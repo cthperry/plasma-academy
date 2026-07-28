@@ -1,0 +1,126 @@
+/* ==========================================================================
+   print.css — 列印樣式
+   工程師會印章節帶進會議,必須可讀
+   ========================================================================== */
+
+@media print {
+  /* 強制淺色 */
+  :root,
+  :root[data-theme="dark"] {
+    --pa-bg: #ffffff;
+    --pa-surface: #ffffff;
+    --pa-surface-raised: #ffffff;
+    --pa-surface-sunken: #ffffff;
+    --pa-text: #000000;
+    --pa-text-muted: #333333;
+    --pa-text-subtle: #555555;
+    --pa-border: #cccccc;
+    --pa-border-strong: #888888;
+    --pa-primary: #000000;
+    --pa-info-bg: #ffffff;
+    --pa-success-bg: #ffffff;
+    --pa-warning-bg: #ffffff;
+    --pa-danger-bg: #ffffff;
+    --pa-shadow-sm: none;
+    --pa-shadow-md: none;
+    --pa-shadow-lg: none;
+  }
+
+  body {
+    font-size: 11pt;
+    line-height: 1.6;
+  }
+
+  /* 隱藏互動與導覽 */
+  .pa-header,
+  .pa-sidebar,
+  .pa-outline,
+  .pa-footer,
+  .pa-chapter-nav,
+  .pa-units,
+  .pa-lab__controls,
+  .pa-lab__readout,
+  .pa-drawer-backdrop,
+  .skip-link,
+  .pa-quiz__actions {
+    display: none !important;
+  }
+
+  .pa-shell {
+    display: block;
+    max-width: none;
+    padding: 0;
+  }
+
+  .pa-prose,
+  .pa-bleed {
+    max-width: none;
+  }
+
+  /* 互動元件改為靜態替代圖 */
+  .pa-lab__stage {
+    display: none;
+  }
+
+  .pa-lab__static {
+    display: block !important;
+  }
+
+  .pa-lab {
+    border: 1px solid var(--pa-border);
+    page-break-inside: avoid;
+  }
+
+  /* 提示方塊去背景改邊框 */
+  .pa-note,
+  .pa-formula,
+  .pa-summary,
+  .pa-objectives {
+    background: none !important;
+    border: 1px solid var(--pa-border-strong);
+    page-break-inside: avoid;
+  }
+
+  /* 連結顯示 URL */
+  .pa-prose a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #555;
+    word-break: break-all;
+  }
+
+  /* 分頁控制 */
+  h1,
+  h2,
+  h3,
+  h4 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  table,
+  .pa-table-wrap,
+  figure,
+  pre {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .pa-table-wrap {
+    overflow: visible;
+  }
+
+  .pa-table thead th {
+    position: static;
+  }
+
+  /* 頁尾標註來源 */
+  @page {
+    margin: 18mm 16mm;
+  }
+}
+
+/* 螢幕上隱藏列印用的靜態替代圖 */
+.pa-lab__static {
+  display: none;
+}

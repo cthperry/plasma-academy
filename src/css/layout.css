@@ -1,0 +1,498 @@
+/* ==========================================================================
+   layout.css — 版面、導覽、響應式
+   斷點:<640 單欄 / 640-1024 單欄+收合側欄 / 1024-1440 兩欄 / >1440 三欄
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. 頁首
+   -------------------------------------------------------------------------- */
+
+.pa-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--pa-header-height);
+  display: flex;
+  align-items: center;
+  gap: var(--pa-space-4);
+  padding: 0 var(--pa-space-4);
+  background: color-mix(in srgb, var(--pa-bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--pa-border);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .pa-header {
+    background: var(--pa-bg);
+  }
+}
+
+.pa-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--pa-space-2);
+  font-weight: 700;
+  font-size: var(--pa-text-base);
+  color: var(--pa-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pa-logo__mark {
+  width: 26px;
+  height: 26px;
+  flex: none;
+}
+
+.pa-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--pa-space-1);
+  margin-left: var(--pa-space-4);
+}
+
+.pa-nav a {
+  padding: var(--pa-space-2) var(--pa-space-3);
+  border-radius: var(--pa-radius-md);
+  color: var(--pa-text-muted);
+  text-decoration: none;
+  font-size: var(--pa-text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.pa-nav a:hover {
+  background: var(--pa-surface-sunken);
+  color: var(--pa-text);
+}
+
+.pa-nav a[aria-current="page"] {
+  color: var(--pa-primary);
+  background: var(--pa-info-bg);
+}
+
+.pa-header__spacer {
+  flex: 1;
+}
+
+.pa-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--pa-space-2);
+}
+
+.pa-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--pa-radius-md);
+  color: var(--pa-text-muted);
+}
+
+.pa-icon-btn:hover {
+  background: var(--pa-surface-sunken);
+  color: var(--pa-text);
+}
+
+.pa-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 行動版選單鈕(桌機隱藏) */
+.pa-menu-btn {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   2. 主體三欄
+   -------------------------------------------------------------------------- */
+
+.pa-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 100rem;
+  margin: 0 auto;
+  padding: 0 var(--pa-space-4);
+  gap: var(--pa-space-6);
+}
+
+.pa-main {
+  min-width: 0; /* 允許內部元素收縮,防止溢出 */
+  padding: var(--pa-space-6) 0 var(--pa-space-8);
+}
+
+.pa-prose {
+  max-width: var(--pa-content-width);
+}
+
+/* 突破正文寬度限制(表格、互動元件、寬圖) */
+.pa-bleed {
+  max-width: min(100%, 60rem);
+}
+
+/* --------------------------------------------------------------------------
+   3. 側欄(章節目錄)
+   -------------------------------------------------------------------------- */
+
+.pa-sidebar {
+  display: none;
+}
+
+.pa-sidebar__inner {
+  position: sticky;
+  top: calc(var(--pa-header-height) + var(--pa-space-4));
+  max-height: calc(100vh - var(--pa-header-height) - var(--pa-space-6));
+  overflow-y: auto;
+  padding-right: var(--pa-space-2);
+  font-size: var(--pa-text-sm);
+}
+
+.pa-toc__level {
+  margin-bottom: var(--pa-space-5);
+}
+
+.pa-toc__level-title {
+  display: flex;
+  align-items: center;
+  gap: var(--pa-space-2);
+  font-weight: 650;
+  font-size: var(--pa-text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pa-text-subtle);
+  margin-bottom: var(--pa-space-2);
+}
+
+.pa-toc__level-title::before {
+  content: "";
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--level-color, var(--pa-border-strong));
+}
+
+.pa-toc ul {
+  list-style: none;
+}
+
+.pa-toc li a {
+  display: flex;
+  align-items: baseline;
+  gap: var(--pa-space-2);
+  padding: var(--pa-space-1) var(--pa-space-2);
+  border-radius: var(--pa-radius-sm);
+  color: var(--pa-text-muted);
+  text-decoration: none;
+  line-height: 1.5;
+}
+
+.pa-toc li a:hover {
+  background: var(--pa-surface-sunken);
+  color: var(--pa-text);
+}
+
+.pa-toc li a[aria-current="page"] {
+  color: var(--pa-primary);
+  font-weight: 600;
+  background: var(--pa-info-bg);
+}
+
+.pa-toc__num {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--pa-text-subtle);
+  font-size: var(--pa-text-xs);
+  min-width: 2em;
+}
+
+.pa-toc__done {
+  flex: none;
+  margin-left: auto;
+  color: var(--pa-success);
+}
+
+/* --------------------------------------------------------------------------
+   4. 右側大綱
+   -------------------------------------------------------------------------- */
+
+.pa-outline {
+  display: none;
+}
+
+.pa-outline__inner {
+  position: sticky;
+  top: calc(var(--pa-header-height) + var(--pa-space-4));
+  max-height: calc(100vh - var(--pa-header-height) - var(--pa-space-6));
+  overflow-y: auto;
+  font-size: var(--pa-text-sm);
+}
+
+.pa-outline__title {
+  font-weight: 650;
+  font-size: var(--pa-text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pa-text-subtle);
+  margin-bottom: var(--pa-space-2);
+}
+
+.pa-outline ul {
+  list-style: none;
+  border-left: 2px solid var(--pa-border);
+}
+
+.pa-outline li a {
+  display: block;
+  padding: var(--pa-space-1) var(--pa-space-3);
+  margin-left: -2px;
+  border-left: 2px solid transparent;
+  color: var(--pa-text-muted);
+  text-decoration: none;
+  line-height: 1.5;
+}
+
+.pa-outline li a:hover {
+  color: var(--pa-text);
+}
+
+.pa-outline li a.is-active {
+  color: var(--pa-primary);
+  border-left-color: var(--pa-primary);
+  font-weight: 600;
+}
+
+.pa-outline li.is-sub a {
+  padding-left: var(--pa-space-5);
+  font-size: var(--pa-text-xs);
+}
+
+/* --------------------------------------------------------------------------
+   5. 頁尾
+   -------------------------------------------------------------------------- */
+
+.pa-footer {
+  border-top: 1px solid var(--pa-border);
+  margin-top: var(--pa-space-8);
+  padding: var(--pa-space-6) var(--pa-space-4);
+  color: var(--pa-text-subtle);
+  font-size: var(--pa-text-sm);
+}
+
+.pa-footer__inner {
+  max-width: 100rem;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pa-space-4);
+  align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   6. 麵包屑
+   -------------------------------------------------------------------------- */
+
+.pa-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pa-space-2);
+  list-style: none;
+  font-size: var(--pa-text-sm);
+  color: var(--pa-text-subtle);
+  margin-bottom: var(--pa-space-4);
+}
+
+.pa-breadcrumb li {
+  display: flex;
+  align-items: center;
+  gap: var(--pa-space-2);
+}
+
+.pa-breadcrumb li:not(:last-child)::after {
+  content: "›";
+  color: var(--pa-border-strong);
+}
+
+.pa-breadcrumb a {
+  color: var(--pa-text-muted);
+  text-decoration: none;
+}
+
+.pa-breadcrumb a:hover {
+  color: var(--pa-primary);
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   7. 章節間導覽
+   -------------------------------------------------------------------------- */
+
+.pa-chapter-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pa-space-3);
+  margin-top: var(--pa-space-7);
+  padding-top: var(--pa-space-5);
+  border-top: 1px solid var(--pa-border);
+}
+
+.pa-chapter-nav a {
+  display: block;
+  padding: var(--pa-space-3) var(--pa-space-4);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+  background: var(--pa-surface);
+  text-decoration: none;
+  color: var(--pa-text);
+  transition: border-color var(--pa-dur-fast) var(--pa-ease-out);
+}
+
+.pa-chapter-nav a:hover {
+  border-color: var(--pa-primary);
+}
+
+.pa-chapter-nav .is-next {
+  text-align: right;
+}
+
+.pa-chapter-nav__label {
+  display: block;
+  font-size: var(--pa-text-xs);
+  color: var(--pa-text-subtle);
+  margin-bottom: var(--pa-space-1);
+}
+
+.pa-chapter-nav__title {
+  font-weight: 600;
+  font-size: var(--pa-text-sm);
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   8. 行動版抽屜
+   -------------------------------------------------------------------------- */
+
+.pa-drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 60;
+}
+
+.pa-drawer-backdrop.is-open {
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   9. 響應式
+   -------------------------------------------------------------------------- */
+
+/* < 640px:單欄,側欄改抽屜 */
+@media (max-width: 639px) {
+  .pa-nav {
+    display: none;
+  }
+
+  .pa-menu-btn {
+    display: grid;
+  }
+
+  .pa-sidebar {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(20rem, 85vw);
+    z-index: 70;
+    background: var(--pa-surface);
+    border-right: 1px solid var(--pa-border);
+    padding: var(--pa-space-4);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform var(--pa-dur-mid) var(--pa-ease-out);
+  }
+
+  .pa-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .pa-sidebar__inner {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .pa-chapter-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .pa-main {
+    padding-top: var(--pa-space-5);
+  }
+}
+
+/* 640-1023:單欄,寬度舒適,側欄仍為抽屜 */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .pa-menu-btn {
+    display: grid;
+  }
+
+  .pa-nav a {
+    padding: var(--pa-space-2);
+  }
+
+  .pa-sidebar {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 20rem;
+    z-index: 70;
+    background: var(--pa-surface);
+    border-right: 1px solid var(--pa-border);
+    padding: var(--pa-space-4);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform var(--pa-dur-mid) var(--pa-ease-out);
+  }
+
+  .pa-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .pa-sidebar__inner {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* >= 1024:左側欄 + 主內容 */
+@media (min-width: 1024px) {
+  .pa-shell.has-sidebar {
+    grid-template-columns: var(--pa-sidebar-width) minmax(0, 1fr);
+  }
+
+  .pa-sidebar {
+    display: block;
+  }
+}
+
+/* >= 1440:完整三欄 */
+@media (min-width: 1440px) {
+  .pa-shell.has-sidebar.has-outline {
+    grid-template-columns:
+      var(--pa-sidebar-width)
+      minmax(0, 1fr)
+      var(--pa-outline-width);
+  }
+
+  .pa-outline {
+    display: block;
+  }
+}

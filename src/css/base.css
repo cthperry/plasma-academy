@@ -1,0 +1,533 @@
+/* ==========================================================================
+   base.css — 設計 token、reset、排版
+   規範來源:docs/07-design-system.md
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Token — 淺色(預設)
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* 表面 */
+  --pa-bg: #fbfcfd;
+  --pa-surface: #ffffff;
+  --pa-surface-raised: #ffffff;
+  --pa-surface-sunken: #f2f5f8;
+
+  /* 文字 */
+  --pa-text: #1a1f26;
+  --pa-text-muted: #4a5560;
+  --pa-text-subtle: #6b7684;
+  --pa-text-inverse: #ffffff;
+
+  /* 邊界 */
+  --pa-border: #e1e6ec;
+  --pa-border-strong: #c5cdd6;
+
+  /* 品牌與互動 */
+  --pa-primary: #0f6fd6;
+  --pa-primary-hover: #0b57a8;
+  --pa-focus: #0f6fd6;
+
+  /* 狀態 */
+  --pa-info: #0f6fd6;
+  --pa-success: #1a7f4b;
+  --pa-warning: #a86400;
+  --pa-danger: #c02626;
+
+  /* 狀態底色(提示方塊用,極淡) */
+  --pa-info-bg: #eef5fd;
+  --pa-success-bg: #ecf7f1;
+  --pa-warning-bg: #fdf5e8;
+  --pa-danger-bg: #fdefef;
+
+  /* 階層識別色 */
+  --pa-level-1: #0e8a9e;
+  --pa-level-2: #2563c9;
+  --pa-level-3: #7040c0;
+  --pa-level-4: #b02d7a;
+
+  /* 資料視覺化(互動元件用,Canvas 由 JS 讀取) */
+  --pa-viz-electron: #2563c9;
+  --pa-viz-ion-pos: #c73a3a;
+  --pa-viz-ion-neg: #7040c0;
+  --pa-viz-neutral: #8a95a3;
+  --pa-viz-radical: #1a8f5a;
+  --pa-viz-polymer: #c08020;
+  --pa-viz-mask: #9a6b3f;
+  --pa-viz-film: #5a6a7a;
+  --pa-viz-substrate: #3a4550;
+  --pa-viz-grid: #dde3ea;
+  --pa-viz-axis: #6b7684;
+
+  /* 字型 */
+  --pa-font-sans: system-ui, -apple-system, "Segoe UI", Roboto,
+    "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --pa-font-mono: ui-monospace, "SF Mono", Menlo, Consolas,
+    "Noto Sans Mono CJK TC", monospace;
+
+  /* 字級 / 行高 */
+  --pa-text-xs: 0.75rem;
+  --pa-text-sm: 0.875rem;
+  --pa-text-base: 1.03125rem; /* 16.5px */
+  --pa-text-lg: 1.1875rem;
+  --pa-text-xl: 1.4375rem;
+  --pa-text-2xl: 1.75rem;
+  --pa-text-3xl: 2.125rem;
+
+  --pa-leading-tight: 1.25;
+  --pa-leading-heading: 1.35;
+  --pa-leading-normal: 1.6;
+  --pa-leading-body: 1.85;
+
+  /* 間距 */
+  --pa-space-1: 0.25rem;
+  --pa-space-2: 0.5rem;
+  --pa-space-3: 0.75rem;
+  --pa-space-4: 1rem;
+  --pa-space-5: 1.5rem;
+  --pa-space-6: 2rem;
+  --pa-space-7: 3rem;
+  --pa-space-8: 4rem;
+
+  /* 圓角 */
+  --pa-radius-sm: 4px;
+  --pa-radius-md: 8px;
+  --pa-radius-lg: 12px;
+  --pa-radius-full: 999px;
+
+  /* 陰影 */
+  --pa-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --pa-shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+  --pa-shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.12);
+
+  /* 版面 */
+  --pa-content-width: 44rem; /* 約 68 中文字元 */
+  --pa-sidebar-width: 16rem;
+  --pa-outline-width: 13rem;
+  --pa-header-height: 3.5rem;
+
+  /* 動效 */
+  --pa-dur-fast: 120ms;
+  --pa-dur-mid: 200ms;
+  --pa-dur-slow: 260ms;
+  --pa-ease-out: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. Token — 深色
+   auto 模式跟隨系統;data-theme 明確指定時必須勝出(兩個方向都要)
+   -------------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --pa-bg: #0e1116;
+    --pa-surface: #161b22;
+    --pa-surface-raised: #1f2630;
+    --pa-surface-sunken: #0b0e13;
+
+    --pa-text: #e6edf3;
+    --pa-text-muted: #9aa7b4;
+    --pa-text-subtle: #7d8896;
+    --pa-text-inverse: #0e1116;
+
+    --pa-border: #2a323c;
+    --pa-border-strong: #3d4753;
+
+    --pa-primary: #4d9df0;
+    --pa-primary-hover: #7ab6f5;
+    --pa-focus: #4d9df0;
+
+    --pa-info: #4d9df0;
+    --pa-success: #3fb87a;
+    --pa-warning: #e0a030;
+    --pa-danger: #f0685f;
+
+    --pa-info-bg: #12233a;
+    --pa-success-bg: #10281d;
+    --pa-warning-bg: #2c2312;
+    --pa-danger-bg: #2e1717;
+
+    --pa-level-1: #3fc0d4;
+    --pa-level-2: #5a9af5;
+    --pa-level-3: #a882f0;
+    --pa-level-4: #e878b4;
+
+    --pa-viz-electron: #5a9af5;
+    --pa-viz-ion-pos: #f07a72;
+    --pa-viz-ion-neg: #a882f0;
+    --pa-viz-neutral: #6e7986;
+    --pa-viz-radical: #4ec48d;
+    --pa-viz-polymer: #e0a850;
+    --pa-viz-mask: #c09060;
+    --pa-viz-film: #8a97a5;
+    --pa-viz-substrate: #5a6570;
+    --pa-viz-grid: #232b35;
+    --pa-viz-axis: #7d8896;
+
+    --pa-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --pa-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --pa-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  }
+}
+
+:root[data-theme="dark"] {
+  --pa-bg: #0e1116;
+  --pa-surface: #161b22;
+  --pa-surface-raised: #1f2630;
+  --pa-surface-sunken: #0b0e13;
+
+  --pa-text: #e6edf3;
+  --pa-text-muted: #9aa7b4;
+  --pa-text-subtle: #7d8896;
+  --pa-text-inverse: #0e1116;
+
+  --pa-border: #2a323c;
+  --pa-border-strong: #3d4753;
+
+  --pa-primary: #4d9df0;
+  --pa-primary-hover: #7ab6f5;
+  --pa-focus: #4d9df0;
+
+  --pa-info: #4d9df0;
+  --pa-success: #3fb87a;
+  --pa-warning: #e0a030;
+  --pa-danger: #f0685f;
+
+  --pa-info-bg: #12233a;
+  --pa-success-bg: #10281d;
+  --pa-warning-bg: #2c2312;
+  --pa-danger-bg: #2e1717;
+
+  --pa-level-1: #3fc0d4;
+  --pa-level-2: #5a9af5;
+  --pa-level-3: #a882f0;
+  --pa-level-4: #e878b4;
+
+  --pa-viz-electron: #5a9af5;
+  --pa-viz-ion-pos: #f07a72;
+  --pa-viz-ion-neg: #a882f0;
+  --pa-viz-neutral: #6e7986;
+  --pa-viz-radical: #4ec48d;
+  --pa-viz-polymer: #e0a850;
+  --pa-viz-mask: #c09060;
+  --pa-viz-film: #8a97a5;
+  --pa-viz-substrate: #5a6570;
+  --pa-viz-grid: #232b35;
+  --pa-viz-axis: #7d8896;
+
+  --pa-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --pa-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --pa-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   3. Reset
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--pa-header-height) + var(--pa-space-4));
+}
+
+body {
+  margin: 0;
+  background: var(--pa-bg);
+  color: var(--pa-text);
+  font-family: var(--pa-font-sans);
+  font-size: var(--pa-text-base);
+  line-height: var(--pa-leading-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* 頁面本體永不橫向捲動 */
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. 焦點 — 絕不移除 outline
+   -------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--pa-focus);
+  outline-offset: 2px;
+  border-radius: var(--pa-radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   5. 排版
+   -------------------------------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 650;
+  line-height: var(--pa-leading-heading);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--pa-text-3xl);
+  line-height: var(--pa-leading-tight);
+}
+
+h2 {
+  font-size: var(--pa-text-2xl);
+  margin-top: var(--pa-space-7);
+  margin-bottom: var(--pa-space-4);
+  padding-bottom: var(--pa-space-2);
+  border-bottom: 1px solid var(--pa-border);
+}
+
+h3 {
+  font-size: var(--pa-text-xl);
+  margin-top: var(--pa-space-6);
+  margin-bottom: var(--pa-space-3);
+}
+
+h4 {
+  font-size: var(--pa-text-lg);
+  margin-top: var(--pa-space-5);
+  margin-bottom: var(--pa-space-2);
+}
+
+p {
+  margin-bottom: var(--pa-space-4);
+}
+
+a {
+  color: var(--pa-primary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--pa-primary-hover);
+}
+
+strong {
+  font-weight: 650;
+}
+
+code {
+  font-family: var(--pa-font-mono);
+  font-size: 0.9em;
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-sm);
+  padding: 0.1em 0.35em;
+}
+
+pre {
+  font-family: var(--pa-font-mono);
+  font-size: var(--pa-text-sm);
+  line-height: 1.65;
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+  padding: var(--pa-space-4);
+  margin: 0 0 var(--pa-space-5);
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* 內文清單 */
+.pa-prose ul,
+.pa-prose ol {
+  margin: 0 0 var(--pa-space-4);
+  padding-left: 1.5em;
+}
+
+.pa-prose li {
+  margin-bottom: var(--pa-space-2);
+}
+
+.pa-prose li::marker {
+  color: var(--pa-text-subtle);
+}
+
+/* 英文術語:與中文正文微妙區隔,不刺眼 */
+.term-en {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* 中西文間距 —— 撰稿時亦可手動留空格 */
+.pa-prose {
+  text-spacing-trim: space-all;
+}
+
+/* --------------------------------------------------------------------------
+   6. 公式排版(純 HTML/CSS,無 KaTeX)
+   -------------------------------------------------------------------------- */
+
+.pa-eq {
+  font-family: var(--pa-font-mono);
+  font-size: 1.05em;
+  white-space: nowrap;
+}
+
+.pa-eq sub,
+.pa-eq sup {
+  font-size: 0.72em;
+  line-height: 0;
+  position: relative;
+}
+
+.pa-eq sub {
+  vertical-align: -0.2em;
+}
+
+.pa-eq sup {
+  vertical-align: 0.45em;
+}
+
+/* 分式 */
+.frac {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 0.92em;
+  margin: 0 0.15em;
+}
+
+.frac > .num {
+  padding: 0 0.3em;
+}
+
+.frac > .den {
+  padding: 0 0.3em;
+  border-top: 1px solid currentColor;
+}
+
+/* 向量 */
+.vec {
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   7. 工具 class
+   -------------------------------------------------------------------------- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pa-muted {
+  color: var(--pa-text-muted);
+}
+
+.pa-subtle {
+  color: var(--pa-text-subtle);
+  font-size: var(--pa-text-sm);
+}
+
+/* 跳至主內容 */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: var(--pa-space-4);
+  transform: translateY(-120%);
+  background: var(--pa-primary);
+  color: var(--pa-text-inverse);
+  padding: var(--pa-space-2) var(--pa-space-4);
+  border-radius: 0 0 var(--pa-radius-md) var(--pa-radius-md);
+  z-index: 100;
+  transition: transform var(--pa-dur-fast) var(--pa-ease-out);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   8. prefers-reduced-motion
+   時長歸零而非移除 —— 避免依賴 transitionend 的 JS 失效
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

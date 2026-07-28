@@ -1,0 +1,19 @@
+{
+  "name": "plasma-academy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "電漿製程工程師教育訓練網站",
+  "type": "module",
+  "scripts": {
+    "build": "node build/build.mjs",
+    "serve": "node tools/serve.mjs",
+    "dev": "node build/build.mjs && node tools/serve.mjs",
+    "check": "node tools/check-all.mjs",
+    "check:contrast": "node tools/check-contrast.mjs",
+    "check:links": "node tools/check-links.mjs",
+    "check:glossary": "node tools/check-glossary.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
