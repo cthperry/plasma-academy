@@ -419,10 +419,14 @@
 
 .pa-lab__stage {
   position: relative;
-  min-height: 260px;
   display: grid;
   place-items: center;
   background: var(--pa-bg);
+}
+
+/* 元件尚未載入時撐住高度,避免版面跳動 */
+.pa-lab__stage:empty {
+  min-height: 240px;
 }
 
 .pa-lab__stage canvas,
@@ -872,4 +876,121 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--pa-space-3);
+}
+
+/* --------------------------------------------------------------------------
+   15. 全站搜尋
+   -------------------------------------------------------------------------- */
+
+.pa-search {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 10vh var(--pa-space-4) var(--pa-space-4);
+}
+
+.pa-search.is-open {
+  display: block;
+}
+
+.pa-search__panel {
+  max-width: 40rem;
+  margin: 0 auto;
+  background: var(--pa-surface-raised);
+  border: 1px solid var(--pa-border-strong);
+  border-radius: var(--pa-radius-lg);
+  box-shadow: var(--pa-shadow-lg);
+  overflow: hidden;
+}
+
+.pa-search__input {
+  width: 100%;
+  padding: var(--pa-space-4) var(--pa-space-5);
+  border: none;
+  border-bottom: 1px solid var(--pa-border);
+  background: transparent;
+  font-size: var(--pa-text-lg);
+}
+
+.pa-search__input:focus {
+  outline: none;
+}
+
+.pa-search__results {
+  max-height: min(60vh, 28rem);
+  overflow-y: auto;
+}
+
+.pa-search__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--pa-space-1) var(--pa-space-3);
+  align-items: baseline;
+  padding: var(--pa-space-3) var(--pa-space-5);
+  border-bottom: 1px solid var(--pa-border);
+  text-decoration: none;
+  color: var(--pa-text);
+}
+
+.pa-search__item:hover,
+.pa-search__item:focus-visible {
+  background: var(--pa-surface-sunken);
+}
+
+.pa-search__type {
+  grid-row: span 2;
+  font-size: var(--pa-text-xs);
+  font-weight: 600;
+  color: var(--pa-primary);
+  background: var(--pa-info-bg);
+  padding: 0.15em 0.5em;
+  border-radius: var(--pa-radius-sm);
+  white-space: nowrap;
+}
+
+.pa-search__title {
+  font-weight: 600;
+}
+
+.pa-search__ctx {
+  font-size: var(--pa-text-sm);
+  color: var(--pa-text-subtle);
+  line-height: 1.5;
+}
+
+.pa-search__empty {
+  padding: var(--pa-space-6);
+  text-align: center;
+  color: var(--pa-text-subtle);
+  font-size: var(--pa-text-sm);
+}
+
+/* --------------------------------------------------------------------------
+   16. 互動元件的補充區塊
+   -------------------------------------------------------------------------- */
+
+/* 控制面板中的按鈕列 */
+.pa-ctrl__row {
+  display: flex;
+  gap: var(--pa-space-2);
+  flex-wrap: wrap;
+}
+
+/* 模型刻意簡化/誇大時的誠實標註 —— 規格書要求必須出現在畫面上 */
+.pa-lab__caveat {
+  padding: var(--pa-space-3) var(--pa-space-4);
+  border-top: 1px solid var(--pa-border);
+  background: var(--pa-surface-sunken);
+  font-size: var(--pa-text-xs);
+  color: var(--pa-text-subtle);
+  line-height: 1.6;
+}
+
+/* 學習路徑卡片上的進度 */
+.pa-path__progress {
+  display: flex;
+  align-items: center;
+  gap: var(--pa-space-2);
 }

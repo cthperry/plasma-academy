@@ -56,15 +56,20 @@
 | `--pa-text-muted` | `#4a5560` | `#9aa7b4` |
 | `--pa-text-subtle` | `#6b7684` | `#7d8896` |
 | `--pa-border` | `#e1e6ec` | `#2a323c` |
-| `--pa-border-strong` | `#c5cdd6` | `#3d4753` |
-| `--pa-primary` | `#0f6fd6` | `#4d9df0` |
-| `--pa-focus` | `#0f6fd6` | `#4d9df0` |
-| `--pa-info` | `#0f6fd6` | `#4d9df0` |
+| `--pa-border-strong` | `#858a90` | `#626a74` |
+| `--pa-primary` | `#0f6cd1` | `#4d9df0` |
+| `--pa-focus` | `#0f6cd1` | `#4d9df0` |
+| `--pa-info` | `#0f6cd1` | `#4d9df0` |
 | `--pa-success` | `#1a7f4b` | `#3fb87a` |
-| `--pa-warning` | `#a86400` | `#e0a030` |
+| `--pa-warning` | `#a06000` | `#e0a030` |
 | `--pa-danger` | `#c02626` | `#f0685f` |
 
-**對比要求**:正文對背景 ≥ 7:1(AAA),次要文字 ≥ 4.5:1(AA),邊界 ≥ 3:1。兩套主題都必須驗證。
+**對比要求**:正文對背景 ≥ 7:1(AAA),次要文字 ≥ 4.5:1(AA),UI 邊界 ≥ 3:1。兩套主題都必須驗證。
+
+`npm run check:contrast` 對 19 組前景/背景配對 × 2 套主題共 38 項自動驗證,不通過即視為未達標。
+
+> **實作記錄**:初版規劃提出的色值有 6 項未達本文件自己訂的標準 —— `text-subtle`(兩處)、`primary` 對提示方塊底、`warning` 對提示方塊底、`border-strong`(深淺各一)。上表為驗證後的修正值。
+> 其中 `--pa-border-strong` 用於按鈕、輸入框與表格表頭底線,屬 WCAG 1.4.11 非文字對比範圍,必須達 3:1;初版值僅 1.56:1,是最容易低估的一項。
 
 ### 階層識別色
 

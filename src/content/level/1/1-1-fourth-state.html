@@ -1,0 +1,243 @@
+<!--meta
+{
+  "title": "1.1 物質第四態 — Plasma Academy",
+  "description": "電漿與一般氣體的本質差異、弱游離電漿的游離度、準中性,以及一團帶電粒子要滿足什麼條件才算電漿。",
+  "type": "chapter",
+  "module": "1.1"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>1.1 物質第四態</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 1.0 小時</span>
+    <span>🔬 A01 互動元件</span>
+    <span>L1 初階</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="1.1">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說出電漿與一般氣體的三個本質差異</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋什麼是「弱游離電漿」,以及製程電漿的游離度為何低到不可思議</span></label></li>
+    <li><label><input type="checkbox" /><span>判斷一團帶電粒子是否夠格被稱為電漿</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <span>無 —— 這是第一章</span>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    電漿是氣體中一小部分粒子被打掉電子之後的狀態。關鍵在「一小部分」——
+    製程電漿的<span class="pa-term" data-term="游離度">游離度</span>只有百萬分之一到千分之一,
+    腔體裡絕大多數仍是中性粒子。所以真正做化學反應的主力是中性
+    <span class="pa-term" data-term="自由基">自由基</span>,離子的角色不是「量」,是「方向性」。
+  </p>
+  <p>
+    電漿之所以自成一態,不是因為它帶電,而是因為它展現<strong>集體行為</strong>:
+    任何電荷分離都會立刻被靜電力拉回,使主體維持
+    <span class="pa-term" data-term="準中性">準中性</span>。這也是為什麼「電漿」的定義是行為上的,
+    而不是成分上的。
+  </p>
+</div>
+
+<h2 id="ignition">1.1.1 從點火那一刻說起</h2>
+
+<div class="pa-prose">
+  <p>
+    先不談定義,談畫面:腔體抽真空 → 通氣 → RF on → <strong>紫色的光亮起來</strong>。
+    這一秒鐘發生了什麼?
+  </p>
+
+  <p>拆解成三件事:</p>
+  <ol>
+    <li>電子被電場加速</li>
+    <li>撞掉中性分子的束縛電子,產生更多電子(連鎖)</li>
+    <li>被撞到激發態的分子掉回基態時放出光子 —— 那就是我們看到的輝光</li>
+  </ol>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 工程師直覺</div>
+    <p>
+      輝光的顏色是氣體的身分證。Ar 是紫粉色,O₂ 偏白藍,N₂ 偏橘紫,CF₄ 系偏藍白。
+      老師傅隔著 viewport 看顏色就知道氣體有沒有切錯 —— 這不是玄學,
+      這是 L4 <span class="pa-term" data-term="光發射光譜">OES</span> 的肉眼版。
+    </p>
+  </div>
+</div>
+
+<h2 id="four-states">1.1.2 四態的排序</h2>
+
+<div class="pa-prose">
+  <p>固 → 液 → 氣 → 電漿,每一次相變都在對抗某種束縛能:</p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead>
+        <tr><th>相變</th><th>打斷什麼</th><th class="is-num">典型能量尺度</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>熔化</td><td>晶格位置束縛</td><td class="is-num">~0.01–0.1 eV</td></tr>
+        <tr><td>汽化</td><td>分子間吸引力</td><td class="is-num">~0.1–0.5 eV</td></tr>
+        <tr><td><strong>游離</strong></td><td><strong>原子核對電子的束縛</strong></td><td class="is-num"><strong>~10–25 eV</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Ar 的第一<span class="pa-term" data-term="游離能">游離能</span> 15.76 eV、O₂ 12.07 eV、
+    N₂ 15.58 eV、CF₄ 約 16 eV。這些數字之後會反覆出現。
+  </p>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>電漿 = 很熱的氣體。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        製程電漿的氣體溫度常常只有 50–150 °C(手摸腔壁不會燙傷)。
+        熱的只有電子。詳見 <a href="../1-2-parameters/">1.2 電漿基本參數</a>。
+      </span>
+    </div>
+  </div>
+</div>
+
+<h2 id="ionization-degree">1.1.3 游離度:製程電漿有多「弱」</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">α = n<sub>i</sub> / (n<sub>i</sub> + n<sub>n</sub>)</div>
+  <div class="pa-formula__name">游離度(Degree of Ionization)</div>
+  <details>
+    <summary>展開符號表與典型值</summary>
+    <div class="pa-formula__body">
+      <dl class="pa-symbols">
+        <dt>α</dt><dd>游離度,無因次</dd>
+        <dt>n<sub>i</sub></dt><dd>離子密度 [cm⁻³]</dd>
+        <dt>n<sub>n</sub></dt><dd>中性粒子密度 [cm⁻³]</dd>
+      </dl>
+      <p style="margin-top:var(--pa-space-3)">
+        因為 n<sub>n</sub> ≫ n<sub>i</sub>,分母幾乎等於 n<sub>n</sub>,
+        所以實務上常直接寫成 α ≈ n<sub>i</sub> / n<sub>n</sub>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>電漿種類</th><th class="is-num">游離度 α</th></tr></thead>
+      <tbody>
+        <tr><td>太陽核心(完全游離)</td><td class="is-num">≈ 1</td></tr>
+        <tr><td>聚變電漿</td><td class="is-num">≈ 1</td></tr>
+        <tr><td><strong>CCP 蝕刻電漿</strong></td><td class="is-num"><strong>10⁻⁶ ~ 10⁻⁴</strong></td></tr>
+        <tr><td><strong>ICP / 高密度電漿</strong></td><td class="is-num"><strong>10⁻⁴ ~ 10⁻²</strong></td></tr>
+        <tr><td>日光燈</td><td class="is-num">~10⁻⁵</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 工程師直覺</div>
+    <p>
+      在 CCP 腔體裡,每一百萬個粒子只有一個是離子。所以腔體裡
+      <strong>絕大多數的化學反應是中性自由基做的</strong>,不是離子。
+      離子的角色不是「量」,是「方向性」—— 這一句話會貫穿整個 L3。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a01">🔬 A01 氣體→電漿相變</h2>
+
+<div class="pa-lab" data-lab="A01">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A01</span>
+    <span class="pa-lab__title">氣體→電漿相變粒子動畫</span>
+  </div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:施加電場後,只有極少數中性粒子被游離成
+      電子與離子,絕大多數仍是中性 —— 這就是「弱游離電漿」。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="quasi-neutrality">1.1.4 準中性</h2>
+
+<div class="pa-prose">
+  <p>
+    在電漿主體(bulk)裡,n<sub>e</sub> ≈ n<sub>i</sub>。這不是巧合,是靜電力強制的結果:
+    只要有一點點電荷分離,產生的電場就大到立刻把它拉回來。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 數量級演示</div>
+    <p>
+      若一個 1 cm³ 的區域裡電子比離子少 0.1%,且 n<sub>e</sub> = 10¹⁰ cm⁻³,
+      算出的電位差會達到數十萬伏特。自然界不允許,所以電漿自己維持中性。
+    </p>
+  </div>
+
+  <p>
+    但<strong><span class="pa-term" data-term="鞘層">鞘層</span>裡不中性</strong> ——
+    這是 <a href="../1-5-sheath-intro/">1.5</a> 的主題,也是整個電漿製程的關鍵。
+  </p>
+</div>
+
+<h2 id="criteria">1.1.5 三個判準:什麼才算電漿</h2>
+
+<div class="pa-prose">
+  <p>一團帶電粒子要被稱為電漿,必須<strong>同時</strong>滿足三個條件:</p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>判準</th><th>意義</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="pa-eq">λ<sub>D</sub> ≪ L</td>
+          <td><span class="pa-term" data-term="Debye 長度">Debye 長度</span>遠小於容器尺寸,否則「集體行為」談不上</td>
+        </tr>
+        <tr>
+          <td class="pa-eq">N<sub>D</sub> ≫ 1</td>
+          <td>Debye 球內粒子數遠大於 1,否則是稀薄帶電粒子,不是流體</td>
+        </tr>
+        <tr>
+          <td class="pa-eq">ω<sub>pe</sub> · τ &gt; 1</td>
+          <td><span class="pa-term" data-term="電漿頻率">電漿振盪</span>比碰撞快,否則被中性碰撞主宰,行為像氣體</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    λ<sub>D</sub> 與 ω<sub>pe</sub> 在 <a href="../1-2-parameters/">1.2</a> 定義。
+    這裡先建立一個觀念:<strong>電漿的定義是行為上的,不是成分上的。</strong>
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>為什麼說「電漿是熱的」這句話對聚變電漿成立、對蝕刻電漿不成立?</li>
+    <li>CCP 電漿中,負責化學蝕刻的主力是離子還是中性自由基?為什麼?</li>
+    <li>若某腔體 n<sub>e</sub> = 10¹⁰ cm⁻³、n<sub>n</sub> = 10¹⁵ cm⁻³,游離度是多少?</li>
+    <li>準中性為什麼在 bulk 成立卻在鞘層不成立?(可先猜,1.5 會驗證)</li>
+    <li>判斷題:游離度越高,蝕刻率一定越高。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 1</li>
+    <li>Chapman, <em>Glow Discharge Processes</em>, Ch. 1–2</li>
+  </ul>
+</div>

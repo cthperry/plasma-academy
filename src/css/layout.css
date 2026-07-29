@@ -44,6 +44,11 @@
   flex: none;
 }
 
+.pa-logo span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .pa-nav {
   display: flex;
   align-items: center;
@@ -84,6 +89,7 @@
 .pa-icon-btn {
   display: grid;
   place-items: center;
+  flex: none; /* 不可收縮:否則在窄視窗被壓成 0 寬而點不到 */
   width: 36px;
   height: 36px;
   border-radius: var(--pa-radius-md);
@@ -393,6 +399,16 @@
 /* < 640px:單欄,側欄改抽屜 */
 @media (max-width: 639px) {
   .pa-nav {
+    display: none;
+  }
+
+  .pa-header {
+    padding: 0 var(--pa-space-2);
+    gap: var(--pa-space-2);
+  }
+
+  /* 375px 這類窄機種放不下 logo 文字 + 4 顆按鈕,文字讓位 */
+  .pa-logo span {
     display: none;
   }
 

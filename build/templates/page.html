@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant" data-base="{{base}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- 主題必須同步執行,在 CSS 套用前設好 data-theme,否則深色模式會閃白 -->
+    <script src="{{base}}js/theme.js"></script>
+
+    <link rel="stylesheet" href="{{base}}css/base.css" />
+    <link rel="stylesheet" href="{{base}}css/layout.css" />
+    <link rel="stylesheet" href="{{base}}css/components.css" />
+    <link rel="stylesheet" href="{{base}}css/print.css" media="print" />
+    <link rel="icon" href="{{base}}favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳至主內容</a>
+
+    <header class="pa-header">
+      <button
+        class="pa-icon-btn pa-menu-btn"
+        type="button"
+        data-menu-btn
+        aria-expanded="false"
+        aria-label="開啟章節目錄"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" />
+        </svg>
+      </button>
+
+      <a class="pa-logo" href="{{base}}">
+        <svg class="pa-logo__mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <circle cx="16" cy="16" r="14" stroke="var(--pa-level-2)" stroke-width="1.5" opacity="0.35" />
+          <ellipse cx="16" cy="16" rx="13" ry="5" stroke="var(--pa-level-1)" stroke-width="1.5" transform="rotate(-25 16 16)" />
+          <ellipse cx="16" cy="16" rx="13" ry="5" stroke="var(--pa-level-4)" stroke-width="1.5" transform="rotate(35 16 16)" />
+          <circle cx="16" cy="16" r="3" fill="var(--pa-primary)" />
+        </svg>
+        <span>Plasma Academy</span>
+      </a>
+
+      <nav class="pa-nav" aria-label="主導覽">
+        <a href="{{base}}#path">學習路徑</a>
+        <a href="{{base}}lab/">實驗室</a>
+        <a href="{{base}}gases/">氣體百科</a>
+        <a href="{{base}}defects/">缺陷圖鑑</a>
+        <a href="{{base}}formulas/">公式</a>
+        <a href="{{base}}glossary/">術語</a>
+      </nav>
+
+      <span class="pa-header__spacer"></span>
+
+      <div class="pa-header__actions">
+        <button class="pa-icon-btn" type="button" data-search-btn aria-label="搜尋(Ctrl+K)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
+          </svg>
+        </button>
+        <a class="pa-icon-btn" href="{{base}}progress/" aria-label="我的進度">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+          </svg>
+        </a>
+        <button class="pa-icon-btn" type="button" data-theme-btn aria-label="切換主題"></button>
+      </div>
+    </header>
+
+    <div class="pa-shell {{shellClass}}">
+      {{sidebar}}
+
+      <main class="pa-main" id="main"{{mainAttrs}}>
+        {{content}}
+      </main>
+
+      {{outline}}
+    </div>
+
+    <footer class="pa-footer">
+      <div class="pa-footer__inner">
+        <span>Plasma Academy — 電漿製程工程師教育訓練</span>
+        <span class="pa-header__spacer"></span>
+        <span>{{buildStamp}}</span>
+      </div>
+    </footer>
+
+    <script src="{{base}}data/curriculum.js" defer></script>
+    <script src="{{base}}js/core/progress.js" defer></script>
+    <script src="{{base}}js/core/nav.js" defer></script>
+    <script src="{{base}}js/core/tooltip.js" defer></script>
+    <script src="{{base}}js/core/units.js" defer></script>
+    <script src="{{base}}js/core/search.js" defer></script>
+    <script src="{{base}}js/core/home.js" defer></script>
+    {{extraScripts}}
+    <script src="{{base}}js/app.js" defer></script>
+  </body>
+</html>

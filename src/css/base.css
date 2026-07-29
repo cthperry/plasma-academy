@@ -17,22 +17,22 @@
   /* 文字 */
   --pa-text: #1a1f26;
   --pa-text-muted: #4a5560;
-  --pa-text-subtle: #6b7684;
+  --pa-text-subtle: #656f7c;
   --pa-text-inverse: #ffffff;
 
   /* 邊界 */
   --pa-border: #e1e6ec;
-  --pa-border-strong: #c5cdd6;
+  --pa-border-strong: #858a90;
 
   /* 品牌與互動 */
-  --pa-primary: #0f6fd6;
+  --pa-primary: #0f6cd1;
   --pa-primary-hover: #0b57a8;
-  --pa-focus: #0f6fd6;
+  --pa-focus: #0f6cd1;
 
   /* 狀態 */
-  --pa-info: #0f6fd6;
+  --pa-info: #0f6cd1;
   --pa-success: #1a7f4b;
-  --pa-warning: #a86400;
+  --pa-warning: #a06000;
   --pa-danger: #c02626;
 
   /* 狀態底色(提示方塊用,極淡) */
@@ -132,7 +132,7 @@
     --pa-text-inverse: #0e1116;
 
     --pa-border: #2a323c;
-    --pa-border-strong: #3d4753;
+    --pa-border-strong: #626a74;
 
     --pa-primary: #4d9df0;
     --pa-primary-hover: #7ab6f5;
@@ -183,7 +183,7 @@
   --pa-text-inverse: #0e1116;
 
   --pa-border: #2a323c;
-  --pa-border-strong: #3d4753;
+  --pa-border-strong: #626a74;
 
   --pa-primary: #4d9df0;
   --pa-primary-hover: #7ab6f5;

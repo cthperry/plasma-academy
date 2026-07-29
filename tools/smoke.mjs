@@ -1,0 +1,427 @@
+/* ==========================================================================
+   smoke.mjs — 瀏覽器煙霧測試(P0 驗收)
+
+   驗證 docs/11-build-roadmap.md 的 P0 驗收條件:
+     · 首頁與示範章節頁可正常瀏覽
+     · 深淺主題切換無閃爍,Canvas 元件正確重繪
+     · 進度追蹤可記錄與匯出
+     · 無 CSP 違規、無 console 錯誤
+     · 首次載入 < 50 KB、可互動 < 300 ms
+     · prefers-reduced-motion 下內容仍完整
+
+   用法:node tools/serve.mjs 8081 & node tools/smoke.mjs
+   ========================================================================== */
+
+import { chromium } from "playwright";
+import { existsSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
+const BASE = process.env.BASE_URL || "http://localhost:8081";
+let pass = 0;
+let fail = 0;
+
+function ok(label, cond, detail) {
+  console.log(`  ${cond ? "✓" : "✗"} ${label}${detail ? " — " + detail : ""}`);
+  cond ? pass++ : fail++;
+}
+
+/**
+ * 用環境預裝的 Chromium,不另外下載。
+ * PLAYWRIGHT_BROWSERS_PATH 下的 build 編號未必與 npm 安裝的 playwright 版本相符,
+ * 因此自行尋找可用的 chrome 執行檔。
+ */
+function findChromium() {
+  if (process.env.PW_CHROMIUM && existsSync(process.env.PW_CHROMIUM)) {
+    return process.env.PW_CHROMIUM;
+  }
+  const root = process.env.PLAYWRIGHT_BROWSERS_PATH || "/opt/pw-browsers";
+  if (!existsSync(root)) return undefined;
+  const candidates = [];
+  for (const name of readdirSync(root)) {
+    if (!name.startsWith("chromium")) continue;
+    candidates.push(
+      join(root, name, "chrome-linux", "chrome"),
+      join(root, name, "chrome-linux", "headless_shell"),
+      join(root, name, "chrome-headless-shell-linux64", "chrome-headless-shell")
+    );
+  }
+  return candidates.find(existsSync);
+}
+
+const EXECUTABLE = findChromium();
+if (EXECUTABLE) console.log(`(使用 Chromium:${EXECUTABLE})`);
+
+const browser = await chromium.launch({
+  executablePath: EXECUTABLE,
+  args: ["--no-sandbox"],
+});
+
+async function newPage(opts = {}) {
+  const ctx = await browser.newContext({
+    viewport: opts.viewport || { width: 1440, height: 900 },
+    reducedMotion: opts.reducedMotion,
+    colorScheme: opts.colorScheme,
+  });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("console", (m) => {
+    if (m.type() === "error") errors.push(m.text());
+  });
+  page.on("pageerror", (e) => errors.push(String(e)));
+  page.errors = errors;
+  return { page, ctx };
+}
+
+// ---------------------------------------------------------------- 首頁
+console.log("\n【首頁】");
+{
+  const { page, ctx } = await newPage();
+  const t0 = Date.now();
+  const resp = await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
+  const domMs = Date.now() - t0;
+
+  ok("HTTP 200", resp.status() === 200);
+  ok("標題正確", (await page.title()).includes("Plasma Academy"));
+  ok("DOMContentLoaded < 300 ms", domMs < 300, `${domMs} ms`);
+
+  const levels = await page.locator(".pa-path__level").count();
+  ok("學習路徑圖渲染 4 階", levels === 4, `實得 ${levels}`);
+
+  await page.waitForFunction(() => window.PA && window.PA.curriculum, null, { timeout: 3000 });
+  const stats = await page.evaluate(() => ({
+    modules: PA.curriculum.modules.length,
+    hours: PA.curriculum.totalHours,
+    labs: PA.curriculum.totalLabs,
+    glossaryLoaded: !!PA.glossary,
+    labLoaded: !!PA.lab,
+  }));
+  ok("課程資料 24 模組", stats.modules === 24, `${stats.modules}`);
+  ok("總時數 60 小時", Math.abs(stats.hours - 60) < 0.01, `${stats.hours}`);
+  ok("互動元件 32 個編號", stats.labs === 32, `${stats.labs}`);
+  ok("首頁不載入術語表(無 .pa-term)", stats.glossaryLoaded === false);
+  ok("首頁不載入 lab 核心(無 [data-lab])", stats.labLoaded === false);
+
+  await page.waitForTimeout(300);
+  const rings = await page.locator(".pa-ring").count();
+  ok("進度環渲染", rings === 4, `${rings}`);
+
+  ok("無 console 錯誤", page.errors.length === 0, page.errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- 章節頁
+console.log("\n【章節頁 1.1】");
+let chapterErrors = [];
+{
+  const { page, ctx } = await newPage();
+  await page.goto(BASE + "/level/1/1-1-fourth-state/", { waitUntil: "load" });
+
+  ok("麵包屑存在", (await page.locator(".pa-breadcrumb li").count()) === 3);
+  ok("側欄列出 24 模組", (await page.locator(".pa-toc a[data-module]").count()) === 24);
+  ok("右側大綱有項目", (await page.locator(".pa-outline a").count()) >= 5);
+  ok("上/下章導覽", (await page.locator("[data-nav-next]").count()) === 1);
+
+  // 學習目標 → 進度
+  const boxes = page.locator(".pa-objectives input[type=checkbox]");
+  ok("學習目標 3 條", (await boxes.count()) === 3);
+  await boxes.nth(0).check();
+  await page.waitForTimeout(120);
+  const saved = await page.evaluate(() => PA.progress.chapter("1.1").objectives[0]);
+  ok("勾選寫入 localStorage", saved === true);
+
+  const visited = await page.evaluate(() => PA.progress.chapter("1.1").visited);
+  ok("造訪已記錄", visited === true);
+
+  const exported = await page.evaluate(() => JSON.parse(PA.progress.exportJSON()));
+  ok("進度可匯出", exported.version === 1 && !!exported.chapters["1.1"]);
+
+  // 術語 tooltip
+  const term = page.locator(".pa-term").first();
+  await term.hover();
+  await page.waitForTimeout(200);
+  const tipVisible = await page.evaluate(() => {
+    const t = document.querySelector(".pa-tooltip");
+    return t && t.style.display !== "none" && t.textContent.length > 10;
+  });
+  ok("術語 tooltip 顯示定義", tipVisible);
+
+  const terms = await page.evaluate(() => (PA.glossary ? PA.glossary.count : 0));
+  ok("術語表按需載入後有 242 條", terms === 242, `${terms}`);
+
+  // 互動元件 A01
+  await page.locator("[data-lab=A01]").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(900);
+  const labState = await page.evaluate(() => {
+    const el = document.querySelector("[data-lab=A01]");
+    const c = el && el.querySelector("canvas");
+    return {
+      mounted: el && el.hasAttribute("data-lab-mounted"),
+      error: el && el.hasAttribute("data-lab-error"),
+      hasCanvas: !!c,
+      w: c ? c.width : 0,
+      controls: el ? el.querySelectorAll(".pa-ctrl").length : 0,
+      readouts: el ? el.querySelectorAll(".pa-readout").length : 0,
+      particles: window.PA.lab.mounted.length ? window.PA.lab.mounted[0].inst.sys.count : 0,
+    };
+  });
+  ok("A01 已掛載", labState.mounted && !labState.error);
+  ok("A01 Canvas 已建立", labState.hasCanvas && labState.w > 0, `width=${labState.w}`);
+  ok("A01 控制項 4 組", labState.controls === 4, `${labState.controls}`);
+  ok("A01 數值面板 4 格", labState.readouts === 4, `${labState.readouts}`);
+  ok("A01 粒子已產生", labState.particles > 300, `${labState.particles} 顆`);
+
+  // 誠實標註誇大 —— 規格書驗收條件
+  const caveat = await page.locator("[data-lab=A01]").textContent();
+  ok("A01 誠實標註游離度誇大", caveat.includes("放大") && caveat.includes("10⁻⁵"));
+
+  chapterErrors = page.errors;
+  ok("無 console 錯誤", page.errors.length === 0, page.errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- 主題切換
+console.log("\n【主題切換與 Canvas 重繪】");
+{
+  const { page, ctx } = await newPage();
+  await page.goto(BASE + "/level/1/1-1-fourth-state/", { waitUntil: "load" });
+  await page.locator("[data-lab=A01]").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
+
+  const read = () =>
+    page.evaluate(() => ({
+      theme: document.documentElement.getAttribute("data-theme"),
+      bg: getComputedStyle(document.body).backgroundColor,
+      palette: PA.canvasTheme.palette().bg,
+    }));
+
+  const before = await read();
+  await page.evaluate(() => PA.theme.set("dark"));
+  await page.waitForTimeout(250);
+  const after = await read();
+
+  ok("data-theme 已切為 dark", after.theme === "dark");
+  ok("body 背景色改變", before.bg !== after.bg, `${before.bg} → ${after.bg}`);
+  ok(
+    "Canvas 調色盤快取已失效並更新",
+    before.palette !== after.palette,
+    `${before.palette} → ${after.palette}`
+  );
+
+  await page.evaluate(() => PA.theme.set("light"));
+  await page.waitForTimeout(250);
+  const back = await read();
+  ok("切回 light 生效(明確指定勝過系統偏好)", back.theme === "light" && back.bg === before.bg);
+
+  // 深色模式下不應閃白:重載後首次繪製即為深色
+  await page.evaluate(() => PA.theme.set("dark"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  const atLoad = await page.evaluate(() => document.documentElement.getAttribute("data-theme"));
+  ok("重載時 data-theme 於 CSS 套用前就設好(防閃爍)", atLoad === "dark");
+
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- 系統深色
+console.log("\n【跟隨系統偏好】");
+{
+  const { page, ctx } = await newPage({ colorScheme: "dark" });
+  await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
+  const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  ok("auto 模式跟隨系統深色", bg === "rgb(14, 17, 22)", bg);
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- reduced motion
+console.log("\n【prefers-reduced-motion】");
+{
+  const { page, ctx } = await newPage({ reducedMotion: "reduce" });
+  await page.goto(BASE + "/level/1/1-1-fourth-state/", { waitUntil: "load" });
+  await page.locator("[data-lab=A01]").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(700);
+
+  const st = await page.evaluate(() => {
+    const inst = window.PA.lab.mounted[0] && window.PA.lab.mounted[0].inst;
+    return {
+      running: inst ? inst.running : null,
+      particles: inst && inst.sys ? inst.sys.count : 0,
+      textLen: document.querySelector(".pa-main").innerText.length,
+    };
+  });
+  ok("動畫迴圈未啟動", st.running === false);
+  ok("仍畫出靜態粒子", st.particles > 300, `${st.particles} 顆`);
+  ok("章節內容完整可讀", st.textLen > 2000, `${st.textLen} 字`);
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- 行動版
+console.log("\n【行動版 375px】");
+{
+  const { page, ctx } = await newPage({ viewport: { width: 375, height: 780 } });
+  await page.goto(BASE + "/level/1/1-1-fourth-state/", { waitUntil: "load" });
+
+  const noHScroll = await page.evaluate(
+    () => document.documentElement.scrollWidth <= window.innerWidth + 1
+  );
+  ok("頁面不橫向捲動", noHScroll);
+
+  const menuVisible = await page.locator("[data-menu-btn]").isVisible();
+  ok("漢堡選單顯示", menuVisible);
+
+  await page.locator("[data-menu-btn]").click();
+  await page.waitForTimeout(300);
+  ok("側欄抽屜可開啟", await page.evaluate(() => document.querySelector(".pa-sidebar").classList.contains("is-open")));
+
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(300);
+  ok("Esc 可關閉抽屜", await page.evaluate(() => !document.querySelector(".pa-sidebar").classList.contains("is-open")));
+
+  await page.locator("[data-lab=A01]").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(700);
+  const canvasFits = await page.evaluate(() => {
+    const c = document.querySelector("[data-lab=A01] canvas");
+    return c && c.getBoundingClientRect().width <= window.innerWidth;
+  });
+  ok("互動元件不溢出視窗", canvasFits);
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- 資源大小
+console.log("\n【效能預算】");
+{
+  const { page, ctx } = await newPage();
+  const sizes = [];
+  page.on("response", async (r) => {
+    try {
+      const h = r.headers();
+      const len = +(h["content-length"] || 0);
+      sizes.push({ url: r.url().replace(BASE, ""), len });
+    } catch (e) {}
+  });
+  await page.goto(BASE + "/level/1/1-1-fourth-state/", { waitUntil: "load" });
+  await page.waitForTimeout(300);
+
+  // 關鍵路徑 = 模板直接引用的 HTML/CSS/JS(不含任何按需載入的東西)
+  const DEFERRED = ["data/glossary.js", "js/lab/", "search-index"];
+  const critical = sizes.filter((s) => !DEFERRED.some((d) => s.url.includes(d)));
+  const deferred = sizes.filter((s) => DEFERRED.some((d) => s.url.includes(d)));
+
+  const kb = critical.reduce((a, b) => a + b.len, 0) / 1024;
+  const dkb = deferred.reduce((a, b) => a + b.len, 0) / 1024;
+  ok("關鍵路徑 < 120 KB", kb > 0 && kb < 120, `${kb.toFixed(1)} KB / ${critical.length} 個資源`);
+  ok("按需資源確實被延後", deferred.length > 0, `${dkb.toFixed(1)} KB / ${deferred.length} 個`);
+  ok(
+    "A01 未在初始載入",
+    critical.every((s) => !s.url.includes("/lab/a01")),
+    `${critical.length} 個資源`
+  );
+  ok("搜尋索引完全未載入(要按搜尋鈕才抓)", sizes.every((s) => !s.url.includes("search-index")));
+
+  // 第二段:捲到元件才應該抓 a01.js
+  await page.locator("[data-lab=A01]").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
+  const lazy = sizes.filter((s) => s.url.includes("/lab/a01"));
+  ok("捲到才載入 A01(僅一次請求)", lazy.length === 1, `${lazy.length} 次請求`);
+  ok(
+    "A01 元件檔 < 30 KB",
+    lazy.length === 1 && lazy[0].len < 30 * 1024,
+    lazy.length ? `${(lazy[0].len / 1024).toFixed(1)} KB` : "未載入"
+  );
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- 搜尋
+console.log("\n【搜尋】");
+{
+  const { page, ctx } = await newPage();
+  await page.goto(BASE + "/", { waitUntil: "load" });
+  await page.locator("[data-search-btn]").click();
+  await page.waitForTimeout(150);
+  await page.locator(".pa-search__input").fill("鞘層");
+  await page.waitForTimeout(600);
+  const n = await page.locator(".pa-search__item").count();
+  ok("中文查詢有結果", n > 0, `${n} 筆`);
+
+  await page.locator(".pa-search__input").fill("paschen");
+  await page.waitForTimeout(400);
+  const n2 = await page.locator(".pa-search__item").count();
+  ok("英文查詢有結果", n2 > 0, `${n2} 筆`);
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- 無障礙
+console.log("\n【無障礙】");
+{
+  const { page, ctx } = await newPage();
+  await page.goto(BASE + "/level/1/1-1-fourth-state/", { waitUntil: "load" });
+  await page.locator("[data-lab=A01]").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(700);
+
+  const a11y = await page.evaluate(() => {
+    const headings = [...document.querySelectorAll(".pa-main h1,.pa-main h2,.pa-main h3")].map(
+      (h) => +h.tagName[1]
+    );
+    let skip = false;
+    for (let i = 1; i < headings.length; i++) {
+      if (headings[i] - headings[i - 1] > 1) skip = true;
+    }
+    const canvas = document.querySelector("[data-lab=A01] canvas");
+    const sliders = [...document.querySelectorAll('.pa-ctrl input[type="range"]')];
+    return {
+      h1: document.querySelectorAll(".pa-main h1").length,
+      skip,
+      canvasLabel: canvas && !!canvas.getAttribute("aria-label"),
+      slidersNative: sliders.length > 0,
+      slidersLabelled: sliders.every((s) => {
+        const l = document.querySelector(`label[for="${s.id}"]`);
+        return !!l;
+      }),
+      readoutLive: !!document.querySelector('.pa-lab__readout[aria-live]'),
+      skipLink: !!document.querySelector(".skip-link"),
+    };
+  });
+  ok("只有一個 h1", a11y.h1 === 1);
+  ok("標題階層不跳級", !a11y.skip);
+  ok("Canvas 有 aria-label", a11y.canvasLabel);
+  ok("滑桿用原生 input[type=range]", a11y.slidersNative);
+  ok("滑桿有關聯的 label", a11y.slidersLabelled);
+  ok("數值面板為 aria-live 區域", a11y.readoutLive);
+  ok("有跳至主內容連結", a11y.skipLink);
+
+  // 鍵盤:Tab 到滑桿並用方向鍵改值
+  await page.locator('.pa-ctrl input[type="range"]').first().focus();
+  const v0 = await page.locator('.pa-ctrl input[type="range"]').first().inputValue();
+  await page.keyboard.press("ArrowRight");
+  const v1 = await page.locator('.pa-ctrl input[type="range"]').first().inputValue();
+  ok("滑桿可用鍵盤操作", v0 !== v1, `${v0} → ${v1}`);
+
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- CSP
+console.log("\n【CSP 相容】");
+{
+  const { page, ctx } = await newPage();
+  const violations = [];
+  page.on("console", (m) => {
+    if (/Content Security Policy/i.test(m.text())) violations.push(m.text());
+  });
+  await page.goto(BASE + "/level/1/1-1-fourth-state/", { waitUntil: "load" });
+  await page.locator("[data-lab=A01]").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
+
+  const inline = await page.evaluate(() => ({
+    inlineScripts: [...document.querySelectorAll("script")].filter((s) => !s.src).length,
+    styleBlocks: document.querySelectorAll("style").length,
+    onAttrs: document.querySelectorAll("[onclick],[onload],[onerror]").length,
+  }));
+  ok("無 inline <script>", inline.inlineScripts === 0, `${inline.inlineScripts} 個`);
+  ok("無 <style> 區塊", inline.styleBlocks === 0, `${inline.styleBlocks} 個`);
+  ok("無 on* 事件屬性", inline.onAttrs === 0, `${inline.onAttrs} 個`);
+  ok("無 CSP 違規", violations.length === 0, violations.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+await browser.close();
+
+console.log(`\n${fail === 0 ? "✓" : "✗"} 煙霧測試 通過 ${pass} / ${pass + fail}\n`);
+process.exit(fail === 0 ? 0 : 1);

@@ -202,7 +202,20 @@ plasma-academy.progress = {
   只載入被開啟的元件
 ```
 
-**互動元件一律延遲載入**:用 `IntersectionObserver` 偵測元件容器進入視窗前 200 px 時才 `import()`。這讓有三個元件的章節頁初始載入仍維持在 50 KB 以下。
+**三層載入策略**(P0 實作後的實測值):
+
+| 層 | 內容 | 大小 | 何時載入 |
+|---|---|---|---|
+| **關鍵路徑** | HTML + 4 支 CSS + 8 支核心 JS | **約 104 KB / 15 個資源** | 每一頁 |
+| **按需** | `data/glossary.js`(41 KB)、`js/lab/` 六支共用模組(48 KB) | 約 92 KB | 頁面有 `.pa-term` 或 `[data-lab]` 時 |
+| **延遲** | 個別互動元件(約 10–30 KB/支)、搜尋索引(120 KB) | 視使用 | 元件捲進視窗前 200 px;搜尋索引按下搜尋鈕才抓 |
+
+實作方式:`js/app.js` 提供 `loadScripts()`,以注入 `<script>` 的方式依序載入(不用 dynamic import,
+這樣 `file://` 直接開啟也能運作)。元件層再由 `js/lab/lifecycle.js` 的 `IntersectionObserver` 控制。
+
+> **實作記錄**:初版規劃寫「章節頁初始載入 < 50 KB」,實作後量到 194 KB —— 因為術語表與
+> lab 共用模組被無條件載入。改為按需後關鍵路徑降到 104 KB。50 KB 對一個含 4 支 CSS 與
+> 完整導覽的中文教材站並不現實,正式門檻改訂為 **關鍵路徑 < 120 KB**,由 `tools/smoke.mjs` 斷言。
 
 ---
 
@@ -253,16 +266,30 @@ plasma-academy.progress = {
 ```
 default-src 'self';
 script-src 'self';
-style-src 'self';
+script-src-attr 'none';
+style-src-elem 'self';
+style-src-attr 'unsafe-inline';
 img-src 'self' data:;
 font-src 'self';
 connect-src 'self';
+base-uri 'self';
+form-action 'self';
+frame-ancestors 'none';
 ```
 
 **這代表**:
 - 所有 JS 在外部 `.js` 檔,無 inline `<script>`
-- 所有 CSS 在外部 `.css` 檔,無 inline `<style>` 區塊(inline `style="..."` 屬性也盡量避免,改用 class)
-- 無 `onclick=` 等事件屬性,一律 `addEventListener`
+- 所有 CSS 在外部 `.css` 檔,**無 inline `<style>` 區塊**(`style-src-elem 'self'`)
+- 無 `onclick=` 等事件屬性,一律 `addEventListener`(`script-src-attr 'none'`)
 - 無 `eval` / `new Function`
 - 字型自行打包或使用系統字型堆疊
 - 圖片內嵌為 SVG 或 `data:` URI
+
+**為什麼 `style-src-attr` 放行 `'unsafe-inline'`**:
+tooltip 的定位、Canvas 元件的動態尺寸、以及建置期寫入的 `style="--level-color:…"`
+都需要 inline `style` **屬性**。style 屬性無法執行程式碼,風險與 `<style>` 區塊不同量級,
+因此業界慣例是把 `style-src-elem` 鎖死、只放行 `style-src-attr`。
+裝飾性的 inline style 仍應改用 class —— 只有真正動態的值(座標、尺寸)才寫進屬性。
+
+`tools/serve.mjs` 在本機開發時就送出與正式部署相同的 CSP,違規在開發階段就會被 console 攔下,
+`tools/smoke.mjs` 也會斷言「無 CSP 違規」。

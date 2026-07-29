@@ -6,7 +6,7 @@
 
 一套給**半導體/面板廠製程工程師**的電漿(Plasma)線上教育訓練網站的完整內容規劃。
 
-從「電漿到底是什麼」開始,一路走到「原子層蝕刻與機台匹配」,分成四個階段、23 個模組、約 60 小時的課程。每個關鍵概念都搭配可調參數的互動動畫,讓工程師不是背公式,而是**看見參數怎麼影響電漿、電漿怎麼影響晶圓**。
+從「電漿到底是什麼」開始,一路走到「原子層蝕刻與機台匹配」,分成四個階段、24 個模組、約 60 小時的課程。每個關鍵概念都搭配可調參數的互動動畫,讓工程師不是背公式,而是**看見參數怎麼影響電漿、電漿怎麼影響晶圓**。
 
 ## 為什麼要做
 
@@ -51,7 +51,7 @@
 | [`docs/02-level2-intermediate.md`](docs/02-level2-intermediate.md) | L2 中階逐章大綱(含氣體選用核心章) |
 | [`docs/03-level3-advanced.md`](docs/03-level3-advanced.md) | L3 進階逐章大綱 |
 | [`docs/04-level4-expert.md`](docs/04-level4-expert.md) | L4 專家逐章大綱 |
-| [`docs/05-animation-spec.md`](docs/05-animation-spec.md) | 28 個互動元件的實作規格 |
+| [`docs/05-animation-spec.md`](docs/05-animation-spec.md) | 32 個互動元件的實作規格 |
 | [`docs/06-site-architecture.md`](docs/06-site-architecture.md) | 網站資訊架構、頁面模板、進度追蹤 |
 | [`docs/07-design-system.md`](docs/07-design-system.md) | 色彩 token、排版、公式呈現、深色模式 |
 | [`docs/08-assessment.md`](docs/08-assessment.md) | 評量與認證設計、題庫規格 |
@@ -81,12 +81,32 @@
 
 之所以暫放於同一個 repo,純粹是版控便利;未來可原樣搬遷至獨立 repo,不需任何改動。
 
-## 現況與下一步
+## 現況
 
-- [x] 課綱規劃
-- [x] 動畫規格
-- [x] 資訊架構與設計系統
-- [x] 評量設計
-- [x] 術語表
-- [ ] Phase 0:網站骨架
-- [ ] Phase 1~4:內容與動畫實作(見 [`docs/11-build-roadmap.md`](docs/11-build-roadmap.md))
+- [x] 課綱規劃 · 動畫規格 · 資訊架構 · 設計系統 · 評量設計 · 術語表
+- [x] **P0 網站骨架與共用元件庫**
+- [ ] P1:L1 初階 6 章 + A01–A07(下一步)
+- [ ] P2~P4:見 [`docs/11-build-roadmap.md`](docs/11-build-roadmap.md)
+
+### 跑起來
+
+```bash
+npm install        # 只有 playwright 一個 devDependency,網站本身零相依
+npm run dev        # 建置 + 本機伺服器 http://localhost:8080
+npm run check      # 完整品質門(物理模型 / 對比度 / 建置 / 死鏈 / 瀏覽器測試)
+```
+
+### P0 已完成
+
+| 類別 | 內容 |
+|---|---|
+| 建置 | `build/build.mjs` — 模板 + 內容片段 → 靜態 HTML;搜尋索引產生器;24 章 + 5 專區佔位頁 |
+| 設計系統 | 4 支 CSS,深淺兩套 token、中文長文排版、公式排版、五種提示方塊、列印樣式 |
+| 核心 JS | 主題切換(防閃爍)、進度追蹤、導覽、術語 tooltip、單位換算、全站搜尋 |
+| 元件共用庫 | 生命週期契約、控制面板、SVG 繪圖、粒子系統、Canvas 主題適配、物理模型 |
+| 資料 | 課程結構(24 模組)、術語表(242 條,由 markdown 自動產生) |
+| 示範 | 首頁、L1 階層頁、1.1 章節頁、**A01 互動元件** |
+| 品質門 | 物理 38 項 + 對比 38 項 + 瀏覽器 62 項 + 死鏈檢查,全綠 |
+
+實作過程修正了 7 處規劃階段的錯誤(課綱總數、Bohm 通量數量級、色票對比、CSP、效能門檻等),
+詳見 [`docs/11-build-roadmap.md`](docs/11-build-roadmap.md) 的「P0 過程中修正的規劃錯誤」。
