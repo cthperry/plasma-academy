@@ -1,0 +1,44 @@
+@media print {
+  :root {
+    --pa-bg: #ffffff;
+    --pa-surface: #ffffff;
+    --pa-surface-sunken: #ffffff;
+    --pa-text: #000000;
+    --pa-text-muted: #333333;
+    --pa-border: #999999;
+  }
+
+  .site-header,
+  .site-footer,
+  .chapter-sidebar,
+  .chapter-outline,
+  .header-actions,
+  .lab-panel,
+  .button {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  .chapter-layout,
+  .content-shell,
+  .home-shell {
+    display: block;
+    max-width: none;
+    padding: 0;
+  }
+
+  .formula-card,
+  .callout,
+  .lab-container,
+  table {
+    break-inside: avoid;
+  }
+
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 10px;
+  }
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.cache/
+.wrangler/
+*.tgz
+*.tar
+*.tar.gz
+*.zip
+qa/
+work/

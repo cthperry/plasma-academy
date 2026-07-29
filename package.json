@@ -1,0 +1,19 @@
+{
+  "name": "plasma-academy-p0",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:search": "node scripts/build-search-index.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "check:size": "node scripts/check-size.mjs",
+    "verify:ui": "node scripts/verify-ui.mjs",
+    "check": "npm run build && npm run check:contrast && npm run check:links && npm run check:size",
+    "serve": "npx --yes serve dist/client --listen 4173"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.0"
+  }
+}

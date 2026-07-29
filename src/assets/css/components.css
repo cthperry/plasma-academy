@@ -1,0 +1,367 @@
+.button,
+.icon-button,
+.segmented,
+.quiz-choice {
+  align-items: center;
+  border: 1px solid var(--pa-border-strong);
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--pa-text-sm);
+  font-weight: 700;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 13px;
+  text-decoration: none;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out, color 120ms ease-out;
+}
+
+.button.primary {
+  background: var(--pa-primary);
+  border-color: var(--pa-primary);
+  color: var(--pa-text-inverse);
+}
+
+.button.primary:hover {
+  background: var(--pa-primary-hover);
+}
+
+.button.secondary,
+.segmented,
+.quiz-choice {
+  background: var(--pa-surface);
+  color: var(--pa-text);
+}
+
+.button.danger {
+  background: transparent;
+  border-color: var(--pa-danger);
+  color: var(--pa-danger);
+}
+
+.icon-button {
+  background: var(--pa-surface-sunken);
+  color: var(--pa-text);
+  height: 40px;
+  padding: 0;
+  width: 40px;
+}
+
+.segmented.active {
+  background: var(--pa-primary);
+  border-color: var(--pa-primary);
+  color: var(--pa-text-inverse);
+}
+
+.text-link {
+  font-size: var(--pa-text-sm);
+  font-weight: 700;
+}
+
+.status-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.status-grid div {
+  background: var(--pa-surface-sunken);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.status-grid dt {
+  color: var(--pa-text-muted);
+  font-size: var(--pa-text-xs);
+}
+
+.status-grid dd {
+  margin: 0;
+}
+
+.progress-ring {
+  height: 72px;
+  width: 72px;
+}
+
+.progress-ring circle {
+  fill: none;
+  stroke-width: 6;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.ring-bg {
+  stroke: var(--pa-border);
+}
+
+.ring-fg {
+  stroke: currentColor;
+}
+
+.progress-ring text {
+  fill: var(--pa-text);
+  font: 700 14px var(--pa-font-sans);
+}
+
+.objective {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+.callout,
+.formula-card,
+.lab-container,
+.self-check {
+  background: var(--pa-surface);
+  border: 1px solid var(--pa-border);
+  border-left: 4px solid var(--pa-primary);
+  border-radius: var(--pa-radius);
+  margin: 28px 0;
+  padding: 18px;
+}
+
+.callout h2,
+.formula-card h2,
+.self-check h2 {
+  font-size: var(--pa-text-xl);
+}
+
+.callout-summary {
+  border-left-color: var(--pa-info);
+}
+
+.callout-intuition {
+  border-left-color: var(--pa-primary);
+}
+
+.callout-misconception {
+  border-left-color: var(--pa-warning);
+}
+
+.formula-card {
+  background: var(--pa-surface-sunken);
+}
+
+.formula-expression {
+  color: var(--pa-primary);
+  font-family: var(--pa-font-mono);
+  font-size: var(--pa-text-xl);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.term {
+  border-bottom: 1px dotted var(--pa-primary);
+  cursor: help;
+}
+
+.tooltip {
+  background: var(--pa-surface-raised);
+  border: 1px solid var(--pa-border-strong);
+  border-radius: 6px;
+  box-shadow: var(--pa-shadow);
+  color: var(--pa-text);
+  font-size: var(--pa-text-sm);
+  max-width: 280px;
+  padding: 10px 12px;
+  position: fixed;
+  z-index: 30;
+}
+
+.lab-stage {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  margin: 14px 0;
+}
+
+.lab-container__header h2 {
+  min-width: 0;
+}
+
+.lab-container__header .button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.lab-stage canvas {
+  aspect-ratio: 2 / 1;
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  display: block;
+  max-width: 100%;
+  width: 100%;
+}
+
+.lab-panel {
+  align-content: start;
+  display: grid;
+  gap: 12px;
+}
+
+.control {
+  background: var(--pa-surface-sunken);
+  border-radius: 6px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+.control label {
+  align-items: center;
+  display: flex;
+  font-size: var(--pa-text-sm);
+  justify-content: space-between;
+}
+
+.control input[type="range"] {
+  width: 100%;
+}
+
+.value-panel {
+  background: var(--pa-surface);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.observation {
+  background: color-mix(in srgb, var(--pa-primary) 10%, var(--pa-surface));
+  border-radius: 6px;
+  color: var(--pa-text);
+  padding: 12px;
+}
+
+.lab-status,
+.quiz-result {
+  color: var(--pa-text-muted);
+  font-size: var(--pa-text-sm);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.lab-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.lab-card {
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  min-height: 170px;
+  overflow: hidden;
+}
+
+.lab-thumb {
+  align-items: center;
+  background: linear-gradient(160deg, var(--pa-surface-sunken), color-mix(in srgb, var(--pa-primary) 22%, var(--pa-surface)));
+  color: var(--pa-primary);
+  display: flex;
+  font-family: var(--pa-font-mono);
+  font-weight: 800;
+  justify-content: center;
+}
+
+.lab-card__body {
+  padding: 14px;
+}
+
+.search-popover {
+  background: var(--pa-surface-raised);
+  border: 1px solid var(--pa-border-strong);
+  border-radius: var(--pa-radius);
+  box-shadow: var(--pa-shadow);
+  position: fixed;
+  right: 20px;
+  top: 76px;
+  width: min(420px, calc(100vw - 32px));
+  z-index: 25;
+  padding: 14px;
+}
+
+.search-popover input {
+  background: var(--pa-surface);
+  border: 1px solid var(--pa-border-strong);
+  border-radius: 6px;
+  color: var(--pa-text);
+  display: block;
+  margin-top: 6px;
+  padding: 9px 10px;
+  width: 100%;
+}
+
+.search-results {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.search-results a {
+  background: var(--pa-surface-sunken);
+  border-radius: 6px;
+  padding: 8px 10px;
+  text-decoration: none;
+}
+
+.file-button {
+  overflow: hidden;
+  position: relative;
+}
+
+.file-button input {
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+}
+
+.progress-json {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  color: var(--pa-text);
+  min-height: 240px;
+  margin-top: 18px;
+  padding: 12px;
+  width: 100%;
+}
+
+@media (max-width: 980px) {
+  .lab-grid,
+  .lab-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .status-grid,
+  .lab-card {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-thumb {
+    min-height: 70px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
