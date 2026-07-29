@@ -1,0 +1,380 @@
+<!--meta
+{
+  "title": "1.2 電漿基本參數 — Plasma Academy",
+  "description": "n_e、T_e、T_i 的典型數值,為什麼電子熱而離子冷,以及 Debye 長度與電漿頻率如何決定鞘層厚度與 13.56 MHz 的選擇。",
+  "type": "chapter",
+  "module": "1.2"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>1.2 電漿基本參數</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 1.5 小時</span>
+    <span>🔬 A02 互動元件</span>
+    <span>L1 初階</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="1.2">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說出 n<sub>e</sub>、T<sub>e</sub>、T<sub>i</sub> 的典型數值與單位</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋為什麼電子熱、離子冷,並說出三個理由</span></label></li>
+    <li><label><input type="checkbox" /><span>用 λ<sub>D</sub> 判斷鞘層的量級,說明 ICP 為何方向性較好</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋 13.56 MHz 為什麼落在電子與離子頻率之間</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../1-1-fourth-state/">1.1 物質第四態</a>
+  <span>—— 需要「準中性」與「弱游離」的概念</span>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    製程電漿是個<strong>熱非平衡</strong>系統:電子溫度 2–5 eV(相當於三、四萬度),
+    離子與氣體卻只有 0.03 eV(室溫附近)。原因全在質量 —— 電子比氬離子輕 73,000 倍,
+    被電場甩得飛快,卻又因為彈性碰撞的能量傳遞效率只有 10⁻⁵ 而散不掉熱。
+  </p>
+  <p>
+    這個「低溫、高活性」的組合,正是電漿在半導體製程中無可取代的理由:
+    我們拿到了高能化學反應,卻不必把晶圓加熱到幾千度。
+  </p>
+  <p>
+    兩個衍生量決定了硬體設計:<span class="pa-term" data-term="Debye 長度">λ<sub>D</sub></span>
+    決定<span class="pa-term" data-term="鞘層">鞘層</span>有多厚(進而決定離子的方向性好不好),
+    <span class="pa-term" data-term="電漿頻率">ω<sub>pe</sub></span> 決定為什麼工業標準頻率是 13.56 MHz。
+  </p>
+</div>
+
+<h2 id="five-numbers">1.2.1 五個你必須記住的數字</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead>
+        <tr><th>參數</th><th>符號</th><th class="is-num">CCP 蝕刻典型值</th><th class="is-num">ICP 典型值</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>電子密度</td><td class="pa-eq">n<sub>e</sub></td><td class="is-num">10⁹ – 10¹⁰ cm⁻³</td><td class="is-num">10¹¹ – 10¹² cm⁻³</td></tr>
+        <tr><td>電子溫度</td><td class="pa-eq">T<sub>e</sub></td><td class="is-num">2 – 5 eV</td><td class="is-num">2 – 4 eV</td></tr>
+        <tr><td>離子溫度</td><td class="pa-eq">T<sub>i</sub></td><td class="is-num">0.03 – 0.05 eV</td><td class="is-num">0.03 – 0.05 eV</td></tr>
+        <tr><td>氣體溫度</td><td class="pa-eq">T<sub>g</sub></td><td class="is-num">300 – 500 K</td><td class="is-num">400 – 800 K</td></tr>
+        <tr><td>電漿電位</td><td class="pa-eq">V<sub>p</sub></td><td class="is-num">10 – 30 V</td><td class="is-num">15 – 25 V</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>先把這張表記起來。</strong>後面所有的推算都從這裡出發 ——
+    包括你在 <a href="../1-5-sheath-intro/">1.5</a> 會用到的鞘層厚度,
+    以及 L2 的離子通量。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 一個好用的檢查</div>
+    <p>
+      看到任何電漿參數,先問「這是幾次方」。n<sub>e</sub> 是 10¹⁰ 還是 10¹²,
+      差的不是 20%,是 100 倍 —— 鞘層厚度、離子通量、蝕刻率全部跟著換一個量級。
+      在這個領域,<strong>數量級比小數點後兩位重要得多</strong>。
+    </p>
+  </div>
+</div>
+
+<h2 id="ev">1.2.2 為什麼用 eV 當溫度單位</h2>
+
+<div class="pa-prose">
+  <p>電漿界不用 K,用 eV。換算是:</p>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">1 eV = 11,605 K ≈ 11,600 K</div>
+  <div class="pa-formula__name">電子伏特與克氏溫度的換算</div>
+  <details>
+    <summary>展開:為什麼這樣比較好用,以及一個常見的混淆</summary>
+    <div class="pa-formula__body">
+      <p>
+        嚴格說 T<sub>e</sub> 是<strong>分佈參數</strong>,不是「平均能量」。
+        對三維 Maxwellian 分佈,平均動能是
+      </p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">⟨E⟩ = (3/2) k T<sub>e</sub></div>
+      <p>
+        所以 T<sub>e</sub> = 3 eV 對應的平均動能是 4.5 eV。
+        本教材全站統一以 <span class="pa-eq">T<sub>e</sub></span> 表示溫度參數,
+        不混用「平均能量」,遇到需要平均值的地方會明講。
+      </p>
+      <dl class="pa-symbols">
+        <dt>1 eV</dt><dd>1.602 × 10⁻¹⁹ J</dd>
+        <dt>k</dt><dd>波茲曼常數,1.381 × 10⁻²³ J/K</dd>
+      </dl>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <p>
+    用 eV 的實際好處是:<strong>可以直接跟游離能比較</strong>。
+    T<sub>e</sub> = 3 eV,而 Ar 的游離能是 15.76 eV —— 一眼就看得出來,
+    典型電子根本撞不動 Ar,只有分佈中<strong>高能尾巴</strong>的那一小撮電子做得到游離。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 工程師直覺</div>
+    <p>
+      「T<sub>e</sub> = 3 eV」翻成白話就是:電子的能量大約在 3 eV 上下散開,
+      要跨過 15.76 eV 這道門檻的,大概是幾千分之一。
+      這也是為什麼<span class="pa-term" data-term="游離度">游離度</span>只有 10⁻⁵ —— 一切都自洽。
+    </p>
+  </div>
+</div>
+
+<h2 id="hot-electrons">1.2.3 為什麼電子熱、離子冷:質量的暴政</h2>
+
+<div class="pa-prose">
+  <p>
+    RF 電場同時作用在電子與離子上,但兩者的反應天差地遠。三個理由,一個比一個關鍵。
+  </p>
+
+  <h3 id="reason-1">理由一:加速能力差 73,000 倍</h3>
+  <p>
+    同樣的電場,加速度 <span class="pa-eq">a = qE/m</span>。
+    Ar⁺ 的質量是電子的 <strong>73,000 倍</strong>,所以在同一個電場裡,
+    電子的加速度是離子的 73,000 倍。電子被甩得飛快,離子幾乎不動。
+  </p>
+
+  <h3 id="reason-2">理由二:離子跟不上頻率</h3>
+  <p>
+    13.56 MHz 的電場一秒振盪 1,356 萬次。電子輕,能跟著場來回振盪並持續吸能;
+    離子重,來不及反應,只感受到<strong>時間平均</strong>的場。
+    這一點在 <a href="../1-5-sheath-intro/">1.5 自偏壓</a> 會再出現一次。
+  </p>
+
+  <h3 id="reason-3">理由三:電子散不掉熱</h3>
+  <p>
+    電子撞中性分子時(彈性碰撞),能量傳遞比例大約是
+  </p>
+  <div class="pa-formula" style="margin-top:0">
+    <div class="pa-formula__eq pa-eq">ΔE / E ≈ 2 m<sub>e</sub> / M ≈ 10⁻⁵</div>
+    <div class="pa-formula__name">電子與中性粒子彈性碰撞的能量傳遞效率(Ar)</div>
+  </div>
+  <p>
+    撞一萬次才交出 10% 的能量。所以電子吸了能量卻散不掉 —— 溫度就高。
+    而離子與中性粒子質量相當,一撞就熱平衡,因此
+    <span class="pa-eq">T<sub>i</sub> ≈ T<sub>g</sub></span>。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 工程師直覺:這才是電漿製程的價值</div>
+    <p>
+      電漿是一個<strong>熱非平衡</strong>系統。這正是它在半導體製程中無可取代的原因 ——
+      我們得到了高能化學反應(電子提供),卻不必把晶圓加熱到幾千度。
+      <strong>低溫、高活性,兩者兼得。</strong>
+      沒有這個特性,今天所有含金屬層的晶圓都不可能做後段製程。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>T<sub>e</sub> = 3 eV ≈ 35,000 K,所以腔體裡有三萬五千度,晶圓一定會燒掉。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        「溫度」高的只有<strong>電子</strong>,而電子只佔全部粒子的十萬分之一,
+        總熱容量微不足道。真正決定晶圓溫度的是氣體溫度、離子轟擊功率與背吹散熱 ——
+        典型晶座溫度只有 20–80 °C。
+      </span>
+    </div>
+  </div>
+</div>
+
+<h2 id="debye">1.2.4 Debye 長度</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    λ<sub>D</sub> = √( ε₀ k T<sub>e</sub> / n<sub>e</sub> e² )
+  </div>
+  <div class="pa-formula__name">Debye 長度(Debye Length)</div>
+  <details>
+    <summary>展開:符號表、工程速算式與物理來源</summary>
+    <div class="pa-formula__body">
+      <dl class="pa-symbols">
+        <dt>λ<sub>D</sub></dt><dd>Debye 長度 [m]</dd>
+        <dt>ε₀</dt><dd>真空介電常數,8.854 × 10⁻¹² F/m</dd>
+        <dt>T<sub>e</sub></dt><dd>電子溫度 [eV](代入時要乘 e 換成焦耳)</dd>
+        <dt>n<sub>e</sub></dt><dd>電子密度 [m⁻³]</dd>
+        <dt>e</dt><dd>基本電荷,1.602 × 10⁻¹⁹ C</dd>
+      </dl>
+      <p style="margin-top:var(--pa-space-3)">工程速算式(注意單位):</p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        λ<sub>D</sub> [mm] ≈ 0.0074 × √( T<sub>e</sub>[eV] × 10¹⁰ / n<sub>e</sub>[cm⁻³] )
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        <strong>物理來源</strong>:電漿裡放進一個外來電荷,電子會被吸引過來(或排開)重新分佈。
+        重新分佈的程度由兩股力量拉鋸 —— 靜電吸引想把電子拉近,熱運動想把電子打散。
+        λ<sub>D</sub> 就是這兩者打平的距離。所以 T<sub>e</sub> 越高(熱運動越猛)遮蔽越差、λ<sub>D</sub> 越大;
+        n<sub>e</sub> 越高(可動用的電子越多)遮蔽越好、λ<sub>D</sub> 越小。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>條件</th><th class="is-num">λ<sub>D</sub></th></tr></thead>
+      <tbody>
+        <tr><td>CCP:n<sub>e</sub> = 10¹⁰ cm⁻³, T<sub>e</sub> = 3 eV</td><td class="is-num">≈ 0.13 mm</td></tr>
+        <tr><td>ICP:n<sub>e</sub> = 10¹² cm⁻³, T<sub>e</sub> = 3 eV</td><td class="is-num">≈ 0.013 mm</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>物理意義</strong>:電漿把任何外來電荷的電場「遮蔽」掉所需的距離。
+    超過 λ<sub>D</sub>,外來電荷幾乎感受不到 —— 這也是
+    <a href="../1-1-fourth-state/#quasi-neutrality">1.1 準中性</a> 成立的機制。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼工程師要在乎</div>
+    <p>
+      <span class="pa-term" data-term="鞘層">鞘層</span>厚度是 λ<sub>D</sub> 的數倍到數十倍。
+      ICP 的 λ<sub>D</sub> 小一個數量級 → 鞘層薄 → 離子穿越鞘層時碰撞少 →
+      <strong>能量分佈窄、方向性好</strong>。
+      這就是導體蝕刻選 ICP 的物理原因,L2 <a href="../../2/2-4-sheath-physics/">2.4</a> 會把它算給你看。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a02">🔬 A02 Debye 遮蔽</h2>
+
+<div class="pa-lab" data-lab="A02">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A02</span>
+    <span class="pa-lab__title">Debye 遮蔽互動</span>
+  </div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:電漿中的自由電荷會重新排列以抵消外來電荷的電場,
+      抵消所需的距離就是 λ_D。密度越高遮蔽越有效(λ_D 越小),溫度越高遮蔽越差(λ_D 越大)。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="plasma-frequency">1.2.5 電漿頻率與 13.56 MHz</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    ω<sub>pe</sub> = √( n<sub>e</sub> e² / ε₀ m<sub>e</sub> )
+    &nbsp;&nbsp;→&nbsp;&nbsp;
+    f<sub>pe</sub> [Hz] ≈ 8,980 × √( n<sub>e</sub> [cm⁻³] )
+  </div>
+  <div class="pa-formula__name">電子電漿頻率(Electron Plasma Frequency)</div>
+  <details>
+    <summary>展開:它代表什麼</summary>
+    <div class="pa-formula__body">
+      <p>
+        把電漿裡的電子整體推開一點再放手,靜電回復力會讓它們來回振盪 ——
+        ω<sub>pe</sub> 就是這個振盪的自然頻率,也就是<strong>電漿響應外界擾動的速度上限</strong>。
+      </p>
+      <p>
+        低於 f<sub>pe</sub> 的電磁波無法穿透電漿(會被反射),高於的可以。
+        這是電離層反射短波無線電的原理,也是 L4 微波干涉診斷的基礎。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <p>n<sub>e</sub> = 10¹⁰ cm⁻³ 時,f<sub>pe</sub> ≈ 900 MHz。把三個頻率排在一起看:</p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>頻率</th><th class="is-num">量級</th><th>誰跟得上</th></tr></thead>
+      <tbody>
+        <tr><td>離子電漿頻率 f<sub>pi</sub></td><td class="is-num">≈ 3 MHz</td><td>離子的響應極限</td></tr>
+        <tr><td><strong>工業標準 RF</strong></td><td class="is-num"><strong>13.56 MHz</strong></td><td><strong>電子跟得上,離子跟不上</strong></td></tr>
+        <tr><td>電子電漿頻率 f<sub>pe</sub></td><td class="is-num">≈ 900 MHz</td><td>電子的響應極限</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 13.56 MHz 不是法規決定的,是物理決定的</div>
+    <p>
+      13.56 MHz 確實是 ISM 免執照頻段(所以不用擔心干擾法規),但它之所以成為<strong>好用</strong>的頻率,
+      是因為它剛好夾在 f<sub>pi</sub> 與 f<sub>pe</sub> 之間:
+    </p>
+    <ul>
+      <li><strong>電子跟得上</strong> → 電子能持續吸收 RF 功率,維持電漿</li>
+      <li><strong>離子跟不上</strong> → 離子只感受到時間平均的場,被穩定地朝晶圓加速</li>
+    </ul>
+    <p>
+      這正是我們要的分工。若頻率低到 400 kHz(低於 f<sub>pi</sub>),離子就會跟著瞬時電場走 ——
+      那會得到完全不同的離子能量分佈,而這正是雙頻 CCP 刻意利用的效果(L2 <a href="../../2/2-4-sheath-physics/">2.4</a>)。
+    </p>
+  </div>
+</div>
+
+<h2 id="criteria-check">1.2.6 回頭驗算 1.1 的三個判準</h2>
+
+<div class="pa-prose">
+  <p>
+    <a href="../1-1-fourth-state/#criteria">1.1.5</a> 給了三個判準但沒給數字。
+    現在你有 λ<sub>D</sub> 和 ω<sub>pe</sub> 了,拿 CCP 的典型值驗算一次:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>判準</th><th class="is-num">代入 n<sub>e</sub>=10¹⁰、T<sub>e</sub>=3 eV</th><th>結論</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="pa-eq">λ<sub>D</sub> ≪ L</td>
+          <td class="is-num">0.13 mm 對上腔體 ~300 mm</td>
+          <td>差 2000 倍 ✅</td>
+        </tr>
+        <tr>
+          <td class="pa-eq">N<sub>D</sub> ≫ 1</td>
+          <td class="is-num">Debye 球內約 9 × 10⁴ 個粒子</td>
+          <td>遠大於 1 ✅</td>
+        </tr>
+        <tr>
+          <td class="pa-eq">ω<sub>pe</sub>·τ &gt; 1</td>
+          <td class="is-num">900 MHz vs 碰撞頻率 ~10 MHz</td>
+          <td>振盪快得多 ✅</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    三項全過 —— 製程電漿確實夠格叫電漿。你可以在上面的 A02 面板裡看到 N<sub>D</sub> 的即時值,
+    把 n<sub>e</sub> 調到 10⁹ 再看一次。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>某 ICP 腔體 n<sub>e</sub> = 5 × 10¹¹ cm⁻³、T<sub>e</sub> = 3 eV,λ<sub>D</sub> 約是多少 mm?</li>
+    <li>若把 T<sub>e</sub> 從 2 eV 提高到 8 eV,而 n<sub>e</sub> 不變,λ<sub>D</sub> 會變成幾倍?</li>
+    <li>為什麼「電子溫度三萬五千度」不會把晶圓燒掉?請用兩個理由回答。</li>
+    <li>電子與 Ar 中性原子彈性碰撞時,平均要撞幾次才交出一半的能量?(用 ΔE/E ≈ 10⁻⁵ 估算量級)</li>
+    <li>400 kHz 的偏壓頻率低於離子電漿頻率。這代表離子會感受到瞬時電場還是平均電場?對離子能量分佈有什麼影響?(可先猜,2.4 會驗證)</li>
+    <li>判斷題:n<sub>e</sub> 越高,鞘層越厚。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, §2.4(Debye 遮蔽)、§4.2</li>
+    <li>Chapman, <em>Glow Discharge Processes</em>, Ch. 3</li>
+  </ul>
+</div>

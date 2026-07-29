@@ -994,3 +994,18 @@
   align-items: center;
   gap: var(--pa-space-2);
 }
+
+/* 互動元件的上下(或左右)分割舞台 */
+.pa-lab__split {
+  display: grid;
+  gap: var(--pa-space-2);
+  width: 100%;
+  padding: var(--pa-space-2);
+}
+
+@media (min-width: 900px) {
+  .pa-lab__split--wide {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+}
