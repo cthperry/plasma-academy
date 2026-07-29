@@ -1,0 +1,395 @@
+<!--meta
+{
+  "title": "1.6 製程電漿地圖 — Plasma Academy",
+  "description": "六大類電漿製程的目的、氣體與參數窗對照;為什麼各自的壓力差這麼多;機台型式速覽;以及逐行拆解一支真實的 poly gate 蝕刻 recipe。",
+  "type": "chapter",
+  "module": "1.6"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>1.6 製程電漿地圖</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 1.0 小時</span>
+    <span>🔬 A07 互動元件</span>
+    <span>L1 初階 · 收束章</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="1.6">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說出六大類電漿製程各自的目的、氣體與參數窗</span></label></li>
+    <li><label><input type="checkbox" /><span>用 λ 與鞘層厚度解釋為什麼各製程的壓力差了三個數量級</span></label></li>
+    <li><label><input type="checkbox" /><span>分辨 CCP / ICP / 微波 / 下游 / magnetron 五種機台型式的定位</span></label></li>
+    <li><label><input type="checkbox" /><span>逐行讀懂一支真實 recipe,說出每一欄為什麼是那個值</span></label></li>
+    <li><label><input type="checkbox" /><span>在地圖上定位自己負責的製程</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../1-5-sheath-intro/">1.5 鞘層入門</a>
+  <span>—— 本章是 L1 的收束點,前五節的概念在這裡合流</span>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    電漿製程看起來五花八門,但只要兩個座標就能全部擺進同一張圖:
+    <strong>壓力</strong>與<strong>電漿密度</strong>。
+  </p>
+  <p>
+    壓力決定 <a href="../1-3-collisions/">λ</a>,λ 決定方向性;
+    密度決定<a href="../1-5-sheath-intro/#thickness">鞘層厚度</a>,鞘層厚度決定離子在裡面會不會被撞歪。
+    所以地圖的<strong>左下到右上不是隨便排的</strong> ——
+    要方向性的製程往左(低壓)擠,不要方向性的往右(高壓)去。
+  </p>
+  <p>
+    這一章的壓軸是<strong>逐行讀一支真實的 poly gate 蝕刻 recipe</strong>。
+    如果你能講清楚為什麼 BT 步壓力最低、OE 步 bias 要降下來,L1 就過了。
+  </p>
+</div>
+
+<h2 id="six-classes">1.6.1 六大類應用</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead>
+        <tr><th>類別</th><th>目的</th><th>主要氣體</th><th class="is-num">壓力</th><th>機台型式</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>電漿蝕刻</strong></td>
+          <td>移除材料、定義圖形</td>
+          <td>氟系 / 氯系 / 溴系 + Ar、O₂</td>
+          <td class="is-num">5–100 mTorr</td>
+          <td>CCP(介電質)、ICP(導體)</td>
+        </tr>
+        <tr>
+          <td><strong>PECVD</strong></td>
+          <td>低溫沉積薄膜</td>
+          <td>SiH₄、TEOS、NH₃、N₂O</td>
+          <td class="is-num">1–10 Torr</td>
+          <td>CCP 平行板</td>
+        </tr>
+        <tr>
+          <td><strong>PVD 濺鍍</strong></td>
+          <td>沉積金屬</td>
+          <td>Ar(+ N₂ / O₂ 反應式)</td>
+          <td class="is-num">1–10 mTorr</td>
+          <td>DC / RF magnetron</td>
+        </tr>
+        <tr>
+          <td><strong>光阻灰化</strong></td>
+          <td>去除光阻</td>
+          <td>O₂(+ N₂ / H₂ / CF₄)</td>
+          <td class="is-num">0.5–2 Torr</td>
+          <td>Downstream / 微波</td>
+        </tr>
+        <tr>
+          <td><strong>腔體清潔</strong></td>
+          <td>去除腔內沉積</td>
+          <td>NF₃、C₂F₆</td>
+          <td class="is-num">1–5 Torr</td>
+          <td>Remote plasma</td>
+        </tr>
+        <tr>
+          <td><strong>表面處理</strong></td>
+          <td>活化、除膠、親水化</td>
+          <td>O₂、Ar、N₂、H₂</td>
+          <td class="is-num">0.1–1 Torr</td>
+          <td>多樣</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 id="lab-a07">🔬 A07 製程電漿地圖</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A07">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A07</span>
+    <span class="pa-lab__title">製程電漿地圖互動</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:把六大類製程擺進「壓力 × 電漿密度」的平面,
+      蝕刻與濺鍍落在低壓區(λ 大、方向性好),PECVD、灰化與腔體清潔落在高壓區(不需要方向性)。
+      密度越高鞘層越薄,離子穿越時越不容易被撞歪。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="why-pressure">1.6.2 為什麼壓力差這麼多</h2>
+
+<div class="pa-prose">
+  <p>
+    地圖上最刺眼的一件事:蝕刻在 10 mTorr,PECVD 在 5 Torr ——
+    <strong>差了 500 倍</strong>。不是機台限制,是每一類製程的取捨不同。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>製程</th><th>要什麼</th><th>所以壓力</th><th>物理理由</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>蝕刻</strong></td>
+          <td>方向性</td>
+          <td>低</td>
+          <td>λ 要比鞘層厚 → 離子不被撞歪(<a href="../1-5-sheath-intro/#thickness">1.5.5</a>)</td>
+        </tr>
+        <tr>
+          <td><strong>沉積</strong></td>
+          <td>覆蓋率與產率</td>
+          <td>高</td>
+          <td>自由基密度高、氣相反應充分;而且沉積<strong>不要</strong>方向性</td>
+        </tr>
+        <tr>
+          <td><strong>濺鍍</strong></td>
+          <td>靶材原子飛得到晶圓</td>
+          <td>低</td>
+          <td>λ 大,濺出來的原子少被散射,才能維持準直與產率</td>
+        </tr>
+        <tr>
+          <td><strong>灰化</strong></td>
+          <td>只要化學反應,不要轟擊</td>
+          <td>高 + 下游</td>
+          <td>離子留在上游,只讓自由基流下來 → 不傷下層</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 一條判斷準則</div>
+    <p>
+      看到一支陌生的 recipe,先問<strong>「這一步要不要方向性?」</strong>
+    </p>
+    <ul>
+      <li><strong>要</strong> → 壓力低、bias 高。你在地圖左側。</li>
+      <li><strong>不要</strong> → 壓力高、bias 低或沒有。你在地圖右側。</li>
+    </ul>
+    <p>
+      這條準則可以直接套到 recipe 裡的<strong>每一個 step</strong> ——
+      同一支 recipe 的不同步驟,常常一步在左、一步在右。下面的例子就是。
+    </p>
+  </div>
+</div>
+
+<h2 id="tool-types">1.6.3 機台型式速覽</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>型式</th><th>怎麼把能量送進去</th><th class="is-num">n_e</th><th>定位</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>CCP 平行板</strong></td>
+          <td>兩片電極間的 RF 電場直接加速電子</td>
+          <td class="is-num">10⁹–10¹¹</td>
+          <td>結構簡單、離子能量高、密度低。介電質蝕刻與 PECVD 的主力</td>
+        </tr>
+        <tr>
+          <td><strong>ICP / TCP</strong></td>
+          <td>線圈的感應電場(像變壓器次級圈)</td>
+          <td class="is-num">10¹¹–10¹²</td>
+          <td>密度高,而且 <strong>source 與 bias 解耦</strong> —— 能量與密度可以分開調。導體蝕刻主力</td>
+        </tr>
+        <tr>
+          <td><strong>ECR / 微波</strong></td>
+          <td>微波在磁場中與電子共振</td>
+          <td class="is-num">10¹¹–10¹²</td>
+          <td>高密度、低損傷,但設備複雜、成本高</td>
+        </tr>
+        <tr>
+          <td><strong>Downstream / Remote</strong></td>
+          <td>電漿產生在別處,只把自由基送過來</td>
+          <td class="is-num">晶圓端近 0</td>
+          <td>灰化與腔體清潔。刻意讓晶圓看不到離子</td>
+        </tr>
+        <tr>
+          <td><strong>Magnetron PVD</strong></td>
+          <td>磁場把電子束縛在靶面附近,提升局部游離率</td>
+          <td class="is-num">10¹⁰–10¹¹</td>
+          <td>濺鍍。低壓也能維持放電,靠的就是這個磁場</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 CCP 與 ICP 的分水嶺:能不能分開調</div>
+    <p>
+      CCP 只有一個旋鈕影響兩件事 —— 加功率,密度上升,<strong>離子能量也跟著上升</strong>。
+      想要「高密度但低能量」(例如怕損傷)在單頻 CCP 上做不到。
+    </p>
+    <p>
+      ICP 把兩件事拆開:線圈功率管密度,晶座偏壓管能量。
+      這就是為什麼需要精細控制轟擊能量的導體蝕刻幾乎都用 ICP。
+      詳細的功率耦合機制在 <a href="../../2/2-5-plasma-sources/">2.5</a>。
+    </p>
+  </div>
+</div>
+
+<h2 id="recipe">1.6.4 讀一份真實 recipe</h2>
+
+<div class="pa-prose">
+  <p>
+    這是 L1 的壓軸。一支 poly gate(多晶矽閘極)蝕刻 recipe,三個步驟:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead>
+        <tr>
+          <th>Step</th><th class="is-num">壓力</th><th class="is-num">Source</th><th class="is-num">Bias</th>
+          <th class="is-num">Cl₂</th><th class="is-num">HBr</th><th class="is-num">O₂</th><th>終點</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>BT</strong> breakthrough</td>
+          <td class="is-num">4 mT</td><td class="is-num">400 W</td><td class="is-num">80 W</td>
+          <td class="is-num">40</td><td class="is-num">—</td><td class="is-num">5</td><td>時間</td>
+        </tr>
+        <tr>
+          <td><strong>ME</strong> main etch</td>
+          <td class="is-num">8 mT</td><td class="is-num">500 W</td><td class="is-num">120 W</td>
+          <td class="is-num">20</td><td class="is-num">80</td><td class="is-num">8</td><td>OES</td>
+        </tr>
+        <tr>
+          <td><strong>OE</strong> over etch</td>
+          <td class="is-num">40 mT</td><td class="is-num">400 W</td><td class="is-num">50 W</td>
+          <td class="is-num">—</td><td class="is-num">100</td><td class="is-num">10</td><td>時間</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="pa-subtle">流量單位 sccm。這是教學用的代表性數值,不是任何特定機台的實際 recipe。</p>
+  </div>
+
+  <h3 id="bt">BT:為什麼壓力最低、用 Cl₂?</h3>
+  <p>
+    多晶矽表面有一層 1–2 nm 的<strong>原生氧化層</strong>(native oxide),
+    化學蝕刻幾乎咬不動,必須靠<strong>物理轟擊</strong>打穿。
+  </p>
+  <ul>
+    <li><strong>壓力壓到 4 mTorr</strong> —— λ 最大,離子最垂直、能量最集中。回頭看地圖,這是最左邊。</li>
+    <li><strong>Cl₂ 而非 HBr</strong> —— Cl 對 Si 的反應性強,而且這一步要的是「快速打開」。</li>
+    <li><strong>時間終點</strong> —— 打穿的量太少,OES 看不到訊號,只能靠時間。</li>
+  </ul>
+
+  <h3 id="me">ME:為什麼加 HBr?</h3>
+  <p>
+    主蝕刻步的任務變成「往下刻、側壁要直、不能傷到下面的閘極氧化層」。
+  </p>
+  <ul>
+    <li>
+      <strong>HBr 是主角</strong> —— Br 對 Si 的反應性比 Cl 溫和,
+      對下層 SiO₂ 的<strong>選擇比高得多</strong>。
+    </li>
+    <li>
+      <strong>O₂ 的作用是側壁鈍化</strong> —— 與 Si 反應生成 SiO<sub>x</sub>Br<sub>y</sub>
+      沉在側壁上,擋住橫向蝕刻。沒有它,側壁會被咬成 undercut。
+    </li>
+    <li>
+      <strong>bias 升到 120 W</strong> —— 底部要打得動鈍化層,側壁沒有離子打所以鈍化層留著。
+      <strong>這就是異向性的本質</strong>:化學到處都有,能量只有垂直方向有。
+    </li>
+    <li><strong>OES 終點</strong> —— 刻穿 poly 時 SiCl / SiBr 的訊號會掉,可以偵測。</li>
+  </ul>
+
+  <h3 id="oe">OE:為什麼壓力升到 40 mT、bias 降到 50 W?</h3>
+  <p>
+    這一步是整支 recipe 裡最反直覺、也最能看出功力的一步。
+  </p>
+  <ul>
+    <li>
+      <strong>目的變了。</strong> 主蝕刻結束時,晶圓上還有些地方沒刻乾淨(膜厚不均、圖形疏密差異)。
+      OE 要把殘留清掉,但底下就是幾 nm 的閘極氧化層 —— <strong>刻穿就報廢</strong>。
+    </li>
+    <li>
+      <strong>bias 降到 50 W</strong> —— 離子能量降低,對 SiO₂ 的物理濺射大幅減少,選擇比拉高。
+    </li>
+    <li>
+      <strong>壓力升到 40 mTorr</strong> —— λ 變短、離子方向性變差,但這一步<strong>不需要</strong>方向性了,
+      要的是化學蝕刻的清除力與均勻度。在地圖上,這一步往右移了。
+    </li>
+    <li><strong>Cl₂ 完全拿掉</strong> —— 只留 HBr,把選擇比推到最高。</li>
+  </ul>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 整支 recipe 的一句話</div>
+    <p>
+      <strong>從「物理為主」一路滑到「化學為主」。</strong>
+      BT 幾乎純物理(低壓、高 bias),ME 是離子輔助的協同(兩者兼具),
+      OE 偏化學(高壓、低 bias)。
+    </p>
+    <p>
+      這個滑移在地圖上就是<strong>從左往右移動</strong>。
+      幾乎每一支成熟的蝕刻 recipe 都有這個結構 —— 認出來之後,讀陌生的 recipe 就快得多。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>蝕刻速率不夠就加 bias,反正 bias 越高刻越快。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        bias 加下去,<strong>選擇比同時垮掉</strong> —— 光阻、硬遮罩、下層一起被打。
+        OE 步刻意把 bias 降下來就是這個道理。
+        速率、選擇比、方向性是<strong>同一組旋鈕拉出來的三個結果</strong>,
+        不可能只動一個。完整的 trade-off 矩陣在
+        <a href="../../2/2-6-causal-chain/">2.6 參數因果鏈</a>。
+      </span>
+    </div>
+  </div>
+</div>
+
+<h2 id="l1-wrap">1.6.5 L1 到這裡收束</h2>
+
+<div class="pa-prose">
+  <p>回頭看,前六節其實是一條線:</p>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>1.1</strong> 電漿是弱游離、準中性、有集體行為的氣體</div>
+    <div class="pa-chain__step"><strong>1.2</strong> 電子熱(1–5 eV)、離子冷(0.03 eV),因為質量差 73,000 倍</div>
+    <div class="pa-chain__step"><strong>1.3</strong> 壓力決定 λ,λ 決定粒子飛得直不直</div>
+    <div class="pa-chain__step"><strong>1.4</strong> 雪崩加二次電子讓放電自持;Paschen 決定點不點得著</div>
+    <div class="pa-chain__step"><strong>1.5</strong> 電子先跑掉 → 鞘層 → 垂直電場 → 離子方向性</div>
+    <div class="pa-chain__step pa-chain__step--end"><strong>1.6</strong> 所有製程都是這幾件事在不同壓力與密度下的組合</div>
+  </div>
+
+  <p>
+    L2 會把每一環拆得更細:氣體怎麼選(2.2)、鞘層的完整物理(2.4)、
+    電漿源怎麼設計(2.5),最後在 <a href="../../2/2-6-causal-chain/">2.6</a>
+    把五大旋鈕與製程結果的因果關係整理成一張完整的矩陣。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>PECVD 的壓力是蝕刻的 500 倍。用 λ 解釋為什麼沉積不怕高壓,而蝕刻怕。</li>
+    <li>灰化為什麼要做成下游式?如果直接把晶圓放進電漿裡會怎樣?</li>
+    <li>某支 recipe 的某一步壓力 60 mTorr、bias 0 W。不看其他資訊,判斷這一步的目的偏物理還是偏化學?</li>
+    <li>為什麼導體蝕刻多用 ICP、介電質蝕刻多用 CCP?從「能量與密度能不能分開調」回答。</li>
+    <li>把上面那支 poly gate recipe 的三個步驟標在地圖上,說明它們的移動方向與理由。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 1(製程全景)</li>
+    <li>May &amp; Spanos, <em>Fundamentals of Semiconductor Manufacturing and Process Control</em>, Ch. 3–4</li>
+    <li>Donnelly &amp; Kornblit, <em>Plasma etching: Yesterday, today, and tomorrow</em>, J. Vac. Sci. Technol. A 31, 050825 (2013)</li>
+  </ul>
+</div>

@@ -317,6 +317,80 @@
 }
 
 /* --------------------------------------------------------------------------
+   5c. 製程資訊卡(A07 地圖的側欄)
+   -------------------------------------------------------------------------- */
+
+.pa-map-card {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+  padding: var(--pa-space-4);
+  font-size: var(--pa-text-sm);
+  line-height: 1.6;
+}
+
+.pa-map-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--pa-space-2);
+  padding-bottom: var(--pa-space-3);
+  margin-bottom: var(--pa-space-3);
+  border-bottom: 1px solid var(--pa-border);
+}
+
+.pa-map-card__head strong {
+  font-size: var(--pa-text-base);
+}
+
+.pa-map-card__head span {
+  color: var(--pa-text-muted);
+  font-size: var(--pa-text-xs);
+}
+
+.pa-map-card__row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: var(--pa-space-3);
+  margin-bottom: var(--pa-space-2);
+}
+
+.pa-map-card__key {
+  color: var(--pa-text-muted);
+  font-size: var(--pa-text-xs);
+  font-weight: 600;
+}
+
+.pa-map-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pa-space-2);
+  margin-top: var(--pa-space-3);
+  padding-top: var(--pa-space-3);
+  border-top: 1px solid var(--pa-border);
+}
+
+.pa-map-card__links a {
+  padding: 2px var(--pa-space-2);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-sm);
+  font-size: var(--pa-text-xs);
+  text-decoration: none;
+}
+
+.pa-map-card__links a:hover {
+  border-color: var(--pa-primary);
+}
+
+@media (max-width: 640px) {
+  .pa-map-card__row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
    6. 表格
    -------------------------------------------------------------------------- */
 
