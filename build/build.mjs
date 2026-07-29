@@ -243,6 +243,20 @@ function renderStats() {
 const pages = [];
 const stamp = new Date().toISOString().slice(0, 10);
 
+/** 建置時的 commit(Vercel 會提供環境變數;本機退回 git 或 "dev") */
+const COMMIT = (() => {
+  const env = process.env.VERCEL_GIT_COMMIT_SHA;
+  if (env) return env.slice(0, 7);
+  try {
+    return execFileSync("git", ["rev-parse", "--short", "HEAD"], {
+      cwd: ROOT,
+      encoding: "utf8",
+    }).trim();
+  } catch (e) {
+    return "dev";
+  }
+})();
+
 function buildPage(file) {
   const raw = readFileSync(file, "utf8");
   let parsed;
@@ -282,7 +296,8 @@ function buildPage(file) {
     .replace(/\{\{mainAttrs\}\}/g, meta.module ? ` data-chapter="${meta.module}"` : "")
     .replace(/\{\{content\}\}/g, content)
     .replace(/\{\{extraScripts\}\}/g, (meta.scripts || []).map((s) => `<script src="${base}${s}" defer></script>`).join("\n    "))
-    .replace(/\{\{buildStamp\}\}/g, `建置於 ${stamp}`);
+    .replace(/\{\{buildStamp\}\}/g, `建置於 ${stamp}`)
+    .replace(/\{\{commit\}\}/g, COMMIT);
 
   mkdirSync(dirname(outFile), { recursive: true });
   writeFileSync(outFile, html, "utf8");
@@ -448,7 +463,8 @@ function writeStub(spec) {
         renderChapterNav(base, { type: meta.module ? "chapter" : "page", module: meta.module })
     )
     .replace(/\{\{extraScripts\}\}/g, spec.extraScripts || "")
-    .replace(/\{\{buildStamp\}\}/g, `建置於 ${stamp}`);
+    .replace(/\{\{buildStamp\}\}/g, `建置於 ${stamp}`)
+    .replace(/\{\{commit\}\}/g, COMMIT);
 
   const outFile = join(DIST, outDir, "index.html");
   mkdirSync(dirname(outFile), { recursive: true });
