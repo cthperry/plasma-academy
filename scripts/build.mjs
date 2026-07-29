@@ -6,6 +6,7 @@ import { labs } from "../src/data/labs.js";
 import { glossary } from "../src/data/glossary.js";
 import { formulas } from "../src/data/formulas.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
+import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { shell, navItems, breadcrumb } from "../src/templates/page-shell.mjs";
 import { formulaCard, callout, labContainer, progressRing } from "../src/templates/components.mjs";
 
@@ -120,7 +121,10 @@ function levelPage(levelId) {
         <h1>${level.title}</h1>
         <p>${level.summary}</p>
       </section>
-      <section class="module-grid">${modules}</section>
+      <section>
+        <h2>模組列表</h2>
+        <div class="module-grid">${modules}</div>
+      </section>
       <section class="assessment-gate">
         <h2>L${level.id} 結業測驗</h2>
         <p>需完成 80% 章節後啟用。P0 先保留入口與狀態邏輯，題庫在後續 phase 補齊。</p>
@@ -196,6 +200,63 @@ function chapterPage() {
   `, { pageType: "chapter" });
 }
 
+function packagingCleaningPage() {
+  const objectives = chapterThreeSeven.objectives.map((item) => `<li>${item}</li>`).join("");
+  const outline = chapterThreeSeven.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("");
+  const bodySections = chapterThreeSeven.sections.map((section) => `
+    <section id="${section.id}" class="prose-section">
+      <h2>${section.title}</h2>
+      ${section.body}
+    </section>
+  `).join("");
+  const callouts = chapterThreeSeven.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const checks = chapterThreeSeven.selfCheck.map((item) => `
+    <details class="check-card">
+      <summary>${item.prompt}</summary>
+      <p>${item.answer}</p>
+    </details>
+  `).join("");
+
+  return page("/level/3/3-7-packaging-cleaning/", "3.7 封裝清潔與表面活化", `
+    <main class="chapter-layout" data-chapter-id="${chapterThreeSeven.id}">
+      <aside class="chapter-sidebar">
+        <strong>課程目錄</strong>
+        <a href="/level/3/">L3 模組列表</a>
+        <a class="current" href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔</a>
+        <a href="/glossary/">術語表</a>
+      </aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L3 進階", "3.7 封裝清潔"])}
+        <header class="chapter-header">
+          <p class="chapter-meta">時數 ${chapterThreeSeven.hours} h · 封裝應用主題</p>
+          <h1>${chapterThreeSeven.title}</h1>
+          <p>把電漿清潔從「去殘留」提升到「界面可靠度控制」。</p>
+        </header>
+        <section class="learning-card">
+          <h2>學習目標</h2>
+          <ul>${objectives}</ul>
+        </section>
+        ${callout("summary", "5 分鐘摘要", chapterThreeSeven.summary)}
+        ${bodySections}
+        ${callouts}
+        <section class="self-check">
+          <h2>自我檢測</h2>
+          ${checks}
+        </section>
+        <nav class="chapter-nav" aria-label="章節導覽">
+          <a class="button secondary" href="/level/3/">返回 L3</a>
+          <a class="button primary" href="/lab/">前往互動實驗室</a>
+        </nav>
+      </article>
+      <aside class="chapter-outline">
+        <strong>本頁大綱</strong>
+        ${outline}
+        <div data-unit-converter></div>
+      </aside>
+    </main>
+  `, { pageType: "chapter" });
+}
+
 function labPage() {
   const cards = labs.map((lab) => `
     <article class="lab-card" data-level="${lab.level}" data-kind="${lab.kind}">
@@ -223,7 +284,10 @@ function labPage() {
         <button type="button" class="segmented" data-filter="3">L3</button>
         <button type="button" class="segmented" data-filter="4">L4</button>
       </div>
-      <section class="lab-grid">${cards}</section>
+      <section>
+        <h2>元件列表</h2>
+        <div class="lab-grid">${cards}</div>
+      </section>
     </main>
   `);
 }
@@ -305,6 +369,7 @@ async function main() {
     levelPage(3),
     levelPage(4),
     chapterPage(),
+    packagingCleaningPage(),
     labPage(),
     progressPage(),
     glossaryPage(),

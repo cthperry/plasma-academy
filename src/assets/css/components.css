@@ -141,6 +141,10 @@
   border-left-color: var(--pa-warning);
 }
 
+.callout-warning {
+  border-left-color: var(--pa-danger);
+}
+
 .formula-card {
   background: var(--pa-surface-sunken);
 }
@@ -246,6 +250,19 @@
 .quiz-result {
   color: var(--pa-text-muted);
   font-size: var(--pa-text-sm);
+}
+
+.check-card {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  margin: 10px 0;
+  padding: 10px 12px;
+}
+
+.check-card summary {
+  cursor: pointer;
+  font-weight: 700;
 }
 
 .filter-row {

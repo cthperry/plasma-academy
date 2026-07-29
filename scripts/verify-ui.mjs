@@ -19,9 +19,16 @@ await desktop.screenshot({ path: path.join(qaDir, "desktop-home.png"), fullPage:
 await desktop.click("[data-theme-toggle]");
 const themeAfterClick = await desktop.locator("html").getAttribute("data-theme");
 await desktop.click("[data-search-open]");
-await desktop.fill("[data-search-input]", "電漿");
+await desktop.fill("[data-search-input]", "封裝清潔");
 await desktop.waitForTimeout(500);
 const searchCount = await desktop.locator("[data-search-results] a").count();
+const packagingSearchHit = await desktop.locator("[data-search-results]").textContent();
+
+await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
+await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
+await desktop.waitForLoadState("networkidle");
+const packagingH1 = await desktop.locator("h1").first().textContent();
+await desktop.screenshot({ path: path.join(qaDir, "desktop-packaging-cleaning.png"), fullPage: true });
 
 await desktop.goto(`${base}/level/1/1-1-fourth-state/`, { waitUntil: "networkidle" });
 await desktop.locator("#lab-a01").scrollIntoViewIfNeeded();
@@ -66,11 +73,12 @@ await mobile.screenshot({ path: path.join(qaDir, "mobile-lab.png"), fullPage: fa
 
 await browser.close();
 
-const result = { themeAfterClick, searchCount, canvasInfo, mobileCanvasInfo, quizText, mobileOverflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, canvasInfo, mobileCanvasInfo, quizText, mobileOverflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
 if (searchCount < 1) throw new Error("搜尋沒有回傳結果。");
+if (!packagingSearchHit.includes("封裝") || !packagingH1.includes("封裝清潔")) throw new Error("封裝清潔頁或搜尋入口未通過驗證。");
 if (canvasInfo.nonBlank < canvasInfo.width * canvasInfo.height * 0.5) throw new Error("A01 Canvas 看起來是空白。");
 if (mobileCanvasInfo.nonBlank < mobileCanvasInfo.width * mobileCanvasInfo.height * 0.5) throw new Error("手機 A01 Canvas 看起來是空白。");
 if (!quizText.includes("正確")) throw new Error("自我檢測沒有顯示成功狀態。");
