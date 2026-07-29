@@ -7,6 +7,7 @@ import { glossary } from "../src/data/glossary.js";
 import { formulas } from "../src/data/formulas.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
+import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
 import { shell, navItems, breadcrumb } from "../src/templates/page-shell.mjs";
 import { formulaCard, callout, labContainer, progressRing } from "../src/templates/components.mjs";
 
@@ -137,7 +138,7 @@ function levelPage(levelId) {
 function chapterPage() {
   const objectives = chapterOneOne.objectives.map((item, index) => `
     <label class="objective">
-      <input type="checkbox" data-objective="${index}" data-chapter-id="${chapterOneOne.id}">
+      <input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterOneOne.id}">
       <span>${item}</span>
     </label>
   `).join("");
@@ -188,7 +189,80 @@ function chapterPage() {
         </section>
         <nav class="chapter-nav" aria-label="章節導覽">
           <a class="button secondary" href="/level/1/">返回 L1</a>
-          <a class="button primary" href="/level/1/">下一章：1.2 電漿基本參數</a>
+          <a class="button primary" href="/level/1/1-2-parameters/">下一章：1.2 電漿基本參數</a>
+        </nav>
+      </article>
+      <aside class="chapter-outline">
+        <strong>本頁大綱</strong>
+        ${outline}
+        <div data-unit-converter></div>
+      </aside>
+    </main>
+  `, { pageType: "chapter" });
+}
+
+function l1ChapterPage(chapter, index) {
+  const previous = index === 0
+    ? { href: "/level/1/1-1-fourth-state/", title: "1.1 物質第四態" }
+    : { href: l1FoundationChapters[index - 1].route, title: l1FoundationChapters[index - 1].title };
+  const next = index < l1FoundationChapters.length - 1
+    ? { href: l1FoundationChapters[index + 1].route, title: l1FoundationChapters[index + 1].title }
+    : { href: "/level/1/", title: "L1 結業測驗" };
+  const objectives = chapter.objectives.map((item, objectiveIndex) => `
+    <label class="objective">
+      <input type="checkbox" aria-label="完成目標：${item}" data-objective="${objectiveIndex}" data-chapter-id="${chapter.id}">
+      <span>${item}</span>
+    </label>
+  `).join("");
+  const outline = chapter.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("");
+  const bodySections = chapter.sections.map((section) => `
+    <section id="${section.id}" class="prose-section">
+      <h2>${section.title}</h2>
+      ${section.body}
+    </section>
+  `).join("");
+  const callouts = chapter.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapter.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapter.selfCheck.map(([prompt, answer]) => `
+    <details class="check-card">
+      <summary>${prompt}</summary>
+      <p>${answer}</p>
+    </details>
+  `).join("");
+  const sidebar = [
+    ["1.1 物質第四態", "/level/1/1-1-fourth-state/"],
+    ...l1FoundationChapters.map((item) => [item.title, item.route])
+  ].map(([title, href]) => `<a class="${href === chapter.route ? "current" : ""}" href="${href}">${title}</a>`).join("");
+
+  return page(chapter.route, chapter.title, `
+    <main class="chapter-layout" data-chapter-id="${chapter.id}">
+      <aside class="chapter-sidebar">
+        <strong>課程目錄</strong>
+        ${sidebar}
+        <a href="/level/1/">L1 模組列表</a>
+      </aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L1 初階", chapter.title])}
+        <header class="chapter-header">
+          <p class="chapter-meta">時數 ${chapter.hours} h · 互動元件 ${chapter.labs.map((lab) => lab.id.toUpperCase()).join(", ")}</p>
+          <h1>${chapter.title}</h1>
+          <p>${chapter.summary}</p>
+        </header>
+        <section class="learning-card">
+          <h2>學習目標</h2>
+          ${objectives}
+        </section>
+        ${callout("summary", "5 分鐘摘要", chapter.summary)}
+        ${bodySections}
+        ${callouts}
+        ${labsHtml}
+        <section class="self-check">
+          <h2>自我檢測</h2>
+          ${checks}
+        </section>
+        <nav class="chapter-nav" aria-label="章節導覽">
+          <a class="button secondary" href="${previous.href}">上一章：${previous.title}</a>
+          <a class="button primary" href="${next.href}">下一章：${next.title}</a>
         </nav>
       </article>
       <aside class="chapter-outline">
@@ -369,6 +443,7 @@ async function main() {
     levelPage(3),
     levelPage(4),
     chapterPage(),
+    ...l1FoundationChapters.map(l1ChapterPage),
     packagingCleaningPage(),
     labPage(),
     progressPage(),

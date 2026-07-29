@@ -36,7 +36,7 @@ export function labContainer({ id, title, module, observation }) {
       <a class="button secondary" href="/lab/">全螢幕</a>
     </header>
     <div class="lab-stage">
-      <canvas width="720" height="360" data-a01-canvas aria-label="氣體粒子與電漿粒子示意"></canvas>
+      <canvas width="720" height="360" data-lab-canvas data-a01-canvas data-lab-id="${id.toUpperCase()}" aria-label="${title} 視覺化區域"></canvas>
       <div class="lab-panel" data-lab-controls></div>
     </div>
     <p class="lab-status" data-lab-status aria-live="polite">等待元件載入。</p>

@@ -42,5 +42,18 @@ export const labs = names.map(([id, level, chapter, name, tech, complexity, kind
   complexity,
   kind,
   goal,
-  href: id === "A01" ? "/level/1/1-1-fourth-state/#lab-a01" : "/lab/"
+  href: labHref(id)
 }));
+
+function labHref(id) {
+  const map = {
+    A01: "/level/1/1-1-fourth-state/#lab-a01",
+    A02: "/level/1/1-2-parameters/#lab-a02",
+    A03: "/level/1/1-3-collisions-mfp/#lab-a03",
+    A04: "/level/1/1-4-glow-breakdown/#lab-a04",
+    A05: "/level/1/1-4-glow-breakdown/#lab-a05",
+    A06: "/level/1/1-5-sheath/#lab-a06",
+    A07: "/level/1/1-6-process-map/#lab-a07"
+  };
+  return map[id] ?? "/lab/";
+}

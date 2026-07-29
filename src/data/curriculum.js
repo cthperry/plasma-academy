@@ -10,11 +10,11 @@ export const curriculum = {
       labs: ["A01", "A02", "A03", "A04", "A05", "A06", "A07"],
       modules: [
         { id: "1.1", title: "物質第四態", hours: 1.0, labs: ["A01"], prerequisites: "", href: "/level/1/1-1-fourth-state/", description: "從現場看到的輝光開始，建立弱游離與熱非平衡的直覺。" },
-        { id: "1.2", title: "電漿基本參數", hours: 1.5, labs: ["A02"], prerequisites: "1.1", href: "/level/1/", description: "電子密度、電子溫度與 Debye 遮蔽。" },
-        { id: "1.3", title: "碰撞與平均自由徑", hours: 1.5, labs: ["A03"], prerequisites: "1.2", href: "/level/1/", description: "把壓力和方向性連起來。" },
-        { id: "1.4", title: "輝光放電與點火", hours: 1.5, labs: ["A04", "A05"], prerequisites: "1.3", href: "/level/1/", description: "Townsend 雪崩與 Paschen 曲線。" },
-        { id: "1.5", title: "鞘層入門", hours: 1.5, labs: ["A06"], prerequisites: "1.2, 1.4", href: "/level/1/", description: "理解離子為什麼垂直轟擊晶圓。" },
-        { id: "1.6", title: "製程電漿地圖", hours: 1.0, labs: ["A07"], prerequisites: "1.5", href: "/level/1/", description: "把自己的 recipe 放到壓力與密度座標上。" }
+        { id: "1.2", title: "電漿基本參數", hours: 1.5, labs: ["A02"], prerequisites: "1.1", href: "/level/1/1-2-parameters/", description: "電子密度、電子溫度與 Debye 遮蔽。" },
+        { id: "1.3", title: "碰撞與平均自由徑", hours: 1.5, labs: ["A03"], prerequisites: "1.2", href: "/level/1/1-3-collisions-mfp/", description: "把壓力和方向性連起來。" },
+        { id: "1.4", title: "輝光放電與點火", hours: 1.5, labs: ["A04", "A05"], prerequisites: "1.3", href: "/level/1/1-4-glow-breakdown/", description: "Townsend 雪崩與 Paschen 曲線。" },
+        { id: "1.5", title: "鞘層入門", hours: 1.5, labs: ["A06"], prerequisites: "1.2, 1.4", href: "/level/1/1-5-sheath/", description: "理解離子為什麼垂直轟擊晶圓。" },
+        { id: "1.6", title: "製程電漿地圖", hours: 1.0, labs: ["A07"], prerequisites: "1.5", href: "/level/1/1-6-process-map/", description: "把自己的 recipe 放到壓力與密度座標上。" }
       ]
     },
     {
