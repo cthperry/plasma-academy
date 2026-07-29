@@ -1,0 +1,324 @@
+<!--meta
+{
+  "title": "2.5 電漿源與功率耦合 — Plasma Academy",
+  "description": "CCP 的歐姆與隨機加熱、ICP 的 E/H 模式跳變與遲滯、ECR 與微波源、遠端與下游電漿、阻抗匹配與反射功率的物理。",
+  "type": "chapter",
+  "module": "2.5"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>2.5 電漿源與功率耦合</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 3.0 小時</span>
+    <span>🔬 A14 · A15 互動元件</span>
+    <span>L2 中階</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="2.5">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說明 CCP 與 ICP 把能量送進電子的機制有什麼不同</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋 source 與 bias 解耦的意義,以及為什麼導體蝕刻需要它</span></label></li>
+    <li><label><input type="checkbox" /><span>說明 E→H 跳變與遲滯,並判斷製程點該不該擺在雙穩態區</span></label></li>
+    <li><label><input type="checkbox" /><span>說出遠端電漿的取捨:沒有離子,就沒有方向性也沒有損傷</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋匹配網路在做什麼,以及匹配電容位置為什麼是診斷指標</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../2-4-sheath-physics/">2.4 鞘層物理進階</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    功率要變成電漿,得先被<strong>電子</strong>吸收。不同的電漿源差別就在
+    「怎麼把能量交給電子」,而這個差別決定了三件事:密度上限、
+    <strong>能不能獨立調離子能量</strong>,以及有沒有模式跳變。
+  </p>
+  <p>
+    <strong>CCP</strong>:電場直接加速電子,但同一個電場也決定了鞘層電壓 ——
+    密度與離子能量<strong>綁在一起</strong>。
+    <strong>ICP</strong>:線圈感應的電場加速電子,晶座偏壓另外給 ——
+    兩者<strong>解耦</strong>。這是導體蝕刻幾乎都用 ICP 的原因。
+  </p>
+  <p>
+    ICP 有一個 CCP 沒有的現象:<strong>E→H 模式跳變</strong>,而且帶<strong>遲滯</strong>。
+    製程點若擺在跳變區,電漿會在兩個模式間反覆跳動 —— 這是很難查的那種不穩。
+  </p>
+</div>
+
+<h2 id="ccp">2.5.1 CCP:電容耦合</h2>
+
+<div class="pa-prose">
+  <p>
+    兩片平行板,RF 加在其中一片。電子被板間的振盪電場加速。加熱有兩條路:
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>機制</th><th>怎麼加熱</th><th>何時主導</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>歐姆加熱</strong></td>
+          <td>電子在振盪電場中運動,靠與中性粒子的碰撞把有序動能轉成熱</td>
+          <td>高壓(碰撞多)</td>
+        </tr>
+        <tr>
+          <td><strong>隨機加熱</strong>(無碰撞加熱)</td>
+          <td>振盪的<strong>鞘層邊界像活塞</strong>一樣拍打電子,每次拍打傳一次能量</td>
+          <td>低壓(碰撞少,但鞘層振盪劇烈)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 CCP 的根本限制</div>
+    <p>
+      加功率 → 電場變強 → 密度上升,但<strong>鞘層電壓也跟著上升</strong> →
+      離子能量一起上升。<strong>你沒辦法要「高密度但低能量」。</strong>
+    </p>
+    <p>
+      解法是<strong>多頻</strong>:高頻(60–100 MHz)主要產生密度,
+      低頻(2 MHz 以下)主要決定鞘層電壓與 IEDF 形狀。
+      現代介電質蝕刻機幾乎都是雙頻或三頻,原因就在這裡。
+    </p>
+  </div>
+</div>
+
+<h2 id="icp">2.5.2 ICP:電感耦合與 E/H 跳變</h2>
+
+<div class="pa-prose">
+  <p>
+    平面渦捲或圓柱線圈,經介電質窗(石英/氧化鋁)把 RF 磁場送進腔體。
+    <strong>變化的磁場感應出方位角方向的電場</strong>,電子被它推著繞圈 ——
+    像變壓器的次級圈,而電漿就是那一圈。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>模式</th><th>耦合方式</th><th class="is-num">密度</th><th>外觀</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>E-mode</strong>(容性)</td>
+          <td>線圈的<strong>電壓</strong>經雜散電容耦合</td>
+          <td class="is-num">~10⁹ cm⁻³</td><td>暗淡</td>
+        </tr>
+        <tr>
+          <td><strong>H-mode</strong>(感性)</td>
+          <td>線圈的<strong>電流</strong>經磁場耦合</td>
+          <td class="is-num">~10¹¹ cm⁻³</td><td>明亮</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 遲滯為什麼存在,以及它怎麼被利用</div>
+    <p>
+      在某段功率範圍內,<strong>兩個模式都能穩定存在</strong>(雙穩態)。
+      系統會停在目前這一支,直到它不再存在為止 ——
+      所以<strong>往上跳的功率高於往下掉的功率</strong>。
+    </p>
+    <ul>
+      <li>
+        <strong>製程點若太靠近跳變閾值</strong> → 電漿在兩個模式間反覆跳動,
+        密度差兩個數量級,製程完全不穩。這是很難查的那種問題,
+        因為 recipe 沒變、機台也沒報警。
+      </li>
+      <li>
+        <strong>Recipe 常刻意用高功率起步</strong>確保進 H-mode,
+        再降到製程功率 —— 靠遲滯留在 H-mode。<strong>順序反了就點不亮。</strong>
+      </li>
+      <li>
+        <strong>法拉第屏蔽</strong>用來抑制容性耦合,減少窗口濺鍍與模式跳變。
+      </li>
+    </ul>
+  </div>
+</div>
+
+<h2 id="lab-a14">🔬 A14 CCP vs ICP 與 E/H 跳變</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A14">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A14</span>
+    <span class="pa-lab__title">功率耦合對比與模式跳變遲滯</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:ICP 在功率上升到約 600 W 時由暗淡的 E-mode
+      跳到明亮的 H-mode,密度躍升兩個數量級;功率下降時要到約 450 W 才掉回來。
+      這 150 W 的差距就是遲滯,中間是雙穩態區,製程點不該擺在那裡。
+      CCP 則平滑上升、沒有跳變,但同功率下密度低一到兩個數量級。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="ecr">2.5.3 ECR、微波源與遠端電漿</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>型式</th><th>原理</th><th>特點</th><th>代價</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>ECR</strong></td>
+          <td>875 Gauss 下電子迴旋頻率恰等於 2.45 GHz → 共振吸能</td>
+          <td>極高密度、可在 0.1–1 mTorr 運作、T_e 低 → 損傷小</td>
+          <td>磁場系統複雜、成本高、大面積均勻度難</td>
+        </tr>
+        <tr>
+          <td><strong>表面波 / RLSA</strong></td>
+          <td>微波經天線在介電質板下形成表面波</td>
+          <td>大面積、極低 T_e 的高密度電漿</td>
+          <td>設備複雜</td>
+        </tr>
+        <tr>
+          <td><strong>遠端 / 下游</strong></td>
+          <td>電漿產生在腔外,只讓中性自由基流進來</td>
+          <td>沒有離子 → <strong>沒有損傷、沒有充電</strong></td>
+          <td><strong>沒有方向性</strong>,不能做圖形定義</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 遠端電漿的取捨很乾脆</div>
+    <p>
+      離子與電子在傳輸途中複合殆盡,抵達晶圓的只剩自由基。
+      <strong>這既是它的全部優點,也是它的全部限制。</strong>
+    </p>
+    <ul>
+      <li><strong>NF₃ 遠端腔體清潔</strong> —— 高 F 產率、無轟擊,不傷零件。業界標準。</li>
+      <li><strong>無損傷光阻灰化</strong> —— 沒有離子,就沒有電漿誘發損傷與充電。</li>
+      <li><strong>不能拿來蝕刻圖形</strong> —— 純化學就是等向的。</li>
+    </ul>
+  </div>
+</div>
+
+<h2 id="matching">2.5.4 阻抗匹配:反射功率的物理</h2>
+
+<div class="pa-prose">
+  <p>
+    RF 源與傳輸線設計為 50 Ω,但<strong>電漿不是 50 Ω</strong> ——
+    典型是 1–20 Ω 的電阻加上一個很大的<strong>電容性虛部</strong>(鞘層就是個電容),
+    而且隨壓力、功率、氣體、腔體狀態動態變化。
+  </p>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    Γ =
+    <span class="frac"><span class="num">Z<sub>L</sub> − 50</span><span class="den">Z<sub>L</sub> + 50</span></span>
+    &nbsp;&nbsp;,&nbsp;&nbsp;
+    反射功率 = |Γ|²
+  </div>
+  <div class="pa-formula__name">反射係數</div>
+  <details>
+    <summary>展開:匹配網路實際上在做什麼</summary>
+    <div class="pa-formula__body">
+      <p>
+        匹配網路的工作是把 <span class="pa-eq">Z_L</span> 變換成 50 + j0。
+        對「低電阻 + 強電容性」的電漿負載,需要三個元件:
+      </p>
+      <ol>
+        <li><strong>串聯電感 L</strong>(固定)—— 先把鞘層的電容性抵銷掉</li>
+        <li><strong>串聯 C_load</strong>(可調)—— 微調到需要的感抗值</li>
+        <li><strong>並聯 C_tune</strong>(可調)—— 把電阻拉到 50 Ω</li>
+      </ol>
+      <p>
+        <strong>光有兩顆電容是匹配不了的</strong> ——
+        電漿已經是電容性的,再加電容只會讓它更偏。
+        必須有一個感性元件,這就是匹配盒裡那個看起來很不起眼的線圈的用途。
+      </p>
+      <p>
+        匹配條件有解析解:並聯前的串聯支路必須滿足
+        <span class="pa-eq">R / (R² + X_s²) = 1/50</span>,
+        即 <span class="pa-eq">X_s = √(50R − R²)</span> ——
+        所以<strong>兩顆電容各有唯一解</strong>,自動匹配盒就是在找它。
+      </p>
+    </div>
+  </details>
+</div>
+
+<h2 id="lab-a15">🔬 A15 阻抗匹配與 Smith 圖</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A15">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A15</span>
+    <span class="pa-lab__title">阻抗匹配互動</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:反射係數 Γ = (Z_L − 50)/(Z_L + 50),
+      反射功率 = |Γ|²。匹配網路由固定串聯電感 + 可調串聯與並聯電容組成,
+      把電漿的低電阻高電容性阻抗變換到 50 Ω。改變壓力或功率後電漿阻抗改變,
+      需要不同的電容位置才能重新匹配 —— 匹配位置因此是腔體狀態的指紋。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--misconception">
+  <div class="pa-note__title">⚠️ 常見誤解</div>
+  <div class="pa-misconception__wrong"><span>機台面板顯示 500 W,電漿就吃到 500 W。</span></div>
+  <div class="pa-misconception__right">
+    <span>
+      面板顯示的常常是<strong>前向功率</strong>。反射 30 % 時,實際進入電漿的只有 350 W。
+      而且反射掉的那部分會在傳輸線與匹配盒裡發熱 ——
+      長期反射偏高不只製程不對,還會燒零件。
+      <strong>要看的是「前向 − 反射」。</strong>
+    </span>
+  </div>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 匹配電容位置是腔體狀態的指紋</div>
+  <p>
+    同一支 recipe,匹配後的兩顆電容位置<strong>應該每次都落在同一個地方</strong>。
+    它漂了,代表電漿阻抗變了 —— 而電漿阻抗會變,通常是因為:
+  </p>
+  <ul>
+    <li>腔壁結垢或零件消耗改變了有效接地面積</li>
+    <li>氣體流量或壓力實際值與設定值不符</li>
+    <li>介電質窗被鍍上一層東西(ICP)</li>
+  </ul>
+  <p>
+    這個訊號不用外加任何感測器,把它納入 FDC 趨勢
+    (<a href="../../4/4-2-endpoint-apc/">L4 4.2</a>)是投報率很高的一件事 ——
+    和 <a href="../2-1-vacuum/#pumps">2.1</a> 的節流閥開度是同一類指標。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>CCP 為什麼做不到「高密度但低離子能量」?業界怎麼繞過這個限制?</li>
+    <li>ICP 的 source 與 bias 為什麼能解耦?這對導體蝕刻為什麼重要?</li>
+    <li>某 ICP 製程設在 550 W,而跳變區是 450–600 W。會發生什麼事?你會怎麼改?</li>
+    <li>為什麼 recipe 的第一步常刻意用比製程值更高的功率?</li>
+    <li>遠端電漿沒有離子。列出兩個因此得到的好處與一個因此付出的代價。</li>
+    <li>為什麼只用兩顆電容做不出匹配網路?第三個元件是什麼、為什麼需要它?</li>
+    <li>某腔體同一支 recipe 的 C_tune 位置三個月內從 340 pF 漂到 410 pF。列出三個可能原因。</li>
+    <li>反射功率 25 %、前向 800 W。實際進入電漿多少?那 200 W 去了哪裡?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 11–13</li>
+    <li>Chabert &amp; Braithwaite, <em>Physics of Radio-Frequency Plasmas</em>, Ch. 6–7</li>
+    <li>Turner &amp; Lieberman, <em>Hysteresis and the E-to-H transition in RF inductive discharges</em>, Plasma Sources Sci. Technol. 8, 313 (1999)</li>
+  </ul>
+</div>
