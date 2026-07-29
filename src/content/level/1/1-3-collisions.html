@@ -1,0 +1,349 @@
+<!--meta
+{
+  "title": "1.3 碰撞與平均自由徑 — Plasma Academy",
+  "description": "壓力單位與 sccm、平均自由徑如何決定蝕刻的方向性、五種電子碰撞的製程意義,以及電負性氣體為什麼改寫規則。",
+  "type": "chapter",
+  "module": "1.3"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>1.3 碰撞與平均自由徑</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 1.5 小時</span>
+    <span>🔬 A03 互動元件</span>
+    <span>L1 初階</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="1.3">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>由壓力推算平均自由徑,並說出它與方向性的關係</span></label></li>
+    <li><label><input type="checkbox" /><span>在 Torr / mTorr / Pa 之間換算,並解釋 sccm 為什麼與壓力無關</span></label></li>
+    <li><label><input type="checkbox" /><span>區分五種電子碰撞,說出各自的製程意義</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋為什麼低壓電漿的損失以器壁複合為主,而不是氣相複合</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../1-2-parameters/">1.2 電漿基本參數</a>
+  <span>—— 需要 T<sub>e</sub> 與游離能的比較</span>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    這一章只有一個數字真正重要:<strong>平均自由徑 λ</strong>。它決定了你的製程是「方向性的」還是「等向性的」——
+    低壓時 λ 比腔體還長,離子從鞘層加速後一路不碰撞、垂直打在晶圓上,做出垂直側壁;
+    高壓時 λ 只剩零點幾毫米,離子一路被撞歪,側壁就被咬圓。
+  </p>
+  <p>
+    「壓力調低 profile 會變直」這句現場老話,物理根源就在這裡。
+  </p>
+  <p>
+    另一半是<strong>碰撞的種類</strong>。同樣是電子撞分子,結果可能是激發(發光,L4 OES 的來源)、
+    游離(維持電漿)、解離(產生<span class="pa-term" data-term="自由基">自由基</span>,L3 蝕刻的主角)
+    或附著(產生負離子,改寫整個電漿的行為)。看懂這五種,recipe 裡每支氣體在做什麼就清楚了。
+  </p>
+</div>
+
+<h2 id="units">1.3.1 壓力單位與 sccm</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>單位</th><th class="is-num">換算</th></tr></thead>
+      <tbody>
+        <tr><td>1 Torr</td><td class="is-num">133.3 Pa</td></tr>
+        <tr><td>1 mTorr</td><td class="is-num">0.1333 Pa</td></tr>
+        <tr><td>1 atm</td><td class="is-num">760 Torr = 101,325 Pa</td></tr>
+        <tr><td>1 mbar</td><td class="is-num">100 Pa = 0.75 Torr</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="pa-subtle">右側常駐的單位換算工具可以直接算,不必背。</p>
+
+  <h3 id="typical-pressure">典型製程壓力</h3>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>製程</th><th class="is-num">壓力</th></tr></thead>
+      <tbody>
+        <tr><td>高深寬比介電質蝕刻</td><td class="is-num">5 – 50 mTorr</td></tr>
+        <tr><td>Poly gate 蝕刻</td><td class="is-num">5 – 20 mTorr</td></tr>
+        <tr><td>PVD 濺鍍</td><td class="is-num">1 – 10 mTorr</td></tr>
+        <tr><td>PECVD</td><td class="is-num">1 – 10 Torr</td></tr>
+        <tr><td>光阻灰化</td><td class="is-num">0.5 – 2 Torr</td></tr>
+        <tr><td>大氣電漿處理</td><td class="is-num">760 Torr</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    注意蝕刻與 PECVD 差了<strong>兩到三個數量級</strong>。這不是隨便選的 ——
+    <a href="../1-6-process-map/">1.6</a> 會解釋每一類製程為什麼落在那個壓力帶。
+  </p>
+
+  <h3 id="sccm">sccm 是什麼</h3>
+
+  <p>
+    <strong>s</strong>tandard <strong>c</strong>ubic <strong>c</strong>entimeter per
+    <strong>m</strong>inute —— 標準狀態(0 °C、1 atm)下每分鐘幾立方公分。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼用 sccm 而不用實際體積流量</div>
+    <p>
+      sccm 是<strong>質量流量</strong>,不是體積流量 —— 它換算成「每秒送進去幾個分子」是固定的,
+      <strong>與腔體壓力無關</strong>。這正是它好用的原因:你把壓力從 10 mTorr 調到 50 mTorr,
+      100 sccm 送進去的分子數完全一樣。
+    </p>
+    <p>
+      所以在 recipe 裡,<strong>流量與壓力是兩個獨立的旋鈕</strong> ——
+      流量決定「送多少料進來」,壓力(靠節流閥)決定「讓它待多久」。
+      這個區分在 L2 <a href="../../2/2-1-vacuum/">2.1 滯留時間</a> 會變成一條可以算的公式。
+    </p>
+  </div>
+</div>
+
+<h2 id="mfp">1.3.2 平均自由徑</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    λ = 1 / (n σ) = k T / (σ P)
+  </div>
+  <div class="pa-formula__name">平均自由徑(Mean Free Path)</div>
+  <details>
+    <summary>展開:符號表、速算式與硬球模型</summary>
+    <div class="pa-formula__body">
+      <dl class="pa-symbols">
+        <dt>λ</dt><dd>平均自由徑 [m]</dd>
+        <dt>n</dt><dd>中性粒子數密度 [m⁻³]</dd>
+        <dt>σ</dt><dd>碰撞截面 [m²]</dd>
+        <dt>P</dt><dd>壓力 [Pa]</dd>
+        <dt>T</dt><dd>氣體溫度 [K]</dd>
+      </dl>
+      <p style="margin-top:var(--pa-space-3)">
+        硬球模型下 σ = √2 · π · d²,d 為分子直徑。Ar 的 d ≈ 0.37 nm,
+        代入得 σ ≈ 6.1 × 10⁻¹⁹ m²。
+      </p>
+      <p><strong>Ar 室溫速算式</strong>(誤差 10% 以內,現場夠用):</p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        λ [cm] ≈ 5 / P [mTorr]
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        注意 λ ∝ T:腔壁加熱或製程放熱會讓氣體溫度上升,λ 跟著變長。
+        這是為什麼腔壁溫控會影響製程結果的其中一條路徑(L3 <a href="../../3/3-6-uniformity/">3.6</a>)。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th class="is-num">壓力</th><th class="is-num">λ(Ar, 室溫)</th><th>與腔體尺度比較</th></tr></thead>
+      <tbody>
+        <tr><td class="is-num">1 mTorr</td><td class="is-num">≈ 5 cm</td><td>比 gap 還長 → 幾乎無碰撞</td></tr>
+        <tr><td class="is-num">10 mTorr</td><td class="is-num">≈ 5 mm</td><td>穿越 3 cm gap 撞約 6 次</td></tr>
+        <tr><td class="is-num">100 mTorr</td><td class="is-num">≈ 0.5 mm</td><td>撞約 60 次</td></tr>
+        <tr><td class="is-num">1 Torr</td><td class="is-num">≈ 50 µm</td><td>撞約 600 次,已是高度碰撞</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 這一個數字決定方向性</div>
+    <ul>
+      <li><strong>低壓</strong> → λ 大 → 離子穿越鞘層與腔體時幾乎不碰撞 → 垂直入射 → <strong>異向性蝕刻</strong></li>
+      <li><strong>高壓</strong> → λ 小 → 離子一路散射 → 入射角散開 → 方向性變差,但自由基多、蝕刻率高</li>
+    </ul>
+    <p>
+      這就是「壓力調低 profile 會變直」的物理根源。下面的 A03 可以直接把這件事看出來。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a03">🔬 A03 平均自由徑</h2>
+
+<div class="pa-lab" data-lab="A03">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A03</span>
+    <span class="pa-lab__title">平均自由徑粒子模擬</span>
+  </div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:離子從鞘層垂直射出後,每走過約一個 λ 就碰撞一次並被撞歪。
+      壓力越高 λ 越短、碰撞越多,抵達晶圓時的入射角分佈就越發散,異向性隨之變差。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="cross-section">1.3.3 碰撞截面不是常數</h2>
+
+<div class="pa-prose">
+  <p>
+    上面的速算式把 σ 當成定值,對中性粒子之間的碰撞夠用。但<strong>電子</strong>的碰撞截面隨能量劇烈變化,
+    這一點在 L2 <a href="../../2/2-3-plasma-chemistry/">2.3</a> 會變成關鍵。這裡先建立三個圖像:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>截面</th><th>形狀</th><th>製程意義</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>游離截面</td>
+          <td>低於游離能<strong>完全為零</strong>,超過後上升,在 50–100 eV 達峰後下降</td>
+          <td>只有高能尾巴的電子游離得動</td>
+        </tr>
+        <tr>
+          <td>激發截面</td>
+          <td>閾值更低(數 eV)</td>
+          <td>低 T<sub>e</sub> 也會發光,但不見得游離得動</td>
+        </tr>
+        <tr>
+          <td>動量轉移截面</td>
+          <td>低能量時可能出現 <strong>Ramsauer 極小</strong>(Ar、Kr、Xe 明顯)</td>
+          <td>低能電子在 Ar 中異常「穿透」,影響輸運</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>電子能量越高,游離越有效率。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        游離截面在 50–100 eV 達到最大之後<strong>反而下降</strong> ——
+        太快的電子「來不及」與束縛電子交互作用就飛過去了。
+        這也是 <a href="../1-4-glow-discharge/">1.4</a> Crookes 暗區為什麼是暗的:
+        那裡的電子能量過高,激發截面小,反而不發光。
+      </span>
+    </div>
+  </div>
+</div>
+
+<h2 id="collision-types">1.3.4 五種電子碰撞與製程意義</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>碰撞</th><th>反應式範例</th><th>製程意義</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>彈性</strong></td>
+          <td class="pa-eq">e + Ar → e + Ar</td>
+          <td>幾乎不交換能量;決定電子遷移率</td>
+        </tr>
+        <tr>
+          <td><strong>激發</strong></td>
+          <td class="pa-eq">e + Ar → e + Ar*</td>
+          <td>退激發放光 → <strong>L4 光發射光譜的來源</strong></td>
+        </tr>
+        <tr>
+          <td><strong>游離</strong></td>
+          <td class="pa-eq">e + Ar → 2e + Ar⁺</td>
+          <td>維持電漿的命脈</td>
+        </tr>
+        <tr>
+          <td><strong>解離</strong></td>
+          <td class="pa-eq">e + CF₄ → e + CF₃ + F</td>
+          <td><strong>產生蝕刻自由基</strong>,L3 的主角</td>
+        </tr>
+        <tr>
+          <td><strong>附著</strong></td>
+          <td class="pa-eq">e + SF₆ → SF₆⁻</td>
+          <td>產生負離子;電負性氣體特有,影響甚大</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>再加上兩個沒有電子參與、但同樣重要的:</p>
+
+  <ul>
+    <li><strong>複合(Recombination)</strong>:<span class="pa-eq">e + Ar⁺ → Ar</span>,主要發生在<strong>器壁</strong>而非氣相</li>
+    <li><strong>電荷交換(Charge Exchange)</strong>:<span class="pa-eq">Ar⁺(快) + Ar(慢) → Ar(快) + Ar⁺(慢)</span>,在鞘層裡造成離子能量分佈的低能尾巴(L2 <a href="../../2/2-4-sheath-physics/">2.4</a>)</li>
+  </ul>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>電漿裡電子和離子一直在複合,所以要一直供電維持。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        低壓電漿的<strong>氣相</strong>複合機率很低 —— 電子與離子要合併必須有第三者帶走多餘的能量與動量,
+        而低壓下三體碰撞極罕見。實際的損失主要靠<strong>擴散到器壁再複合</strong>。
+      </span>
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 這個誤解修正之後,很多現場現象就通了</div>
+    <p>
+      既然損失發生在器壁,那<strong>器壁的狀態就直接影響電漿密度與自由基濃度</strong>。這解釋了:
+    </p>
+    <ul>
+      <li>為什麼 PM 或腔體清潔之後,第一片的結果會不一樣(first wafer effect)</li>
+      <li>為什麼要跑 seasoning 片把腔壁「養」回製程狀態</li>
+      <li>為什麼換了內襯材質、製程就飄了</li>
+    </ul>
+    <p>這些會在 L3 <a href="../../3/3-6-uniformity/">3.6 腔體工程</a> 完整展開。</p>
+  </div>
+</div>
+
+<h2 id="electronegative">1.3.5 電負性氣體:負離子改寫規則</h2>
+
+<div class="pa-prose">
+  <p>
+    O₂、Cl₂、SF₆、NF₃、CF₄ 都是<span class="pa-term" data-term="電負性氣體">電負性氣體</span>,
+    會抓走電子形成<span class="pa-term" data-term="負離子">負離子</span>。而製程用的氣體,
+    絕大多數都是電負性的 —— 所以這不是特例,是常態。
+  </p>
+
+  <p>後果有四個:</p>
+
+  <ol>
+    <li><strong>n<sub>e</sub> 下降</strong> —— 電子被鎖進負離子,相同功率下電漿更難維持</li>
+    <li><strong>T<sub>e</sub> 被迫上升</strong> —— 電漿要靠更高的電子溫度補償游離損失,所以電負性電漿的 T<sub>e</sub> 通常較高</li>
+    <li><strong>負離子出不去</strong> —— 被<span class="pa-term" data-term="鞘層">鞘層</span>電場擋住,打不到晶圓。
+      但<strong>脈衝電漿可以放它們出來</strong>,這是 L4 <a href="../../4/4-4-advanced-tech/">4.4</a> 解決高深寬比孔洞充電的關鍵手段</li>
+    <li><strong>電漿可能不穩</strong> —— 附著驅動的振盪(attachment-driven instability),表現為功率或光強度的週期性波動</li>
+  </ol>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 現場對照</div>
+    <p>
+      同樣的機台、同樣的功率,把 Ar 換成 Cl₂,你會看到:電漿變暗、匹配位置大幅移動、
+      反射功率變化。這不是機台壞了 —— 這是電負性氣體把 n<sub>e</sub> 拉下來、把電漿阻抗改掉了。
+    </p>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>某製程壓力 20 mTorr、氣體為 Ar,平均自由徑約多少 mm?離子穿越 3 cm 的 gap 大約碰撞幾次?</li>
+    <li>把 100 sccm 的流量維持不變、壓力從 10 mTorr 調到 40 mTorr,送進腔體的分子數會變嗎?為什麼?</li>
+    <li>為什麼激發截面的閾值比游離截面低?這對「低功率時電漿仍會發光但蝕刻率很低」有什麼解釋?</li>
+    <li>低壓電漿中電子與離子的主要損失途徑是什麼?這對腔體 PM 有什麼實務含意?</li>
+    <li>把 Ar 換成 SF₆ 之後 n<sub>e</sub> 下降,但 T<sub>e</sub> 上升。用「電漿必須自己維持粒子平衡」解釋這個現象。</li>
+    <li>判斷題:壓力越高,自由基越多,所以蝕刻率一定越高。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 3(碰撞與截面)</li>
+    <li>Chapman, <em>Glow Discharge Processes</em>, Ch. 2</li>
+    <li><strong>LXCat</strong>(www.lxcat.net)—— 公開的碰撞截面資料庫,L4 模擬會用到</li>
+  </ul>
+</div>
