@@ -1124,3 +1124,166 @@
     align-items: center;
   }
 }
+
+/* --------------------------------------------------------------------------
+   14. 氣體百科與決策樹(A09 / A11 / /gases/)
+   -------------------------------------------------------------------------- */
+
+.pa-tree__step,
+.pa-tree__recipe,
+.pa-tree__blocked {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+  padding: var(--pa-space-4);
+  margin-bottom: var(--pa-space-3);
+  font-size: var(--pa-text-sm);
+  line-height: 1.6;
+}
+
+.pa-tree__blocked {
+  border-color: var(--pa-danger);
+  background: var(--pa-danger-bg);
+}
+
+.pa-tree__q {
+  font-weight: 700;
+  margin-bottom: var(--pa-space-2);
+}
+
+.pa-tree__step p,
+.pa-tree__gas p,
+.pa-tree__blocked p {
+  margin: 0;
+}
+
+.pa-tree__vol-row {
+  display: grid;
+  grid-template-columns: 8rem 1fr 5.5rem 4rem;
+  gap: var(--pa-space-2);
+  padding: 3px 0;
+  border-top: 1px solid var(--pa-border);
+  font-size: var(--pa-text-xs);
+}
+
+.pa-tree__vol-row.is-no {
+  color: var(--pa-danger);
+  font-weight: 600;
+}
+
+.pa-tree__vol-k {
+  font-weight: 600;
+}
+
+.pa-tree__vol-bp {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pa-tree__gas {
+  padding: var(--pa-space-2) 0;
+  border-top: 1px solid var(--pa-border);
+}
+
+.pa-tree__gas-head {
+  display: flex;
+  align-items: center;
+  gap: var(--pa-space-2);
+  margin-bottom: 2px;
+}
+
+.pa-tree__link {
+  font-size: var(--pa-text-xs);
+  margin-left: auto;
+}
+
+.pa-tree__caution {
+  margin-top: var(--pa-space-3);
+  padding-top: var(--pa-space-3);
+  border-top: 1px solid var(--pa-border);
+  color: var(--pa-danger);
+}
+
+.pa-tree__hazard {
+  font-size: var(--pa-text-xs);
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.pa-tree__hazard.is-crit { color: var(--pa-danger); }
+.pa-tree__hazard.is-high { color: var(--pa-warning); }
+.pa-tree__hazard.is-mid  { color: var(--pa-text-muted); }
+.pa-tree__hazard.is-low  { color: var(--pa-success); }
+
+.pa-gas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  gap: var(--pa-space-3);
+}
+
+.pa-gas-card {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+  padding: var(--pa-space-4);
+  font-size: var(--pa-text-sm);
+  line-height: 1.55;
+}
+
+.pa-gas-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--pa-space-2);
+  padding-bottom: var(--pa-space-2);
+  margin-bottom: var(--pa-space-2);
+  border-bottom: 1px solid var(--pa-border);
+}
+
+.pa-gas-card__formula { font-size: var(--pa-text-lg); }
+.pa-gas-card__en { color: var(--pa-text-muted); font-size: var(--pa-text-xs); }
+.pa-gas-card__note { margin: 0 0 var(--pa-space-3); }
+
+.pa-gas-card__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: 2px var(--pa-space-3);
+  margin-bottom: var(--pa-space-3);
+  padding-bottom: var(--pa-space-3);
+  border-bottom: 1px solid var(--pa-border);
+}
+
+.pa-gas-card__fact { display: flex; justify-content: space-between; gap: var(--pa-space-2); }
+.pa-gas-card__k { color: var(--pa-text-muted); font-size: var(--pa-text-xs); }
+
+.pa-gas-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: var(--pa-space-3);
+}
+
+.pa-gas-card__tag {
+  font-size: var(--pa-text-xs);
+  padding: 1px 7px;
+  border: 1px solid var(--pa-border);
+  border-radius: 999px;
+  color: var(--pa-text-muted);
+}
+
+.pa-gas-search {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--pa-border-strong);
+  border-radius: var(--pa-radius-sm);
+  background: var(--pa-surface);
+  color: var(--pa-text);
+  font: inherit;
+  font-size: var(--pa-text-sm);
+}
+
+@media (max-width: 640px) {
+  .pa-tree__vol-row { grid-template-columns: 1fr 1fr; }
+}

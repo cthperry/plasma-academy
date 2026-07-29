@@ -15,6 +15,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const STEPS = [
   ["物理模型與課文數值一致", "tools/check-model.mjs"],
   ["氣體資料與課文表格一致", "tools/check-gases.mjs"],
+  ["輪廓引擎的定性行為", "tools/check-profile.mjs"],
   ["色彩對比(深淺兩套主題)", "tools/check-contrast.mjs"],
   ["建置", "build/build.mjs"],
   ["死鏈", "tools/check-links.mjs"],

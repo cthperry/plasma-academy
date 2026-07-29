@@ -1,0 +1,504 @@
+<!--meta
+{
+  "title": "2.2 製程氣體選用學 — Plasma Academy",
+  "description": "選氣體的四個問題、揮發性第一原則、七大氣體家族、F/C 比與蝕刻↔沉積的轉換、離子輔助聚合物移除機制、危害分級與五個配方實戰案例。",
+  "type": "chapter",
+  "module": "2.2"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>2.2 製程氣體選用學</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 4.0 小時</span>
+    <span>🔬 A09 · A10 · A11 互動元件</span>
+    <span>L2 中階 · ★ 旗艦章</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="2.2">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>用揮發性原則判斷一種材料能不能用電漿蝕刻</span></label></li>
+    <li><label><input type="checkbox" /><span>說出七大氣體家族各自的角色與典型應用</span></label></li>
+    <li><label><input type="checkbox" /><span>用 F/C 比解釋氟碳氣體從蝕刻模式到沉積模式的轉換</span></label></li>
+    <li><label><input type="checkbox" /><span>說明離子輔助聚合物移除如何同時產生選擇比與異向性</span></label></li>
+    <li><label><input type="checkbox" /><span>針對指定材料組合提出配方,並說明每一支氣體的作用</span></label></li>
+    <li><label><input type="checkbox" /><span>判斷氣體的危害等級與相容材質</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../1/1-6-process-map/">1.6 製程電漿地圖</a>
+  <span>、</span>
+  <a href="../2-1-vacuum/">2.1 氣體動力學與真空</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    「為什麼這道製程要用這支氣體」是新人最常問、也最少被好好回答的問題。
+    答案不是背下來的表格,是<strong>四個依序回答的問題</strong>。
+  </p>
+  <p>
+    <strong>第一題就能否決一切:產物揮發得掉嗎?</strong>
+    蝕刻的本質是把固體變成能被抽走的氣體。Al 遇 F 生成 AlF₃,沸點 1291 °C ——
+    這條路直接封死,所以 Al 只能用氯系。Cu 連氯化物都是 993 °C,
+    所以業界乾脆不蝕刻它,改走大馬士革製程。
+  </p>
+  <p>
+    第二個核心是<strong>F/C 比</strong>。同樣是氟碳氣體,CF₄(F/C = 4)偏蝕刻、
+    C₄F₈(2)剛好、CH₃F(1)已經在沉積聚合物。而聚合物在<strong>側壁留著、溝底被離子清掉</strong>
+    這一件事,同時生出了<strong>異向性與選擇比</strong> ——
+    這是整個電漿蝕刻最精妙的設計,值得花時間弄懂。
+  </p>
+</div>
+
+<h2 id="four-questions">2.2.1 選氣體的四個問題</h2>
+
+<div class="pa-prose">
+  <p>任何配方設計都在依序回答這四題:</p>
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>① 要移除的材料是什麼?</strong> → 決定主蝕刻劑(<strong>產物必須揮發</strong>)</div>
+    <div class="pa-chain__step"><strong>② 不能動到的材料是什麼?</strong> → 決定選擇比策略(通常靠鈍化)</div>
+    <div class="pa-chain__step"><strong>③ 要什麼樣的 profile?</strong> → 決定鈍化劑與離子轟擊的比重</div>
+    <div class="pa-chain__step pa-chain__step--end"><strong>④ 有什麼限制?</strong> → 損傷、殘留、安全、成本、環保</div>
+  </div>
+
+  <h3 id="volatility">揮發性是第一原則,也是唯一的否決題</h3>
+  <p>
+    如果產物不揮發,它就<strong>沉積在原地</strong>,蝕刻停止。
+    後面三題答得再漂亮都沒有用。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>材料</th><th>蝕刻劑</th><th>產物</th><th class="is-num">沸點</th><th>可行?</th></tr></thead>
+      <tbody>
+        <tr><td>Si</td><td>F</td><td>SiF₄</td><td class="is-num">−86 °C</td><td>✅</td></tr>
+        <tr><td>Si</td><td>Cl</td><td>SiCl₄</td><td class="is-num">57 °C</td><td>✅</td></tr>
+        <tr><td>SiO₂</td><td>F(+ 離子)</td><td>SiF₄ + CO/CO₂</td><td class="is-num">低</td><td>✅</td></tr>
+        <tr><td>Al</td><td>Cl</td><td>AlCl₃</td><td class="is-num">178 °C(昇華)</td><td>✅</td></tr>
+        <tr><td><strong>Al</strong></td><td><strong>F</strong></td><td><strong>AlF₃</strong></td><td class="is-num"><strong>1291 °C</strong></td><td><strong>❌ 完全不行</strong></td></tr>
+        <tr><td>Cu</td><td>Cl</td><td>CuCl₂</td><td class="is-num">993 °C</td><td>❌ 需高溫或 IBE</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 這張表解釋了整個金屬蝕刻的歷史</div>
+    <ul>
+      <li><strong>Al 只能用氯系</strong> —— 這就是為什麼鋁蝕刻機和氧化層蝕刻機是兩種完全不同的機台,連管路材質都不一樣。</li>
+      <li>
+        <strong>Cu 沒有可用的揮發性鹵化物</strong> —— 所以業界不蝕刻銅,改走
+        <strong>大馬士革製程</strong>:先刻出溝槽、鍍銅填滿、再用 CMP 磨平。
+        整個銅製程的架構,起因就是這張表上的一個沸點。
+      </li>
+    </ul>
+    <p>
+      下一次有人問「為什麼不直接刻銅」,答案是 993 °C。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a09">🔬 A09 氣體選用決策樹</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A09">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A09</span>
+    <span class="pa-lab__title">氣體選用決策樹</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:依序回答四個問題得出配方。
+      第一題是揮發性否決題 —— Al + F 生成 AlF₃(1291 °C)不可行,Cu 的鹵化物全部不揮發。
+      第二、三題決定選擇比策略與 profile 取捨。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="families">2.2.2 七大氣體家族</h2>
+
+<h3 id="inert">(1) 惰性氣體 —— 物理轟擊與稀釋</h3>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th class="is-num">質量</th><th>角色</th></tr></thead>
+      <tbody>
+        <tr><td><strong>He</strong></td><td class="is-num">4</td><td>稀釋、熱傳(背吹)、穩定電漿、抑制 arcing</td></tr>
+        <tr><td><strong>Ar</strong></td><td class="is-num">40</td><td><strong>主力物理轟擊源</strong>、稀釋、穩定電漿、OES actinometry 內標</td></tr>
+        <tr><td>Kr / Xe</td><td class="is-num">84 / 131</td><td>重離子,濺鍍產率高,特殊應用</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>Ar 的三重身分</strong> —— 同一支氣體在配方裡同時做三件事:</p>
+  <ol>
+    <li><strong>物理濺鍍</strong> —— 打斷鍵、移除鈍化層、促進離子輔助反應</li>
+    <li><strong>稀釋劑</strong> —— 調整反應氣體的分壓而不改變總壓</li>
+    <li><strong>電漿穩定劑</strong> —— 游離能適中(15.76 eV),容易維持放電</li>
+  </ol>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 He 背吹不是製程氣體</div>
+    <p>
+      背吹 He 走的是<strong>晶圓背面</strong>,在 ESC 與晶圓之間導熱,壓力典型 5–20 Torr ——
+      它根本不進電漿。之所以用 He,是因為它的熱導率在常用氣體裡最高。
+    </p>
+    <p>
+      <strong>He 洩漏率是機台健康的核心指標</strong>:洩漏代表夾持不良 →
+      晶圓溫度失控 → 製程立刻飄。這個數字每片都該看。
+    </p>
+  </div>
+</div>
+
+<h3 id="fluorocarbon">(2) 氟碳系 —— 介電質蝕刻的核心</h3>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th class="is-num">F/C 比</th><th>主要用途</th></tr></thead>
+      <tbody>
+        <tr><td>CF₄</td><td class="is-num">4.0</td><td>通用蝕刻、Si/SiO₂/SiN、腔體清潔</td></tr>
+        <tr><td>C₂F₆</td><td class="is-num">3.0</td><td>腔體清潔(已大量被 NF₃ 取代)</td></tr>
+        <tr><td>CHF₃</td><td class="is-num">3.0</td><td>SiO₂ 蝕刻,中度聚合</td></tr>
+        <tr><td>CH₂F₂</td><td class="is-num">2.0</td><td>SiN spacer,高聚合、高選擇比</td></tr>
+        <tr><td><strong>C₄F₈</strong></td><td class="is-num">2.0</td><td><strong>HAR 接觸孔蝕刻主力</strong>、Bosch 鈍化步</td></tr>
+        <tr><td>C₅F₈</td><td class="is-num">1.6</td><td>HAR</td></tr>
+        <tr><td><strong>C₄F₆</strong></td><td class="is-num">1.5</td><td>更高聚合,先進節點 HAR</td></tr>
+        <tr><td>CH₃F</td><td class="is-num">1.0</td><td>極高聚合,SiN 對 Si 高選擇比</td></tr>
+      </tbody>
+    </table>
+    <p class="pa-subtle">F/C 比由分子式推算,並由 <code>tools/check-gases.mjs</code> 驗證與本表一致。</p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 F/C 比是本章的核心概念</div>
+    <div class="pa-chain">
+      <div class="pa-chain__step"><strong>高 F/C(CF₄ 端)</strong> —— F 自由基多、聚合物少 → 蝕刻模式、等向性強、選擇比低</div>
+      <div class="pa-chain__step"><strong>中 F/C(C₄F₈ 端)</strong> —— 側壁鈍化剛好 → 垂直側壁、選擇比佳,<strong>製程窗在這裡</strong></div>
+      <div class="pa-chain__step pa-chain__step--end"><strong>低 F/C(CH₃F 端)</strong> —— CFx 聚合物多 → 沉積模式、etch stop</div>
+    </div>
+    <p>
+      而且你不必換氣體就能移動這條軸:
+    </p>
+    <ul>
+      <li><strong>加 O₂ 會提高有效 F/C</strong> —— O 消耗 C 形成 CO/CO₂,把 F 釋放出來</li>
+      <li><strong>加 H₂ 會降低有效 F/C</strong> —— H 消耗 F 形成 HF</li>
+    </ul>
+    <p>
+      這兩句話是介電質蝕刻工程師的日常工具。「刻不動就加一點 O₂」背後就是這件事。
+    </p>
+  </div>
+
+  <h3 id="polymer-mechanism">離子輔助聚合物移除 —— 整個電漿蝕刻最精妙的設計</h3>
+
+  <p>
+    為什麼 SiO₂ 對 Si 會有選擇比?為什麼側壁會垂直?
+    這兩個問題的答案是<strong>同一個機制</strong>:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>位置</th><th>有離子嗎</th><th>有氧可消耗聚合物嗎</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>SiO₂ 溝底</strong></td><td>有(垂直入射)</td><td><strong>有</strong>(氧化物自帶)</td>
+          <td>聚合物被清掉 → <strong>蝕刻繼續</strong> ✅</td>
+        </tr>
+        <tr>
+          <td><strong>Si 表面</strong></td><td>有</td><td><strong>沒有</strong></td>
+          <td>聚合物越積越厚 → <strong>蝕刻停止</strong> → 這就是選擇比</td>
+        </tr>
+        <tr>
+          <td><strong>側壁</strong></td><td><strong>沒有</strong>(被自己上緣遮住)</td><td>—</td>
+          <td>聚合物保留 → <strong>側壁受保護</strong> → 這就是異向性</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 一句話</div>
+    <p>
+      <strong>聚合物到處沉積,但只有被離子打到的地方會被清掉。</strong>
+    </p>
+    <p>
+      側壁收不到離子(<a href="../../1/1-5-sheath-intro/#directionality">1.5.4</a> 講的垂直電場),
+      所以聚合物留著;溝底收得到,所以被清開繼續刻。
+      <strong>異向性與選擇比是同一個機制的兩個面向</strong>,不是兩套設計。
+    </p>
+    <p>
+      下面的 A10 就是把這件事跑給你看 —— 它沒有為任何一種輪廓寫規則,
+      所有形狀都是從「通量 + 鈍化 + 移除」三條式子演化出來的。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a10">🔬 A10 F/C 比滑桿</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A10">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A10</span>
+    <span class="pa-lab__title">F/C 比與蝕刻↔沉積轉換</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:高 F/C(CF₄)不聚合 → 側壁被側蝕;
+      中 F/C(C₄F₈)側壁有聚合物保護 → 垂直;低 F/C(CH₃F)連溝底都被蓋住 → etch stop。
+      同樣條件下 SiO₂ 照刻而 Si 停住,因為 SiO₂ 自身的氧會把聚合物燒成 CO/CO₂。
+    </div>
+  </noscript>
+</div>
+
+<h3 id="other-f">(3) 其他氟系 —— 無碳,所以不聚合</h3>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th>特性</th><th class="is-num">GWP</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SF₆</strong></td><td>F 產率極高、<strong>無碳不聚合</strong> → 等向性強;深矽蝕刻、快速 Si 移除</td><td class="is-num">23,500</td></tr>
+        <tr><td><strong>NF₃</strong></td><td>F 產率最高、易解離 → <strong>遠端電漿腔體清潔標準</strong></td><td class="is-num">16,100</td></tr>
+        <tr><td>F₂</td><td>直接提供 F 不需解離,但劇毒且強腐蝕</td><td class="is-num">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>NF₃ 取代 C₂F₆ 做腔體清潔,是因為它比較環保。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        <strong>NF₃ 的 GWP(16,100)其實比 C₂F₆(11,100)還高。</strong>
+        真正的理由是 N–F 鍵能只有 301 kJ/mol,在遠端電漿中<strong>幾乎完全分解</strong>,
+        逃逸到大氣的比例遠低於 C₂F₆。GWP 高但排不出去,總排放量反而低得多。
+        <strong>看的是逃逸率,不是 GWP 本身。</strong>
+      </span>
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--safety">
+    <div class="pa-note__title">🔴 環保註記</div>
+    <p>
+      CF₄、C₂F₆、SF₆、NF₃ 都是強效溫室氣體。SF₆ 的 GWP 23,500 是所有製程氣體之最。
+      PFC 減量是 L4 <a href="../../4/4-6-production/">4.6</a> 的主題,
+      涉及製程替代、燃燒式尾氣處理與用量最佳化三個方向。
+    </p>
+  </div>
+</div>
+
+<h3 id="cl-br">(4) 氯 / 溴系 —— 導體蝕刻</h3>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cl₂</strong></td><td>Poly-Si、Al、W 主蝕刻劑;蝕刻率高,對 SiO₂ 選擇比佳</td></tr>
+        <tr><td><strong>HBr</strong></td><td>Poly-Si 高選擇比與異向性主力;與 O 形成 SiOBr 側壁鈍化</td></tr>
+        <tr><td><strong>BCl₃</strong></td><td>Al 蝕刻不可或缺 —— <strong>B 抓走 Al 表面的原生 Al₂O₃</strong>;同時提供 Cl</td></tr>
+        <tr><td>SiCl₄</td><td>特殊材料、鈍化調整</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>Poly gate 蝕刻的 Cl₂ / HBr / O₂ 三重奏</strong>,每一支各司其職:</p>
+  <ul>
+    <li><strong>Cl₂</strong> —— 提供蝕刻率</li>
+    <li><strong>HBr</strong> —— 提供對 gate oxide 的選擇比與異向性</li>
+    <li><strong>O₂</strong> —— 與 Si、Br 形成 SiOBr 鈍化側壁</li>
+  </ul>
+  <p>
+    這正是 <a href="../../1/1-6-process-map/#recipe">1.6.4</a> 那支 recipe 的組成。
+    現在每一欄都說得出理由了。
+  </p>
+
+  <div class="pa-note pa-note--safety">
+    <div class="pa-note__title">🔴 安全提醒:氯溴系全部劇毒兼強腐蝕</div>
+    <ul>
+      <li><strong>管路必須乾燥</strong> —— BCl₃ 遇水生成 HCl,腐蝕管路並產生微粒。</li>
+      <li>
+        <strong>晶圓出腔後的後處理是必要步驟</strong>,不是可選項。
+        殘留的 Cl 遇到大氣濕氣會持續腐蝕 Al 線路,<strong>幾小時內就能吃斷</strong>。
+        去離子水沖洗或 H₂O 電漿處理,兩者擇一。
+      </li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="oxidizing">(5) 氧化性氣體</h3>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td><strong>O₂</strong></td><td>光阻灰化主力;氟碳製程中調 F/C;側壁鈍化(SiOBr/SiOCl);PECVD 氧化劑</td></tr>
+        <tr><td>N₂O</td><td>PECVD SiO₂ 的溫和氧化劑(N–O 鍵只有 167 kJ/mol,容易放出氧)</td></tr>
+        <tr><td>CO₂ / CO</td><td>先進 HAR 蝕刻中調控聚合物與側壁</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 O₂ 的雙面性 —— 最容易搞混的地方</div>
+    <ul>
+      <li><strong>加少量 O₂</strong> → 清除聚合物、釋放 F → <strong>蝕刻率上升</strong></li>
+      <li><strong>加過量 O₂</strong> → 表面氧化 + 稀釋 → <strong>蝕刻率下降</strong></li>
+    </ul>
+    <p>
+      中間存在一個<strong>最佳點</strong>。這是最經典的 DOE 題目,
+      也是為什麼「O₂ 加了有效」和「O₂ 加了反而變差」兩種說法在現場都聽得到 ——
+      兩邊都對,只是站在最佳點的不同側。
+    </p>
+  </div>
+</div>
+
+<h3 id="others">(6)(7) 氮化、還原、前驅物與特殊氣體</h3>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th>用途</th><th>危害</th></tr></thead>
+      <tbody>
+        <tr><td>N₂</td><td>稀釋、PECVD SiN、表面氮化、腔體 purge</td><td>窒息</td></tr>
+        <tr><td><strong>NH₃</strong></td><td>PECVD SiN 氮源(N–H 391 ≪ N≡N 945,好解離)、表面處理</td><td>毒性、腐蝕</td></tr>
+        <tr><td><strong>H₂</strong></td><td>降 F/C、還原、HAR 蝕刻改善 profile</td><td><strong>爆炸性</strong></td></tr>
+        <tr><td><strong>SiH₄</strong></td><td>PECVD Si 源</td><td><strong>自燃</strong> —— 最高等級管制</td></tr>
+        <tr><td>TEOS</td><td>PECVD SiO₂ 源(液態,需汽化與伴熱)</td><td>低毒</td></tr>
+        <tr><td><strong>WF₆</strong></td><td>W CVD</td><td>劇毒、腐蝕</td></tr>
+        <tr><td><strong>B₂H₆</strong></td><td>硼摻雜源</td><td><strong>自燃</strong>、劇毒</td></tr>
+        <tr><td>CH₄</td><td>有機金屬蝕刻、碳膜沉積</td><td>可燃</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 id="lab-a11">🔬 A11 氣體百科瀏覽器</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A11">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A11</span>
+    <span class="pa-lab__title">32 種製程氣體百科</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。32 種氣體可依家族、用途、危害等級篩選與搜尋,
+      每張卡包含分子量、沸點、游離能、鍵能、自由基、流量、危害、相容材質、產物、
+      排氣處理與常見故障模式。完整清單另見「氣體百科」頁。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="hazard">2.2.4 危害與安全分級</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>等級</th><th>氣體</th><th>管制要求</th></tr></thead>
+      <tbody>
+        <tr><td><strong>極高</strong></td><td>SiH₄、B₂H₆、PH₃</td><td><strong>自燃</strong>;雙層管、氣體偵測、自動關斷</td></tr>
+        <tr><td><strong>高</strong></td><td>Cl₂、HBr、BCl₃、WF₆、NF₃、F₂</td><td>劇毒/腐蝕;氣瓶櫃、專用排氣、偵測器</td></tr>
+        <tr><td>中</td><td>NH₃、N₂O、CF₄ 系</td><td>毒性或窒息;一般管制</td></tr>
+        <tr><td>低</td><td>Ar、He、N₂、O₂</td><td>窒息風險(密閉空間)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--safety">
+    <div class="pa-note__title">🔴 氣體切換前的三個確認</div>
+    <ol>
+      <li><strong>purge 完成了嗎</strong> —— 殘留的前一支氣體可能與新氣體反應</li>
+      <li><strong>管路材質相容嗎</strong> —— 含水環境對氯溴系是致命的</li>
+      <li><strong>下游 scrubber 型式對嗎</strong> —— 濕式 / 乾式 / 燃燒式各有適用對象</li>
+    </ol>
+    <p>
+      <strong>本站的安全資料僅供教學理解。</strong>
+      實際作業的危害分級、相容材質與洩漏應變,一律以供應商 SDS 與廠內氣體管理規範為準。
+    </p>
+  </div>
+</div>
+
+<h2 id="cases">2.2.5 配方設計實戰:五個案例</h2>
+
+<div class="pa-prose">
+  <p>格式一致 —— 給目標,逐支氣體推理。建議先自己想過再看答案。</p>
+
+  <h3 id="case1">① Poly-Si gate over gate oxide(Cl₂ / HBr / O₂)</h3>
+  <ul>
+    <li><strong>揮發性</strong>:Si + Cl → SiCl₄(57 °C)✅;Si + Br → SiBr₄ ✅</li>
+    <li><strong>選擇比</strong>:下層是幾 nm 的 gate oxide,刻穿就報廢 → HBr 為主(Br 較溫和)</li>
+    <li><strong>Profile</strong>:要垂直 → O₂ 生成 SiOBr 側壁鈍化</li>
+    <li><strong>限制</strong>:氯溴系劇毒腐蝕,管路須乾燥</li>
+  </ul>
+
+  <h3 id="case2">② SiO₂ 接觸孔 over Si(C₄F₈ / Ar / O₂)</h3>
+  <ul>
+    <li><strong>揮發性</strong>:SiO₂ + F → SiF₄ + CO/CO₂ ✅</li>
+    <li><strong>選擇比</strong>:下層 Si → 低 F/C 產生聚合物,SiO₂ 的氧會燒掉它、Si 不會 → C₄F₈(F/C = 2)</li>
+    <li><strong>Profile</strong>:高深寬比,需要強側壁鈍化 + 高偏壓把溝底打開 → Ar 提供物理轟擊</li>
+    <li><strong>限制</strong>:聚合過頭會 etch stop → 微量 O₂ 把有效 F/C 拉回窗內</li>
+  </ul>
+
+  <h3 id="case3">③ SiN spacer over Si(CH₂F₂ / O₂ / Ar)</h3>
+  <ul>
+    <li><strong>選擇比</strong>:SiN 對 Si 要高 → CH₂F₂(F/C = 2 且含兩個 H,聚合更強)</li>
+    <li><strong>Profile</strong>:spacer 蝕刻要留下側壁的那一圈,因此異向性必須極好</li>
+    <li><strong>限制</strong>:製程窗窄,O₂ 是微調的旋鈕</li>
+  </ul>
+
+  <h3 id="case4">④ Al 金屬線 over SiO₂(Cl₂ / BCl₃ / N₂ + 後處理)</h3>
+  <ul>
+    <li><strong>揮發性</strong>:<strong>只能用 Cl</strong> —— AlF₃ 沸點 1291 °C,氟系直接出局</li>
+    <li><strong>開場問題</strong>:Al 表面有原生 Al₂O₃ → BCl₃ 的 B 抓走氧,把蝕刻打開</li>
+    <li><strong>Profile</strong>:N₂ 做側壁鈍化控制側蝕</li>
+    <li><strong>限制</strong>:<strong>後處理不可省</strong> —— 殘留 Cl 遇濕氣會持續腐蝕 Al</li>
+  </ul>
+
+  <h3 id="case5">⑤ 深矽 MEMS 溝槽(Bosch:SF₆ ↔ C₄F₈ 交替)</h3>
+  <ul>
+    <li><strong>矛盾</strong>:要刻很深(SF₆ 的 F 產率最高)又要垂直(但 SF₆ 無碳、不聚合)</li>
+    <li>
+      <strong>解法</strong>:不要同時做,<strong>時間上分開</strong> ——
+      SF₆ 快速蝕刻幾秒 → 切到 C₄F₈ 鍍一層鈍化 → 再切回 SF₆(離子把溝底的鈍化打開,側壁的留著)
+    </li>
+    <li><strong>代價</strong>:側壁留下扇貝狀的 scallop,週期越短越平滑但速率越低</li>
+  </ul>
+  <p class="pa-subtle">Bosch 循環的完整動畫在 <a href="../../3/3-2-etch-applications/">L3 3.2</a>(A19)。</p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>為什麼不能用氟系蝕刻 Al?給出產物與沸點。</li>
+    <li>Cu 為什麼走大馬士革製程而不是蝕刻?</li>
+    <li>某 SiO₂ 蝕刻用 CHF₃,選擇比不夠。你會加 O₂ 還是 H₂?為什麼?</li>
+    <li>解釋為什麼同一個聚合物機制同時產生了異向性與選擇比。</li>
+    <li>SF₆ 刻矽很快但側壁一定不垂直,為什麼?Bosch 製程怎麼繞過這個矛盾?</li>
+    <li>NF₃ 的 GWP 比 C₂F₆ 高,為什麼它反而被視為較環保的腔體清潔氣體?</li>
+    <li>某製程從 C₄F₈ 換成 C₄F₆ 之後開始出現 etch stop。用 F/C 比解釋,並提出兩個調整方向。</li>
+    <li>列出 SiH₄ 與 Cl₂ 在氣體管理上的差異,至少三點。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 15</li>
+    <li>Coburn, <em>Plasma Etching and Reactive Ion Etching</em>(AVS Monograph)</li>
+    <li>Standaert et al., <em>High-density fluorocarbon etching of silicon dioxide</em>, J. Vac. Sci. Technol. A 16, 239 (1998)</li>
+    <li>各氣體供應商的 SDS —— <strong>安全資料以此為準,不以本站為準</strong></li>
+  </ul>
+</div>

@@ -19,15 +19,25 @@
   var mounted = []; // 已掛載的實例
 
   /** 元件自我註冊 */
-  function define(id, factory) {
-    registry[id] = factory;
-    // 若容器已在頁面上等待,立即掛載
-    var pending = document.querySelectorAll(
-      '[data-lab="' + id + '"]:not([data-lab-mounted])'
-    );
-    Array.prototype.forEach.call(pending, function (el) {
-      mount(el);
-    });
+  /**
+   * 註冊元件。
+   * deps 是這個元件額外需要的檔案(相對站台根目錄),例如
+   * A10 需要 data/gases.js 與 js/lab/profile-engine.js。
+   * 這些檔案不放進 lab core —— 只有真的用到的元件才付載入成本。
+   */
+  function define(id, factory, deps) {
+    function register() {
+      registry[id] = factory;
+      // 若容器已在頁面上等待,立即掛載
+      var pending = document.querySelectorAll(
+        '[data-lab="' + id + '"]:not([data-lab-mounted])'
+      );
+      Array.prototype.forEach.call(pending, function (el) {
+        mount(el);
+      });
+    }
+    if (deps && deps.length && PA.loadScripts) PA.loadScripts(deps, register);
+    else register();
   }
 
   /**

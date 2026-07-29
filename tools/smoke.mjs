@@ -476,7 +476,12 @@ console.log("\n【已撰寫章節通用檢查】");
         return {
           mounted: el.hasAttribute("data-lab-mounted"),
           error: el.hasAttribute("data-lab-error"),
-          visual: !!(el.querySelector("canvas") || el.querySelector("svg")),
+          // 有些元件依規格就是純 HTML(A11 氣體百科、A09 決策樹的資料卡),
+          // 硬要求 canvas/svg 只會逼人加裝飾用的圖。改為「舞台真的長出東西」:
+          // 掛載失敗時舞台是空的,一樣抓得到。
+          visual:
+            !!(el.querySelector("canvas") || el.querySelector("svg")) ||
+            el.querySelectorAll(".pa-lab__stage *").length >= 3,
           controls: el.querySelectorAll(".pa-ctrl").length,
           readouts: el.querySelectorAll(".pa-readout").length,
           observe: !!el.querySelector(".pa-lab__observe"),
