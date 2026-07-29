@@ -1,6 +1,6 @@
 # Plasma Academy — 電漿製程工程師教育訓練網站
 
-**線上版:https://plasma-academybyclaude.vercel.app**
+**線上版:https://plasma-academy.vercel.app**
 
 > P0 骨架已上線。內容目前只有 1.1 一章可讀,其餘 23 章為佔位頁 —— 見下方「現況」。
 
@@ -100,9 +100,9 @@ npm run check      # 完整品質門(物理模型 / 對比度 / 建置 / 死鏈 
 
 ### 部署
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fcthperry%2Fplasma-academy)
+已部署於 **https://plasma-academy.vercel.app**,`main` 有新 commit 就自動上線。
 
-`vercel.json` 已設定完成,匯入後不需要任何額外調整:
+`vercel.json` 設定如下,匯入時不需要任何額外調整:
 
 | 設定 | 值 | 說明 |
 |---|---|---|
@@ -114,7 +114,11 @@ npm run check      # 完整品質門(物理模型 / 對比度 / 建置 / 死鏈 
 安全標頭同樣寫在 `vercel.json`,CSP 與 `tools/serve.mjs` 本機伺服器完全一致 ——
 本機開發就會攔到違規,不會等到上線才發現。
 
-接上 Git 之後每次 `git push` 自動部署,PR 也會自動產生 preview URL。
+頁尾會顯示建置時的 commit 短碼(來自 `VERCEL_GIT_COMMIT_SHA`),
+所以「線上跑的是哪個版本」直接看畫面就知道,不必翻 dashboard。
+
+> **要自己匯入的話**,在 Vercel 用 **Import Git Repository** 選既有 repo,
+> **不要**用 Clone Template —— 那會複製出一個新 repo,推送到原 repo 不會觸發部署。
 
 ### P0 已完成
 
