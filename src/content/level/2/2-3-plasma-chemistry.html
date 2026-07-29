@@ -1,0 +1,332 @@
+<!--meta
+{
+  "title": "2.3 電漿化學基礎 — Plasma Academy",
+  "description": "速率係數與重疊積分、Maxwellian 與 Druyvesteyn 的差別、CF₄ 的解離鏈、自由基的表面損失係數、氣相與表面兩層的分工、黏著係數與 Arrhenius。",
+  "type": "chapter",
+  "module": "2.3"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>2.3 電漿化學基礎</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2.5 小時</span>
+    <span>🔬 A12 互動元件</span>
+    <span>L2 中階</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="2.3">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>解釋速率係數為什麼是 σ(E) 與 EEDF 的重疊積分,以及它為何對 T_e 極度敏感</span></label></li>
+    <li><label><input type="checkbox" /><span>說明為什麼功率主要調 n_e 而不是 T_e</span></label></li>
+    <li><label><input type="checkbox" /><span>分辨 Maxwellian 與 Druyvesteyn,並說出它對估算的影響</span></label></li>
+    <li><label><input type="checkbox" /><span>寫出 CF₄ 的解離鏈,並指出誰才是真正的蝕刻劑</span></label></li>
+    <li><label><input type="checkbox" /><span>用「氣相 vs 表面」兩層架構診斷蝕刻率異常</span></label></li>
+    <li><label><input type="checkbox" /><span>用溫度敏感度判斷製程偏化學還是偏離子輔助</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../1/1-3-collisions/">1.3 碰撞與平均自由徑</a>
+  <span>、</span>
+  <a href="../2-2-gas-selection/">2.2 製程氣體選用學</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    電漿裡的每一個反應速率,都是<strong>兩條曲線的重疊面積</strong>:
+    碰撞截面 σ(E) 與電子能量分佈 f(E)。
+  </p>
+  <p>
+    σ 有<strong>閾值</strong>(低於它完全不反應),f 的高能端<strong>指數衰減</strong> ——
+    所以兩者只在高能尾巴那一小段重疊。
+    T_e 從 2 拉到 3 eV 只上升 50 %,游離率卻上升將近 20 倍。
+  </p>
+  <p>
+    這個極端敏感性有一個重要後果:<strong>你幾乎無法用旋鈕直接調 T_e</strong>。
+    電漿會自我調節,把 T_e 鎖在 2–5 eV。
+    <strong>功率主要調 n_e,不調 T_e</strong> —— 這是 2.6 因果鏈最重要的一塊基石。
+  </p>
+</div>
+
+<h2 id="rate">2.3.1 速率係數:兩條曲線的重疊</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    k = ⟨σ(E) · v(E)⟩ = ∫ σ(E) · v(E) · f(E) dE
+  </div>
+  <div class="pa-formula__name">速率係數 —— 反應速率 = k · n<sub>e</sub> · n<sub>gas</sub></div>
+  <details>
+    <summary>展開:為什麼是「重疊」,以及它為何這麼敏感</summary>
+    <div class="pa-formula__body">
+      <dl class="pa-symbols">
+        <dt>σ(E)</dt><dd>碰撞截面 —— 低於閾值為 0,達峰後緩降</dd>
+        <dt>f(E)</dt><dd>電子能量分佈 —— 高能端指數衰減</dd>
+        <dt>v(E)</dt><dd>電子速度 ∝ √E</dd>
+      </dl>
+      <p style="margin-top:var(--pa-space-3)">
+        σ 在左邊是零,f 在右邊快速掉光。<strong>兩者只在中間一小段重疊</strong>,
+        而那一段正好落在 f 的高能尾巴上。
+      </p>
+      <p>
+        尾巴是指數的,所以 T_e 稍微一動,那一段的高度就變很多 ——
+        整塊面積跟著大幅變化。這就是速率係數對 T_e 極度敏感的原因。
+      </p>
+      <p>
+        <strong>Ar 的實際數字</strong>(本站模型,由 <code>tools/check-model.mjs</code> 驗證):
+        T_e 從 2 eV 到 3 eV,游離速率係數上升約 <strong>19 倍</strong>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 電漿的自我調節,以及它對調機的意義</div>
+  <p>
+    正因為敏感,電漿會把 T_e <strong>自動穩定在一個很窄的範圍</strong>(製程電漿約 2–5 eV):
+    稍高就游離太多、損失太快;稍低就維持不住放電。
+  </p>
+  <p>
+    現場的意義很直接:
+  </p>
+  <ul>
+    <li><strong>T_e 主要由「氣體種類 × 壓力 × 腔體尺寸」決定</strong>(粒子平衡),不是功率</li>
+    <li><strong>功率主要調 n_e</strong> —— 功率加倍,密度大致加倍,T_e 幾乎不動</li>
+  </ul>
+  <p>
+    這一點會在 <a href="../2-6-causal-chain/">2.6</a> 反覆用到。
+    「加功率讓電子變熱」是很常見但不正確的想像。
+  </p>
+</div>
+
+<h2 id="lab-a12">🔬 A12 EEDF 與重疊積分</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A12">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A12</span>
+    <span class="pa-lab__title">EEDF 曲線與速率係數</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:速率係數 k = ∫σ(E)v(E)f(E)dE 是截面與
+      能量分佈的重疊積分。σ 有閾值、f 指數衰減,兩者只在高能尾巴重疊,
+      因此 T_e 從 2 eV 升到 3 eV 時游離率上升近 20 倍。
+      同 T_e 下 Druyvesteyn 的高能尾巴較少,游離率明顯低於 Maxwellian。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="eedf">2.3.2 EEDF:Maxwellian 不總是對的</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>分佈</th><th>形狀</th><th>何時出現</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Maxwellian</strong></td>
+          <td class="pa-eq">f ∝ exp(−E/T<sub>e</sub>)</td>
+          <td>高密度、電子−電子碰撞頻繁(ICP 高功率)</td>
+        </tr>
+        <tr>
+          <td><strong>Druyvesteyn</strong></td>
+          <td class="pa-eq">f ∝ exp(−(E/E₀)²)</td>
+          <td>低密度、彈性碰撞主導(低壓 CCP);<strong>高能尾巴少很多</strong></td>
+        </tr>
+        <tr>
+          <td><strong>雙溫 Bi-Maxwellian</strong></td>
+          <td>兩段斜率</td>
+          <td>CCP 中隨機加熱產生的高能電子束</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼工程師要在乎分佈的形狀</div>
+    <p>
+      同樣的 T_e,Druyvesteyn 的高能電子數量遠少於 Maxwellian ——
+      本站模型在 T_e = 3 eV 時,兩者的游離率差了<strong>將近百倍</strong>。
+    </p>
+    <p>
+      <strong>當你用簡單模型算出來的自由基密度跟量測差很多,EEDF 形狀往往就是原因。</strong>
+      這不是模型「不準」,是模型假設了 Maxwellian 而實際不是。
+      真正要確認得靠 Langmuir 探針的二次微分(<a href="../../4/4-1-diagnostics/">L4 4.1</a>)。
+    </p>
+  </div>
+</div>
+
+<h2 id="dissociation">2.3.3 解離、自由基與產物</h2>
+
+<div class="pa-prose">
+  <p>以 CF₄ 為例的解離鏈:</p>
+  <div class="pa-formula">
+    <div class="pa-formula__body">
+      <div class="pa-eq">e + CF₄ → e + CF₃ + F&nbsp;&nbsp;&nbsp;&nbsp;(主要)</div>
+      <div class="pa-eq">e + CF₄ → 2e + CF₃⁺ + F&nbsp;&nbsp;&nbsp;&nbsp;(解離游離)</div>
+      <div class="pa-eq">e + CF₃ → e + CF₂ + F</div>
+      <div class="pa-eq">e + CF₂ → e + CF + F</div>
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>CF₄ 是蝕刻劑,它會去咬 Si。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        <strong>CF₄ 本身不蝕刻任何東西。</strong> 真正咬 Si 的是解離出來的
+        <strong>F 原子</strong>;CFx 則是<strong>聚合物的前驅物</strong>。
+        所以「氣體種類」只決定了原料,真正決定製程的是
+        <strong>解離之後產生了什麼、比例多少</strong> —— 而那由 EEDF 與 T_e 決定。
+        這也是同一支氣體在 CCP 與 ICP 上表現不同的原因。
+      </span>
+    </div>
+  </div>
+
+  <h3 id="radical-balance">自由基密度的平衡</h3>
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      生成率(電子碰撞解離) = 損失率(表面複合 + 抽走 + 氣相反應)
+    </div>
+    <div class="pa-formula__name">穩態自由基密度</div>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 表面損失係數 —— 最常被忽略的參數</div>
+    <p>
+      自由基撞到腔壁時,有一定機率就地複合而消失。這個機率<strong>強烈依賴表面材質</strong>:
+    </p>
+    <ul>
+      <li><strong>F 在石英表面</strong> —— 複合機率很低,自由基壽命長</li>
+      <li><strong>F 在金屬表面</strong> —— 複合機率高,自由基很快被吃掉</li>
+    </ul>
+    <p>
+      <strong>這就是為什麼腔體內襯材質換了、製程就變了。</strong>
+      也是 seasoning 與 chamber memory 的物理根源之一
+      (<a href="../../3/3-6-uniformity/">L3 3.6</a>)——
+      腔壁上積了什麼,直接改變了自由基的壽命。
+    </p>
+    <p>
+      同一件事也解釋了 <a href="../2-1-vacuum/#residence">2.1</a> 的滯留時間為什麼重要:
+      τ 就是「被抽走」那一項的時間尺度。
+    </p>
+  </div>
+</div>
+
+<h2 id="gas-vs-surface">2.3.4 氣相 vs 表面:反應在哪裡發生</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>氣相</th><th>表面</th></tr></thead>
+      <tbody>
+        <tr><td><strong>主要反應</strong></td><td>電子碰撞解離、游離</td><td>蝕刻、沉積、複合</td></tr>
+        <tr><td><strong>決定因素</strong></td><td>n_e、T_e、EEDF</td><td>自由基通量、離子能量、溫度</td></tr>
+        <tr><td><strong>工程旋鈕</strong></td><td>功率、壓力、氣體配比</td><td>溫度、bias、表面材質</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 診斷蝕刻率異常的第一個分岔</div>
+    <p>
+      <strong>把這兩層分開想,是診斷問題最有效的第一步。</strong>
+      蝕刻率不對,先問一句:
+    </p>
+    <div class="pa-chain">
+      <div class="pa-chain__step"><strong>是自由基不夠嗎?</strong>(氣相問題)→ 查功率、氣體配比、壓力、MFC</div>
+      <div class="pa-chain__step"><strong>還是表面反應被抑制?</strong>(表面問題)→ 查晶座溫度、鈍化過頭、污染、背吹 He</div>
+      <div class="pa-chain__step pa-chain__step--end">分岔選錯,後面查一整天都在錯的那一半</div>
+    </div>
+    <p>
+      OES 可以幫你分辨:自由基訊號正常但蝕刻率低 → 問題在表面;
+      自由基訊號本身就低 → 問題在氣相(<a href="../../4/4-1-diagnostics/">L4 4.1</a>)。
+    </p>
+  </div>
+</div>
+
+<h2 id="surface-kinetics">2.3.5 表面反應動力學</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>概念</th><th>意義</th><th>用在哪</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>黏著係數 s</strong></td>
+          <td>自由基撞到表面後留下的機率。<strong>s 小 → 鑽得進深孔</strong>;s 大 → 在開口就被吃掉</td>
+          <td>階梯覆蓋率、PEALD(<a href="../../3/3-4-deposition/">3.4</a>)</td>
+        </tr>
+        <tr>
+          <td><strong>Arrhenius</strong></td>
+          <td class="pa-eq">R ∝ exp(−E_a / kT)</td>
+          <td>純化學蝕刻對溫度極敏感;離子輔助則不敏感</td>
+        </tr>
+        <tr>
+          <td><strong>Langmuir 吸附</strong></td>
+          <td>表面吸附位有限 → 覆蓋率會飽和</td>
+          <td>ALE 自限制的基礎(<a href="../../4/4-4-advanced-tech/">4.4</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 一個免費的診斷實驗</div>
+    <p>
+      把晶座溫度改幾度,看蝕刻率變多少:
+    </p>
+    <ul>
+      <li><strong>很敏感</strong> → 製程偏<strong>化學</strong>(自由基主導,Arrhenius 在作用)</li>
+      <li><strong>幾乎不敏感</strong> → 製程偏<strong>離子輔助</strong>(離子提供活化能,溫度不是瓶頸)</li>
+    </ul>
+    <p>
+      這個實驗不用改配方、不用加感測器,而且直接告訴你「該往哪個方向調」。
+      偏化學的製程改 bias 效果有限,偏離子輔助的製程改溫度效果有限 ——
+      知道自己在哪一邊,可以省下大量無效的 DOE。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>黏著係數大代表反應性好,對沉積是好事。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        對<strong>階梯覆蓋率</strong>是壞事。s 大的前驅物一撞到開口就黏住,
+        根本鑽不進溝底,結果是「上面厚、下面薄」甚至夾出 void。
+        PEALD 之所以能做到接近 100 % 的覆蓋率,靠的正是
+        <strong>刻意選用低黏著、且會自限制的前驅物</strong>。
+      </span>
+    </div>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>為什麼速率係數對 T_e 這麼敏感?用 σ 與 f 兩條曲線的形狀解釋。</li>
+    <li>為什麼說「功率主要調 n_e,不調 T_e」?那 T_e 由什麼決定?</li>
+    <li>同樣 T_e = 3 eV,Maxwellian 與 Druyvesteyn 的游離率差多少?這對估算自由基密度有什麼影響?</li>
+    <li>CF₄ 電漿中真正蝕刻 Si 的是什麼?CFx 的角色是什麼?</li>
+    <li>某腔體換了新的石英內襯之後蝕刻率上升了 15 %,配方完全沒動。用表面損失係數解釋。</li>
+    <li>蝕刻率偏低。描述你會怎麼用「氣相 vs 表面」兩層架構,在三個步驟內縮小範圍。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 3、Ch. 9</li>
+    <li>Chabert &amp; Braithwaite, <em>Physics of Radio-Frequency Plasmas</em>, Ch. 2</li>
+    <li>LXCat 截面資料庫 —— 電子碰撞截面的公開來源(<a href="../../4/4-5-simulation/">L4 4.5</a> 會用到)</li>
+  </ul>
+</div>
