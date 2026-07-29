@@ -165,16 +165,27 @@
         svgEl("line", { x1: m.l, y1: m.t, x2: m.l, y2: m.t + ih, stroke: p.vizAxis, "stroke-width": 1.5 })
       );
 
-      // 刻度標籤
+      // 刻度標籤。
+      // 注意 tickCount: n 會產生 n+1 個刻度,若 format 又四捨五入到整數,
+      // 相鄰兩格可能印出一樣的字(例如 1.6 與 2.4 都變成「2」)。
+      // 格線照畫,但重複的標籤跳過 —— 軸上不該出現兩個一樣的數字。
+      var prevX = null;
       xt.forEach(function (v) {
+        var text = tickLabel(v, xs);
+        if (text === prevX) return;
+        prevX = text;
         var t = svgEl("text", {
           x: sx(v), y: m.t + ih + 16, "text-anchor": "middle",
           fill: p.textSubtle, "font-size": 11,
         });
-        t.textContent = tickLabel(v, xs);
+        t.textContent = text;
         gAxis.appendChild(t);
       });
+      var prevY = null;
       yt.forEach(function (v) {
+        var textY = tickLabel(v, ys);
+        if (textY === prevY) return;
+        prevY = textY;
         var t = svgEl("text", {
           x: m.l - 8, y: sy(v) + 4, "text-anchor": "end",
           fill: p.textSubtle, "font-size": 11,

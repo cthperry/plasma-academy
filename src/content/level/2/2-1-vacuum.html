@@ -1,0 +1,434 @@
+<!--meta
+{
+  "title": "2.1 氣體動力學與真空 — Plasma Academy",
+  "description": "理想氣體定律的製程版本、道爾頓分壓、滯留時間 τ 為什麼重要、Knudsen 數與流體區間、泵浦鏈與節流閥、三種壓力計怎麼選。",
+  "type": "chapter",
+  "module": "2.1"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>2.1 氣體動力學與真空</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2.0 小時</span>
+    <span>🔬 A08 互動元件</span>
+    <span>L2 中階</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="2.1">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>由壓力直接算出中性粒子密度,並驗算 L1 的游離度</span></label></li>
+    <li><label><input type="checkbox" /><span>用分壓算混氣配方,並說出「流量比 ≠ 腔內濃度比」的原因</span></label></li>
+    <li><label><input type="checkbox" /><span>算出滯留時間 τ,解釋 τ 太短與太長各自的後果</span></label></li>
+    <li><label><input type="checkbox" /><span>用 Knudsen 數判斷流體區間,並說明它對腔體設計的意義</span></label></li>
+    <li><label><input type="checkbox" /><span>說出節流閥開度為什麼是最好用的健康指標</span></label></li>
+    <li><label><input type="checkbox" /><span>依用途選對壓力計</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../1/1-3-collisions/">1.3 碰撞與平均自由徑</a>
+  <span>—— 需要 λ 與壓力單位</span>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    這一章講的是<strong>電漿點著之前</strong>的事:氣體怎麼進來、在腔內待多久、怎麼被抽走。
+    聽起來很基礎,但現場一半以上的「製程飄了」都是在這一層出問題。
+  </p>
+  <p>
+    最重要的一個量是<strong>滯留時間</strong>
+    <span class="pa-eq">τ = P·V / Q</span> ——
+    一個氣體分子在腔內平均待多久。太短,氣體來不及解離就被抽走;
+    太長,產物累積、再解離、再沉積。
+  </p>
+  <p>
+    由此得出本章最實用的一句話:<strong>流量與壓力是兩個獨立旋鈕</strong>。
+    把總流量加倍而壓力不變,腔內的粒子數<strong>一個也沒變</strong>,
+    你改的是換氣速度,不是濃度。很多人把這兩件事混在一起調,結果調不出所以然。
+  </p>
+</div>
+
+<h2 id="ideal-gas">2.1.1 理想氣體定律的製程版本</h2>
+
+<div class="pa-prose">
+  <p>教科書寫 <span class="pa-eq">PV = NkT</span>,但工程師要的是「壓力表讀數 → 粒子密度」:</p>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    n [cm⁻³] = 9.66 × 10¹⁶ ×
+    <span class="frac"><span class="num">P [Torr]</span><span class="den">T [K]</span></span>
+  </div>
+  <div class="pa-formula__name">由壓力算中性粒子密度</div>
+  <details>
+    <summary>展開:室溫速算式與 L1 的驗算</summary>
+    <div class="pa-formula__body">
+      <p>室溫(300 K)代進去,得到最常用的速算式:</p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        n [cm⁻³] ≈ 3.2 × 10¹³ × P [mTorr]
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        10 mTorr → n ≈ 3.2 × 10¹⁴ cm⁻³。
+      </p>
+      <p>
+        對照 L1 的 <span class="pa-eq">n<sub>e</sub> ≈ 10¹⁰ cm⁻³</span>:
+      </p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        游離度 α = n<sub>e</sub> / n ≈ 10¹⁰ / 3.2×10¹⁴ ≈ 3 × 10⁻⁵
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        落在 <a href="../../1/1-1-fourth-state/">1.1</a> 說的弱游離範圍(10⁻⁶–10⁻³)裡。
+        <strong>數字對得起來</strong> —— 這是 L1 那個宣稱的實際驗算。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 記住這個比例就好</div>
+  <p>
+    <strong>一萬個中性粒子裡才有一個離子。</strong>
+    電漿製程幾乎所有的化學都發生在那「一萬個」身上 ——
+    離子負責給方向與能量,真正把材料咬掉的量,自由基佔了大部分。
+    這個觀念會一路用到 L3。
+  </p>
+</div>
+
+<h2 id="partial-pressure">2.1.2 道爾頓分壓:混氣 recipe 的算法</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    P<sub>i</sub> = P<sub>total</sub> ×
+    <span class="frac"><span class="num">Q<sub>i</sub></span><span class="den">Q<sub>total</sub></span></span>
+  </div>
+  <div class="pa-formula__name">分壓 —— 由流量比推算</div>
+</div>
+
+<div class="pa-prose">
+  <p>範例:<code>Ar 100 / CF₄ 50 / O₂ 10 sccm</code>,總壓 20 mTorr。</p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th class="is-num">流量 (sccm)</th><th class="is-num">佔比</th><th class="is-num">分壓 (mTorr)</th></tr></thead>
+      <tbody>
+        <tr><td>Ar</td><td class="is-num">100</td><td class="is-num">62.5 %</td><td class="is-num">12.5</td></tr>
+        <tr><td>CF₄</td><td class="is-num">50</td><td class="is-num">31.3 %</td><td class="is-num">6.25</td></tr>
+        <tr><td>O₂</td><td class="is-num">10</td><td class="is-num">6.3 %</td><td class="is-num">1.25</td></tr>
+        <tr><td><strong>合計</strong></td><td class="is-num"><strong>160</strong></td><td class="is-num"><strong>100 %</strong></td><td class="is-num"><strong>20</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>流量比就是腔體內的濃度比。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        <strong>只有在「沒有消耗」的前提下才成立。</strong>
+        實際上 CF₄ 被大量解離、O₂ 被表面反應吃掉、蝕刻產物(SiF₄)還會加入氣相。
+        高消耗製程裡,腔內真實組成和進氣比可以差<strong>數倍</strong>。
+        要知道真的是什麼,得靠 RGA 或質譜(<a href="../../4/4-1-diagnostics/">L4 4.1</a>)。
+      </span>
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼還是要算分壓</div>
+    <p>
+      因為它是<strong>你控制得到的那一端</strong>。腔內真實組成量不到,但進氣分壓是
+      MFC 直接決定的,而且它決定了「餵進去多少反應物」。
+      調機時看分壓,分析異常時才想到腔內組成 —— 兩件事分開用。
+    </p>
+  </div>
+</div>
+
+<h2 id="residence">2.1.3 滯留時間:被低估的關鍵參數</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    τ =
+    <span class="frac"><span class="num">P · V</span><span class="den">Q</span></span>
+    &nbsp;&nbsp;→&nbsp;&nbsp;
+    τ [s] = 79.0 ×
+    <span class="frac"><span class="num">P [Torr] · V [L]</span><span class="den">Q [sccm]</span></span>
+  </div>
+  <div class="pa-formula__name">滯留時間</div>
+  <details>
+    <summary>展開:79.0 從哪裡來,以及與抽速的關係</summary>
+    <div class="pa-formula__body">
+      <p>
+        1 sccm 是每分鐘 1 cm³ 的標準狀態氣體,換成流通量(throughput):
+      </p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        1 sccm = 760 Torr × 0.001 L ÷ 60 s = 0.01267 Torr·L/s =
+        <span class="frac"><span class="num">1</span><span class="den">79.0</span></span> Torr·L/s
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        <strong>有效抽速</strong>就是流通量除以壓力:
+      </p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        S [L/s] = Q / P &nbsp;&nbsp;,&nbsp;&nbsp; τ = V / S
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        兩條式子用的是同一個常數,所以 <strong>τ = V/S 恆成立</strong>。
+        本站的計算全部從這一個常數出發,兩式不可能互相矛盾。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <p><strong>範例</strong>:V = 30 L、P = 20 mTorr、Q = 200 sccm</p>
+  <div class="pa-formula__eq pa-eq" style="font-size:1rem;margin-bottom:var(--pa-space-5)">
+    τ = 79.0 × 0.02 × 30 ÷ 200 ≈ <strong>0.24 s</strong>
+    &nbsp;&nbsp;,&nbsp;&nbsp;
+    S = 200 ÷ 79.0 ÷ 0.02 ≈ <strong>127 L/s</strong>
+  </div>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>τ 太短</th><th>τ 太長</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>氣體來不及被解離 → 自由基少、蝕刻率低</td>
+          <td>產物累積 → 再解離、再沉積</td>
+        </tr>
+        <tr>
+          <td>氣體浪費、成本高</td>
+          <td>副產物參與反應 → 製程不可控</td>
+        </tr>
+        <tr>
+          <td>但腔體乾淨、產物迅速抽走</td>
+          <td>均勻度變差(中心與邊緣停留時間不同)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 本章最重要的一句話</div>
+    <p>
+      當你把總流量從 200 sccm 加到 400 sccm 卻維持壓力不變,
+      你其實只做了一件事:<strong>把 τ 砍半</strong>。
+    </p>
+    <ul>
+      <li>腔內的<strong>粒子數完全沒變</strong>(壓力沒變)</li>
+      <li>蝕刻率可能<strong>不升反降</strong>(自由基來不及生成)</li>
+      <li>但均勻度可能<strong>改善</strong>(產物快速排除)</li>
+    </ul>
+    <p>
+      <strong>流量與壓力是兩個獨立旋鈕,不要只調其中一個就下結論。</strong>
+      下面的 A08 可以直接把這件事看出來。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a08">🔬 A08 滯留時間計算器</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A08">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A08</span>
+    <span class="pa-lab__title">腔體流場與滯留時間計算器</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:τ = 79.0 × P[Torr] × V[L] / Q[sccm]。
+      30 L、20 mTorr、200 sccm 得 τ ≈ 0.24 s。流量加倍而壓力不變時 τ 減半,
+      但腔內粒子數不變 —— 改變的是換氣速度而不是濃度。
+      分子的停留時間呈指數分佈,τ 只是平均值。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 直方圖告訴你的第二件事</div>
+  <p>
+    A08 的分佈圖不是裝飾。理想混合腔體裡,分子的停留時間服從
+    <strong>指數分佈</strong> —— 最多的其實是「剛進來就被抽走」的那一批,
+    <strong>τ 只是平均值</strong>。
+  </p>
+  <p>
+    這件事有實際後果:即使 τ = 0.24 s,還是有一小部分分子待了超過 1 秒。
+    那些就是有機會被反覆解離、變成聚合物前驅物、最後成為微粒的分子。
+    「平均值很安全」不代表「沒有長尾」。
+  </p>
+</div>
+
+<h2 id="knudsen">2.1.4 流體區間:Knudsen 數</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    Kn =
+    <span class="frac"><span class="num">λ</span><span class="den">d</span></span>
+  </div>
+  <div class="pa-formula__name">Knudsen 數 —— d 為特徵尺寸(管徑或 gap)</div>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th class="is-num">Kn</th><th>區間</th><th>行為</th></tr></thead>
+      <tbody>
+        <tr><td class="is-num">&lt; 0.01</td><td><strong>黏滯流</strong> Viscous</td><td>分子互撞為主,整體像流體</td></tr>
+        <tr><td class="is-num">0.01 – 1</td><td><strong>過渡流</strong> Transition</td><td>兩者混合 —— 最難算,也最常見</td></tr>
+        <tr><td class="is-num">&gt; 1</td><td><strong>分子流</strong> Molecular</td><td>分子只跟器壁碰,彼此不相干</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>製程</th><th class="is-num">條件</th><th class="is-num">Kn</th><th>區間與後果</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>PECVD</td><td class="is-num">1–10 Torr,gap ~1 cm</td><td class="is-num">≪ 0.01</td>
+          <td>黏滯流 → <strong>氣流分佈設計(噴淋頭)決定均勻度</strong></td>
+        </tr>
+        <tr>
+          <td>蝕刻</td><td class="is-num">10 mTorr,gap ~3 cm</td><td class="is-num">~0.2</td>
+          <td>過渡流 —— 沒有簡單公式,只能靠模擬與實驗</td>
+        </tr>
+        <tr>
+          <td>高真空管路</td><td class="is-num">&lt; 1 mTorr</td><td class="is-num">&gt; 1</td>
+          <td>分子流 → <strong>導傳由幾何決定,與壓力無關</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼腔體到泵之間永遠是又粗又短的管子</div>
+    <p>
+      分子流區的導傳(conductance)大致
+      <span class="pa-eq">∝ D³ / L</span> ——
+      <strong>管徑的三次方</strong>,長度只有一次方。
+    </p>
+    <p>
+      所以管子加粗遠比縮短有效:直徑加倍,導傳變八倍;長度減半,導傳只變兩倍。
+      這就是為什麼機台設計時寧可把泵擺遠一點也要用粗管。
+      現場如果有人為了空間把管路換細,抽速會掉得比直覺嚴重得多。
+    </p>
+  </div>
+</div>
+
+<h2 id="pumps">2.1.5 泵浦鏈與壓力控制</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>泵</th><th class="is-num">工作區間</th><th>角色</th></tr></thead>
+      <tbody>
+        <tr><td>乾式幫浦 Dry pump</td><td class="is-num">大氣 → 10⁻² Torr</td><td>前級,接排氣端</td></tr>
+        <tr><td><strong>渦輪分子泵 TMP</strong></td><td class="is-num">10⁻² → 10⁻⁸ Torr</td><td>主泵,製程時在跑的就是它</td></tr>
+        <tr><td>冷凝泵 Cryo</td><td class="is-num">高真空</td><td>PVD 常用,抽水氣特別強</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>壓力是怎麼被控制的</strong>:泵的轉速是固定的,真正在調的是
+    <strong>節流閥(throttle valve)</strong> —— 它擋在泵前面,改變有效抽速。
+    閉迴路很單純:Baratron 讀壓力 → 控制器調閥位 → 壓力回到設定值。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 閥位是最好用的免費健康指標</div>
+    <p>
+      同一支 recipe、同樣的流量與壓力設定,<strong>閥位應該每次都一樣</strong>。
+      它一旦漂移,代表腔體或泵那一側有東西變了:
+    </p>
+    <ul>
+      <li><strong>閥開度異常大</strong> → 抽不動,可能是漏氣、流量計飄高,或泵抽速衰退</li>
+      <li><strong>閥開度異常小</strong> → 太好抽,可能是流量計飄低,或管路阻塞讓壓力計讀不準</li>
+      <li><strong>閥位慢慢往一個方向走</strong> → 沉積物累積或零件消耗,這是 PM 的預警</li>
+    </ul>
+    <p>
+      這個訊號不用額外裝任何感測器,機台本來就有。
+      把它納入 FDC 監控(<a href="../../4/4-2-endpoint-apc/">L4 4.2</a>)是投報率最高的一件事。
+    </p>
+  </div>
+</div>
+
+<h2 id="gauges">2.1.6 壓力量測:選對計</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>計種</th><th>原理</th><th class="is-num">範圍 (Torr)</th><th>特性</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>電容薄膜計 Baratron</strong></td>
+          <td>隔膜位移造成電容變化</td>
+          <td class="is-num">10⁻⁴ – 1000</td>
+          <td><strong>與氣體種類無關</strong> —— 製程控制的標準</td>
+        </tr>
+        <tr>
+          <td>Pirani</td>
+          <td>燈絲的熱傳導損失</td>
+          <td class="is-num">10⁻³ – 10</td>
+          <td>依氣體種類校正,便宜,只能當粗略指示</td>
+        </tr>
+        <tr>
+          <td>離子規 Ion gauge</td>
+          <td>游離電流</td>
+          <td class="is-num">10⁻¹⁰ – 10⁻³</td>
+          <td>量 base pressure 與漏氣檢查</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>兩支壓力計讀數不一樣,一定有一支壞了。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        <strong>Pirani 依氣體種類而異,讀 Ar 和讀 He 可以差好幾倍</strong> ——
+        它量的是熱傳導,而熱傳導本來就跟氣體種類有關。
+        Baratron 量的是力,和氣體是什麼完全無關。
+        兩者在混氣製程下讀數不同是<strong>正常的</strong>,不是故障。
+        製程壓力一律以 Baratron 為準。
+      </span>
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📐 選計的一句話原則</div>
+    <ul>
+      <li><strong>製程壓力控制</strong> → Baratron,沒有第二個選擇</li>
+      <li><strong>抽氣過程的粗略監看</strong> → Pirani</li>
+      <li><strong>base pressure、漏氣率</strong> → 離子規</li>
+    </ul>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>腔體 40 L、壓力 30 mTorr、總流量 300 sccm。算出 τ 與有效抽速。</li>
+    <li>上題若把流量加到 600 sccm 而壓力維持 30 mTorr,腔內粒子數變多少?τ 變多少?</li>
+    <li>某 recipe 為 Ar 150 / Cl₂ 60 / O₂ 15 sccm、總壓 15 mTorr,算出各氣體分壓。為什麼腔內實際的 Cl₂ 分壓會低於算出來的值?</li>
+    <li>10 mTorr、gap 3 cm 的蝕刻腔,Kn 大約多少?屬於哪個區間?</li>
+    <li>某腔體同一支 recipe 的節流閥開度三個月內從 42 % 慢慢升到 61 %。列出至少三個可能原因,並說明你會怎麼逐一排除。</li>
+    <li>為什麼 Pirani 讀 He 和讀 Ar 會差很多,而 Baratron 不會?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>O'Hanlon, <em>A User's Guide to Vacuum Technology</em>(真空工程的標準參考)</li>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, §9.1（氣體流動與抽氣）</li>
+    <li>Chambers, <em>Modern Vacuum Physics</em>, Ch. 4–5</li>
+  </ul>
+</div>

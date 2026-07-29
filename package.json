@@ -11,7 +11,8 @@
     "check": "node tools/check-all.mjs",
     "check:contrast": "node tools/check-contrast.mjs",
     "check:links": "node tools/check-links.mjs",
-    "check:glossary": "node tools/check-glossary.mjs"
+    "check:glossary": "node tools/check-glossary.mjs",
+    "check:gases": "node tools/check-gases.mjs"
   },
   "engines": {
     "node": ">=18"

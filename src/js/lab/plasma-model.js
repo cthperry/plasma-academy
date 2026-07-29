@@ -198,10 +198,28 @@
   }
 
   /**
+   * 有效抽速 [L/s]:S = Q / P
+   * 1 sccm = 760 Torr × 0.001 L / 60 s = 1/79.0 Torr·L/s —— 與 residenceTime
+   * 用的是同一個常數,所以恆有 τ = V / S,兩式不可能互相矛盾。
+   * 200 sccm、20 mTorr 應得 ≈127 L/s(docs 2.1.5)
+   */
+  function pumpingSpeed(pressure_mTorr, flow_sccm) {
+    var throughput = flow_sccm / 79.0; // Torr·L/s
+    return throughput / (pressure_mTorr / 1000);
+  }
+
+  /**
    * Knudsen 數
    */
   function knudsen(pressure_mTorr, dimension_cm, gasKey) {
     return meanFreePath(pressure_mTorr, gasKey) / dimension_cm;
+  }
+
+  /** Knudsen 數對應的流體區間(docs 2.1.4) */
+  function flowRegime(Kn) {
+    if (Kn < 0.01) return "黏滯流";
+    if (Kn <= 1) return "過渡流";
+    return "分子流";
   }
 
   // ---- Paschen ----------------------------------------------------------
@@ -401,7 +419,9 @@
     sheathThickness: sheathThickness,
     floatingPotentialDrop: floatingPotentialDrop,
     residenceTime: residenceTime,
+    pumpingSpeed: pumpingSpeed,
     knudsen: knudsen,
+    flowRegime: flowRegime,
     breakdownVoltage: breakdownVoltage,
     paschenMinimum: paschenMinimum,
     eedf: eedf,

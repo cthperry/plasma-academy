@@ -109,6 +109,24 @@ console.log("\n【2.1 真空與滯留時間】");
 near("n_gas @ 10 mTorr", M.gasDensity(10), 3.2e14, 10, " cm⁻³");
 near("τ (30 L, 20 mTorr, 200 sccm)", M.residenceTime(20, 30, 200), 0.24, 5, " s");
 near("τ (40 L, 30 mTorr, 300 sccm)", M.residenceTime(30, 40, 300), 0.316, 5, " s");
+near("有效抽速 (20 mTorr, 200 sccm)", M.pumpingSpeed(20, 200), 127, 3, " L/s");
+assert(
+  "τ = V / S 恆成立(兩式同源)",
+  Math.abs(M.residenceTime(20, 30, 200) - 30 / M.pumpingSpeed(20, 200)) < 1e-12
+);
+assert(
+  "流量加倍 → τ 減半、抽速加倍(壓力不變)",
+  Math.abs(M.residenceTime(20, 30, 400) / M.residenceTime(20, 30, 200) - 0.5) < 1e-12 &&
+    Math.abs(M.pumpingSpeed(20, 400) / M.pumpingSpeed(20, 200) - 2) < 1e-12
+);
+for (const [Kn, regime] of [
+  [0.001, "黏滯流"],
+  [0.2, "過渡流"],
+  [5, "分子流"],
+]) {
+  assert(`Kn = ${Kn} → ${regime}`, M.flowRegime(Kn) === regime, M.flowRegime(Kn));
+}
+near("蝕刻腔 Kn (10 mTorr, gap 3 cm, Ar)", M.knudsen(10, 3, "Ar"), 0.2, 25, "");
 
 console.log("\n【2.4 鞘層物理】");
 near("Bohm 速度 (Ar, Te=3)", M.bohmVelocity(3, 39.95), 2.69e3, 5, " m/s");
