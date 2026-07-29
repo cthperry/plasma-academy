@@ -289,6 +289,8 @@ async function main() {
   await mkdir(out, { recursive: true });
   await cp(path.join(root, "src", "assets"), path.join(out, "assets"), { recursive: true });
   await cp(path.join(root, "src", "data"), path.join(out, "assets", "data"), { recursive: true });
+  await mkdir(path.join(root, "dist", "server"), { recursive: true });
+  await cp(path.join(root, "worker", "index.js"), path.join(root, "dist", "server", "index.js"));
   try {
     await access(path.join(root, ".openai", "hosting.json"));
     await cp(path.join(root, ".openai"), path.join(out, ".openai"), { recursive: true });
