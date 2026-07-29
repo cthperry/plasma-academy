@@ -96,6 +96,24 @@ npm run dev        # 建置 + 本機伺服器 http://localhost:8080
 npm run check      # 完整品質門(物理模型 / 對比度 / 建置 / 死鏈 / 瀏覽器測試)
 ```
 
+### 部署
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fcthperry%2Fplasma-academy)
+
+`vercel.json` 已設定完成,匯入後不需要任何額外調整:
+
+| 設定 | 值 | 說明 |
+|---|---|---|
+| Install Command | `echo …`(跳過) | 網站本身零相依,建置只用 Node 內建模組 |
+| Build Command | `node build/build.mjs` | 產出 35 頁靜態 HTML |
+| Output Directory | `dist` | |
+| Framework Preset | None | 無框架 |
+
+安全標頭同樣寫在 `vercel.json`,CSP 與 `tools/serve.mjs` 本機伺服器完全一致 ——
+本機開發就會攔到違規,不會等到上線才發現。
+
+接上 Git 之後每次 `git push` 自動部署,PR 也會自動產生 preview URL。
+
 ### P0 已完成
 
 | 類別 | 內容 |
