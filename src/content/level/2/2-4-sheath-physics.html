@@ -1,0 +1,345 @@
+<!--meta
+{
+  "title": "2.4 鞘層物理進階 — Plasma Academy",
+  "description": "Bohm 判準與預鞘層、Child–Langmuir 鞘層厚度、自偏壓的完整圖像與面積比、IEDF 雙峰的成因與峰間距、碰撞型鞘層的低能尾巴。",
+  "type": "chapter",
+  "module": "2.4"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>2.4 鞘層物理進階</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2.5 小時</span>
+    <span>🔬 A13 互動元件</span>
+    <span>L2 中階</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="2.4">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說明 Bohm 判準的內容,以及預鞘層為什麼必須存在</span></label></li>
+    <li><label><input type="checkbox" /><span>用 Child–Langmuir 估算鞘層厚度並判斷鞘層內會不會碰撞</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋自偏壓的成因與面積比效應</span></label></li>
+    <li><label><input type="checkbox" /><span>說出 IEDF 雙峰的物理成因,以及峰間距由什麼決定</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋為什麼「只看平均離子能量」會誤判選擇比</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../1/1-5-sheath-intro/">1.5 鞘層入門</a>
+  <span>、</span>
+  <a href="../2-3-plasma-chemistry/">2.3 電漿化學基礎</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    <a href="../../1/1-5-sheath-intro/">1.5</a> 說了鞘層為什麼存在。這一章補齊三件事:
+    <strong>離子怎麼進去</strong>(Bohm 判準)、
+    <strong>鞘層有多厚</strong>(Child–Langmuir)、
+    <strong>離子帶著什麼能量出來</strong>(IEDF)。
+  </p>
+  <p>
+    最後一項是本章的重點,而且是現場最容易被誤用的。
+    打到晶圓的離子<strong>不是單一能量</strong>,而是一個分佈,通常還是<strong>雙峰</strong>的。
+    形狀由「離子穿越鞘層的時間」與「RF 週期」的比值決定。
+  </p>
+  <p>
+    <strong>只看平均能量會誤判。</strong>
+    兩個平均能量相同但分佈不同的製程,選擇比可以差兩倍 ——
+    因為選擇比取決於「多少離子落在 A 材料的閾值以上、B 材料的閾值以下」,
+    那是分佈的問題,不是平均值的問題。
+  </p>
+</div>
+
+<h2 id="bohm">2.4.1 Bohm 判準:進鞘層前就要先加速</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    u<sub>B</sub> = √( k T<sub>e</sub> / M )
+  </div>
+  <div class="pa-formula__name">Bohm 速度 —— 離子進入鞘層的最低速度</div>
+  <details>
+    <summary>展開:為什麼「最低」,以及預鞘層的角色</summary>
+    <div class="pa-formula__body">
+      <p>
+        鞘層要能穩定存在,離子密度在鞘層內必須<strong>下降得比電子慢</strong>。
+        推導後會得到一個條件:離子必須以至少 u_B 進入鞘層,否則解不存在 ——
+        物理上就是鞘層垮掉、電位分佈不成立。
+      </p>
+      <p>
+        但 bulk 裡的離子是冷的(T_i ≈ 0.03 eV),速度遠低於 u_B。
+        所以在 bulk 與鞘層之間必須存在一個<strong>弱電場區把離子預先加速</strong> ——
+        這就是 <span class="pa-term" data-term="預鞘層">預鞘層</span>(presheath)。
+      </p>
+      <p>
+        預鞘層的電位降約 <strong>T_e / 2</strong>,離子因此帶著約 ½T_e 的能量進入鞘層。
+        A06 的離子密度曲線用的就是這個進入能量。
+      </p>
+      <p>
+        <strong>Ar、T_e = 3 eV</strong>:u_B ≈ 2.69 × 10³ m/s。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    Γ<sub>i</sub> = 0.61 · n<sub>e</sub> · u<sub>B</sub>
+  </div>
+  <div class="pa-formula__name">Bohm 離子通量 —— 打到表面的離子有多少</div>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>條件</th><th class="is-num">n_e</th><th class="is-num">離子通量</th><th class="is-num">每個表面原子每秒被打幾次</th></tr></thead>
+      <tbody>
+        <tr><td>CCP</td><td class="is-num">10¹⁰ cm⁻³</td><td class="is-num">1.6 × 10¹⁵ cm⁻²s⁻¹</td><td class="is-num">約 2</td></tr>
+        <tr><td>ICP</td><td class="is-num">10¹² cm⁻³</td><td class="is-num">1.6 × 10¹⁷ cm⁻²s⁻¹</td><td class="is-num">約 230</td></tr>
+      </tbody>
+    </table>
+    <p class="pa-subtle">表面原子密度取 7 × 10¹⁴ cm⁻²。數值由 <code>tools/check-model.mjs</code> 驗證。</p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 這兩個數字說明了什麼</div>
+    <p>
+      CCP 下每個表面原子<strong>每秒才被打兩次</strong>;ICP 下是 230 次。
+      這就是為什麼 ICP 的蝕刻率可以高一到兩個數量級,
+      也是為什麼 ICP 的損傷與零件消耗要另外處理 ——
+      腔壁也在承受同一個量級的轟擊。
+    </p>
+  </div>
+</div>
+
+<h2 id="child-langmuir">2.4.2 Child–Langmuir:鞘層厚度</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    s =
+    <span class="frac"><span class="num">√2</span><span class="den">3</span></span>
+    λ<sub>D</sub>
+    <span>(</span>
+    <span class="frac"><span class="num">2 V₀</span><span class="den">T<sub>e</sub></span></span>
+    <span>)</span><sup>3/4</sup>
+    &nbsp;&nbsp;→&nbsp;&nbsp;
+    s ∝ V<sup>3/4</sup> · n<sub>e</sub><sup>−1/2</sup> · T<sub>e</sub><sup>−1/4</sup>
+  </div>
+  <div class="pa-formula__name">
+    <span class="pa-term" data-term="Child–Langmuir 定律">Child–Langmuir</span> 鞘層厚度
+  </div>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>條件</th><th class="is-num">鞘層 s</th><th class="is-num">10 mTorr 的 λ</th><th class="is-num">s / λ</th><th>後果</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>CCP,V = 500 V,n_e = 10¹⁰</td>
+          <td class="is-num">4.8 mm</td><td class="is-num">5.1 mm</td><td class="is-num">0.94</td>
+          <td><strong>約碰撞一次</strong> → IEDF 有低能尾巴</td>
+        </tr>
+        <tr>
+          <td>ICP,V = 100 V,n_e = 10¹²</td>
+          <td class="is-num">0.4 mm</td><td class="is-num">5.1 mm</td><td class="is-num">0.08</td>
+          <td>幾乎<span class="pa-term" data-term="無碰撞鞘層">無碰撞</span> → IEDF 乾淨</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 判斷準則就一句話:把 s 和 λ 擺在一起比</div>
+    <ul>
+      <li><span class="pa-eq">s / λ ≪ 1</span> → 無碰撞鞘層,離子乾淨地垂直入射</li>
+      <li><span class="pa-eq">s / λ ≳ 1</span> → <span class="pa-term" data-term="碰撞型鞘層">碰撞型鞘層</span>,出現低能離子與角度發散</li>
+    </ul>
+    <p>
+      <strong>ICP 方向性好,有一半原因是鞘層薄了十倍</strong>,碰撞機率跟著掉。
+      這也解釋了為什麼「同樣的偏壓,ICP 的 profile 就是比 CCP 直」。
+    </p>
+  </div>
+</div>
+
+<h2 id="self-bias">2.4.3 自偏壓的完整圖像</h2>
+
+<div class="pa-prose">
+  <p>
+    <a href="../../1/1-5-sheath-intro/#self-bias">1.5.3</a> 已經講過成因:
+    耦合電容不允許淨直流電流,而電子比離子容易進入電極,
+    所以電極必須自行降到一個負電位把多餘的電子擋回去。這裡補上兩件事。
+  </p>
+
+  <h3 id="area-ratio">面積比效應</h3>
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      <span class="frac"><span class="num">V₁</span><span class="den">V₂</span></span>
+      =
+      <span class="frac"><span class="num">A₂</span><span class="den">A₁</span></span>
+      <sup>q</sup>
+      &nbsp;&nbsp;,&nbsp;&nbsp; q ≈ 1 ~ 2.5(理想模型給 4)
+    </div>
+    <div class="pa-formula__name">小電極分到大電位</div>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>V_dc 就是離子撞擊能量。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        離子撞擊能量是<strong>鞘層電位降</strong>,約等於
+        <span class="pa-eq">V<sub>p</sub> + |V<sub>dc</sub>|</span> ——
+        V_p 那一項在低偏壓時佔比不小。而且更重要的是,
+        <strong>離子不是全部帶著這個能量抵達</strong>,而是一個分佈(見下一節)。
+        把 V_dc 直接當能量用,在低偏壓與高壓製程下都會失準。
+      </span>
+    </div>
+  </div>
+</div>
+
+<h2 id="iedf">2.4.4 IEDF:離子能量分佈,以及那個雙峰</h2>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    τ<sub>ion</sub> ≈ 3s / √( 2eV / M )
+  </div>
+  <div class="pa-formula__name">離子穿越鞘層的時間 —— IEDF 形狀的唯一控制參數</div>
+  <details>
+    <summary>展開:峰間距的來源與 ΔE ∝ 1/(f·s·√M)</summary>
+    <div class="pa-formula__body">
+      <p>
+        離子在鞘層裡走的期間,RF 電壓一直在振盪。
+        它<strong>感受到的是這段時間內的平均</strong>,而不是進入瞬間的值。
+        把正弦波在長度 τ 的窗內平均,得到的衰減因子是
+        <span class="pa-eq">|sinc(ωτ/2)|</span>:
+      </p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        ΔE = 2 · V<sub>rf</sub> · | sinc( π f τ<sub>ion</sub> ) |
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        因為 <span class="pa-eq">τ ∝ s·√M</span>,這正好給出課文的比例式:
+      </p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        ΔE ∝ 1 / ( f · s · √M )
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        <strong>頻率越低、鞘層越薄、離子越輕,雙峰分得越開。</strong>
+        A13 的直方圖會實際量出峰間距,與這條式子並列顯示。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>條件</th><th>離子看到什麼</th><th>IEDF</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="pa-eq">τ<sub>ion</sub> ≪ τ<sub>rf</sub></span>(低頻)</td>
+          <td>瞬時電壓</td><td><strong>寬雙峰</strong>,間距接近整個 RF 振幅</td>
+        </tr>
+        <tr>
+          <td><span class="pa-eq">τ<sub>ion</sub> ≈ τ<sub>rf</sub></span></td>
+          <td>部分平均</td><td>中等雙峰</td>
+        </tr>
+        <tr>
+          <td><span class="pa-eq">τ<sub>ion</sub> ≫ τ<sub>rf</sub></span>(高頻)</td>
+          <td>只有時間平均場</td><td><strong>窄單峰</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 雙峰為什麼是「雙」峰</div>
+    <p>
+      因為<strong>正弦波在極值附近是駐點,停留的時間最長</strong>。
+      離子進入鞘層的時刻是隨機的,所以它最容易「抽到」極大值或極小值附近的電壓 ——
+      分佈自然在兩端堆積,中間反而少。
+    </p>
+    <p>
+      這個形狀不是誰畫上去的,只要老實把離子丟進振盪電場裡積分就會出現。
+      A13 就是這樣做的。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 碰撞的影響:低能尾巴</div>
+    <p>
+      壓力升高 → 鞘層內發生<strong>電荷交換</strong>(快離子把電荷交給慢中性粒子,
+      自己變成快中性粒子飛走,原地留下一個慢離子)→
+      那個新生的慢離子只走完剩下的路程,能量低得多。
+    </p>
+    <p>
+      結果是 IEDF 長出一條<strong>低能尾巴</strong>。這些離子
+      <strong>沒有足夠能量做離子輔助蝕刻</strong>,只會增加等向性成分 ——
+      它們對速率沒貢獻,對 profile 卻有害。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a13">🔬 A13 IEDF 雙峰模擬</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A13">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A13</span>
+    <span class="pa-lab__title">IEDF 雙峰與低能尾巴</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:離子穿越鞘層期間 RF 電壓持續振盪,
+      它感受到的是這段時間的平均。穿越得快(低頻)保留瞬時值 → 寬雙峰;
+      穿越得慢(高頻)平均掉 → 窄單峰。峰間距 ΔE = 2·V_rf·|sinc(πfτ)|,
+      因此 ΔE ∝ 1/(f·s·√M)。壓力升高造成電荷交換,長出低能尾巴。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 為什麼工程師要在乎 IEDF</div>
+  <ul>
+    <li><strong>選擇比取決於分佈,不是平均值</strong> —— 取決於有多少離子落在 A 材料的濺射閾值以上、B 材料的閾值以下</li>
+    <li><strong>兩個平均能量相同的製程,選擇比可以差兩倍</strong>,只因為分佈不同</li>
+    <li>
+      所以先進製程用<strong>脈衝偏壓</strong>或<strong>方波偏壓(tailored waveform)</strong>
+      刻意把 IEDF 壓成單能量峰 —— 那是 <a href="../../4/4-4-advanced-tech/">L4 4.4</a> 的主題
+    </li>
+  </ul>
+  <p>
+    這也是為什麼多頻 CCP 會流行:<strong>高頻管密度、低頻管能量分佈</strong>,
+    兩者分開才能同時要速率與選擇比。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>為什麼離子進入鞘層前必須先被加速到 u_B?那個加速發生在哪裡?</li>
+    <li>Ar、T_e = 3 eV、n_e = 10¹¹ cm⁻³,算出 u_B 與 Bohm 通量。</li>
+    <li>偏壓從 200 V 加到 800 V,鞘層厚度變幾倍?這對鞘層內的碰撞機率是好是壞?</li>
+    <li>用 sinc 因子解釋:為什麼 60 MHz 的 IEDF 是窄單峰,而 400 kHz 是寬雙峰?</li>
+    <li>某製程從 Ar 換成 He 當主氣體,偏壓與頻率都不變。IEDF 的峰間距會變寬還是變窄?為什麼?</li>
+    <li>壓力從 5 mTorr 升到 50 mTorr,平均離子能量下降了 30 %,但蝕刻率下降超過一半。用低能尾巴解釋這個不成比例的落差。</li>
+    <li>你的機台只顯示 V_dc 一個數字。列出兩件「V_dc 相同但製程結果不同」的可能情況。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 6、§11.1</li>
+    <li>Chabert &amp; Braithwaite, <em>Physics of Radio-Frequency Plasmas</em>, Ch. 4–5</li>
+    <li>Kawamura et al., <em>Ion energy distributions in rf sheaths</em>, Plasma Sources Sci. Technol. 8, R45 (1999)</li>
+  </ul>
+</div>

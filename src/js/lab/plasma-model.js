@@ -215,6 +215,31 @@
     return meanFreePath(pressure_mTorr, gasKey) / dimension_cm;
   }
 
+  /**
+   * 離子穿越鞘層的時間 [s]:τ_ion ≈ 3s / √(2eV/M)(docs 2.4.4)
+   * s 以 mm 給,V 以 V 給,M 以 amu 給。
+   */
+  function ionTransitTime(sheath_mm, V_volt, M_amu) {
+    var v = Math.sqrt((2 * C.e * V_volt) / (M_amu * C.amu));
+    return (3 * (sheath_mm / 1000)) / v;
+  }
+
+  /**
+   * IEDF 的峰間距 [eV](docs 2.4.4)
+   *
+   * 離子沿路徑感受到的 RF 電壓被平均掉,平均化因子是 sinc(ωτ/2):
+   *   τ ≪ T → sinc → 1 → 完整的 RF 振幅都留著 → 寬雙峰
+   *   τ ≫ T → sinc → 0 → 只剩時間平均 → 窄單峰
+   * 由於 τ ∝ s·√M,這正好給出課文的 ΔE ∝ 1/(f·s·√M)。
+   */
+  function iedfSpread(f_Hz, sheath_mm, V_dc, M_amu, ripple) {
+    var rip = ripple == null ? 0.35 : ripple;
+    var tau = ionTransitTime(sheath_mm, V_dc, M_amu);
+    var x = Math.PI * f_Hz * tau; // = ωτ/2
+    var sinc = x === 0 ? 1 : Math.sin(x) / x;
+    return 2 * V_dc * rip * Math.abs(sinc);
+  }
+
   /** Knudsen 數對應的流體區間(docs 2.1.4) */
   function flowRegime(Kn) {
     if (Kn < 0.01) return "黏滯流";
@@ -422,6 +447,8 @@
     pumpingSpeed: pumpingSpeed,
     knudsen: knudsen,
     flowRegime: flowRegime,
+    ionTransitTime: ionTransitTime,
+    iedfSpread: iedfSpread,
     breakdownVoltage: breakdownVoltage,
     paschenMinimum: paschenMinimum,
     eedf: eedf,

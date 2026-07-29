@@ -151,6 +151,43 @@ assert(
   M.sheathThickness(1e10, 3, 500) / M.sheathThickness(1e12, 3, 100) > 8
 );
 
+console.log("\n【2.4.4 IEDF — A13 的驗收條件】");
+{
+  const sheath = (V) => M.sheathThickness(1e10, 3, V);
+  const spread = (f, V, amu) => M.iedfSpread(f, sheath(V), V, amu);
+  // ΔE ∝ 1/(f·s·√M) —— 三個變數各驗一次(在 sinc 尚未飽和的區間)
+  assert(
+    "ΔE 隨頻率上升而變窄(0.4 → 60 MHz)",
+    spread(0.4e6, 400, 39.95) > spread(2e6, 400, 39.95) &&
+      spread(2e6, 400, 39.95) > spread(13.56e6, 400, 39.95) &&
+      spread(13.56e6, 400, 39.95) > spread(60e6, 400, 39.95),
+    [0.4e6, 2e6, 13.56e6, 60e6].map((f) => spread(f, 400, 39.95).toFixed(0)).join(" > ") + " eV"
+  );
+  assert(
+    "ΔE 隨離子質量上升而變窄(同頻率)",
+    spread(13.56e6, 400, 1.008) > spread(13.56e6, 400, 39.95) &&
+      spread(13.56e6, 400, 39.95) > spread(13.56e6, 400, 131.3),
+    `H⁺ ${spread(13.56e6, 400, 1.008).toFixed(0)} > Ar⁺ ${spread(13.56e6, 400, 39.95).toFixed(0)} > Xe⁺ ${spread(13.56e6, 400, 131.3).toFixed(0)} eV`
+  );
+  assert(
+    "低頻極限:離子看到完整 RF 振幅(sinc → 1)",
+    Math.abs(spread(0.05e6, 400, 39.95) / (2 * 400 * 0.35) - 1) < 0.02,
+    `${spread(0.05e6, 400, 39.95).toFixed(0)} eV vs 上限 ${(2 * 400 * 0.35).toFixed(0)} eV`
+  );
+  assert(
+    "高頻極限:雙峰塌成單峰(ΔE < 2 % 的 V_dc)",
+    spread(60e6, 400, 39.95) < 400 * 0.02,
+    `${spread(60e6, 400, 39.95).toFixed(1)} eV`
+  );
+  near(
+    "Ar⁺ 穿越 400 V 鞘層的時間",
+    M.ionTransitTime(sheath(400), 400, 39.95) * 1e9,
+    277,
+    15,
+    " ns"
+  );
+}
+
 console.log("\n【2.3 EEDF 與速率係數】");
 const k2 = M.rateCoefficient(2, 15.76, "maxwellian");
 const k3 = M.rateCoefficient(3, 15.76, "maxwellian");
