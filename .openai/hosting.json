@@ -1,12 +1,3 @@
 {
-  "project_id": "appgprj_6a69443bcaf08191b2d5014509f64348",
-  "title": "Plasma Academy P0",
-  "build": {
-    "command": "npm run build",
-    "output_dir": "dist/client"
-  },
-  "worker": {
-    "entrypoint": "worker/index.js",
-    "assets_dir": "dist/client"
-  }
+  "project_id": "appgprj_6a69443bcaf08191b2d5014509f64348"
 }
