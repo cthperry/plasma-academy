@@ -1,0 +1,262 @@
+<!--meta
+{
+  "title": "2.6 參數因果鏈 — Plasma Academy",
+  "description": "五大旋鈕與 gap、壓力與 source/bias 功率的完整因果鏈、trade-off 矩陣,以及 L2 的收束:虛擬機台控制面板。",
+  "type": "chapter",
+  "module": "2.6"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>2.6 參數因果鏈</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2.0 小時</span>
+    <span>🔬 A16 互動元件</span>
+    <span>L2 中階 · ★ 收束章</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="2.6">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>列出五大旋鈕(加上 gap)各自直接影響什麼</span></label></li>
+    <li><label><input type="checkbox" /><span>畫出壓力、source、bias 三條完整的因果鏈,含反向作用</span></label></li>
+    <li><label><input type="checkbox" /><span>說明為什麼「加功率」的第一效果是加自由基而不是加離子能量</span></label></li>
+    <li><label><input type="checkbox" /><span>用 trade-off 矩陣判斷一個調整會犧牲什麼</span></label></li>
+    <li><label><input type="checkbox" /><span>在虛擬機台上同時達成速率、選擇比與 profile 三個目標</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <span>L2 全部 —— 本章是收束章,2.1 到 2.5 的結論在這裡合流</span>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    製程工程師手上其實只有<strong>五、六個旋鈕</strong>。難的不是旋鈕多,
+    而是<strong>每一個旋鈕都同時牽動好幾條鏈,而且有些是反向的</strong>。
+  </p>
+  <p>
+    這一章把每條鏈攤開來。最重要的兩個結論:
+  </p>
+  <ul>
+    <li><strong>Source power 加的是自由基,不是離子能量。</strong>T_e 幾乎不動 —— 想加能量請動 bias。</li>
+    <li><strong>Bias 是最危險的旋鈕。</strong>提升蝕刻率最快,但選擇比、側壁保護、損傷全部跟著惡化。</li>
+  </ul>
+  <p>
+    最後用 A16 虛擬機台把整套跑一遍:調任一旋鈕,右側會顯示這條鏈上
+    <strong>實際變了多少</strong> —— 不是預先寫死的箭頭,是模型真的算出來的。
+  </p>
+</div>
+
+<h2 id="knobs">2.6.1 五大旋鈕</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>旋鈕</th><th>直接影響</th><th class="is-num">典型範圍</th></tr></thead>
+      <tbody>
+        <tr><td><strong>壓力</strong></td><td>n_gas、λ、鞘層碰撞、τ</td><td class="is-num">5–100 mTorr</td></tr>
+        <tr><td><strong>Source power</strong></td><td>n_e、自由基密度</td><td class="is-num">200–2000 W</td></tr>
+        <tr><td><strong>Bias power</strong></td><td>離子能量、鞘層厚度</td><td class="is-num">0–500 W</td></tr>
+        <tr><td><strong>氣體流量與配比</strong></td><td>化學組成、τ、F/C</td><td class="is-num">10–500 sccm</td></tr>
+        <tr><td><strong>溫度</strong></td><td>表面反應速率、鈍化厚度、產物再沉積</td><td class="is-num">20–80 °C</td></tr>
+        <tr><td><strong>Gap</strong>(常被忽略的第六個)</td><td>鞘層佔比、氣體停留、均勻度、T_e</td><td class="is-num">1–5 cm</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 id="chain-pressure">2.6.2 完整因果鏈:壓力</h2>
+
+<div class="pa-prose">
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>n_gas ↑</strong> → 自由基密度 ↑ → 化學蝕刻率 ↑</div>
+    <div class="pa-chain__step"><strong>λ ↓</strong> → 鞘層內碰撞 ↑ → IEDF 低能尾巴 ↑ → 方向性 ↓ → undercut / bowing</div>
+    <div class="pa-chain__step"><strong>T_e ↓</strong> → 解離效率 ↓ ——<strong>反向作用</strong></div>
+    <div class="pa-chain__step"><strong>τ ↑</strong> → 產物滯留 ↑ → 再沉積 ↑ → 聚合物殘留</div>
+    <div class="pa-chain__step pa-chain__step--end">電漿趨向侷限於中心 → 均勻度改變</div>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼壓力總是有最佳點</div>
+    <p>
+      注意上面第一條與第三條<strong>方向相反</strong>:壓力上升讓中性粒子變多(好),
+      但同時把 T_e 壓下來、解離效率變差(壞)。
+    </p>
+    <p>
+      <strong>淨效果不是單向的</strong>,所以壓力從來不是「越低越好」或「越高越好」,
+      而是有一個最佳點 —— 而且那個最佳點會隨其他旋鈕移動。
+      這是壓力 DOE 幾乎一定要做的原因。
+    </p>
+  </div>
+</div>
+
+<h2 id="chain-source">2.6.3 完整因果鏈:Source power</h2>
+
+<div class="pa-prose">
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>n_e ↑</strong> → 離子通量 ↑ → 蝕刻率 ↑</div>
+    <div class="pa-chain__step"><strong>n_e ↑</strong> → 自由基密度 ↑ → 蝕刻率 ↑</div>
+    <div class="pa-chain__step"><strong>T_e 幾乎不變</strong>(由粒子平衡鎖定,見 <a href="../2-3-plasma-chemistry/">2.3</a>)</div>
+    <div class="pa-chain__step">鞘層變薄(s ∝ n_e<sup>−1/2</sup>)→ 方向性略改善</div>
+    <div class="pa-chain__step">解離度 ↑ → 有效 F/C 上升(對氟碳氣體)→ 聚合減少 → <strong>選擇比 ↓</strong></div>
+    <div class="pa-chain__step pa-chain__step--end">熱負荷 ↑ → 腔壁與晶圓溫度 ↑ → 二次效應</div>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>加功率會讓電子變熱,所以反應更劇烈。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        <strong>T_e 幾乎不動。</strong>電漿會自我調節把它鎖在 2–5 eV
+        (<a href="../2-3-plasma-chemistry/#rate">2.3.1</a>)。
+        加功率增加的是<strong>電子的數量</strong>,不是每個電子的能量 ——
+        所以第一效果是<strong>自由基變多</strong>。
+        想加離子能量,唯一的旋鈕是 bias。這一點可以在 A16 上直接驗證。
+      </span>
+    </div>
+  </div>
+</div>
+
+<h2 id="chain-bias">2.6.4 完整因果鏈:Bias power</h2>
+
+<div class="pa-prose">
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>V_dc ↑</strong> → 離子能量 ↑ → 物理濺鍍 ↑ → 蝕刻率 ↑</div>
+    <div class="pa-chain__step">離子能量 ↑ → 對光阻與遮罩的濺鍍 ↑ → <strong>選擇比 ↓</strong></div>
+    <div class="pa-chain__step">離子能量 ↑ → 鈍化層被打穿 → 側壁保護 ↓ → <strong>bowing 風險</strong></div>
+    <div class="pa-chain__step">鞘層變厚(s ∝ V<sup>3/4</sup>)→ 鞘層內碰撞次數 ↑ → 高壓時方向性反而略降</div>
+    <div class="pa-chain__step">深孔底部帶電效應 → notching / twisting 風險 ↑</div>
+    <div class="pa-chain__step pa-chain__step--end">電漿誘發損傷 ↑(<a href="../../4/4-3-plasma-damage/">L4 4.3</a>)</div>
+  </div>
+
+  <div class="pa-note pa-note--safety">
+    <div class="pa-note__title">🔴 Bias 是最危險的旋鈕</div>
+    <p>
+      它提升蝕刻率最快 —— 所以「刻不動就加 bias」很誘人。
+      但上面六條鏈裡,<strong>只有第一條是你要的</strong>,其餘五條全是副作用。
+    </p>
+    <p>
+      這就是為什麼 <a href="../../1/1-6-process-map/#oe">1.6</a> 那支 recipe 的
+      over etch 步刻意把 bias <strong>降下來</strong>:那一步的目標變成保護下層,
+      速率反而不重要了。
+    </p>
+  </div>
+</div>
+
+<h2 id="matrix">2.6.5 Trade-off 矩陣</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead>
+        <tr>
+          <th>調整</th><th>蝕刻率</th><th>選擇比</th><th>方向性</th><th>均勻度</th><th>損傷</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>壓力 ↑</strong></td><td>↑(化學)</td><td>↑</td><td><strong>↓</strong></td><td>視腔體</td><td>↓</td></tr>
+        <tr><td><strong>Source ↑</strong></td><td><strong>↑↑</strong></td><td>↓</td><td>略 ↑</td><td>視設計</td><td>↑</td></tr>
+        <tr><td><strong>Bias ↑</strong></td><td><strong>↑↑</strong></td><td><strong>↓↓</strong></td><td>↑ 後 ↓</td><td>—</td><td><strong>↑↑</strong></td></tr>
+        <tr><td><strong>F/C ↓</strong>(加聚合)</td><td>↓</td><td><strong>↑↑</strong></td><td>↑</td><td>—</td><td>—</td></tr>
+        <tr><td><strong>溫度 ↑</strong></td><td>↑(化學為主時)</td><td>↓</td><td>↓</td><td>視均溫</td><td>—</td></tr>
+        <tr><td><strong>Gap ↓</strong></td><td>↑</td><td>—</td><td>—</td><td><strong>改變</strong></td><td>↑</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 這張表最重要的一列</div>
+    <p>
+      看 <strong>Bias ↑</strong> 那一列:速率 ↑↑,但選擇比 ↓↓、損傷 ↑↑。
+      <strong>沒有任何一格是免費的。</strong>
+    </p>
+    <p>
+      相對地,<strong>F/C ↓</strong> 那一列幾乎全是好的 —— 代價只有速率。
+      所以當你需要選擇比時,<strong>先想化學(改氣體),再想物理(改 bias)</strong>。
+      這個順序能省下很多不必要的損傷。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a16">🔬 A16 虛擬機台控制面板</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A16">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A16</span>
+    <span class="pa-lab__title">虛擬機台 —— L2 的收束</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。六個旋鈕驅動 0-D 全域模型與輪廓引擎,
+      輸出 n_e、T_e、V_dc、鞘層厚度、蝕刻率、選擇比與晶圓剖面。
+      核心觀察:Source power 從 200 W 加到 2000 W 時 T_e 變化不到 10 %,
+      但 n_e 跟著功率走 —— 功率調的是密度,不是溫度。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 A16 的因果鏈追蹤不是裝飾</div>
+  <p>
+    右側顯示的百分比是<strong>模型真的算出來的差值</strong>,不是預先寫死的箭頭。
+    所以當它說「T_e 幾乎不變」時,那是 0-D 全域模型的粒子平衡自己解出來的結果,
+    不是我們宣稱的。
+  </p>
+  <p>
+    同樣地,輪廓是 <a href="../2-2-gas-selection/#lab-a10">A10</a> 那支輪廓引擎跑出來的:
+    通量、鈍化、移除三條規則,沒有為任何一種缺陷寫規則。
+    你在這裡看到的 undercut 或 etch stop,都是這些式子的自然結果。
+  </p>
+</div>
+
+<h2 id="l2-wrap">2.6.6 L2 到這裡收束</h2>
+
+<div class="pa-prose">
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>2.1</strong> 氣體怎麼進來、待多久、怎麼被抽走 —— 流量與壓力是兩個獨立旋鈕</div>
+    <div class="pa-chain__step"><strong>2.2</strong> 氣體選用四問,F/C 比與離子輔助聚合物移除 —— 異向性與選擇比是同一個機制</div>
+    <div class="pa-chain__step"><strong>2.3</strong> 速率是 σ 與 EEDF 的重疊積分 —— 功率調密度,不調溫度</div>
+    <div class="pa-chain__step"><strong>2.4</strong> Bohm、Child–Langmuir、IEDF —— 只看平均能量會誤判</div>
+    <div class="pa-chain__step"><strong>2.5</strong> CCP/ICP 的耦合差異、E/H 跳變、阻抗匹配</div>
+    <div class="pa-chain__step pa-chain__step--end"><strong>2.6</strong> 六個旋鈕、六條因果鏈、一張 trade-off 矩陣</div>
+  </div>
+
+  <p>
+    L3 會把這套架構用到真實的製程與缺陷上:蝕刻機制(3.1)、
+    主要應用(3.2)、<a href="../../3/3-3-defect-atlas/">缺陷圖鑑(3.3)</a>、
+    沉積(3.4)、PVD(3.5)、均勻度與腔體工程(3.6)。
+  </p>
+  <p>
+    <strong>那時候你會發現,每一種缺陷都可以回推到這一章的某一條鏈。</strong>
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>為什麼加 source power 不會讓 T_e 明顯上升?那 T_e 由什麼決定?</li>
+    <li>寫出壓力上升的五條影響,並指出哪一條與其他方向相反。</li>
+    <li>某製程蝕刻率不足。列出三個可調方向,並各說出它會犧牲什麼。</li>
+    <li>為什麼說「需要選擇比時先想化學再想物理」?</li>
+    <li>bias 加倍,鞘層厚度變幾倍?這對高壓製程的方向性是好是壞?</li>
+    <li>在 A16 上找出一組同時滿足「蝕刻率 > 250、選擇比 > 20、側壁垂直」的參數,並說明你為什麼那樣調。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 10(全域模型)</li>
+    <li>May &amp; Spanos, <em>Fundamentals of Semiconductor Manufacturing and Process Control</em>, Ch. 5–6(DOE 與製程窗)</li>
+    <li>Donnelly &amp; Kornblit, <em>Plasma etching: Yesterday, today, and tomorrow</em>, J. Vac. Sci. Technol. A 31, 050825 (2013)</li>
+  </ul>
+</div>

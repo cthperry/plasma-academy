@@ -1287,3 +1287,57 @@
 @media (max-width: 640px) {
   .pa-tree__vol-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* --------------------------------------------------------------------------
+   15. 因果鏈面板(A16)
+   -------------------------------------------------------------------------- */
+
+.pa-chainpanel {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+  padding: var(--pa-space-4);
+  font-size: var(--pa-text-sm);
+  line-height: 1.55;
+}
+
+.pa-chainpanel__head {
+  font-weight: 700;
+  padding-bottom: var(--pa-space-2);
+  margin-bottom: var(--pa-space-2);
+  border-bottom: 1px solid var(--pa-border);
+}
+
+.pa-chainpanel__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--pa-space-2);
+  padding: var(--pa-space-2) 0;
+  border-top: 1px solid var(--pa-border);
+}
+
+.pa-chainpanel__row:first-of-type {
+  border-top: none;
+}
+
+.pa-chainpanel__delta {
+  margin-left: auto;
+  flex: none;
+  font-size: var(--pa-text-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.pa-chainpanel__delta.is-up { color: var(--pa-danger); }
+.pa-chainpanel__delta.is-down { color: var(--pa-primary); }
+.pa-chainpanel__delta.is-flat { color: var(--pa-text-muted); }
+
+.pa-chainpanel__note {
+  margin-top: var(--pa-space-3);
+  padding-top: var(--pa-space-3);
+  border-top: 1px solid var(--pa-border);
+  color: var(--pa-text-muted);
+}
