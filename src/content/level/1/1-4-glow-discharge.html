@@ -1,0 +1,350 @@
+<!--meta
+{
+  "title": "1.4 輝光放電與點火 — Plasma Academy",
+  "description": "Townsend 雪崩與二次電子如何讓放電自持、Paschen 定律兩支的物理成因、DC 輝光的分區,以及為什麼製程要用 RF 而不是 DC。",
+  "type": "chapter",
+  "module": "1.4"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>1.4 輝光放電與點火</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 1.5 小時</span>
+    <span>🔬 A04 · A05 互動元件</span>
+    <span>L1 初階</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="1.4">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說明電子雪崩如何導致崩潰,以及為什麼光有雪崩不足以自持</span></label></li>
+    <li><label><input type="checkbox" /><span>讀 Paschen 曲線,解釋為什麼太低壓與太高壓都點不著</span></label></li>
+    <li><label><input type="checkbox" /><span>認出 DC 輝光的分區並說出各區在做什麼</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋為什麼半導體製程必須用 RF 而不能只用 DC</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../1-3-collisions/">1.3 碰撞與平均自由徑</a>
+  <span>—— 需要 λ 與碰撞截面的概念</span>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    點火分兩件事。第一件是<strong>雪崩</strong>:一個種子電子被電場加速、撞出第二個,兩個各自再撞 ——
+    電子數呈指數成長。但雪崩衝到陽極就結束了,<strong>光有雪崩不會自持</strong>。
+  </p>
+  <p>
+    第二件才是關鍵:離子回頭撞陰極,以機率 γ 打出<strong>二次電子</strong>,補回種子。
+    這條回路接得起來,放電才維持得住。所以「換了 PM 之後同一支 recipe 點不著」很常見 ——
+    電極材質或表面狀態變了,γ 就變了。
+  </p>
+  <p>
+    把自持條件代進去,會得到一個只依賴 <strong>p·d 乘積</strong>的崩潰電壓 —— 這就是
+    <span class="pa-term" data-term="Paschen 定律">Paschen 定律</span>,曲線呈 U 形。
+    製程壓力通常落在<strong>左支</strong>,那裡崩潰電壓極高,這正是點火時要先衝壓力再降下來的原因。
+  </p>
+</div>
+
+<h2 id="avalanche">1.4.1 Townsend 雪崩</h2>
+
+<div class="pa-prose">
+  <p>
+    一個種子電子被電場加速 → 游離出第二個 → 兩個各自再游離 → 指數成長:
+  </p>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">n(d) = n₀ · e<sup>αd</sup></div>
+  <div class="pa-formula__name">Townsend 雪崩(第一係數 α)</div>
+  <details>
+    <summary>展開:α 的物理意義與經驗式</summary>
+    <div class="pa-formula__body">
+      <dl class="pa-symbols">
+        <dt>α</dt><dd>第一 Townsend 係數 [cm⁻¹] —— 電子每前進 1 cm 產生幾個電子離子對</dd>
+        <dt>d</dt><dd>電極間距 [cm]</dd>
+        <dt>n₀</dt><dd>起始種子電子數</dd>
+      </dl>
+      <p style="margin-top:var(--pa-space-3)">常用的經驗式:</p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        α / p = A · exp( −B / (E/p) )
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        注意 α 只依賴<strong>約化電場 E/p</strong>,不是單獨的 E。
+        物理上很直觀:E 決定電子在一段自由程內被加速到多少能量,而自由程長度由 p 決定 ——
+        兩者一起才決定「撞上去的時候有沒有足夠能量游離」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <h3 id="self-sustain">但光靠 α 不會自持</h3>
+
+  <p>
+    雪崩衝到陽極就被收走了。要持續放電,必須有機制<strong>補回種子電子</strong> ——
+    這就是<strong>第二 Townsend 係數 γ</strong>:離子撞擊陰極打出二次電子。
+  </p>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">γ ( e<sup>αd</sup> − 1 ) = 1</div>
+  <div class="pa-formula__name">自持條件(崩潰條件)</div>
+  <details>
+    <summary>展開:這條式子怎麼讀</summary>
+    <div class="pa-formula__body">
+      <p>
+        一個種子電子引發的雪崩,沿途產生 <span class="pa-eq">e<sup>αd</sup> − 1</span> 個離子。
+        這些離子回頭撞陰極,每個以機率 γ 打出一個二次電子。
+      </p>
+      <p>
+        若打出的二次電子<strong>剛好等於 1</strong>,下一輪雪崩規模就和這一輪一樣 —— 放電剛好維持。
+        大於 1 就成長到崩潰,小於 1 就衰減熄滅。
+      </p>
+      <p>
+        <strong>典型值</strong>:金屬電極的 γ 約 0.01–0.2,依材料與表面狀態而定。
+        氧化層、聚合物沉積都會顯著改變它。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 工程師直覺:γ 是會變的</div>
+  <p>
+    γ 依<strong>陰極材料與表面狀態</strong>而定。腔體零件換過、電極被鍍上一層聚合物、
+    或是陽極處理面被消耗掉之後,γ 就變了,<strong>點火電壓跟著變</strong>。
+  </p>
+  <p>
+    「同一支 recipe,換了 PM 之後點不著」——這是最常見的原因之一。
+    通常的處理是把點火步的壓力或功率加大,但根因在表面。
+  </p>
+</div>
+
+<h2 id="lab-a04">🔬 A04 電子雪崩</h2>
+
+<div class="pa-lab" data-lab="A04">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A04</span>
+    <span class="pa-lab__title">電子雪崩與自持條件</span>
+  </div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:電子雪崩沿途產生離子,離子撞陰極以機率 γ 打出二次電子。
+      只有當 γ(e^αd − 1) ≥ 1 時,放電才能自我維持。把 γ 設為 0,雪崩衝到陽極後就熄滅。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="paschen">1.4.2 Paschen 定律</h2>
+
+<div class="pa-prose">
+  <p>把自持條件代入 α 的經驗式,整理之後會得到一件很漂亮的事:</p>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    V<sub>b</sub> =
+    <span class="frac"><span class="num">B · pd</span><span class="den">ln(A · pd) − ln( ln(1 + 1/γ) )</span></span>
+  </div>
+  <div class="pa-formula__name">Paschen 定律 —— 崩潰電壓只依賴 p·d 乘積</div>
+  <details>
+    <summary>展開:最小值的解析解</summary>
+    <div class="pa-formula__body">
+      <p>對 pd 微分求極值,可得曲線最小值的位置與高度:</p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        (pd)<sub>min</sub> = <span class="frac"><span class="num">e</span><span class="den">A</span></span> ln(1 + 1/γ)
+        &nbsp;&nbsp;,&nbsp;&nbsp;
+        V<sub>min</sub> = <span class="frac"><span class="num">e · B</span><span class="den">A</span></span> ln(1 + 1/γ)
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        (此處的 e 是自然對數底 2.718,不是電荷。)
+      </p>
+      <p>
+        本站互動元件的 A、B 係數就是由下表的 (pd<sub>min</sub>, V<sub>min</sub>, γ) 反推出來的 ——
+        這樣曲線最小值<strong>必然</strong>等於表格值,程式與課文不可能對不上。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th class="is-num">(p·d)<sub>min</sub> (Torr·cm)</th><th class="is-num">V<sub>min</sub> (V)</th></tr></thead>
+      <tbody>
+        <tr><td>Ar</td><td class="is-num">0.9</td><td class="is-num">137</td></tr>
+        <tr><td>He</td><td class="is-num">4.0</td><td class="is-num">156</td></tr>
+        <tr><td>N₂</td><td class="is-num">0.67</td><td class="is-num">251</td></tr>
+        <tr><td>Air</td><td class="is-num">0.57</td><td class="is-num">327</td></tr>
+        <tr><td>O₂</td><td class="is-num">0.70</td><td class="is-num">450</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="two-branches">兩支各自的物理</h3>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>分支</th><th>條件</th><th>為什麼難點火</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>左支</strong></td>
+          <td>pd 小(低壓或窄間距)</td>
+          <td>λ 太長,電子還沒撞到任何分子就抵達陽極 —— <strong>碰撞次數不夠</strong></td>
+        </tr>
+        <tr>
+          <td><strong>右支</strong></td>
+          <td>pd 大(高壓或寬間距)</td>
+          <td>λ 太短,電子在兩次碰撞間累積不到游離能 —— <strong>單次能量不足</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 三個現場應用</div>
+    <ol>
+      <li>
+        <strong>為什麼點火要先衝壓力再降到製程壓力</strong> ——
+        10 mTorr、3 cm 的 pd 只有 0.03 Torr·cm,深在左支,崩潰電壓高到不合理。
+        先把壓力拉到接近谷底再點,點著之後才降回製程壓力。
+      </li>
+      <li>
+        <strong>腔體裡意外的窄縫或大空腔會出現異常放電</strong> ——
+        那些位置的 pd 剛好落在谷底附近,而它們承受的電壓和主放電區一樣。
+      </li>
+      <li>
+        <strong>真空管路裡有時會看到不該有的輝光</strong> —— 同樣的道理。
+      </li>
+    </ol>
+  </div>
+
+  <div class="pa-note pa-note--safety">
+    <div class="pa-note__title">🔴 安全提醒</div>
+    <p>
+      高壓區(RF 匹配盒內、氣體管路法蘭、饋入端絕緣件)若 pd 落在 Paschen 谷底附近,
+      會導致<strong>寄生放電與電弧</strong>。這是設備損壞與微粒的常見來源,也是為什麼
+      這些位置要嘛抽到夠低壓、要嘛灌到接近大氣 —— <strong>就是不能停在谷底</strong>。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a05">🔬 A05 Paschen 曲線</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A05">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A05</span>
+    <span class="pa-lab__title">Paschen 曲線互動</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:崩潰電壓只依賴 p·d 乘積,曲線呈 U 形。
+      左支因碰撞次數不足、右支因單次能量不足,兩邊都需要更高的電壓才能點火。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="glow-regions">1.4.3 DC 輝光的分區</h2>
+
+<div class="pa-prose">
+  <p>直流輝光放電從陰極到陽極有一組固定的明暗分區,每一區都在做不同的事:</p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>區域</th><th>外觀</th><th>在做什麼</th></tr></thead>
+      <tbody>
+        <tr><td>Aston 暗區</td><td>暗</td><td>二次電子剛出發,能量太低,激發不動</td></tr>
+        <tr><td>陰極輝光</td><td>亮</td><td>電子開始有能量,激發中性粒子</td></tr>
+        <tr><td><strong>Crookes 暗區</strong>(陰極暗區)</td><td>暗</td><td><strong>電位降幾乎全落在這裡</strong>;電子能量過高,激發截面反而下降</td></tr>
+        <tr><td><strong>負輝光</strong></td><td><strong>最亮</strong></td><td>電子減速到激發截面的峰值能量 → 大量發光</td></tr>
+        <tr><td>Faraday 暗區</td><td>暗</td><td>電子能量耗盡</td></tr>
+        <tr><td>正柱區</td><td>均勻微亮</td><td>準中性、電場很小 —— 日光燈的主體</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 這張表對 RF 製程的意義</div>
+    <p>
+      RF 電漿雖然沒有這麼完整的分區,但有兩個直接對應:
+    </p>
+    <ul>
+      <li><strong><span class="pa-term" data-term="鞘層">鞘層</span> ≈ Crookes 暗區</strong> —— 電位降集中處、暗</li>
+      <li><strong>bulk ≈ 負輝光 / 正柱區</strong> —— 準中性、亮</li>
+    </ul>
+    <p>
+      所以隔著 viewport 看電極表面附近那一層<strong>暗帶</strong>,那就是鞘層,
+      厚度可以目視粗估。這是最便宜的鞘層診斷。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>越暗的地方電子能量越低。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        Crookes 暗區正好相反 —— 那裡的電子<strong>能量最高</strong>,但因為
+        <a href="../1-3-collisions/#cross-section">激發截面在高能量時反而下降</a>(1.3.3),
+        所以不發光。亮暗反映的是<strong>激發速率</strong>,不是能量高低。
+      </span>
+    </div>
+  </div>
+</div>
+
+<h2 id="dc-to-rf">1.4.4 從 DC 到 RF:為什麼製程非用 RF 不可</h2>
+
+<div class="pa-prose">
+  <p>
+    DC 放電有一個對半導體製程來說致命的問題:<strong>絕緣體不能當電極</strong>。
+  </p>
+
+  <p>
+    介電質表面會很快累積電荷,把電場屏蔽掉,放電就熄滅了。而製程要蝕刻的偏偏就有
+    SiO₂、SiN 這類絕緣膜,晶圓本身也常被絕緣層覆蓋。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 RF 的解法</div>
+    <p>
+      電場方向不斷反轉,一個半週累積的電荷在下半週被中和 ——
+      <strong>電容耦合(CCP)</strong> 讓 RF 功率穿過介電質進入電漿,絕緣不再是問題。
+    </p>
+    <p>
+      這也直接帶出下一章的主題:既然電子與離子對 RF 的反應天差地遠
+      (<a href="../1-2-parameters/#hot-electrons">1.2.3</a>),
+      表面附近會發生什麼事?答案就是<a href="../1-5-sheath-intro/">鞘層</a>。
+    </p>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>為什麼自持條件裡是 <span class="pa-eq">e<sup>αd</sup> − 1</span> 而不是 <span class="pa-eq">e<sup>αd</sup></span>?那個「−1」代表什麼?</li>
+    <li>某腔體 γ 從 0.10 掉到 0.02(電極被鍍上聚合物)。定性說明崩潰電壓會怎麼變,以及為什麼。</li>
+    <li>製程條件 20 mTorr、間距 2 cm,pd 是多少 Torr·cm?落在 Ar 曲線的左支還是右支?</li>
+    <li>為什麼 He 的 Paschen 最小值 pd 特別大(4.0)?用 1.3 的碰撞截面概念解釋。</li>
+    <li>Crookes 暗區的電子能量最高卻不發光。請解釋這個看似矛盾的現象。</li>
+    <li>判斷題:壓力越低越容易點火。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Chapman, <em>Glow Discharge Processes</em>, Ch. 3–4(DC 輝光分區講得最清楚)</li>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, §14.1</li>
+    <li>Raizer, <em>Gas Discharge Physics</em>, Ch. 4(Paschen 定律的完整推導)</li>
+  </ul>
+</div>

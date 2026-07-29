@@ -212,9 +212,10 @@
         var mfpPx = api.mfpCm() * pxCm;
 
         // 穩定的射出速率
+        var EMIT_INTERVAL = 0.012; // 秒/顆
         api._acc = (api._acc || 0) + dt;
-        while (api._acc > 0.012) {
-          api._acc -= 0.03;
+        while (api._acc > EMIT_INTERVAL) {
+          api._acc -= EMIT_INTERVAL;
           api.emit();
         }
 
