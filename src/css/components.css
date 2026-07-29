@@ -276,6 +276,47 @@
 }
 
 /* --------------------------------------------------------------------------
+   5b. 因果鏈 —— 一環扣一環的推論,步驟之間以箭頭串接
+   -------------------------------------------------------------------------- */
+
+.pa-chain {
+  margin: 0 0 var(--pa-space-5);
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-chain__step {
+  position: relative;
+  padding: var(--pa-space-3) var(--pa-space-4);
+  background: var(--pa-surface-sunken);
+  border-left: 3px solid var(--pa-primary);
+  border-radius: var(--pa-radius-sm);
+  font-size: var(--pa-text-sm);
+  line-height: 1.6;
+}
+
+/* 步驟之間用 margin 留出箭頭的空間,箭頭本身絕對定位 */
+.pa-chain__step + .pa-chain__step {
+  margin-top: 1.5rem;
+}
+
+.pa-chain__step + .pa-chain__step::before {
+  content: "↓";
+  position: absolute;
+  top: -1.35rem;
+  left: var(--pa-space-4);
+  color: var(--pa-text-subtle);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.pa-chain__step--end {
+  border-left-color: var(--pa-success);
+  background: var(--pa-success-bg);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
    6. 表格
    -------------------------------------------------------------------------- */
 

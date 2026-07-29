@@ -211,10 +211,19 @@
       var s = style || {};
       var d = "";
       var pen = false;
+      /**
+       * 離譜的值(發散、無定義)才提筆斷線。
+       * 線性軸的門檻要用「值域跨距」算 —— 寫成 ys.min * 0.5 的話,
+       * 值域含負數時門檻會反而往上跑,把合法資料切掉。
+       * 對數軸則維持倍率門檻,那才符合它的尺度。
+       */
+      var span = ys.max - ys.min;
+      var loCut = ys.log ? ys.min * 0.5 : ys.min - span;
+      var hiCut = ys.log ? ys.max * 1.5 : ys.max + span;
       for (var i = 0; i < points.length; i++) {
         var px = points[i][0],
           py = points[i][1];
-        if (!isFinite(px) || !isFinite(py) || py > ys.max * 1.5 || py < ys.min * 0.5) {
+        if (!isFinite(px) || !isFinite(py) || py > hiCut || py < loCut) {
           pen = false;
           continue;
         }

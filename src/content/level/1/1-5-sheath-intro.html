@@ -1,0 +1,500 @@
+<!--meta
+{
+  "title": "1.5 鞘層入門 — Plasma Academy",
+  "description": "鞘層為什麼必然形成、V_p / V_f / V_dc 三個電位的分別、自偏壓與面積比,以及離子方向性完整的因果鏈。",
+  "type": "chapter",
+  "module": "1.5"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>1.5 鞘層入門</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 1.5 小時</span>
+    <span>🔬 A06 互動元件</span>
+    <span>L1 初階</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="1.5">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>用四步論證說明鞘層為什麼一定會形成</span></label></li>
+    <li><label><input type="checkbox" /><span>分辨電漿電位 V_p、浮動電位 V_f、自偏壓 V_dc,並說出各自的典型值</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋耦合電容如何造成自偏壓,以及面積比為什麼決定電位分配</span></label></li>
+    <li><label><input type="checkbox" /><span>完整背出「離子方向性」的因果鏈,並指出每一環被破壞時會出現什麼缺陷</span></label></li>
+    <li><label><input type="checkbox" /><span>估算鞘層厚度的量級,並與 λ 比較判斷鞘層內會不會碰撞</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../1-2-parameters/">1.2 電漿基本參數</a>
+  <span>—— λ_D 與「電子熱、離子冷」;</span>
+  <a href="../1-4-glow-discharge/">1.4 輝光放電</a>
+  <span>—— Crookes 暗區</span>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    電子跑得比離子快幾百倍。把電漿裝進一個腔體,電子率先大量撞上器壁,
+    <strong>器壁因此帶負電</strong>。這個負電位排斥後續電子、吸引離子,
+    直到兩者流量相等為止 —— 於是表面附近出現一層電子被排空、離子過剩的區域,
+    這就是 <span class="pa-term" data-term="鞘層">鞘層</span>。
+  </p>
+  <p>
+    <strong>鞘層不是副作用,它是電漿製程的全部。</strong>
+    鞘層裡有一個強烈而且<strong>垂直於表面</strong>的電場,離子被它加速後垂直轟擊晶圓。
+    沒有鞘層,離子就只是四面八方亂飛的化學物種,做不出垂直的溝槽。
+  </p>
+  <p>
+    鞘層電位降有兩個來源。表面浮著不接任何東西時,只有
+    <span class="pa-eq">V<sub>p</sub> − V<sub>f</sub> ≈ 4.7 T<sub>e</sub></span> ——
+    T_e = 3 eV 也才 14 V,<strong>蝕刻不動</strong>。要打到幾百 eV,必須靠
+    <span class="pa-term" data-term="自偏壓">自偏壓</span> V_dc,那才是離子能量真正的旋鈕。
+  </p>
+</div>
+
+<h2 id="why-sheath">1.5.1 鞘層為什麼必然存在</h2>
+
+<div class="pa-prose">
+  <p>
+    這不是實驗觀察到的巧合,而是<strong>推導得出的必然</strong>。只要四步:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>步驟</th><th>發生什麼</th><th>為什麼</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>t = 0</strong></td>
+          <td>電子與離子均勻分佈,器壁電中性</td>
+          <td>思想實驗的起點 —— 這個狀態<strong>維持不住</strong></td>
+        </tr>
+        <tr>
+          <td><strong>t = t₁</strong></td>
+          <td>電子先大量抵達器壁</td>
+          <td>
+            熱速度比 <span class="pa-eq">√(M/m<sub>e</sub> · T<sub>e</sub>/T<sub>i</sub>)</span>。
+            Ar、T_e = 3 eV、T_i = 0.03 eV 時約 <strong>2,700 倍</strong>(見 <a href="../1-2-parameters/#hot-electrons">1.2.3</a>)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>t = t₂</strong></td>
+          <td>器壁相對電漿帶負電</td>
+          <td>負電位開始排斥後續電子、吸引離子</td>
+        </tr>
+        <tr>
+          <td><strong>穩態</strong></td>
+          <td>電子與離子流量相等</td>
+          <td>電位停在剛好讓兩邊平衡的值 —— 這個值就是 V_f</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    結果是表面附近一層<strong>電子被排空、離子過剩</strong>的區域。
+    這裡 <span class="pa-eq">n<sub>e</sub> ≪ n<sub>i</sub></span>,
+    <span class="pa-term" data-term="準中性">準中性</span>公然不成立 ——
+    和 1.1 講的 bulk 完全相反。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼是「電子被排空」而不是「離子被吸乾」</div>
+    <p>
+      鞘層裡兩種粒子都在,只是比例失衡。離子被電場加速,通過得更快,
+      所以密度<strong>略降但不歸零</strong>(通量守恆:密度 × 速度是定值);
+      電子則被負電位擋在外面,只有能量夠高的少數能鑽進來,密度呈指數衰減。
+    </p>
+    <p>
+      下方 A06 的兩條密度曲線就是在畫這件事。
+    </p>
+  </div>
+</div>
+
+<h2 id="three-potentials">1.5.2 三個電位,不要搞混</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>電位</th><th>定義</th><th class="is-num">典型值</th><th>誰有</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong><span class="pa-term" data-term="電漿電位">電漿電位</span> V<sub>p</sub></strong></td>
+          <td>電漿 bulk 相對接地的電位</td>
+          <td class="is-num">+10 ~ +30 V</td>
+          <td>電漿本身</td>
+        </tr>
+        <tr>
+          <td><strong><span class="pa-term" data-term="浮動電位">浮動電位</span> V<sub>f</sub></strong></td>
+          <td>絕緣或浮接表面自然達到的電位</td>
+          <td class="is-num">比 V_p 低 10–20 V</td>
+          <td>不接東西的表面</td>
+        </tr>
+        <tr>
+          <td><strong><span class="pa-term" data-term="自偏壓">自偏壓</span> V<sub>dc</sub></strong></td>
+          <td>經耦合電容接 RF 的電極上出現的直流電位</td>
+          <td class="is-num">−50 ~ −1000 V</td>
+          <td>被 RF 驅動的電極</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 V_p 永遠是正的 —— 這件事的代價</div>
+    <p>
+      電漿相對於<strong>所有</strong>接觸到的表面都是正的。所以腔壁、噴淋頭、
+      <span class="pa-term" data-term="聚焦環">聚焦環</span>、
+      石英視窗、夾具 —— 全部都在被離子轟擊,只是能量比晶圓低得多。
+    </p>
+    <p>
+      這就是零件消耗與微粒的根源。「為什麼腔體零件會有壽命」,答案在這一行。
+    </p>
+  </div>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    V<sub>p</sub> − V<sub>f</sub> =
+    <span class="frac"><span class="num">k T<sub>e</sub></span><span class="den">2 e</span></span>
+    ln <span class="frac"><span class="num">M</span><span class="den">2π m<sub>e</sub></span></span>
+  </div>
+  <div class="pa-formula__name">浮動電位 —— 浮接表面的鞘層電位降</div>
+  <details>
+    <summary>展開:怎麼推出來的,以及為什麼只依賴 T_e</summary>
+    <div class="pa-formula__body">
+      <dl class="pa-symbols">
+        <dt>M</dt><dd>離子質量 [kg]</dd>
+        <dt>m<sub>e</sub></dt><dd>電子質量 [kg]</dd>
+        <dt>T<sub>e</sub></dt><dd>電子溫度 [eV]</dd>
+      </dl>
+      <p style="margin-top:var(--pa-space-3)">
+        令流向表面的電子通量等於離子通量。離子以
+        <span class="pa-eq">u<sub>B</sub></span> 進入(2.4 會證明),
+        電子則被電位擋掉一個 Boltzmann 因子
+        <span class="pa-eq">exp(−e(V<sub>p</sub>−V<sub>f</sub>)/kT<sub>e</sub>)</span>。
+        兩邊相等,解出電位差就是上式。
+      </p>
+      <p>
+        <strong>注意這裡沒有 n_e。</strong> 電位降只由電子溫度與離子質量決定 ——
+        密度再高十倍,鞘層電位降一樣。這一點在 A06 裡可以直接驗證。
+      </p>
+      <p>
+        <strong>各氣體的係數</strong>(V_p − V_f 是 T_e 的幾倍):
+      </p>
+      <div class="pa-table-wrap">
+        <table class="pa-table">
+          <thead><tr><th>氣體</th><th class="is-num">倍數</th><th class="is-num">T_e = 3 eV 時</th></tr></thead>
+          <tbody>
+            <tr><td>H₂</td><td class="is-num">3.2</td><td class="is-num">10 V</td></tr>
+            <tr><td>N₂</td><td class="is-num">4.5</td><td class="is-num">13 V</td></tr>
+            <tr><td>Ar</td><td class="is-num">4.7</td><td class="is-num">14 V</td></tr>
+            <tr><td>Cl₂</td><td class="is-num">5.0</td><td class="is-num">15 V</td></tr>
+            <tr><td>Xe</td><td class="is-num">5.3</td><td class="is-num">16 V</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        差距很小 —— 因為是取對數。<strong>記 5 倍 T_e 就夠用了。</strong>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-note pa-note--misconception">
+  <div class="pa-note__title">⚠️ 常見誤解</div>
+  <div class="pa-misconception__wrong"><span>晶圓是接地的,所以晶圓表面沒有電位差,離子不會被加速。</span></div>
+  <div class="pa-misconception__right">
+    <span>
+      「接地」是相對於機台外殼。電漿本身浮在 <strong>+V_p</strong>,
+      所以接地表面前面照樣有 V_p 這麼大的電位降,離子照樣被加速 ——
+      只是能量只有一二十 eV。真正的問題不是「有沒有」,而是<strong>「夠不夠」</strong>。
+    </span>
+  </div>
+</div>
+
+<h2 id="lab-a06">🔬 A06 鞘層形成時間軸</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A06">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A06</span>
+    <span class="pa-lab__title">鞘層形成時間軸動畫</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。核心觀念:電子先流失使表面帶負電,近表面形成電子被排空的鞘層。
+      鞘層電位降 V_p − V_f ≈ 4.7 T_e 只由電子溫度決定;鞘層厚度 s ∝ λ_D ∝ √(T_e/n_e),
+      密度上升 100 倍鞘層薄 10 倍。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 從 A06 帶走的兩句話</div>
+  <ul>
+    <li><strong>T_e 管能量</strong> —— V_p − V_f 只跟 T_e 走,拉密度完全不動。</li>
+    <li><strong>n_e 管厚度</strong> —— s ∝ 1/√n_e,拉溫度只有微弱的 √T_e 影響。</li>
+  </ul>
+  <p>
+    這兩件事是分開的旋鈕。所以 ICP(高密度、低 T_e)有又薄又乾淨的鞘層,
+    而它的離子能量必須<strong>另外</strong>用偏壓來給 —— 這正是 ICP 要做成雙功率源的原因。
+  </p>
+</div>
+
+<h2 id="self-bias">1.5.3 自偏壓:離子能量真正的旋鈕</h2>
+
+<div class="pa-prose">
+  <p>
+    十幾 eV 蝕刻不動任何東西。要打到幾百 eV,靠的是<strong>自偏壓</strong>。
+  </p>
+  <p>
+    在 CCP 中,RF 電極經由一顆<strong>耦合電容</strong>接 RF 源。三個事實湊在一起:
+  </p>
+  <ol>
+    <li>RF 正半週,電子大量湧入電極(電子快)</li>
+    <li>RF 負半週,離子只能慢慢流入(離子慢)</li>
+    <li>電容<strong>不允許有淨直流電流</strong>通過</li>
+  </ol>
+  <p>
+    一個週期內進出的電荷必須相等,但電子進得太容易 ——
+    於是電極只能<strong>自行降到一個負的直流電位</strong>,把多餘的電子擋回去。
+    這個電位就是 V_dc。它不是外面加的,是電漿自己算出來的。
+  </p>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    <span class="frac"><span class="num">V₁</span><span class="den">V₂</span></span>
+    =
+    <span class="frac"><span class="num">A₂</span><span class="den">A₁</span></span>
+    <sup>q</sup>
+    &nbsp;&nbsp;,&nbsp;&nbsp; q ≈ 1 ~ 2.5
+  </div>
+  <div class="pa-formula__name">面積比效應 —— 小電極分到大電位</div>
+  <details>
+    <summary>展開:這條式子解釋了腔體為什麼長那樣</summary>
+    <div class="pa-formula__body">
+      <p>
+        兩個電極串在同一個 RF 迴路上,電流相同。鞘層像電容,
+        面積小的那一片阻抗大,因此分到的電位降也大。
+      </p>
+      <p>
+        <strong>設計上的直接後果</strong>:
+      </p>
+      <ul>
+        <li>晶圓所在的下電極<strong>面積小</strong> → 分到大的負偏壓 → 離子猛打晶圓 ✅</li>
+        <li>接地的腔壁 + 上電極<strong>面積大</strong> → 只分到小電位 → 腔壁被打得輕 → 零件壽命長 ✅</li>
+      </ul>
+      <p>
+        接地面積是<strong>刻意做大</strong>的,不是碰巧。
+      </p>
+      <p>
+        理想的無碰撞模型給出 q = 4,但實際量測通常落在 1 ~ 2.5 ——
+        因為鞘層內有碰撞、也有其他接地路徑。<strong>把它當趨勢用,不要當計算式用。</strong>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 現場意義:V_dc 是最好用的免費診斷</div>
+  <p>
+    幾乎每台機都有 V_dc 讀值,而且它同時反映了<strong>三件事</strong>:
+    電漿密度、接地面積、以及匹配狀態。
+  </p>
+  <ul>
+    <li><strong>V_dc 慢慢往上飄(絕對值變小)</strong> —— 接地面積因結垢而改變,或是零件消耗。這是 PM 的訊號。</li>
+    <li><strong>V_dc 突然跳一階</strong> —— 匹配點跑掉,或是實際進入電漿的功率變了。</li>
+    <li><strong>同 recipe、不同腔體 V_dc 差很多</strong> —— chamber matching 的第一個切入點(L4 4.6)。</li>
+  </ul>
+  <p>
+    把 V_dc 放進日常趨勢圖,比等到 wafer 出問題再查便宜太多。
+  </p>
+</div>
+
+<h2 id="directionality">1.5.4 離子的方向性從何而來</h2>
+
+<div class="pa-prose">
+  <p>
+    這是 L1 最重要的一段。<strong>整章、甚至整個 L1,就是為了講通這條鏈:</strong>
+  </p>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step">電子跑得比離子快幾百倍</div>
+    <div class="pa-chain__step">表面帶負電,形成鞘層</div>
+    <div class="pa-chain__step">鞘層裡有很強的<strong>垂直</strong>電場(數百 V 落在 &lt; 1 mm)</div>
+    <div class="pa-chain__step">離子進入鞘層被垂直加速</div>
+    <div class="pa-chain__step">鞘層內若無碰撞,離子保持垂直</div>
+    <div class="pa-chain__step">垂直入射的高能離子轟擊晶圓</div>
+    <div class="pa-chain__step pa-chain__step--end"><span class="pa-term" data-term="異向性">異向性</span>蝕刻(垂直側壁)</div>
+  </div>
+
+  <p>
+    <strong>任何一環被破壞,方向性就壞掉。</strong>
+    這張表是 L3 缺陷圖鑑的預告 —— 每一種輪廓缺陷都可以回推到這條鏈的某一環:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>斷在哪一環</th><th>什麼情況會發生</th><th>看到的缺陷</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>鞘層內無碰撞</td>
+          <td>壓力太高,λ &lt; 鞘層厚度</td>
+          <td>入射角散開 → 側壁被咬(undercut)、taper</td>
+        </tr>
+        <tr>
+          <td>電場垂直</td>
+          <td>絕緣圖形表面充電,局部電場歪斜</td>
+          <td>離子偏折 → notching(L4 4.3)</td>
+        </tr>
+        <tr>
+          <td>電場垂直</td>
+          <td>晶圓邊緣鞘層彎曲</td>
+          <td>邊緣傾斜(tilting)→ 聚焦環就是為了修這個(L3 3.6)</td>
+        </tr>
+        <tr>
+          <td>離子能量夠</td>
+          <td>V_dc 不足或功率耦合掉了</td>
+          <td>蝕刻停止(etch stop)、聚合物殘留</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 一句話版本</div>
+    <p>
+      <strong>方向性不是氣體給的,是電場給的。</strong>
+      氣體決定「會不會反應、反應成什麼」,鞘層決定「往哪個方向反應」。
+      這兩件事分開來想,製程調機就不會亂 —— 這也是 2.6 參數因果鏈的骨架。
+    </p>
+  </div>
+</div>
+
+<h2 id="thickness">1.5.5 鞘層厚度的量級</h2>
+
+<div class="pa-prose">
+  <p>完整推導留到 <a href="../../2/2-4-sheath-physics/">2.4</a>,這裡先給結論與量級感:</p>
+</div>
+
+<div class="pa-formula">
+  <div class="pa-formula__eq pa-eq">
+    s ≈
+    <span class="frac"><span class="num">√2</span><span class="den">3</span></span>
+    λ<sub>D</sub>
+    <span>(</span>
+    <span class="frac"><span class="num">2 V<sub>sheath</sub></span><span class="den">T<sub>e</sub></span></span>
+    <span>)</span><sup>3/4</sup>
+  </div>
+  <div class="pa-formula__name"><span class="pa-term" data-term="Child–Langmuir 定律">Child–Langmuir</span> 鞘層厚度</div>
+  <details>
+    <summary>展開:兩個指數的意義</summary>
+    <div class="pa-formula__body">
+      <p>
+        把 <span class="pa-eq">λ<sub>D</sub> ∝ √(T<sub>e</sub>/n<sub>e</sub>)</span> 代進去:
+      </p>
+      <div class="pa-formula__eq pa-eq" style="font-size:1rem">
+        s ∝ V<sub>sheath</sub><sup>3/4</sup> · n<sub>e</sub><sup>−1/2</sup> · T<sub>e</sub><sup>−1/4</sup>
+      </div>
+      <p style="margin-top:var(--pa-space-3)">
+        兩個好記的比例:
+      </p>
+      <ul>
+        <li><strong>密度變 4 倍 → 鞘層變一半</strong>(n^(−1/2))</li>
+        <li><strong>偏壓變 3 倍 → 鞘層厚約 2.3 倍</strong>(V^(3/4))</li>
+      </ul>
+      <p>
+        T_e 的影響只有四次方根,幾乎可以忽略 —— 所以現場調機時,
+        <strong>鞘層厚度基本上就是密度與偏壓兩件事</strong>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>條件</th><th class="is-num">鞘層厚度 s</th><th class="is-num">10 mTorr 的 λ</th><th>鞘層內碰撞?</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>浮接表面,無偏壓(n_e = 10¹⁰、T_e = 3)</td>
+          <td class="is-num">~0.3 mm</td>
+          <td class="is-num">~5 mm</td>
+          <td>幾乎不碰撞</td>
+        </tr>
+        <tr>
+          <td>CCP,V_dc = −500 V,n_e = 10¹⁰</td>
+          <td class="is-num">2 – 5 mm</td>
+          <td class="is-num">~5 mm</td>
+          <td><strong>約碰撞一次</strong></td>
+        </tr>
+        <tr>
+          <td>ICP,V_bias = −100 V,n_e = 10¹²</td>
+          <td class="is-num">0.1 – 0.3 mm</td>
+          <td class="is-num">~5 mm</td>
+          <td>幾乎不碰撞</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 這張表要拿去跟 1.3 的 λ 對照</div>
+    <p>
+      判斷準則很簡單:<strong>把 λ 和 s 擺在一起比</strong>。
+    </p>
+    <ul>
+      <li><span class="pa-eq">λ ≫ s</span> → <span class="pa-term" data-term="無碰撞鞘層">無碰撞鞘層</span>,離子乾淨地垂直入射,能量集中</li>
+      <li><span class="pa-eq">λ ≲ s</span> → <span class="pa-term" data-term="碰撞型鞘層">碰撞型鞘層</span>,出現低能離子與角度發散</li>
+    </ul>
+    <p>
+      CCP 在 10 mTorr 時兩者都是幾 mm —— 剛好在邊界上,鞘層內大約碰撞一次。
+      這就是 CCP 的 IEDF 為什麼會拖一條低能尾巴(2.4)。
+      <strong>ICP 之所以方向性好,一半原因是鞘層薄了十倍,碰撞機率跟著掉。</strong>
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>鞘層越厚,離子打得越用力。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        因果反了。是<strong>電位降大 → 鞘層才厚</strong>(s ∝ V^(3/4)),
+        不是厚了才有力。而且厚鞘層對方向性是<strong>壞事</strong> ——
+        離子在裡面走得更遠,撞到東西的機會更大。
+        「又薄又高壓降」才是理想的鞘層,那正是 ICP 加偏壓在追求的。
+      </span>
+    </div>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>如果電子和離子一樣重(思想實驗),還會形成鞘層嗎?為什麼?</li>
+    <li>某製程 T_e 從 3 eV 升到 5 eV,n_e 不變。V_p − V_f 變多少?鞘層厚度變多少?哪個影響大?</li>
+    <li>晶圓是接地的,為什麼還會被離子轟擊?能量大約多少?</li>
+    <li>為什麼 CCP 的接地面積要刻意做大?如果腔壁結垢導致有效接地面積變小,V_dc 會往哪個方向走?</li>
+    <li>一片浮接的石英視窗和一片接地的腔壁,哪一個受到的離子轟擊比較輕?為什麼?</li>
+    <li>某製程從 CCP(n_e = 10¹⁰)換到 ICP(n_e = 10¹²),偏壓相同。鞘層厚度變幾倍?這對 profile 是好是壞?</li>
+    <li>把 1.2 到 1.5 串起來:寫出從「電子質量小」到「垂直側壁」的完整因果鏈,至少六個環節。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 6(鞘層)、§11.1(自偏壓)</li>
+    <li>Chapman, <em>Glow Discharge Processes</em>, Ch. 5(面積比效應講得最白話)</li>
+    <li>Chabert &amp; Braithwaite, <em>Physics of Radio-Frequency Plasmas</em>, Ch. 4</li>
+  </ul>
+</div>

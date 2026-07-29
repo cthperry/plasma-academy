@@ -73,6 +73,38 @@ assert(
 console.log("\n【1.5 鞘層入門】");
 near("V_p − V_f (Ar, Te=3)", M.floatingPotentialDrop(3, 39.95), 4.7 * 3, 10, " V");
 
+// 1.5.2 的倍數表 —— 課文寫幾倍,這裡就驗幾倍
+for (const [label, amu, mult] of [
+  ["H₂", 2.016, 3.2],
+  ["N₂", 28.01, 4.5],
+  ["Ar", 39.95, 4.7],
+  ["Cl₂", 70.9, 5.0],
+  ["Xe", 131.3, 5.3],
+]) {
+  near(`${label} 的 (V_p−V_f)/T_e`, M.floatingPotentialDrop(1, amu), mult, 3, " ×T_e");
+}
+assert(
+  "V_p − V_f 正比於 T_e:3→6 eV 剛好加倍(且不含 n_e)",
+  Math.abs(M.floatingPotentialDrop(6, 39.95) / M.floatingPotentialDrop(3, 39.95) - 2) < 1e-9
+);
+
+// A06 的兩條驗收條件(docs/05)
+{
+  const drop = (Te) => M.floatingPotentialDrop(Te, 39.95);
+  const sheathFloat = (ne, Te) => M.sheathThickness(ne, Te, drop(Te));
+  near("A06 浮接鞘層厚度 (n=1e10, Te=3)", sheathFloat(1e10, 3), 0.33, 15, " mm");
+  assert(
+    "A06 鞘層隨 n_e 上升而變薄:10¹⁰→10¹² 薄約 10 倍",
+    Math.abs(sheathFloat(1e10, 3) / sheathFloat(1e12, 3) - 10) < 0.2,
+    `實得 ${(sheathFloat(1e10, 3) / sheathFloat(1e12, 3)).toFixed(2)} 倍`
+  );
+  assert(
+    "A06 全參數範圍的鞘層都落在 2 mm 視窗內",
+    sheathFloat(1e9, 8) < 2 && sheathFloat(1e12, 1) > 0.005,
+    `最厚 ${sheathFloat(1e9, 8).toFixed(2)} mm、最薄 ${sheathFloat(1e12, 1).toFixed(3)} mm`
+  );
+}
+
 console.log("\n【2.1 真空與滯留時間】");
 near("n_gas @ 10 mTorr", M.gasDensity(10), 3.2e14, 10, " cm⁻³");
 near("τ (30 L, 20 mTorr, 200 sccm)", M.residenceTime(20, 30, 200), 0.24, 5, " s");
