@@ -79,6 +79,22 @@
     };
   }
 
+  /**
+   * stepParams 再套上 state.engine 的覆寫。
+   *
+   * ⚠️ 這個入口是刻意留的:從外面覆寫 `S.stepParams` **沒有效果**,
+   * 因為 `step()` 呼叫的是模組內部的函式 —— 探測參數時踩過兩次這個坑,
+   * 得到「這個參數沒有效果」的假結論(見 docs/11)。
+   * 有了 engine 覆寫,參數搜尋就不必改檔案。
+   */
+  function paramsFor(s) {
+    var p = stepParams(s);
+    if (s.engine) {
+      Object.keys(s.engine).forEach(function (k) { p[k] = s.engine[k]; });
+    }
+    return p;
+  }
+
   /** 建立剖面。multi = 三個不同 CD 同時蝕刻,用來看 ARDE */
   var SINGLE_OPENING = [[0.42, 0.58]];
   var MULTI_OPENINGS = [[0.06, 0.13], [0.28, 0.42], [0.58, 0.86]];
@@ -93,25 +109,51 @@
    * 但也不能太厚:遮罩本身就是一個深井,太厚會把膜的側壁完全遮住,
    * 鈍化強弱就再也看不出差別(0.28 試過,八種預設全部糊成一樣)。
    */
-  var LAYERS = [
-    { material: "mask", thickness: 0.2 },
-    { material: "oxide", thickness: 0.6 },
-    { material: "silicon", thickness: 0.2 },
-  ];
+  var MASK_FRAC = 0.2;
+  var FILM_FRAC = 0.6;
+  var IFACE_FRAC = MASK_FRAC + FILM_FRAC;
 
-  var MASK_FRAC = LAYERS[0].thickness;
-  var IFACE_FRAC = LAYERS[0].thickness + LAYERS[1].thickness;
+  /**
+   * 目標膜可選 —— 這不是為了多一個旋鈕,是因為**側蝕本身是材料的性質**。
+   *
+   * 引擎的材料表裡 silicon 的 chem 是 1.0、oxide 只有 0.25,而 oxide 的
+   * oxy = 1.0(氧會把聚合物燒掉)、silicon 是 0。也就是說:
+   *   · F 自由基**自發**咬矽又快又等向 → 沒有側壁保護就會 undercut
+   *   · SiO₂ 幾乎不自發反應,非得靠離子輔助 → 天生就比較不會側蝕
+   * 這正是 3.1.4 講的化學選擇性。把膜固定成 oxide 再要求它 undercut,
+   * 等於要求模型違反自己的材料表 —— undercut 該用矽膜示範
+   * (現場的經典案例也正是 poly-Si gate 的側蝕,不是接觸孔)。
+   *
+   * 下層跟著換:矽膜配氧化層下層(poly gate 的閘極氧化層),
+   * 氧化膜配矽下層(接觸孔打到矽)—— 兩者都是真實的堆疊。
+   */
+  var FILMS = {
+    oxide: { film: "oxide", under: "silicon", label: "SiO₂(接觸孔)" },
+    silicon: { film: "silicon", under: "oxide", label: "poly-Si(閘極)" },
+    nitride: { film: "nitride", under: "silicon", label: "SiN(spacer)" },
+  };
+
+  function layersOf(film) {
+    var f = FILMS[film] || FILMS.oxide;
+    return [
+      { material: "mask", thickness: MASK_FRAC },
+      { material: f.film, thickness: FILM_FRAC },
+      { material: f.under, thickness: 1 - IFACE_FRAC },
+    ];
+  }
+
+  var LAYERS = layersOf("oxide");
 
   /**
    * scale < 1 會等比例縮小格點。深寬比與各層的相對厚度都不變,
    * 所以定性行為一致 —— 參數搜尋用得起,UI 仍用全尺寸。
    */
-  function makeProf(multi, scale) {
+  function makeProf(multi, scale, film) {
     var k = scale || 1;
     return PA.profile.create({
       cols: Math.round((multi ? 200 : 140) * k),
       rows: Math.round(100 * k),
-      layers: LAYERS,
+      layers: layersOf(film),
       openings: multi ? MULTI_OPENINGS : SINGLE_OPENING,
     });
   }
@@ -135,7 +177,7 @@
    * 所以「頂部 171 %」的意思很明確:遮罩下方比原始開口寬了 71 %。
    */
   function start(s, scale) {
-    var prof = makeProf(s.multi, scale);
+    var prof = makeProf(s.multi, scale, s.film);
     var center = mainCenter(s.multi);
     var sim = {
       prof: prof,
@@ -161,7 +203,7 @@
   }
 
   function step(sim, n) {
-    var p = stepParams(sim.state);
+    var p = paramsFor(sim.state);
     for (var i = 0; i < (n || 1); i++) {
       sim.prof.step(p);
       sim.steps++;
@@ -389,6 +431,9 @@
     ionDiv: ionDiv,
     neutralRel: neutralRel,
     stepParams: stepParams,
+    paramsFor: paramsFor,
+    FILMS: FILMS,
+    layersOf: layersOf,
     makeProf: makeProf,
     openingCenters: openingCenters,
     mainCenter: mainCenter,

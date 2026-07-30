@@ -306,6 +306,36 @@ A19 沿用 profile-engine,只在兩組參數之間交替 —— scallop 不必�
   使 block 落在 0…1 之間可變;或讓聚合物本身會被斜射離子緩慢濺射掉。
   這一改會動到 etch-stop 的邊界,要一併重新確認 F/C 分水嶺。
 
+#### Undercut:目標膜已可選,但**判定**卡住(第三條記錄)
+
+`profile-shapes.js` 已支援 `state.film`(oxide / silicon / nitride,見 `FILMS` 與 `layersOf`),
+下層自動配對(矽膜配氧化層下層 = poly gate;氧化膜配矽下層 = 接觸孔)。
+同時補了 `paramsFor(state)`,讓 `state.engine` 可以覆寫引擎參數 ——
+從外面覆寫 `S.stepParams` 沒有效果的那個坑就此拔掉。
+
+**在矽膜上側蝕確實出現了**(這是對的:silicon 的 `chem` 是 1.0、oxide 只有 0.25):
+undercut 預設在矽膜上量到頂部 **257 %**、中段 114 %、底部 43 %。氧化膜則是 100/100/100。
+所以「undercut 要在 Si 上示範」這個判斷成立。
+
+**但 `classify()` 把它判成 Faceting**,原因是**判別指標本身有缺陷**:
+
+- `maskMetrics().widen` 量的是**遮罩最下一列**的開口寬。膜被側蝕之後,
+  遮罩下方變成懸空的簷,那一列很快就被從下面咬開 → widen 衝到 2.57,
+  越過 `> 1.25 → Faceting` 的分支。
+  **而 widen 這個指標當初就是為了把 faceting 和 undercut 分開才加的** ——
+  它現在對 undercut 也有反應,等於失去了鑑別力。
+- 直覺的修法「改量遮罩**最上面**那一列」**也不對**:實測氧化膜的 undercut
+  (判定為垂直、widen = 1.00)openTop/base 已經是 **2.86**,
+  遮罩肩部 `shoulderRatio` 甚至是 0.00。也就是說遮罩上緣在各種預設下都會被削,
+  上緣寬度同樣分不開兩者。
+- 掃描 100 組(ion 200–900 × radical 15–95 × passiv 0–28,矽膜)
+  **沒有任何一組**同時滿足「頂部 > 125 %」與「widen ≤ 1.25」。
+
+→ **下一步不是再調參數,是重新定義 faceting 的判別**。
+可能的方向:比較遮罩**剩餘厚度的橫向分布**(faceting 是肩部薄、遠處厚的斜面),
+而不是比較開口寬度 —— 開口寬度同時被兩種缺陷推動,先天分不開。
+`fieldLeft` 與 `shoulderRatio` 已經量好了,但目前只在 faceting 分支後面才用到。
+
 #### 試過但**沒有用**的兩條路(別再走一遍)
 
 1. **加強再沉積(redeposition 0.5 → 10)**:完全沒有差別。原因是側壁的聚合物
