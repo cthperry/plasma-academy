@@ -10,6 +10,9 @@ import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.m
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
+import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
+import { chapterTwoFour } from "../src/content/chapter-2-4.mjs";
+import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
 import { l1FoundationChapters as l1FoundationChaptersBase } from "../src/content/l1-foundation-chapters.mjs";
 import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
 import { level1ExamSpec } from "../src/data/quiz/level-1.js";
@@ -474,6 +477,66 @@ function chapterTwoTwoPage() {
   `, { pageType: "chapter", description: "製程氣體選用、F/C 比、鈍化、材料相容與安全的工程教材。" });
 }
 
+function l2ChapterPage(chapter, { previous, next, formulaKeys = [] }) {
+  const objectives = chapter.objectives.map((item, index) => `
+    <label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapter.id}"><span>${item}</span></label>
+  `).join("");
+  const prerequisites = chapter.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapter.readings.map((item) => `<li>${item}</li>`).join("");
+  const outline = [...chapter.sections, ...chapter.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
+  const sections = chapter.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const callouts = chapter.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapter.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapter.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
+  const chapterFormulas = formulaKeys.map((key) => formulas[key]).filter(Boolean).map(formulaCard).join("");
+  const chapterLinks = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive].map((item) => `<a class="${item.route === chapter.route ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  const labNames = chapter.labs.map((lab) => lab.id.toUpperCase()).join("、");
+
+  return page(chapter.route, chapter.title, `
+    <main class="chapter-layout" data-chapter-id="${chapter.id}">
+      <aside class="chapter-sidebar"><strong>課程目錄</strong>${chapterLinks}<a href="/level/2/">L2 模組列表</a><a href="/gases/">氣體百科</a></aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L2 中階", chapter.title])}
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapter.hours} h · 互動元件 ${labNames}</p><h1>${chapter.title}</h1><p>${chapter.summary}</p></header>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
+        ${callout("summary", "5 分鐘摘要", chapter.summary)}
+        ${sections}
+        ${chapterFormulas}
+        ${callouts}
+        ${labsHtml}
+        <section class="self-check"><h2>自我檢測</h2>${checks}</section>
+        <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${previous.href}">上一章：${previous.title}</a><a class="button primary" href="${next.href}">下一章：${next.title}</a></nav>
+      </article>
+      <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
+    </main>
+  `, { pageType: "chapter" });
+}
+
+function chapterTwoThreePage() {
+  return l2ChapterPage(chapterTwoThree, {
+    previous: { href: chapterTwoTwo.route, title: chapterTwoTwo.title },
+    next: { href: chapterTwoFour.route, title: chapterTwoFour.title },
+    formulaKeys: ["rateCoefficient"]
+  });
+}
+
+function chapterTwoFourPage() {
+  return l2ChapterPage(chapterTwoFour, {
+    previous: { href: chapterTwoThree.route, title: chapterTwoThree.title },
+    next: { href: chapterTwoFive.route, title: chapterTwoFive.title },
+    formulaKeys: ["bohmIonFlux"]
+  });
+}
+
+function chapterTwoFivePage() {
+  return l2ChapterPage(chapterTwoFive, {
+    previous: { href: chapterTwoFour.route, title: chapterTwoFour.title },
+    next: { href: "/level/2/", title: "2.6 參數因果鏈" }
+  });
+}
+
 function labPage() {
   const cards = labs.map((lab) => `
     <article class="lab-card" data-level="${lab.level}" data-kind="${lab.kind}">
@@ -700,6 +763,9 @@ async function main() {
     ...l1FoundationChapters.map(l1ChapterPage),
     chapterTwoOnePage(),
     chapterTwoTwoPage(),
+    chapterTwoThreePage(),
+    chapterTwoFourPage(),
+    chapterTwoFivePage(),
     packagingCleaningPage(),
     labPage(),
     progressPage(),

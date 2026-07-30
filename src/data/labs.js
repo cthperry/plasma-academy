@@ -57,7 +57,11 @@ function labHref(id) {
     A08: "/level/2/2-1-gas-vacuum/#lab-a08",
     A09: "/level/2/2-2-process-gases/#lab-a09",
     A10: "/level/2/2-2-process-gases/#lab-a10",
-    A11: "/gases/"
+    A11: "/gases/",
+    A12: "/level/2/2-3-plasma-chemistry/#lab-a12",
+    A13: "/level/2/2-4-advanced-sheath/#lab-a13",
+    A14: "/level/2/2-5-plasma-sources/#lab-a14",
+    A15: "/level/2/2-5-plasma-sources/#lab-a15"
   };
   return map[id] ?? "/lab/";
 }

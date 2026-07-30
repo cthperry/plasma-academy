@@ -1,8 +1,16 @@
 import { chromium } from "playwright";
+import { existsSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
-const browser = await chromium.launch({ headless: true });
+let browser;
+try {
+  browser = await chromium.launch({ headless: true });
+} catch (error) {
+  const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+  if (!existsSync(chromePath)) throw error;
+  browser = await chromium.launch({ headless: true, executablePath: chromePath });
+}
 const base = "http://localhost:4173";
 const qaDir = path.resolve("qa");
 await mkdir(qaDir, { recursive: true });
@@ -165,6 +173,121 @@ const a10CanvasPixels = await desktop.evaluate(() => {
   return nonBlank;
 });
 await desktop.screenshot({ path: path.join(qaDir, "desktop-a09-a10.png"), fullPage: false });
+
+await desktop.goto(`${base}/level/2/2-3-plasma-chemistry/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a12").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(500);
+const a12PathCount = await desktop.locator("#lab-a12 svg path").count();
+const a12OverlapCount = await desktop.locator("#lab-a12 .eedf-overlap").count();
+const a12RateBarCount = await desktop.locator("#lab-a12 .eedf-rate-bars i").count();
+const a12Range = desktop.locator('#lab-a12 input[type="range"]');
+const readA12Ionization = async () => Number(await desktop.locator('#lab-a12 [data-value-key="游離率 kᵢ"]').textContent());
+await a12Range.evaluate((input) => { input.value = "2"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a12Ionization2Ev = await readA12Ionization();
+await a12Range.evaluate((input) => { input.value = "3"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a12Ionization3Ev = await readA12Ionization();
+await desktop.locator("#lab-a12").getByRole("radio", { name: "Druyvesteyn" }).click();
+const a12DruyvesteynIonization = await readA12Ionization();
+await desktop.locator("#lab-a12 select").selectOption("CF4");
+const a12Cf4Status = await desktop.locator("#lab-a12 [data-lab-status]").textContent();
+const a12Cf4Dissociation = Number(await desktop.locator('#lab-a12 [data-value-key="解離率 k_d"]').textContent());
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a12.png"), fullPage: false });
+
+await desktop.goto(`${base}/level/2/2-4-advanced-sheath/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a13").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(650);
+const a13BarCount = await desktop.locator("#lab-a13 .iedf-bar").count();
+const readA13Value = async (key) => parseFloat(await desktop.locator(`#lab-a13 [data-value-key="${key}"]`).textContent());
+await desktop.locator("#lab-a13").getByRole("radio", { name: "0.4 MHz" }).click();
+const a13LowFrequencyDelta = await readA13Value("峰間距 ΔE");
+const a13LowFrequencyStatus = await desktop.locator("#lab-a13 [data-lab-status]").textContent();
+await desktop.locator("#lab-a13").getByRole("radio", { name: "60 MHz" }).click();
+const a13HighFrequencyDelta = await readA13Value("峰間距 ΔE");
+const a13HighFrequencyStatus = await desktop.locator("#lab-a13 [data-lab-status]").textContent();
+await desktop.locator("#lab-a13").getByRole("radio", { name: "13.56 MHz" }).click();
+const a13Ranges = desktop.locator('#lab-a13 input[type="range"]');
+await a13Ranges.nth(1).evaluate((input) => { input.value = "100"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a13HighPressureTail = await readA13Value("低能尾巴");
+const a13HighPressureStatus = await desktop.locator("#lab-a13 [data-lab-status]").textContent();
+await a13Ranges.nth(1).evaluate((input) => { input.value = "1"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+await desktop.locator("#lab-a13 select").selectOption("Ar");
+const a13ArDelta = await readA13Value("峰間距 ΔE");
+await desktop.locator("#lab-a13 select").selectOption("CF3");
+const a13Cf3Delta = await readA13Value("峰間距 ΔE");
+const a13CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a13 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  return nonBlank;
+});
+const a13ThemeBefore = await desktop.evaluate(() => [...document.querySelector("#lab-a13 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+await desktop.click("[data-theme-toggle]");
+await desktop.waitForTimeout(150);
+const a13ThemeAfter = await desktop.evaluate(() => [...document.querySelector("#lab-a13 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a13.png"), fullPage: false });
+
+await desktop.goto(`${base}/level/2/2-5-plasma-sources/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a14").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(350);
+const a14Power = desktop.locator('#lab-a14 input[type="range"]').first();
+const setA14Power = async (value) => {
+  await a14Power.evaluate((input, nextValue) => {
+    input.value = String(nextValue);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }, value);
+  return desktop.locator("#lab-a14 [data-lab-status]").textContent();
+};
+const a14At550Up = await setA14Power(550);
+const a14At700Up = await setA14Power(700);
+const a14At550Down = await setA14Power(550);
+const a14At400Down = await setA14Power(400);
+const a14PathCount = await desktop.locator("#lab-a14 svg path.plot-line").count();
+const a14CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a14 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++;
+  return nonBlank;
+});
+const a14ThemeBefore = await desktop.evaluate(() => [...document.querySelector("#lab-a14 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+await desktop.click("[data-theme-toggle]");
+await desktop.waitForTimeout(150);
+let a14ThemeAfter = await desktop.evaluate(() => [...document.querySelector("#lab-a14 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+if (JSON.stringify(a14ThemeBefore) === JSON.stringify(a14ThemeAfter)) {
+  await desktop.click("[data-theme-toggle]");
+  await desktop.waitForTimeout(150);
+  a14ThemeAfter = await desktop.evaluate(() => [...document.querySelector("#lab-a14 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+}
+
+await desktop.locator("#lab-a15").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(200);
+const readA15Reflection = async () => parseFloat(await desktop.locator('#lab-a15 [data-value-key="反射功率"]').textContent());
+const a15InitialReflection = await readA15Reflection();
+await desktop.locator("#lab-a15").getByRole("button", { name: "自動匹配" }).click();
+await desktop.waitForTimeout(1300);
+const a15MatchedReflection = await readA15Reflection();
+const a15FirstFingerprint = await desktop.locator('#lab-a15 [data-value-key="電容指紋"]').textContent();
+const a15Ranges = desktop.locator('#lab-a15 input[type="range"]');
+await a15Ranges.nth(2).evaluate((input) => {
+  input.value = "80";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+const a15DriftReflection = await readA15Reflection();
+await desktop.locator("#lab-a15").getByRole("button", { name: "自動匹配" }).click();
+await desktop.waitForTimeout(1300);
+const a15RematchedReflection = await readA15Reflection();
+const a15SecondFingerprint = await desktop.locator('#lab-a15 [data-value-key="電容指紋"]').textContent();
+const a15PathCount = await desktop.locator("#lab-a15 svg path").count();
+const a15PointCount = await desktop.locator("#lab-a15 svg circle").count();
+const a15CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a15 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++;
+  return nonBlank;
+});
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a14-a15.png"), fullPage: false });
 
 await desktop.goto(`${base}/level/1/1-2-parameters/`, { waitUntil: "networkidle" });
 await desktop.locator("#lab-a02").scrollIntoViewIfNeeded();
@@ -519,6 +642,52 @@ const mobileA10CanvasPixels = await mobile.evaluate(() => {
 });
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a09-a10.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/2/2-3-plasma-chemistry/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a12").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(500);
+const mobileA12Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA12PathCount = await mobile.locator("#lab-a12 svg path").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a12.png"), fullPage: false });
+
+await mobile.goto(`${base}/level/2/2-4-advanced-sheath/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a13").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(600);
+const mobileA13Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA13BarCount = await mobile.locator("#lab-a13 .iedf-bar").count();
+const mobileA13CanvasPixels = await mobile.evaluate(() => {
+  const canvas = document.querySelector("#lab-a13 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  return nonBlank;
+});
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a13.png"), fullPage: false });
+
+await mobile.goto(`${base}/level/2/2-5-plasma-sources/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a14").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(350);
+const mobileA14Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA14PathCount = await mobile.locator("#lab-a14 svg path.plot-line").count();
+const mobileA14CanvasPixels = await mobile.evaluate(() => {
+  const canvas = document.querySelector("#lab-a14 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++;
+  return nonBlank;
+});
+await mobile.locator("#lab-a15").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(250);
+const mobileA15Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA15PathCount = await mobile.locator("#lab-a15 svg path").count();
+const mobileA15CanvasPixels = await mobile.evaluate(() => {
+  const canvas = document.querySelector("#lab-a15 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++;
+  return nonBlank;
+});
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a14-a15.png"), fullPage: false });
+
 await mobile.evaluate(() => {
   const chapters = Object.fromEntries(["1-1", "1-2", "1-3", "1-4", "1-5"].map((id) => [id, { visited: true, objectives: [true, true, true, true] }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
@@ -534,6 +703,10 @@ await browser.close();
 
 const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, gasCardCount, fluorocarbonCardCount, extremeGasCount, gasSearchTitle, fcLabelsDoNotOverlap, gasSdsStatusCount, mobileGasOverflow, mobileGasCardCount, formulaCardCount, formulaPageText, a08InitialPanel, a08InitialDensity, a08HighFlowResidence, a08HighFlowDensity, a08HighPressureResidence, a08HighPressureDensity, a08CanvasPixels, a08ThemePixelBefore, a08ThemePixelAfter, mobileA08Overflow, mobileA08CanvasPixels, chapterOneOneSelfChecks, chapterOneOneDiagramCount, chapterOneOneSupportCount, chapterOneOneObservationCount, chapterOneOneFigureNumbersValid, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
 Object.assign(result, { a09NodeCount, a09Cases, a09CuText, a10InitialStatus, a10InitialFc, a10HighStatus, a10LowStatus, a10OxideRate, a10SiRate, a10CanvasPixels, mobileA10Overflow, mobileA10CanvasPixels });
+Object.assign(result, { a12PathCount, a12OverlapCount, a12RateBarCount, a12Ionization2Ev, a12Ionization3Ev, a12DruyvesteynIonization, a12Cf4Status, a12Cf4Dissociation, mobileA12Overflow, mobileA12PathCount });
+Object.assign(result, { a13BarCount, a13LowFrequencyDelta, a13LowFrequencyStatus, a13HighFrequencyDelta, a13HighFrequencyStatus, a13HighPressureTail, a13HighPressureStatus, a13ArDelta, a13Cf3Delta, a13CanvasPixels, a13ThemeBefore, a13ThemeAfter, mobileA13Overflow, mobileA13BarCount, mobileA13CanvasPixels });
+Object.assign(result, { a14At550Up, a14At700Up, a14At550Down, a14At400Down, a14PathCount, a14CanvasPixels, a14ThemeBefore, a14ThemeAfter, mobileA14Overflow, mobileA14PathCount, mobileA14CanvasPixels });
+Object.assign(result, { a15InitialReflection, a15MatchedReflection, a15FirstFingerprint, a15DriftReflection, a15RematchedReflection, a15SecondFingerprint, a15PathCount, a15PointCount, a15CanvasPixels, mobileA15Overflow, mobileA15PathCount, mobileA15CanvasPixels });
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -560,6 +733,26 @@ if (!a10HighStatus.includes("等向") || !a10LowStatus.includes("etch stop")) th
 if (!(a10SiRate < a10OxideRate * 0.5)) throw new Error("A10 Si 與 SiO2 的表面選擇比趨勢不符規格。");
 if (a10CanvasPixels < 100000 || mobileA10CanvasPixels < 100000) throw new Error("A10 桌機或手機 Canvas 看起來是空白。");
 if (mobileA10Overflow) throw new Error("A09/A10 手機版有水平溢出。");
+if (a12PathCount < 4 || a12OverlapCount !== 1 || a12RateBarCount !== 3) throw new Error("A12 EEDF、截面、重疊區或反應率長條未完整渲染。");
+if (!(a12Ionization3Ev / a12Ionization2Ev > 5)) throw new Error("A12 T_e 2→3 eV 的游離率增幅未超過五倍。");
+if (!(a12DruyvesteynIonization < a12Ionization3Ev)) throw new Error("A12 Druyvesteyn 高能尾端沒有降低游離率。");
+if (!a12Cf4Status.includes("15.9 eV") || !(a12Cf4Dissociation > 0)) throw new Error("A12 CF4 閾值或解離率未更新。");
+if (mobileA12Overflow || mobileA12PathCount < 4) throw new Error("A12 手機版發生水平溢出或曲線缺漏。");
+if (a13BarCount !== 48 || mobileA13BarCount !== 48) throw new Error("A13 IEDF 直方圖未完整渲染 48 個能量區間。");
+if (!(a13LowFrequencyDelta > a13HighFrequencyDelta * 10) || !a13LowFrequencyStatus.includes("寬雙峰") || !a13HighFrequencyStatus.includes("窄單峰")) throw new Error("A13 低頻寬雙峰或高頻窄單峰未通過。");
+if (!(a13HighPressureTail >= 20) || !a13HighPressureStatus.includes("低能尾巴")) throw new Error("A13 高壓電荷交換低能尾巴未通過。");
+if (!(a13Cf3Delta < a13ArDelta)) throw new Error("A13 重離子峰間距沒有依 1/sqrt(M) 趨勢縮小。");
+if (a13CanvasPixels < 100000 || mobileA13CanvasPixels < 100000) throw new Error("A13 桌機或手機 Canvas 看起來是空白。");
+if (JSON.stringify(a13ThemeBefore) === JSON.stringify(a13ThemeAfter)) throw new Error("A13 Canvas 未隨主題切換重新取色。");
+if (mobileA13Overflow) throw new Error("A13 手機版有水平溢出。");
+if (!a14At550Up.includes("E-mode") || !a14At700Up.includes("H-mode") || !a14At550Down.includes("H-mode") || !a14At400Down.includes("E-mode")) throw new Error("A14 E/H 模式遲滯與掃描歷史未通過。");
+if (a14PathCount !== 2 || mobileA14PathCount !== 2 || a14CanvasPixels < 100000 || mobileA14CanvasPixels < 100000) throw new Error("A14 遲滯曲線或 CCP/ICP Canvas 未完整渲染。");
+if (JSON.stringify(a14ThemeBefore) === JSON.stringify(a14ThemeAfter)) throw new Error("A14 Canvas 未隨主題切換重新取色。");
+if (mobileA14Overflow) throw new Error("A14 手機版有水平溢出。");
+if (!(a15InitialReflection > 1) || !(a15MatchedReflection < 1) || !(a15DriftReflection > 5) || !(a15RematchedReflection < 1)) throw new Error("A15 初始失配、條件漂移或自動匹配收斂未通過。");
+if (a15FirstFingerprint === a15SecondFingerprint) throw new Error("A15 壓力改變後沒有產生新的匹配電容指紋。");
+if (a15PathCount < 8 || a15PointCount < 8 || mobileA15PathCount < 8 || a15CanvasPixels < 100000 || mobileA15CanvasPixels < 100000) throw new Error("A15 Smith-like 圖、L 網路或功率 Canvas 未完整渲染。");
+if (mobileA15Overflow) throw new Error("A15 手機版有水平溢出。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);

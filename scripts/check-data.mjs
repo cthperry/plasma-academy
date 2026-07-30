@@ -9,7 +9,7 @@ import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs"
 import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { gases, gasFamilies, hazardLevels } from "../src/data/gases.js";
-import { childLangmuirSheathMm, effectivePumpingSpeedLps, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, townsendDischarge } from "../src/assets/js/plasma-model.js";
+import { childLangmuirSheathMm, eedfReactionModel, effectivePumpingSpeedLps, findAutoMatch, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, simulateIedf, sourceCouplingModel, townsendDischarge } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
 
@@ -91,6 +91,31 @@ const fcLow = fluorocarbonProfile({ gas: "CH3F", oxygenPercent: 0, hydrogenPerce
 const fcSilicon = fluorocarbonProfile({ gas: "C4F8", oxygenPercent: 8, hydrogenPercent: 0, biasW: 250, substrate: "Si" });
 if (fcWindow.regime !== "process-window" || fcHigh.regime !== "isotropic" || fcLow.regime !== "etch-stop") failures.push("A10 必須可重現中 F/C 製程窗、高 F/C 等向蝕刻與低 F/C etch stop。");
 if (!(fcSilicon.bottomNetRate < fcWindow.bottomNetRate * 0.5)) failures.push("A10 同條件下 Si 淨速率應顯著低於 SiO2。 ");
+const eedf2Ev = eedfReactionModel({ electronTemperatureEv: 2, distribution: "maxwellian", gas: "Ar" });
+const eedf3Ev = eedfReactionModel({ electronTemperatureEv: 3, distribution: "maxwellian", gas: "Ar" });
+const eedfDruyvesteyn = eedfReactionModel({ electronTemperatureEv: 3, distribution: "druyvesteyn", gas: "Ar" });
+if (!(eedf3Ev.rates.ionization / eedf2Ev.rates.ionization > 5)) failures.push("A12 T_e 由 2 提高到 3 eV 時，Ar 游離率應上升超過五倍。");
+if (!(eedfDruyvesteyn.rates.ionization < eedf3Ev.rates.ionization)) failures.push("A12 同 T_e 下 Druyvesteyn 的 Ar 游離率應低於 Maxwellian。");
+const iedfLowFrequency = simulateIedf({ frequencyMhz: 0.4, biasV: 300, pressureMtorr: 1, ion: "Ar" });
+const iedfReference = simulateIedf({ frequencyMhz: 13.56, biasV: 300, pressureMtorr: 1, ion: "Ar" });
+const iedfHighFrequency = simulateIedf({ frequencyMhz: 60, biasV: 300, pressureMtorr: 1, ion: "Ar" });
+const iedfHighPressure = simulateIedf({ frequencyMhz: 13.56, biasV: 300, pressureMtorr: 100, ion: "Ar" });
+const iedfHeavyIon = simulateIedf({ frequencyMhz: 13.56, biasV: 300, pressureMtorr: 1, ion: "CF3" });
+if (!(iedfLowFrequency.peakSeparationEv > iedfHighFrequency.peakSeparationEv * 10)) failures.push("A13 低頻 IEDF 應顯著寬於 60 MHz IEDF。");
+if (!(iedfHighPressure.lowEnergyFraction > iedfReference.lowEnergyFraction * 5)) failures.push("A13 高壓電荷交換應形成明顯低能尾巴。");
+const frequencyScaling = iedfHighFrequency.peakSeparationEv / iedfReference.peakSeparationEv;
+const expectedFrequencyScaling = 13.56 / 60;
+if (Math.abs(frequencyScaling / expectedFrequencyScaling - 1) > 0.3) failures.push("A13 峰間距未呈現近似 1/f 比例。");
+const massScaling = iedfHeavyIon.peakSeparationEv / iedfReference.peakSeparationEv;
+const expectedMassScaling = Math.sqrt(39.95 / 69.01);
+if (Math.abs(massScaling / expectedMassScaling - 1) > 0.3) failures.push("A13 峰間距未呈現近似 1/sqrt(M) 比例。");
+const eModeAt550 = sourceCouplingModel({ source: "ICP", powerW: 550, previousMode: "E", direction: "up" });
+const hModeAt550 = sourceCouplingModel({ source: "ICP", powerW: 550, previousMode: "H", direction: "down" });
+if (eModeAt550.mode !== "E" || hModeAt550.mode !== "H" || !(hModeAt550.densityCm3 > eModeAt550.densityCm3 * 10)) failures.push("A14 550 W 必須依掃描方向呈現 E/H 遲滯與密度跳變。");
+const matchNominal = findAutoMatch({ pressureMtorr: 20, powerW: 800, gas: "Ar" });
+const matchHighPressure = findAutoMatch({ pressureMtorr: 80, powerW: 800, gas: "Ar" });
+if (!(matchNominal.reflectedFraction < 0.01) || !(matchHighPressure.reflectedFraction < 0.01)) failures.push("A15 自動匹配後反射功率必須低於 1%。");
+if (matchNominal.tunePf === matchHighPressure.tunePf && matchNominal.loadPf === matchHighPressure.loadPf) failures.push("A15 壓力改變後必須需要不同匹配電容位置。");
 const densityExample = neutralGasDensityCm3(10, 300);
 if (Math.abs(densityExample / 3.22e14 - 1) > 0.02) failures.push(`10 mTorr、300 K 中性密度應約 3.2×10^14 cm^-3，目前 ${densityExample.toExponential(2)}。`);
 const pumpingExample = effectivePumpingSpeedLps({ pressureMtorr: 20, flowSccm: 200 });

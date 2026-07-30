@@ -17,6 +17,7 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${escapeHtml(description)}">
   <title>${escapeHtml(title)}</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <script src="/assets/js/theme-init.js"></script>
   <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/layout.css">

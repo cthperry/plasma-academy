@@ -354,6 +354,145 @@
   padding: 28px;
 }
 
+.lab-stage--eedf {
+  grid-template-columns: minmax(0, 1fr) 250px;
+}
+
+.eedf-visual {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.eedf-visual svg {
+  color: var(--pa-text-muted);
+  display: block;
+  width: 100%;
+}
+
+.eedf-overlap {
+  fill: color-mix(in srgb, var(--pa-primary) 20%, transparent);
+}
+
+.plot-line.eedf-distribution { stroke: var(--pa-primary); stroke-width: 3; }
+.plot-line.eedf-ionization { stroke: var(--pa-danger); stroke-width: 2; }
+.plot-line.eedf-excitation { stroke: var(--pa-warning); stroke-width: 2; }
+.eedf-threshold { stroke-dasharray: 5 4; stroke-width: 1; }
+.eedf-threshold.ion { stroke: var(--pa-danger); }
+.eedf-threshold.excite { stroke: var(--pa-warning); }
+.eedf-threshold-label { fill: var(--pa-text-muted); font: 700 11px var(--pa-font-sans); }
+
+.eedf-rate-bars {
+  border-top: 1px solid var(--pa-border);
+  display: grid;
+  gap: 8px;
+  padding: 12px 16px 16px;
+}
+
+.eedf-rate-bars div {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 42px minmax(0, 1fr) 100px;
+}
+
+.eedf-rate-bars i {
+  border-radius: 3px;
+  display: block;
+  height: 10px;
+}
+
+.eedf-rate-bars .ionization { background: var(--pa-danger); }
+.eedf-rate-bars .excitation { background: var(--pa-warning); }
+.eedf-rate-bars .dissociation { background: var(--pa-primary); }
+.eedf-rate-bars output { font: 12px var(--pa-font-mono); text-align: right; }
+
+.iedf-visual {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.iedf-visual canvas,
+.iedf-visual svg {
+  border: 0;
+  border-radius: 0;
+  display: block;
+  width: 100%;
+}
+
+.iedf-visual svg {
+  border-top: 1px solid var(--pa-border);
+  color: var(--pa-text-muted);
+}
+
+.iedf-bar { fill: var(--pa-primary); }
+.iedf-bar.tail { fill: var(--pa-warning); }
+.iedf-mean { stroke: var(--pa-danger); stroke-dasharray: 5 4; stroke-width: 2; }
+.iedf-label { fill: var(--pa-text); font: 700 11px var(--pa-font-sans); }
+
+.source-coupling-visual {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.source-coupling-visual canvas,
+.source-coupling-visual svg {
+  border: 0;
+  border-radius: 0;
+  display: block;
+  width: 100%;
+}
+
+.source-coupling-visual svg {
+  border-top: 1px solid var(--pa-border);
+  color: var(--pa-text-muted);
+}
+
+.plot-line.source-up { stroke: var(--pa-primary); stroke-width: 3; }
+.plot-line.source-down { stroke: var(--pa-danger); stroke-dasharray: 6 4; stroke-width: 2; }
+.source-current { fill: var(--pa-surface); stroke: var(--pa-success); stroke-width: 3; }
+.source-legend { fill: var(--pa-text-muted); font: 700 11px var(--pa-font-sans); }
+
+.matching-visual {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.matching-visual svg,
+.matching-visual canvas {
+  border: 0;
+  border-radius: 0;
+  display: block;
+  width: 100%;
+}
+
+.matching-visual canvas { border-top: 1px solid var(--pa-border); }
+.smith-boundary { fill: none; stroke: var(--pa-border-strong); stroke-width: 2; }
+.smith-grid { fill: none; stroke: var(--pa-border); stroke-width: 1; }
+.smith-target { fill: none; stroke: var(--pa-success); stroke-width: 3; }
+.match-trajectory { fill: none; stroke: var(--pa-primary); stroke-width: 3; }
+.match-point { fill: var(--pa-surface); stroke: var(--pa-primary); stroke-width: 2; }
+.match-point.step-2 { stroke: var(--pa-danger); }
+.match-label,
+.match-circuit-label,
+.match-title,
+.match-fingerprint { fill: var(--pa-text); font: 700 11px var(--pa-font-sans); }
+.match-title { font-size: 14px; }
+.match-fingerprint { fill: var(--pa-text-muted); }
+.match-circuit,
+.match-capacitor { fill: none; stroke: var(--pa-text); stroke-width: 2; }
+
 .fc-lab-track span {
   display: grid;
   font-size: 10px;
@@ -382,6 +521,10 @@
 
   .decision-visual {
     overflow-x: auto;
+  }
+
+  .lab-stage--eedf {
+    grid-template-columns: 1fr;
   }
 }
 

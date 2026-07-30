@@ -3,12 +3,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
+import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
+import { chapterTwoFour } from "../src/content/chapter-2-4.mjs";
+import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
 import { formulas } from "../src/data/formulas.js";
 import { gases } from "../src/data/gases.js";
 import { labs } from "../src/data/labs.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const chapters = [chapterTwoOne, chapterTwoTwo];
+const chapters = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive];
 const stripHtml = (value) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
 const content = chapters.flatMap((chapter) => [
   chapter.title,
