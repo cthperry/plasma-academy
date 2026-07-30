@@ -16,9 +16,18 @@ const examConfigs = {
     questionExport: "level2Questions",
     specExport: "level2ExamSpec",
     objectiveCounts: { "2-1": 3, "2-2": 4, "2-3": 4, "2-4": 4, "2-5": 4, "2-6": 5 }
+  },
+  3: {
+    key: "L3",
+    badge: "製程應用與診斷",
+    dataPath: "/assets/data/quiz/level-3.js",
+    questionExport: "level3Questions",
+    specExport: "level3ExamSpec",
+    objectiveCounts: { "3-1": 5, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 6 },
+    requiredChapters: 6
   }
 };
-const typeLabels = { single: "單選題", multi: "多選題", numeric: "計算題", scenario: "情境題" };
+const typeLabels = { single: "單選題", multi: "多選題", numeric: "計算題", graphic: "圖形判讀題", scenario: "情境題" };
 const examDataPromises = new Map();
 
 export function initExam() {
@@ -38,7 +47,7 @@ function completedChapters(config, progress = getProgress()) {
 }
 
 function canTakeExam(config, progress = getProgress()) {
-  return completedChapters(config, progress) >= 5 || Boolean(progress.quizzes?.[config.key]?.passed);
+  return completedChapters(config, progress) >= (config.requiredChapters ?? 5) || Boolean(progress.quizzes?.[config.key]?.passed);
 }
 
 function updateExamGates() {
@@ -48,9 +57,11 @@ function updateExamGates() {
     if (!config) return;
     const completed = completedChapters(config, progress);
     const unlocked = canTakeExam(config, progress);
+    const total = Object.keys(config.objectiveCounts).length;
+    const required = config.requiredChapters ?? 5;
     const status = gate.querySelector("[data-exam-gate-status]");
     const link = gate.querySelector("[data-exam-link]");
-    status.textContent = unlocked ? `已完成 ${completed}/6 章，可開始或重測。` : `已完成 ${completed}/6 章；還需完成 ${5 - completed} 章。`;
+    status.textContent = unlocked ? `已完成 ${completed}/${total} 章，可開始或重測。` : `已完成 ${completed}/${total} 章；還需完成 ${required - completed} 章。`;
     link.hidden = !unlocked;
   });
 }
@@ -79,11 +90,13 @@ function initExamPage(page) {
     const progress = getProgress();
     const completed = completedChapters(config, progress);
     const unlocked = canTakeExam(config, progress);
+    const total = Object.keys(config.objectiveCounts).length;
+    const required = config.requiredChapters ?? 5;
     startButton.disabled = !unlocked;
     unlockTitle.textContent = unlocked ? "測驗已解鎖" : "完成學習目標以解鎖";
     unlockStatus.textContent = unlocked
-      ? `已完成 ${completed}/6 章。開始後有 ${page.dataset.examMinutes} 分鐘作答，離開頁面會結束本次作答。`
-      : `已完成 ${completed}/6 章；完成 5 章的全部學習目標後可開始。`;
+      ? `已完成 ${completed}/${total} 章。開始後有 ${page.dataset.examMinutes} 分鐘作答，離開頁面會結束本次作答。`
+      : `已完成 ${completed}/${total} 章；完成 ${required} 章的全部學習目標後可開始。`;
   };
 
   const renderNav = () => {
@@ -119,6 +132,13 @@ function initExamPage(page) {
     const legend = document.createElement("legend");
     legend.textContent = question.question;
     fieldset.append(legend);
+
+    if (question.type === "graphic") {
+      const figure = document.createElement("figure");
+      figure.className = "exam-graphic instruction-diagram";
+      figure.innerHTML = `<img src="${escapeHtml(question.image)}" width="760" height="360" alt="${escapeHtml(question.imageAlt)}">`;
+      fieldset.append(figure);
+    }
 
     if (question.type === "numeric") {
       const label = document.createElement("label");
@@ -335,7 +355,14 @@ function chapterRoute(chapter) {
     "2.3": "/level/2/2-3-plasma-chemistry/",
     "2.4": "/level/2/2-4-advanced-sheath/",
     "2.5": "/level/2/2-5-plasma-sources/",
-    "2.6": "/level/2/2-6-causal-chain/"
+    "2.6": "/level/2/2-6-causal-chain/",
+    "3.1": "/level/3/3-1-etch-mechanisms/",
+    "3.2": "/level/3/3-2-deep-silicon-etch/",
+    "3.3": "/level/3/3-3-defect-atlas/",
+    "3.4": "/level/3/3-4-plasma-deposition/",
+    "3.5": "/level/3/3-5-pvd-cleaning/",
+    "3.6": "/level/3/3-6-uniformity-chamber/",
+    "3.7": "/level/3/3-7-packaging-cleaning/"
   };
   return routes[chapter] ?? "/level/1/";
 }

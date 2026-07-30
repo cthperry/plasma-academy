@@ -10,6 +10,7 @@ import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { defects } from "../src/data/defects.js";
 import { labs } from "../src/data/labs.js";
+import { level3Questions } from "../src/data/quiz/level-3.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven];
@@ -30,7 +31,7 @@ const metrics = {
   defects: defects.length,
   labsImplemented: labs.filter((lab) => lab.level === 3 && lab.href !== "/lab/").length,
   selfChecks: chapters.reduce((total, chapter) => total + (chapter.selfCheck?.length ?? 0), 0),
-  levelExamQuestions: 0,
+  levelExamQuestions: level3Questions.length,
   svgDiagrams: await countFiles(path.join(root, "src", "assets", "svg", "l3"), ".svg")
 };
 const targets = { chapters: 7, sections: 30, contentUnits: 68000, defects: 19, labsImplemented: 10, selfChecks: 45, levelExamQuestions: 95, svgDiagrams: 45 };

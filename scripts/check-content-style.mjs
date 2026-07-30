@@ -17,6 +17,7 @@ import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
+import { l3Diagrams } from "../src/data/l3-diagrams.js";
 
 const l1Chapters = expandL1Content([chapterOneOne, ...l1FoundationChapters]);
 const chapters = [...l1Chapters, chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
@@ -108,7 +109,15 @@ for (const chapter of p3Chapters) {
   for (const lab of chapter.labs ?? []) {
     if (!Array.isArray(lab.observation) || lab.observation.length < 2 || lab.observation.length > 4) failures.push(`${chapter.id}/${lab.id} 應有 2–4 條可執行觀察點。`);
   }
+  const figures = l3Diagrams.filter((entry) => entry.chapter === chapter.id);
+  for (const entry of figures) {
+    if (!chapter.sections.some((section) => section.id === entry.section)) failures.push(`${entry.id} 指向不存在的小節 ${chapter.id}/${entry.section}。`);
+    if (entry.caption.length < 20 || entry.caption.length > 80) failures.push(`${entry.id} 圖說應為 20–80 字，目前 ${entry.caption.length} 字。`);
+    if (!entry.note || !["flow", "compare", "plot", "profile", "wafer"].includes(entry.type)) failures.push(`${entry.id} 缺少有效圖型或教學註記。`);
+  }
 }
+
+if (l3Diagrams.length !== 45) failures.push(`L3 應有 45 張圖解資料，目前 ${l3Diagrams.length} 張。`);
 
 if (failures.length) {
   console.error(`內容規範檢查失敗（${failures.length} 項）：`);
@@ -116,4 +125,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、A01–A25/A33 觀察引導。`);
+console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、A01–A25/A33 觀察引導。`);

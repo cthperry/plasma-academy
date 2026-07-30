@@ -8,6 +8,7 @@ import { formulas } from "../src/data/formulas.js";
 import { gases, gasFamilies, hazardLabels } from "../src/data/gases.js";
 import { sdsEvidenceByGas } from "../src/data/sds-evidence.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
+import { l3Diagrams } from "../src/data/l3-diagrams.js";
 import { defectCategories, defects } from "../src/data/defects.js";
 import { defectSvg } from "../src/data/defect-visuals.js";
 import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.mjs";
@@ -29,6 +30,7 @@ import { l1FoundationChapters as l1FoundationChaptersBase } from "../src/content
 import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
 import { level1ExamSpec } from "../src/data/quiz/level-1.js";
 import { level2ExamSpec } from "../src/data/quiz/level-2.js";
+import { level3ExamSpec } from "../src/data/quiz/level-3.js";
 import { shell, navItems, breadcrumb } from "../src/templates/page-shell.mjs";
 import { formulaCard, callout, labContainer, progressRing } from "../src/templates/components.mjs";
 
@@ -139,11 +141,12 @@ function levelPage(levelId) {
     </article>
   `).join("");
 
-  const examSpec = { 1: level1ExamSpec, 2: level2ExamSpec }[level.id];
+  const examSpec = { 1: level1ExamSpec, 2: level2ExamSpec, 3: level3ExamSpec }[level.id];
+  const examRequirement = level.id === 3 ? "完成 7 章中的 6 章學習目標後啟用" : "完成 6 章中的 5 章學習目標後啟用";
   const assessment = examSpec ? `
       <section class="assessment-gate" data-exam-gate data-exam-level="${level.id}">
         <h2>L${level.id} 結業測驗</h2>
-        <p>${examSpec.durationMinutes} 分鐘抽考 ${Object.values(examSpec.draw).reduce((sum, count) => sum + count, 0)} 題，達 ${examSpec.passPercent}% 通過。完成 6 章中的 5 章學習目標後啟用。</p>
+        <p>${examSpec.durationMinutes} 分鐘抽考 ${Object.values(examSpec.draw).reduce((sum, count) => sum + count, 0)} 題，達 ${examSpec.passPercent}% 通過。${examRequirement}。</p>
         <p class="meta" data-exam-gate-status aria-live="polite">正在讀取本機進度…</p>
         <a class="button primary" href="/level/${level.id}/exam/" data-exam-link hidden>進入 L${level.id} 測驗</a>
       </section>` : `
@@ -359,12 +362,7 @@ function packagingCleaningPage() {
   const prerequisites = chapterThreeSeven.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapterThreeSeven.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = `${chapterThreeSeven.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("")}<a href="#lab-a33">A33 封裝處理計算器</a>`;
-  const bodySections = chapterThreeSeven.sections.map((section) => `
-    <section id="${section.id}" class="prose-section">
-      <h2>${section.title}</h2>
-      ${section.body}
-    </section>
-  `).join("");
+  const bodySections = p3SectionsHtml(chapterThreeSeven);
   const callouts = chapterThreeSeven.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterThreeSeven.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterThreeSeven.selfCheck.map((item) => `
@@ -421,7 +419,7 @@ function chapterThreeOnePage() {
   const prerequisites = chapterThreeOne.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapterThreeOne.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = [...chapterThreeOne.sections, ...chapterThreeOne.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
-  const sections = chapterThreeOne.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const sections = p3SectionsHtml(chapterThreeOne);
   const callouts = chapterThreeOne.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterThreeOne.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterThreeOne.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
@@ -458,7 +456,7 @@ function chapterThreeTwoPage() {
   const prerequisites = chapterThreeTwo.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapterThreeTwo.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = [...chapterThreeTwo.sections, ...chapterThreeTwo.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
-  const sections = chapterThreeTwo.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const sections = p3SectionsHtml(chapterThreeTwo);
   const callouts = chapterThreeTwo.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterThreeTwo.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterThreeTwo.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
@@ -487,7 +485,7 @@ function chapterThreeThreePage() {
   const prerequisites = chapterThreeThree.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapterThreeThree.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = [...chapterThreeThree.sections, ...chapterThreeThree.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
-  const sections = chapterThreeThree.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const sections = p3SectionsHtml(chapterThreeThree);
   const callouts = chapterThreeThree.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterThreeThree.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterThreeThree.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
@@ -516,7 +514,7 @@ function chapterThreeFourPage() {
   const prerequisites = chapterThreeFour.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapterThreeFour.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = [...chapterThreeFour.sections, ...chapterThreeFour.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
-  const sections = chapterThreeFour.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const sections = p3SectionsHtml(chapterThreeFour);
   const callouts = chapterThreeFour.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterThreeFour.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterThreeFour.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
@@ -565,7 +563,7 @@ function p3ChapterPage(chapter, { labLabel, previous, next, description, extraSt
   const prerequisites = chapter.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapter.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = [...chapter.sections, ...chapter.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
-  const sections = chapter.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const sections = p3SectionsHtml(chapter);
   const callouts = chapter.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapter.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapter.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
@@ -738,6 +736,17 @@ function l2SectionsHtml(chapter) {
   }).join("");
 }
 
+function p3SectionsHtml(chapter) {
+  const chapterDiagrams = l3Diagrams.filter((diagram) => diagram.chapter === chapter.id);
+  return chapter.sections.map((section) => {
+    const figures = chapterDiagrams.filter((diagram) => diagram.section === section.id).map((diagram) => {
+      const number = `${chapter.id.replace("-", ".")}-${chapterDiagrams.indexOf(diagram) + 1}`;
+      return `<figure class="instruction-diagram"><img src="/assets/svg/l3/${diagram.id}.svg" width="760" height="360" loading="lazy" alt="${diagram.caption}"><figcaption><strong>圖 ${number} ${diagram.title}</strong>${diagram.caption}</figcaption></figure>`;
+    }).join("");
+    return `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}${figures}</section>`;
+  }).join("");
+}
+
 function engineeringCasesHtml(chapter) {
   const cases = l2EngineeringCases[chapter.id] ?? [];
   const exercise = l2ShiftExercises[chapter.id];
@@ -859,6 +868,13 @@ function progressPage() {
           </div>
           <a class="button secondary" href="/level/2/exam/">查看測驗</a>
         </section>
+        <section class="progress-badge" data-progress-l3-badge>
+          <div>
+            <span class="badge-mark" aria-hidden="true">L3</span>
+            <div><strong>製程應用與診斷</strong><p data-progress-l3-status>尚未通過 L3 結業測驗</p></div>
+          </div>
+          <a class="button secondary" href="/level/3/exam/">查看測驗</a>
+        </section>
         <div class="progress-actions">
           <button class="button primary" type="button" data-export-progress>匯出 JSON</button>
           <label class="button secondary file-button">匯入 JSON<input type="file" accept="application/json" data-import-progress></label>
@@ -871,10 +887,11 @@ function progressPage() {
 }
 
 function examPage(level) {
-  const spec = level === 1 ? level1ExamSpec : level2ExamSpec;
-  const bankSize = level === 1 ? 55 : 80;
+  const spec = { 1: level1ExamSpec, 2: level2ExamSpec, 3: level3ExamSpec }[level];
+  const bankSize = { 1: 55, 2: 80, 3: 95 }[level];
   const drawCount = Object.values(spec.draw).reduce((sum, count) => sum + count, 0);
-  const levelName = level === 1 ? "初階" : "中階";
+  const levelName = { 1: "初階", 2: "中階", 3: "進階" }[level];
+  const chapterRequirement = level === 3 ? "完成 7 章中的 6 章學習目標後可開始" : "完成 6 章中的 5 章學習目標後可開始";
   return page(`/level/${level}/exam/`, spec.title, `
     <main class="content-shell narrow" data-exam-page data-exam-level="${level}" data-exam-minutes="${spec.durationMinutes}">
       ${breadcrumb(["首頁", `L${level} ${levelName}`, "結業測驗"])}
@@ -886,7 +903,7 @@ function examPage(level) {
       <section class="exam-entry" data-exam-entry>
         <div class="exam-entry__status">
           <strong data-exam-unlock-title>正在確認學習進度</strong>
-          <p data-exam-unlock-status aria-live="polite">完成 6 章中的 5 章學習目標後可開始。</p>
+          <p data-exam-unlock-status aria-live="polite">${chapterRequirement}。</p>
         </div>
         <button class="button primary" type="button" data-exam-start disabled>開始測驗</button>
       </section>
@@ -1054,6 +1071,7 @@ async function main() {
     progressPage(),
     examPage(1),
     examPage(2),
+    examPage(3),
     gasesPage(),
     defectAtlasPage(),
     glossaryPage(),

@@ -67,7 +67,7 @@ function initProgressPage() {
     page.querySelector("[data-progress-visited]").textContent = Object.values(progress.chapters).filter((item) => item.visited).length;
     page.querySelector("[data-progress-objectives]").textContent = Object.values(progress.chapters).flatMap((item) => item.objectives ?? []).filter(Boolean).length;
     page.querySelector("[data-progress-labs]").textContent = Object.values(progress.labUsage).reduce((sum, value) => sum + value, 0);
-    for (const level of ["L1", "L2"]) {
+    for (const level of ["L1", "L2", "L3"]) {
       const exam = progress.quizzes?.[level];
       const suffix = level.toLowerCase();
       const badge = page.querySelector(`[data-progress-${suffix}-badge]`);
