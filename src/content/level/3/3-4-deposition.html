@@ -1,0 +1,585 @@
+<!--meta
+{
+  "title": "3.4 電漿沉積 — Plasma Academy",
+  "description": "PECVD 的低溫價值與代價、膜特性怎麼調(應力的主旋鈕是低頻功率)、階梯覆蓋率與 void 的成因鏈、HDP-CVD 的削 cusp 與材料落回、PEALD 自限制循環。",
+  "type": "chapter",
+  "module": "3.4"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>3.4 電漿沉積</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 4.0 小時</span>
+    <span>🔬 A22 · A23 互動元件</span>
+    <span>L3 進階 · 應用章</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="3.4">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說明 PECVD 為什麼能在低溫沉積,以及代價是什麼</span></label></li>
+    <li><label><input type="checkbox" /><span>指出膜應力的主旋鈕,並說明為什麼不是溫度</span></label></li>
+    <li><label><input type="checkbox" /><span>把「黏著係數高 → 夾 void」這條成因鏈完整說出來</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋 HDP-CVD 填得進高深寬比溝槽的兩個機制,以及它的速率代價</span></label></li>
+    <li><label><input type="checkbox" /><span>說明 PEALD 的自限制為什麼讓厚度只由循環數決定</span></label></li>
+    <li><label><input type="checkbox" /><span>說明為什麼 ALD 的脈衝與吹除時間必須跟著深寬比一起加長</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../2/2-3-plasma-chemistry/">2.3 電漿化學基礎</a>
+  <a href="../../2/2-5-plasma-sources/">2.5 電漿源與功率耦合</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    蝕刻是把材料移走,沉積是把材料長上去 —— 但<strong>決定成敗的是同一件事</strong>:
+    到達表面的通量在溝槽各處不一樣。
+  </p>
+  <ul>
+    <li><strong>PECVD 的價值是低溫</strong> —— 熱 CVD 沉積 SiN 要 700–800 °C,
+      PECVD 只要 300–400 °C。因為<strong>用電子能量取代熱能</strong>來解離前驅物。
+      有了它才能在已經有 Al 金屬線的晶圓上沉積。</li>
+    <li><strong>膜應力的主旋鈕是低頻功率,不是溫度</strong> —— 這是本章最容易錯的一題。</li>
+    <li><strong>Void 是一條成因鏈,不是一種現象</strong>:黏著係數高 → 開口通量最高 →
+      開口先合攏 → 內部封閉。<strong>每一環都可以單獨改</strong>,這就是三種解法的來源。</li>
+    <li><strong>HDP 靠兩個機制填溝</strong>:把 45° 的 cusp 濺掉,<strong>而且</strong>
+      讓削下來的材料落回溝裡。A23 把兩個機制分別關掉 —— 少任何一個都填不滿。</li>
+    <li><strong>PEALD 的一切都來自「吸附滿了就停」</strong>:厚度只由循環數決定,
+      所以覆蓋率接近 100 %。代價是慢,以及電漿自由基在深孔會衰減。</li>
+  </ul>
+</div>
+
+<h2 id="pecvd">3.4.1 PECVD 基本原理</h2>
+
+<div class="pa-prose">
+  <p>
+    熱 CVD 靠溫度把前驅物拆開;PECVD 靠<strong>電子碰撞</strong>把前驅物拆開。
+    這是 <a href="../../2/2-3-plasma-chemistry/">2.3</a> 那件事的直接應用 ——
+    電子溫度 2–5 eV 對應到上萬 K 的等效能量,而<strong>氣體本身還是接近室溫的</strong>。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>熱 CVD</th><th>PECVD</th></tr></thead>
+      <tbody>
+        <tr><td>SiN 沉積溫度</td><td>700–800 °C</td><td><strong>300–400 °C</strong></td></tr>
+        <tr><td>解離能量來源</td><td>熱</td><td><strong>電子碰撞</strong></td></tr>
+        <tr><td>膜密度</td><td>高</td><td>較低</td></tr>
+        <tr><td>膜中氫含量</td><td>低</td><td><strong>高</strong>(Si–H、N–H)</td></tr>
+        <tr><td>階梯覆蓋率</td><td>好</td><td>較差</td></tr>
+        <tr><td>電漿誘發損傷</td><td>無</td><td><strong>有</strong>(見 4.3)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼 400 °C 這個數字這麼要緊</div>
+    <p>
+      Al 的熔點是 660 °C,但製程上限大約只有 <strong>450 °C</strong> ——
+      再高一點就會開始出現電遷移與介面反應的問題。
+    </p>
+    <p>
+      也就是說:<strong>一旦晶圓上有了金屬線,700 °C 的熱 CVD 就完全出局了。</strong>
+      BEOL(後段製程)的每一層介電質都只能靠 PECVD ——
+      這不是「PECVD 比較方便」,是<strong>沒有別的選擇</strong>。
+    </p>
+  </div>
+</div>
+
+<h2 id="films">3.4.2 主要 PECVD 膜種</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>膜</th><th>前驅物</th><th>主要用途</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SiO₂</strong></td><td>SiH₄ + N₂O,或 <strong>TEOS + O₂</strong></td>
+          <td>層間介電質 ILD、保護層</td></tr>
+        <tr><td><strong>SiN</strong></td><td>SiH₄ + NH₃ + N₂</td>
+          <td>保護層、蝕刻停止層、<strong>應力層</strong></td></tr>
+        <tr><td>SiON</td><td>SiH₄ + N₂O + NH₃</td><td>抗反射層、調折射率</td></tr>
+        <tr><td>a-Si</td><td>SiH₄</td><td>TFT 通道、犧牲層</td></tr>
+        <tr><td>SiOC / SiCOH(low-k)</td><td>有機矽前驅物 + 造孔劑</td>
+          <td>先進 BEOL 介電質(見 4.3 的 k 值劣化)</td></tr>
+        <tr><td>非晶碳 a-C</td><td>C₃H₆ / C₂H₂</td><td>硬遮罩</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 TEOS 為什麼比 SiH₄ 好 —— 只差一個黏著係數</div>
+    <p>
+      SiH₄ 的黏著係數高(模型取 <strong>0.95</strong>):撞到什麼就黏什麼。
+      TEOS 分子在表面<strong>遷移率高</strong>、黏著係數低(模型取 <strong>0.18</strong>):
+      落下來以後還會四處移動,才找地方反應。
+    </p>
+    <p>
+      能移動,就爬得進凹處 —— 於是階梯覆蓋率從約 <strong>三成</strong>
+      跳到約 <strong>五到六成</strong>(A22 實測)。代價是 TEOS 是液體,
+      要多養一套汽化與輸送系統。<strong>廠裡願意付這個代價,買的就是這一格差異。</strong>
+    </p>
+    <p>
+      這是 <a href="../../2/2-3-plasma-chemistry/#sticking">2.3.5 黏著係數</a>
+      最直接的應用:同一個參數,在蝕刻裡決定側壁鈍化,在沉積裡決定覆蓋率。
+    </p>
+  </div>
+</div>
+
+<h2 id="properties">3.4.3 膜特性的控制</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>特性</th><th>主旋鈕</th><th>機制</th></tr></thead>
+      <tbody>
+        <tr><td><strong>應力</strong>(壓 / 張)</td><td><strong>低頻功率比例</strong></td>
+          <td>低頻 → 離子能量高 → 轟擊致密化 → <strong>壓應力</strong>;
+            高頻 → 轟擊少 → <strong>張應力</strong></td></tr>
+        <tr><td>折射率</td><td>氣體比(Si/N 比)</td><td>富矽 → n 高</td></tr>
+        <tr><td>氫含量</td><td>溫度、NH₃ 比例</td><td>溫度高 → H 少 → 膜緻密</td></tr>
+        <tr><td>沉積率</td><td>前驅物流量、功率</td><td>—</td></tr>
+        <tr><td>均勻度</td><td>噴淋頭設計、gap、壓力</td><td>見 3.6</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解:「膜應力靠溫度調」</div>
+    <p>
+      <strong>正解:主旋鈕是低頻(LF)功率比例。</strong>
+      溫度是次要旋鈕。
+    </p>
+    <p>
+      為什麼是低頻?回到 <a href="../../2/2-4-sheath-physics/">2.4</a>:
+      低頻的週期比離子穿越鞘層的時間長,<strong>離子跟得上瞬時電場</strong>,
+      被加速到高能量;高頻時離子只感受到平均電場,能量低。
+      所以低頻功率比例決定的其實是<strong>離子轟擊的強度</strong> ——
+      而轟擊把正在長的膜打緻密,就是壓應力的來源。
+    </p>
+    <p>
+      這條因果鏈和 <a href="../3-1-etch-mechanisms/">3.1</a> 的離子輔助是同一件事:
+      <strong>雙頻機台上,高頻管密度、低頻管能量。</strong>
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 為什麼應力這麼重要</div>
+    <p>
+      SiN 應力層是提升 MOSFET 載子遷移率的標準技術:
+      拉伸應變提升 NMOS 的電子遷移率,壓縮應變提升 PMOS 的電洞遷移率。
+    </p>
+    <p>
+      這要求應力能從 <strong>−3 GPa(壓)</strong> 一路調到
+      <strong>+1.5 GPa(張)</strong> —— 全靠雙頻功率比。
+      同一支氣體配方、同一個溫度,只改功率分配就能跨過 4.5 GPa 的範圍。
+    </p>
+  </div>
+</div>
+
+<h2 id="coverage">3.4.4 階梯覆蓋率與 void 的成因鏈</h2>
+
+<div class="pa-prose">
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      Step Coverage = t<sub>sidewall</sub> / t<sub>field</sub>
+    </div>
+    <div class="pa-formula__name">
+      <span class="pa-term" data-term="階梯覆蓋率">階梯覆蓋率</span> ——
+      場區(field)是溝槽以外的平坦區;1.0 表示完全同形(conformal)
+    </div>
+  </div>
+
+  <p>
+    <strong>void 不是一種現象,是一條鏈。</strong>把它逐環寫開:
+  </p>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step">黏著係數高 → 前驅物撞到就黏,<strong>直來直往</strong></div>
+    <div class="pa-chain__step">溝槽開口「看得到的天空」最多 → <strong>開口處通量最高</strong></div>
+    <div class="pa-chain__step">開口長最快 → 長出往內傾的 <strong>cusp</strong>(麵包頭 bread-loafing)</div>
+    <div class="pa-chain__step">兩側 cusp 碰上 → <strong>開口先合攏</strong></div>
+    <div class="pa-chain__step">內部封閉 → <strong>void(空洞)</strong></div>
+  </div>
+
+  <p>
+    Void 是可靠度殺手:後續的 CMP、熱循環或封裝應力會讓它<strong>裂開</strong>,
+    而它在製程中<strong>量不到</strong> —— 膜厚、折射率、應力全部正常,
+    要剖片才看得見。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 把鏈拆開,三種解法就自己出現了</div>
+    <p>
+      既然是一條鏈,<strong>切斷任何一環都能解決問題</strong> ——
+      這正好對應到業界的三條路:
+    </p>
+    <ul>
+      <li><strong>改第一環</strong>(降低黏著係數)→ 換成 <strong>TEOS</strong>,
+        讓分子落下來還能移動</li>
+      <li><strong>改第三、四環</strong>(cusp 一長出來就削掉)→ <strong>HDP-CVD</strong></li>
+      <li><strong>整條鏈都不要</strong>(讓通量高低完全不影響厚度)→ <strong>ALD</strong></li>
+    </ul>
+    <p>
+      三種製程不是三個獨立發明,是<strong>對同一條鏈的三個不同下手點</strong>。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A23 實測:同樣的淨沉積厚度下,四種製程填溝的結果</div>
+    <p>
+      比較點是<strong>場區膜厚都長到溝寬的 1.5 倍</strong>(同形填滿只需 0.5 倍,
+      所以這是三倍餘裕)。深寬比 AR 3:
+    </p>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>製程</th><th>封閉空洞</th><th>溝內填充</th><th>合攏時已填</th><th>步數</th></tr></thead>
+        <tbody>
+          <tr><td>PECVD(SiH₄)</td><td><strong>484 格</strong></td><td><strong>27 %</strong></td><td>22 %</td><td>161</td></tr>
+          <tr><td>PECVD(TEOS)</td><td>1 格</td><td>100 %</td><td>51 %</td><td>161</td></tr>
+          <tr><td>HDP-CVD</td><td>0</td><td>100 %</td><td>54 %</td><td><strong>322</strong></td></tr>
+          <tr><td>PEALD</td><td>0</td><td>100 %</td><td><strong>100 %</strong></td><td>161</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>「合攏時已填」是這張表最有資訊量的一欄。</strong>
+      SiH₄ 填不到四分之一就把自己封住了;PEALD 幾乎填滿才可能合攏。
+      同一條溝、同樣的膜厚,差別全在通量在溝內怎麼分布。
+    </p>
+  </div>
+</div>
+
+<h2 id="hdp">3.4.5 HDP-CVD:邊沉積邊濺鍍</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>核心概念</strong>:在同一個腔體、同一個時間裡同時進行
+    <strong>沉積</strong>(SiH₄ / O₂)與<strong>濺鍍</strong>(高 bias 的 Ar⁺)。
+  </p>
+
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      R<sub>net</sub> = R<sub>dep</sub> − R<sub>sputter</sub>
+    </div>
+    <div class="pa-formula__name">
+      淨沉積率。D/S ratio = R<sub>dep</sub> / R<sub>sputter</sub> ——
+      這個比值同時決定填溝能力與速率代價
+    </div>
+  </div>
+
+  <p>
+    <strong>為什麼能填溝 —— 第一個機制:cusp 正好是最好濺的角度。</strong>
+    回到 <a href="../3-1-etch-mechanisms/#sputter-angle">3.1.6</a>:
+    濺鍍產額 Y(θ) 在入射角約 <strong>45°–60°</strong> 有極大值,遠高於垂直入射。
+    而開口處剛長出來的 cusp,<strong>斜面正好就在 45° 附近</strong> ——
+    於是它一形成就被優先削掉,開口保持敞開。
+  </p>
+
+  <p>
+    <strong>第二個機制:削下來的材料會落回溝裡。</strong>
+    cusp 是朝著溝內的斜面,從它上面濺出來的原子看得到的就是側壁與溝底 ——
+    所以溝槽是<strong>由下往上</strong>被填起來的。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A23 把兩個機制分別關掉(AR 5)</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>設定</th><th>封閉空洞</th><th>溝內填充</th></tr></thead>
+        <tbody>
+          <tr><td>完整 HDP</td><td><strong>0</strong></td><td><strong>100 %</strong></td></tr>
+          <tr><td>關掉濺鍍</td><td>307 格</td><td>22 %</td></tr>
+          <tr><td>留著濺鍍,但材料不落回</td><td>231 格</td><td>42 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>兩個機制都是必要條件。</strong>關掉濺鍍就直接退回 PECVD 的夾 void;
+      只削 cusp、不讓材料落回,開口撐住了但溝裡沒有材料補進去 ——
+      填充只從 22 % 進步到 42 %,還是填不滿。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 HDP 的代價寫在「步數」那一欄</div>
+    <p>
+      A23 實測:要長到同樣的<strong>淨</strong>厚度,HDP 花的時間大約是
+      PECVD 的 <strong>兩倍</strong>(AR 2/3/5 都量到 2.0 倍)。
+      因為濺鍍一直在把剛長好的膜打掉 —— 這就是 D/S 比的字面意思。
+    </p>
+    <p>
+      所以 HDP <strong>不會</strong>拿來當一般的厚膜製程。
+      它是為了填溝而付出速率代價的專用工具。
+      把 A23 的「濺鍍/沉積比」往上拉到 0.9 附近會看到極端情況:
+      填溝很好,但場區<strong>幾乎不長膜了</strong>。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解:「HDP 填得好是因為它比較同形」</div>
+    <p>
+      <strong>正解:HDP 一點也不同形。</strong>它照樣會長 cusp、照樣是高黏著係數的
+      前驅物。它靠的是<strong>不斷把長出來的 cusp 削掉</strong>,加上削下來的材料
+      落回溝底 —— 是一個<strong>動態平衡</strong>,不是一個溫和的沉積。
+    </p>
+    <p>
+      真正同形的是 ALD。兩者填得滿的<strong>理由完全不同</strong>,
+      看 A23 的「階梯覆蓋率」那一欄最清楚:HDP 量到的值會
+      <strong>超過 1</strong>(溝內比場區還厚),因為材料被搬進去了。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📐 HDP 的極限,以及模型在這裡的已知不足</div>
+    <p>
+      真實的 HDP-CVD 在深寬比超過約 <strong>6:1</strong> 之後會失效:
+      濺出來的材料在溝口附近堆成一頂「帽子」,反而重新把開口封住。
+      這是 HDP 在先進節點被<strong>流動式 CVD(FCVD)</strong>與旋塗介電質
+      取代的原因。
+    </p>
+    <p>
+      <strong>本模型還沒有重現這件事</strong> —— A23 的 HDP 一路到 AR 10 都填得滿。
+      要重現需要把濺出通量的<strong>角度分布與直線飛行</strong>完整算出來,
+      目前的模型只做了「落點沿深度指數衰減」的近似。
+      所以:<strong>A23 在極高 AR 的 HDP 結果是樂觀的,不要拿它當製程窗的依據。</strong>
+      這一項記在 <code>docs/11</code> 的待辦裡。
+    </p>
+  </div>
+</div>
+
+<h2 id="peald">3.4.6 PEALD:自限制的沉積</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>步驟</th><th>做什麼</th><th>厚度會不會增加</th></tr></thead>
+      <tbody>
+        <tr><td>1. 前驅物脈衝</td><td>前驅物吸附到表面,<strong>飽和於一個單層</strong></td><td>不會</td></tr>
+        <tr><td>2. 吹除 Purge</td><td>抽走多餘前驅物(<strong>關鍵步驟</strong>)</td><td>不會</td></tr>
+        <tr><td>3. 電漿脈衝</td><td>自由基與吸附層反應,長出一層、移除配位基</td><td><strong>會</strong></td></tr>
+        <tr><td>4. 吹除 Purge</td><td>抽走副產物,回到乾淨表面</td><td>不會</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    每循環約 <strong>0.05–0.1 nm</strong>,重複到需要的厚度。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 自限制是一切的源頭</div>
+    <p>
+      因為第 1 步<strong>吸附滿了就停</strong>,所以厚度<strong>只由循環數決定</strong> ——
+      與流量、時間、位置都無關。三個優勢全部從這一句話推出來:
+    </p>
+    <ul>
+      <li><strong>覆蓋率接近 100 %</strong> —— 深孔內外一樣厚,因為「通量多寡」被自限制吃掉了</li>
+      <li><strong>厚度控制到原子級</strong> —— 循環數即厚度,不必控制時間</li>
+      <li><strong>均勻度極佳</strong> —— 不依賴流場均勻,因為不依賴通量</li>
+    </ul>
+    <p>
+      A22 的「每循環厚度 GPC」那一欄就是在看這件事:它是定值。
+      <strong>ALD 配方調的是圈數,不是時間</strong> —— 這和 CVD 是完全相反的思維。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A22 實測:自限制與它的兩個前提</div>
+    <p>
+      「自限制」在機台上不是免費的,它有<strong>兩個必須被滿足的前提</strong>。
+      A22 讓你把它們一個一個破壞掉(AR 5、階梯覆蓋率):
+    </p>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>前驅物脈衝(× 場區飽和量)</th><th>覆蓋率</th></tr></thead>
+        <tbody>
+          <tr><td>1.0</td><td>45 %</td></tr>
+          <tr><td>2.0</td><td>91 %</td></tr>
+          <tr><td>2.5 以上</td><td><strong>100 %,再加也不變</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>吹除充分程度</th><th>覆蓋率</th></tr></thead>
+        <tbody>
+          <tr><td>1.0(充分)</td><td>100 %</td></tr>
+          <tr><td>0.6</td><td>71 %</td></tr>
+          <tr><td>0.2</td><td>39 %</td></tr>
+          <tr><td>0(完全不吹)</td><td><strong>23 %</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>上面那張表是「自限制」的定義本身</strong>:過了飽和點,
+      再通更久也不會更厚 —— 這是 ALD 與 CVD 的分界線。
+      而<strong>下面那張表是機台工程師最該記住的一張</strong>:
+      吹除不乾淨,前驅物與自由基就在氣相相遇,製程<strong>退化成 CVD</strong>,
+      ALD 的三個優勢同時消失。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解:「ALD 的脈衝時間隨便給長一點就好」</div>
+    <p>
+      <strong>正解:飽和所需的脈衝時間會隨深寬比一起變長。</strong>
+    </p>
+    <p>
+      深處的前驅物通量本來就低,要更久才吸附飽和。A22 實測:場區飽和量的
+      1.0 倍在 AR 5 只能給出 45 % 覆蓋率,要到 <strong>2.5 倍</strong>
+      才讓整條溝都飽和。
+    </p>
+    <p>
+      所以<strong>把一支在 AR 3 驗證過的 ALD 配方直接搬到 AR 10 的結構上,
+      是會出事的</strong> —— 而且出的事是覆蓋率不足,
+      量膜厚(量的是場區)完全看不出來。這是配方移植最常踩的坑。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 PEALD vs 熱 ALD:電漿買到什麼、付出什麼</div>
+    <p>
+      <strong>買到</strong>:高活性自由基 → 更低的溫度、更好的膜質、
+      可以做熱 ALD 做不到的材料(例如金屬氮化物)。
+    </p>
+    <p>
+      <strong>付出</strong>:<strong>方向性</strong>。自由基沿著深孔一路在壁上複合掉,
+      到得了溝底的比到得了開口的少。A22 實測:PEALD 到 AR 8 都還接近 100 %,
+      <strong>AR 12 掉到九成</strong>。所以極高 AR 的結構上,
+      <strong>PEALD 的覆蓋率反而不如不用電漿的熱 ALD</strong>。
+    </p>
+    <p>
+      這是本課程反覆出現的同一個模式:<strong>電漿給的是活性與低溫,
+      收的費用是方向性與損傷。</strong>
+    </p>
+  </div>
+
+  <p>
+    <strong>主要應用</strong>:HKMG 的 HfO₂、spacer SiN、DRAM 電容介電層、
+    封裝阻障層、多重曝光的 spacer(SADP / SAQP)。
+    <strong>多重曝光尤其依賴 ALD</strong> —— spacer 的厚度直接決定最終線寬,
+    厚度控制不到原子級就做不出來。
+  </p>
+</div>
+
+<h2 id="lab-a22">🔬 A22 PEALD 四步循環與階梯覆蓋率</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A22">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A22</span>
+    <span class="pa-lab__title">自限制、GPC,以及破壞它的兩種方法</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。四個旋鈕(深寬比、循環數、前驅物脈衝、吹除充分程度)
+      驅動沉積模型。「厚度 = GPC × 循環數」、脈衝過了飽和點就不再變厚、
+      吹除不足時覆蓋率崩壞,三件事都是抵達量規則的結果,沒有為任何一種寫規則。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="lab-a23">🔬 A23 HDP-CVD 填溝 vs PECVD 夾 void</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A23">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A23</span>
+    <span class="pa-lab__title">void 的成因鏈,與 HDP 兩個機制的拆解</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。五個製程預設(SiH₄、TEOS、HDP,以及把 HDP 的
+      濺鍍與材料落回分別關掉的兩個對照)在同樣的淨沉積厚度下比較填溝結果。
+      void 是泛洪泛不到的真空格,不是畫出來的。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 A22 與 A23 用的是同一個模型,只有三條規則</div>
+  <p>
+    整個沉積模型只做三件事:<strong>抵達</strong>(黏著係數決定通量怎麼分布)、
+    <strong>長厚</strong>(累積到一格就變成膜)、<strong>濺掉</strong>(只有 HDP,
+    產額帶角度依賴)。
+  </p>
+  <p>
+    四種製程<strong>只是這三條規則的不同參數</strong>。
+    void、cusping、同形覆蓋、由下往上填滿 —— 沒有任何一種被單獨寫成規則,
+    全部是這三條的後果。
+  </p>
+  <p class="pa-subtle">
+    模型的行為由 <code>tools/check-deposit.mjs</code> 的 24 項斷言守住,
+    包含「把濺鍍關掉就退回 PECVD 的夾 void」這種<strong>因果對照</strong> ——
+    確保結論是機制產生的,不是參數湊出來的。
+  </p>
+</div>
+
+<h2 id="wrap">3.4.7 四種製程的一張表</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>製程</th><th>怎麼對付 void</th><th>覆蓋率</th><th>代價</th><th>用在哪</th></tr></thead>
+      <tbody>
+        <tr><td>PECVD(SiH₄)</td><td>不對付</td><td>約 30 %</td><td>—</td>
+          <td>平坦面、厚膜、保護層</td></tr>
+        <tr><td>PECVD(TEOS)</td><td><strong>降低黏著係數</strong></td><td>約 50–60 %</td>
+          <td>液態源系統</td><td>中等 AR 的 ILD</td></tr>
+        <tr><td>HDP-CVD</td><td><strong>把 cusp 濺掉 + 材料落回</strong></td>
+          <td>&gt; 1(材料被搬進溝裡)</td><td><strong>速率減半</strong></td>
+          <td>STI、高 AR 填溝(AR ≲ 6)</td></tr>
+        <tr><td>PEALD</td><td><strong>讓通量高低完全不影響厚度</strong></td>
+          <td>接近 100 %</td><td><strong>慢</strong>、極高 AR 有方向性問題</td>
+          <td>HKMG、spacer、DRAM 電容</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>把第二欄讀一遍</strong>:四種製程對應到 3.4.4 那條成因鏈的
+    四個不同下手點。選製程不是選「哪個比較好」,是選
+    <strong>要在哪一環切斷、願意付哪一種代價</strong>。
+  </p>
+  <p>
+    <a href="../3-5-pvd/">3.5</a> 會把「濺鍍」這件事本身講完 ——
+    HDP 裡的濺鍍只是它的副業,PVD 是拿它當主業。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>PECVD 相對熱 CVD 的核心價值是什麼?<strong>用 Al 的製程上限說明為什麼這件事非它不可。</strong></li>
+    <li>PECVD 的膜為什麼含氫多、密度低?這對可靠度有什麼影響?</li>
+    <li>要把 SiN 的應力從壓應力調成張應力,你動哪個旋鈕?<strong>為什麼不是溫度?</strong></li>
+    <li>把 void 的成因鏈五個環節依序寫出來。針對其中三環,各說一個切斷它的實際製程。</li>
+    <li>SiH₄ 換成 TEOS,覆蓋率為什麼會變好?這件事和 3.1 的側壁鈍化用的是同一個參數,那是什麼?</li>
+    <li>HDP-CVD 填得進高 AR 溝槽的兩個機制各是什麼?<strong>如果只有其中一個,結果會怎樣?</strong></li>
+    <li>為什麼 HDP 的階梯覆蓋率可以量到大於 1?這代表它很同形嗎?</li>
+    <li>PEALD 的「厚度只由循環數決定」是從哪一個步驟的哪一個性質推出來的?</li>
+    <li>一支在 AR 3 驗證過的 ALD 配方,直接用在 AR 10 的結構上會出什麼問題?<strong>為什麼量膜厚看不出來?</strong></li>
+    <li>吹除時間不足會發生什麼?為什麼說這會讓 ALD 的三個優勢同時消失?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>George, <em>Atomic Layer Deposition: An Overview</em>, Chem. Rev. 110, 111 (2010) —— ALD 的標準綜述</li>
+    <li>Profijt, Potts, van de Sanden &amp; Kessels, <em>Plasma-Assisted Atomic Layer Deposition: Basics, Opportunities, and Challenges</em>, J. Vac. Sci. Technol. A 29, 050801 (2011)</li>
+    <li>Nguyen, <em>High-density plasma chemical vapor deposition of silicon-based dielectric films for integrated circuits</em>, IBM J. Res. Dev. 43, 5 (1999)</li>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 16</li>
+    <li>Ohring, <em>Materials Science of Thin Films</em>, Ch. 6(膜應力與微結構)</li>
+  </ul>
+</div>
