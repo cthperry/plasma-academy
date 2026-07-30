@@ -24,7 +24,19 @@
   // 這一欄就是 SiO₂ 對 Si 選擇比的來源,不是另外寫死的規則。
   var MATERIALS = {
     vacuum: { id: 0, token: "bg", oxy: 0, chem: 0, ionY: 0 },
-    mask: { id: 1, token: "vizMask", oxy: 0.15, chem: 0.06, ionY: 0.35 },
+    /**
+     * 遮罩的兩個係數都被實作修正過,而且都是「遮罩根本撐不到終點」這一個問題:
+     *
+     * chem 0.06 → 0.01:遮罩之所以能當遮罩,就是因為它**不被化學蝕刻** ——
+     *   損耗幾乎全來自離子濺射,所以遮罩的問題是 faceting 與 mask loss
+     *   (角度與能量依賴),不是被自由基咬掉。
+     *
+     * ionY 0.35 → 0.18:0.35 對 SiO₂ 的 1.0 只有約 3 倍選擇比,
+     *   而蝕穿目標膜要花掉遮罩好幾倍的厚度 —— 於是**每一種低鈍化的預設**
+     *   都在中途把遮罩濺鍍光,全部被判成 faceting,undercut 根本做不出來。
+     *   0.18 對應約 5–6 倍的遮罩選擇比,與介電質蝕刻的實務量級相符。
+     */
+    mask: { id: 1, token: "vizMask", oxy: 0.15, chem: 0.01, ionY: 0.18 },
     oxide: { id: 2, token: "vizFilm", oxy: 1.0, chem: 0.25, ionY: 1.0 },
     nitride: { id: 3, token: "vizPolymer", oxy: 0.3, chem: 0.45, ionY: 0.85 },
     silicon: { id: 4, token: "vizSubstrate", oxy: 0.0, chem: 1.0, ionY: 0.9 },
@@ -136,11 +148,189 @@
     api.ionFlux = ionFlux;
 
     /**
+     * 有角度發散的離子通量。
+     *
+     * 真實的離子不是完美垂直的 —— 鞘層裡的碰撞與離子的橫向溫度給它一個
+     * 角度分佈(2.4 的 IEDF 同一件事的角度版本)。div 是這個分佈的
+     * 半角切線值(tan θ),0 就退回上面那個完美垂直的版本。
+     *
+     * 回傳 { f, slope }:
+     *   f     通量(0…1),中央權重高的加權平均
+     *   slope 通得過的射線的加權平均斜率 —— 也就是離子實際打過來的方向。
+     *         鏡面反射要用它,所以在這裡一起算出來。
+     *
+     * 這一條同時解釋兩件事:
+     *   · 側壁開始吃得到離子 → undercut / bowing 的來源
+     *   · 深窄溝的溝底反而收不足 → ARDE 不只是自由基的事
+     */
+
+    /**
+     * 整個格點最上面那一列固體的位置。
+     * 位於這一列(或更上面)的格子,任何方向的視線都不會被擋 ——
+     * 通量必定是 1,不必射線追蹤。
+     *
+     * 平坦上表面(遮罩頂)佔了暴露格的一大半,這個提前判斷讓每一步
+     * 省掉大部分工作。條件是「全域最上層」而不是「左右鄰居也空」——
+     * 後者對自由基的 ±60° 扇形不成立,會把深溝底部誤判成無遮蔽。
+     */
+    var topSolidRow = 0;
+    function refreshTopSolid() {
+      for (var y = 0; y < rows; y++) {
+        for (var x = 0; x < cols; x++) {
+          if (mat[idx(x, y)] !== 0) {
+            topSolidRow = y;
+            return;
+          }
+        }
+      }
+      topSolidRow = rows;
+    }
+
+    function skyClear(y) {
+      return y <= topSolidRow;
+    }
+
+    var DIV_RAYS = 8;
+    function ionFluxVec(x, y, div) {
+      if (!div || div <= 0) return { f: ionFlux(x, y), slope: 0 };
+      if (skyClear(y)) return { f: 1, slope: 0 };
+      var open = 0;
+      var total = 0;
+      var slopeSum = 0;
+      for (var a = -DIV_RAYS; a <= DIV_RAYS; a++) {
+        var t = a / DIV_RAYS;
+        var dx = t * div;
+        // 角度分佈中央高、邊緣低(近似鞘層裡的橫向速度分佈)
+        var w = 1 - 0.7 * Math.abs(t);
+        total += w;
+        var blocked = false;
+        for (var yy = y - 1; yy >= 0; yy--) {
+          var xx = Math.round(x + dx * (y - yy));
+          if (xx < 0 || xx >= cols) break;
+          if (mat[idx(xx, yy)] !== 0) {
+            blocked = true;
+            break;
+          }
+        }
+        if (!blocked) {
+          open += w;
+          slopeSum += w * dx;
+        }
+      }
+      if (open <= 0) return { f: 0, slope: 0 };
+      return { f: open / total, slope: slopeSum / open };
+    }
+    api.ionFluxVec = ionFluxVec;
+
+    /**
+     * 表面法線,指向真空側。用 3×3 的固體密度梯度估。
+     * 反射需要知道表面是斜的還是平的,而「斜多少」正是濺鍍產額角度依賴
+     * (3.1.6)與反射比例的共同依據。
+     */
+    function normalAt(x, y) {
+      var gx = 0;
+      var gy = 0;
+      for (var dy = -1; dy <= 1; dy++) {
+        for (var dx = -1; dx <= 1; dx++) {
+          if (!dx && !dy) continue;
+          var xx = x + dx;
+          var yy = y + dy;
+          var solid;
+          if (xx < 0 || xx >= cols) solid = 1; // 側邊視為固體(週期外)
+          else if (yy < 0) solid = 0; // 上方是電漿
+          else if (yy >= rows) solid = 1;
+          else solid = mat[idx(xx, yy)] !== 0 ? 1 : 0;
+          var w = 1 / Math.sqrt(dx * dx + dy * dy);
+          gx += dx * solid * w;
+          gy += dy * solid * w;
+        }
+      }
+      var L = Math.sqrt(gx * gx + gy * gy);
+      if (L < 1e-6) return null;
+      return { x: -gx / L, y: -gy / L };
+    }
+    api.normalAt = normalAt;
+
+    /**
+     * 反射離子通量圖。
+     *
+     * 離子打在斜面上不會全部被吸收:入射角越掠(cos θ 越小)反射比例越高。
+     * 反射後沿鏡面方向前進,打到的第一個表面多吃一份離子通量。
+     *
+     * **一條規則、兩個缺陷**:
+     *   · 遮罩肩部被削出的斜面把離子送向側壁 → bowing
+     *   · 溝底附近微微內傾的側壁把離子送向溝底兩側 → microtrench
+     * 兩者都不是另外寫的規則,是同一段反射計算在不同幾何下的結果。
+     */
+    function reflectMap(div, coef) {
+      var out = new Float32Array(n);
+      if (!coef || coef <= 0) return out;
+      for (var y = 0; y < rows; y++) {
+        for (var x = 0; x < cols; x++) {
+          var i = idx(x, y);
+          if (mat[i] === 0) continue;
+          if (!exposed(x, y)) continue;
+          var inc = ionFluxVec(x, y, div);
+          if (inc.f <= 0.02) continue;
+          var nrm = normalAt(x, y);
+          if (!nrm) continue;
+
+          // 入射方向:射線朝天空是 (slope, −1),所以離子來的方向是它的反向
+          var dxi = -inc.slope;
+          var dyi = 1;
+          var dl = Math.sqrt(dxi * dxi + 1);
+          dxi /= dl;
+          dyi /= dl;
+
+          var dot = dxi * nrm.x + dyi * nrm.y; // < 0 表示打向表面
+          if (dot >= 0) continue;
+          var cosI = -dot; // 1 = 垂直入射,0 = 掠射
+          /**
+           * 掠射反射多、垂直入射全吸收。指數用 1.2 而不是 2:
+           * 平方會讓 45° 入射的反射率只剩 9 %,實測下來溝底兩側的
+           * 微溝完全長不出來(碗狀底部的中央優勢壓過反射的集中)。
+           * 真實的離子反射係數在中等入射角也還有兩三成,不會掉那麼快。
+           */
+          var R = coef * Math.pow(1 - cosI, 1.2);
+          if (R <= 1e-3) continue;
+
+          // 鏡面反射方向
+          var rx = dxi - 2 * dot * nrm.x;
+          var ry = dyi - 2 * dot * nrm.y;
+          var rl = Math.sqrt(rx * rx + ry * ry);
+          if (rl < 1e-6) continue;
+          rx /= rl;
+          ry /= rl;
+
+          // 沿反射方向前進,找第一個碰到的表面
+          var px = x + nrm.x * 1.2;
+          var py = y + nrm.y * 1.2;
+          for (var s = 0; s < 2 * rows; s++) {
+            px += rx * 0.7;
+            py += ry * 0.7;
+            var cx = Math.round(px);
+            var cy = Math.round(py);
+            if (cx < 0 || cx >= cols || cy < 0 || cy >= rows) break;
+            if (cx === x && cy === y) continue;
+            var ti = idx(cx, cy);
+            if (mat[ti] !== 0) {
+              out[ti] += inc.f * R;
+              break;
+            }
+          }
+        }
+      }
+      return out;
+    }
+    api.reflectMap = reflectMap;
+
+    /**
      * 自由基通量:等向入射,所以看的是「這一格能看到多少上方的天空」。
      * 深溝裡看到的立體角小 → 通量低 —— ARDE / RIE lag 由此而來,
      * 不必另外寫規則。
      */
     function neutralFlux(x, y) {
+      if (skyClear(y)) return 1;
       var open = 0;
       var total = 0;
       // 以 ±60° 的扇形取樣視線
@@ -170,7 +360,12 @@
      *   ionFluxRel  離子通量相對值(bias 之外的密度因素)
      *   dt          步長
      *   polyCrit    聚合物擋住蝕刻的門檻厚度
+     *   ionDiv      離子角度發散的 tan θ(預設 0 = 完美垂直)
+     *   ionReflect  鏡面反射係數(預設 0 = 全吸收)
      * }
+     * ionDiv / ionReflect 預設為 0,此時行為與加入它們之前完全相同 ——
+     * A10 等既有元件不受影響。
+     *
      * 回傳三個代表位置的淨速率,供 UI 標示:溝底 / 側壁 / 遮罩頂
      */
     api.step = function (p) {
@@ -179,12 +374,18 @@
       var E = p.ionEnergy;
       var iRel = p.ionFluxRel == null ? 1 : p.ionFluxRel;
       var polyCrit = p.polyCrit == null ? 1 : p.polyCrit;
+      var div = p.ionDiv || 0;
+      refreshTopSolid(); // 通量的提前判斷要用,幾何一變就要更新
+      var refl = reflectMap(div, p.ionReflect || 0);
 
       // F 自由基的相對量 ∝ 有效 F/C;聚合物前驅物則相反。
       // 3.4 附近是分水嶺:高於它幾乎不聚合(CF₄ 那一端),
       // 低於它聚合物快速增加(C₄F₈ / CH₃F 那一端),而且是超線性的。
-      var fRad = Math.max(0, effFC) / 4;
-      var depRate = Math.pow(Math.max(0, 3.4 - effFC), 1.6) * 0.9;
+      // neutralRel 是「中性粒子總量」(流量/壓力)這一個獨立旋鈕:
+      // 它同比例放大 F 自由基與聚合物前驅物,不改變兩者的比例(那是 effFC 的事)。
+      var nRel = p.neutralRel == null ? 1 : p.neutralRel;
+      var fRad = (Math.max(0, effFC) / 4) * nRel;
+      var depRate = Math.pow(Math.max(0, 3.4 - effFC), 1.6) * 0.9 * nRel;
 
       var yi = ionYield(E, 25);
 
@@ -202,7 +403,9 @@
           if (!exposed(x, y)) continue;
 
           var m = BY_ID[mat[i]];
-          var fi = ionFlux(x, y) * iRel;
+          // 直射 + 反射。反射進來的那一份沒有「方向性」的意義,
+          // 但它一樣打斷鍵、一樣清聚合物 —— 所以就是加在同一個 fi 上。
+          var fi = (ionFluxVec(x, y, div).f + refl[i]) * iRel;
           var fn = neutralFlux(x, y);
 
           // --- 聚合物收支 ---
@@ -216,7 +419,15 @@
            * 在 Si 表面只剩 (a),聚合物越積越厚 → 蝕刻停住。
            * 這就是課文說的「離子輔助聚合物移除機制」,不是另外寫死的規則。
            */
-          var rem = fi * yi * (0.03 + m.oxy * 0.075) + m.oxy * fRad * 0.2;
+          /**
+           * 兩條路都必須有離子。第二條原本寫成與離子無關,結果側壁的聚合物
+           * 也會被清掉 —— 那就違反了 3.1.4 的整個圖像(側壁離子打不到,
+           * 所以鈍化層留著、蝕刻停住)。加上 gate 之後,無離子處 rem → 0,
+           * 側壁才真的受保護。
+           */
+          var ionAct = fi * yi;
+          var gate = ionAct / (3 + ionAct); // 無離子 → 0,離子充足 → 1
+          var rem = ionAct * 0.03 + m.oxy * (ionAct * 0.075 + fRad * 0.38 * gate);
           // 上限只是數值保險,避免長時間沉積讓數字跑掉
           var pNew = Math.min(4 * polyCrit, Math.max(0, poly[i] + (dep - rem) * dt));
 
@@ -226,7 +437,34 @@
             // 聚合物越厚,擋得越多(線性衰減到門檻)
             var block = 1 - pNew / polyCrit;
             var chem = m.chem * fRad * fn * 0.35; // 等向
-            var ionAssist = m.ionY * fi * yi * fRad * 0.16; // 方向性
+            /**
+             * 離子輔助(方向性)。兩種寫法:
+             *
+             * 預設 —— 只乘全域的自由基密度 fRad。這是 P2 建立、
+             *   `tools/check-profile.mjs` 16 項斷言守住的版本,A10 等既有元件用它。
+             *
+             * localCoverage —— 再乘上「表面**本地**被自由基覆蓋了多少」。
+             *   這才是 3.1.2 協同效應的完整內容:離子只是把已經生成的 SiFx
+             *   打掉,本地沒有 SiFx 就只剩純濺鍍。用 Langmuir 型飽和:
+             *   供應充足時趨近 1(離子限制),不足時正比於供應(自由基限制)。
+             *
+             *   **這一項是 ARDE / RIE lag 的主因** —— 深窄溝的自由基通量被
+             *   立體角削掉,覆蓋率跟著掉,即使離子照樣打得到,速率還是慢。
+             *   少了本地的 fn,深窄溝與淺寬溝會刻得一樣快(實測落差 < 2 %),那是錯的。
+             *
+             * 為什麼不直接把 localCoverage 變成預設:它會改變絕對蝕刻率,
+             * 而 F/C 各模式的邊界(尤其 etch stop 落在哪個 F/C)是被課文與
+             * check-profile 綁住的。與其為了 A18 去重新校準 A10 的既有結論,
+             * 不如讓需要的元件明確 opt in。
+             */
+            var ionAssist;
+            if (p.localCoverage) {
+              var supply = fRad * fn;
+              var coverage = supply / (0.6 + supply);
+              ionAssist = m.ionY * fi * yi * coverage * 0.48;
+            } else {
+              ionAssist = m.ionY * fi * yi * fRad * 0.16;
+            }
             etch = (chem + ionAssist) * block;
           }
 
@@ -276,6 +514,7 @@
     };
 
     api.reset();
+    refreshTopSolid();
     return api;
   }
 

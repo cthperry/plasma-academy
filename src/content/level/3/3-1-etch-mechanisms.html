@@ -1,0 +1,542 @@
+<!--meta
+{
+  "title": "3.1 蝕刻機制 — Plasma Academy",
+  "description": "四種蝕刻機制、Coburn–Winters 協同實驗、側壁鈍化如何同時做出異向性與選擇比、濺鍍產額的角度依賴。",
+  "type": "chapter",
+  "module": "3.1"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>3.1 蝕刻機制</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 3.0 小時</span>
+    <span>🔬 A17、A18 互動元件</span>
+    <span>L3 進階 · 機制章</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="3.1">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>區分四種蝕刻機制,並說出各自的 profile 特徵與選擇比</span></label></li>
+    <li><label><input type="checkbox" /><span>用 Coburn–Winters 的三個數字說明協同效應為什麼是相乘不是相加</span></label></li>
+    <li><label><input type="checkbox" /><span>從協同效應推出異向性,不需要額外假設</span></label></li>
+    <li><label><input type="checkbox" /><span>說明側壁鈍化如何同時解決異向性與選擇比,以及它的代價</span></label></li>
+    <li><label><input type="checkbox" /><span>列出選擇比的三種來源,並判斷手上的製程靠哪一種</span></label></li>
+    <li><label><input type="checkbox" /><span>用濺鍍產額的角度依賴解釋 faceting 與 microtrenching</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../2/2-6-causal-chain/">2.6 參數因果鏈</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    L2 把旋鈕與電漿參數的關係建好了。這一章開始問<strong>材料到底是怎麼被移除的</strong>。
+  </p>
+  <p>
+    答案只有四種機制,而現代電漿蝕刻是<strong>後兩種的組合</strong>:
+    離子輔助協同 + 側壁鈍化。
+  </p>
+  <ul>
+    <li><strong>協同效應是相乘的。</strong>1979 年 Coburn–Winters:化學 5、物理 2、
+      兩者同時 <strong>55</strong>。5 + 2 = 7,實測 55 —— 差了近八倍。</li>
+    <li><strong>異向性不是額外機制,是協同的直接後果。</strong>溝底同時有離子與自由基(55),
+      側壁只有自由基(5)。底部快 11 倍,側壁自然就垂直了。</li>
+    <li><strong>選擇比幾乎永遠是鈍化做出來的。</strong>所以「提高選擇比」的三個手段
+      ——加聚合性氣體、降 bias、降 O₂ ——<strong>全部都會降蝕刻率</strong>。
+      這是根本性的 trade-off,不是調得好就能兩全。</li>
+  </ul>
+  <p>
+    兩個元件:<a href="#lab-a17">A17</a> 重現原始實驗,
+    <a href="#lab-a18">A18</a>(★★ 旗艦)讓你用五個旋鈕直接把這些機制推到極端,看輪廓怎麼變形。
+  </p>
+</div>
+
+<h2 id="four">3.1.1 四種機制</h2>
+
+<div class="pa-prose">
+  <p>
+    材料要離開晶圓,必須變成<strong>揮發性的分子</strong>然後被抽走。
+    達成這件事的路徑只有四條:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead>
+        <tr><th>機制</th><th>驅動</th><th>Profile</th><th>選擇比</th><th>蝕刻率</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span class="pa-term" data-term="物理濺鍍">物理濺鍍</span></strong></td>
+          <td>純離子動量轉移</td>
+          <td>異向,但有 45° 斜面效應</td>
+          <td><strong>極差</strong>(對誰都差不多)</td>
+          <td>低</td>
+        </tr>
+        <tr>
+          <td><strong>純化學蝕刻</strong></td>
+          <td>中性自由基</td>
+          <td><strong>完全<span class="pa-term" data-term="等向性">等向</span></strong></td>
+          <td>極佳</td>
+          <td>高</td>
+        </tr>
+        <tr>
+          <td><strong><span class="pa-term" data-term="離子輔助蝕刻">離子輔助</span></strong>(<span class="pa-term" data-term="反應性離子蝕刻">RIE</span>)</td>
+          <td>離子 + 自由基協同</td>
+          <td><span class="pa-term" data-term="異向性">異向</span></td>
+          <td>好</td>
+          <td>高</td>
+        </tr>
+        <tr>
+          <td><strong>抑制劑輔助</strong>(<span class="pa-term" data-term="側壁鈍化">側壁鈍化</span>)</td>
+          <td>離子 + 自由基 + 聚合物</td>
+          <td><strong>高度異向</strong></td>
+          <td>極佳</td>
+          <td>中</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼前兩種在量產上都不能用</div>
+    <p>
+      <strong>純物理</strong>:方向性最好,但它對任何材料的濺鍍產額都在同一個數量級 ——
+      蝕刻 SiO₂ 的同時把光阻和下層一起削掉,<strong>選擇比接近 1</strong>。
+      而且速率太低,產能撐不起來。
+    </p>
+    <p>
+      <strong>純化學</strong>:選擇比可以做到幾百,速率也漂亮,但自由基是等向入射的 ——
+      <strong>側壁與底部一樣快</strong>。圖案還沒刻到底,CD 就已經吃掉了。
+      灰化(ashing)這種不在乎 profile 的製程才用純化學。
+    </p>
+    <p>
+      <strong>兩個都不行,但把它們疊起來卻同時解決了兩個問題。</strong>
+      這件事在 1979 年之前並沒有人預期得到 —— 下一節就是那個實驗。
+    </p>
+  </div>
+</div>
+
+<h2 id="coburn">3.1.2 Coburn–Winters 實驗:整個領域的奠基實驗</h2>
+
+<div class="pa-prose">
+  <p>
+    實驗設計非常乾淨:一片 Si,一道 XeF₂ 氣流(純化學,可獨立開關),
+    一束 Ar⁺ 離子(純物理,可獨立開關)。分三個階段量 Si 的蝕刻率。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>階段</th><th>條件</th><th class="is-num">Si 蝕刻率(相對)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>只有 XeF₂ 氣體</td><td class="is-num">~5</td></tr>
+        <tr><td>2</td><td><strong>XeF₂ + Ar⁺ 離子束</strong></td><td class="is-num"><strong>~55</strong></td></tr>
+        <tr><td>3</td><td>只有 Ar⁺ 離子束</td><td class="is-num">~2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 5 + 2 = 7,但一起用得到 55</div>
+    <p>
+      這就是<span class="pa-term" data-term="協同效應">協同效應</span>(synergy)。
+      兩者同時作用的速率是<strong>各自相加的 7.9 倍</strong>。
+    </p>
+    <p>
+      所以協同<strong>不能寫成加法模型</strong>。A17 的模型是
+      <code>R = 5·g + 2·i + 48·g·i</code> —— 那個 <code>g·i</code> 的乘積項就是協同,
+      而 48 這個係數是從 55 − 5 − 2 反推的,不是調出來的。
+    </p>
+  </div>
+
+  <h3 id="coburn-why">機制:離子的工作不是自己刻</h3>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>只有自由基</strong>:F 吸附在 Si 表面 → 生成 SiF<sub>x</sub> 層 → 反應停在那裡,SiF<sub>x</sub> 脫附很慢 → <strong>速率被脫附卡住</strong></div>
+    <div class="pa-chain__step"><strong>加上離子</strong>:打斷 Si–Si 鍵產生懸鍵(新的反應位置)、把 SiF<sub>x</sub> 打成揮發性的 SiF₄ 立刻脫附、混合表面層讓 F 進得更深 → <strong>脫附瓶頸被打開</strong></div>
+    <div class="pa-chain__step"><strong>只有離子</strong>:表面沒有 SiF<sub>x</sub> 可打,只剩純動量濺鍍 → <strong>效率極低</strong></div>
+    <div class="pa-chain__step pa-chain__step--end">離子提供的是<strong>活化能</strong>,不是移除量 —— 這句話是整章的鑰匙</div>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 現場意義:離子與自由基是兩個獨立旋鈕,但效果不獨立</div>
+    <p>
+      因為速率是乘積型的,<strong>缺哪一邊都會塌</strong>。
+      自由基不足時加 bias 幾乎沒用(乘上一個小數);
+      離子不足時加流量也幾乎沒用。
+    </p>
+    <p>
+      這解釋了一個現場常見的困惑:「我明明加了功率,速率卻沒動。」
+      —— 通常是另一邊已經飽和了,你加在乘積裡已經被鎖住的那一項上。
+      回頭看 <a href="../../2/2-6-causal-chain/#chain-source">2.6 的 source/bias 兩條鏈</a>,
+      判斷你缺的是密度還是能量。
+    </p>
+  </div>
+</div>
+
+<h2 id="anisotropy">3.1.3 異向性的根本:同一個機制,兩個位置</h2>
+
+<div class="pa-prose">
+  <p>
+    這是本章最重要的一段推導,而且它<strong>不需要任何新假設</strong> ——
+    只要把上一節的乘積模型套到溝槽的兩個位置上:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>位置</th><th>自由基</th><th>離子</th><th class="is-num">速率</th></tr></thead>
+      <tbody>
+        <tr><td><strong>溝底</strong></td><td>有(等向入射,進得去)</td><td>有(鞘層加速,垂直入射)</td><td class="is-num"><strong>55</strong></td></tr>
+        <tr><td><strong>側壁</strong></td><td>有</td><td>幾乎沒有(垂直入射打不到)</td><td class="is-num"><strong>5</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>底部比側壁快 11 倍 → 垂直側壁。</strong>
+    異向性的來源就是<span class="pa-term" data-term="鞘層">鞘層</span>把離子整成單一方向
+    (<a href="../../1/1-5-sheath-intro/">1.5</a>),而協同效應把「有沒有離子」放大成 11 倍的速率差。
+  </p>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠ 常見誤解:「離子把材料撞掉,所以往下刻」</div>
+    <p>
+      如果真是離子撞掉材料,速率上限就是階段 3 的那個 <strong>2</strong> ——
+      比純化學還慢,而且選擇比接近 1。實際製程用的是 <strong>55</strong>,
+      也就是<strong>化學在刻,離子只是開門</strong>。
+    </p>
+    <p>
+      這個區別在調機時很實際:當你以為速率靠離子時,不足就會一直加 bias,
+      結果選擇比崩掉、<a href="../../4/4-3-plasma-damage/">損傷</a>上升,而速率沒怎麼動。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a17">🔬 A17 Coburn–Winters 實驗重現</h2>
+
+<div class="pa-lab" data-lab="A17">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A17</span>
+    <span class="pa-lab__title">協同效應 —— 為什麼 5 + 2 = 55</span>
+  </div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。兩個開關(XeF₂ 氣體、Ar⁺ 離子束)驅動
+      <code>R = 5·g + 2·i + 48·g·i</code>,重現 1979 年的三階段:5 / 55 / 2。
+      「溝槽剖面」視角把同一個模型套到溝底與側壁,直接得到 11 倍的速率差。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 A17 的紅色虛線是重點</div>
+  <p>
+    圖上那條紅色虛線畫在 <strong>7</strong> 的位置 —— 也就是「如果協同可以相加」該有的高度。
+    兩個開關都打開時,曲線衝到 55,把虛線遠遠留在下面。
+  </p>
+  <p>
+    <strong>那段落差就是整個電漿蝕刻產業存在的理由。</strong>
+    沒有它,乾式蝕刻不會比濕式好。
+  </p>
+</div>
+
+<h2 id="passivation">3.1.4 側壁鈍化:第二層保險</h2>
+
+<div class="pa-prose">
+  <p>
+    協同效應給了 11 倍的速率差,但側壁那個「5」<strong>不是零</strong> ——
+    刻得越深、時間越久,側壁被化學蝕刻咬掉的量就越可觀。深孔製程尤其明顯。
+  </p>
+  <p>
+    所以現代製程加上第二個機制:<strong>在側壁長一層保護膜</strong>。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>來源</th><th><span class="pa-term" data-term="鈍化層">鈍化層</span>成分</th><th>典型製程</th></tr></thead>
+      <tbody>
+        <tr><td><strong>氟碳<span class="pa-term" data-term="聚合物">聚合物</span></strong></td><td>CF<sub>x</sub> 聚合物</td><td>介電質蝕刻(C₄F₈)</td></tr>
+        <tr><td><strong>氧化型鈍化</strong></td><td>SiOBr / SiOCl</td><td>Poly-Si 蝕刻(HBr/Cl₂ + O₂)</td></tr>
+        <tr><td><strong>光阻濺鍍再沉積</strong></td><td>碳質膜</td><td>早期製程,現多視為缺陷來源</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="passivation-logic">運作邏輯 —— L3 最重要的一張圖像</h3>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step">鈍化層<strong>均勻沉積在所有表面</strong>(它是中性物種,等向入射)</div>
+    <div class="pa-chain__step"><strong>溝底</strong>:垂直離子轟擊持續把它打掉 → 露出材料 → 蝕刻繼續</div>
+    <div class="pa-chain__step"><strong>側壁</strong>:離子打不到 → 鈍化層保留並持續增厚 → 蝕刻停止</div>
+    <div class="pa-chain__step pa-chain__step--end">結果:<strong>垂直側壁</strong>,而且側壁那個「5」也被關掉了</div>
+  </div>
+
+  <p>
+    注意這個機制的<strong>選擇器仍然是離子的方向性</strong> ——
+    和協同效應是同一個選擇器。所以兩個機制不是並列的兩招,
+    而是<strong>同一個原理用在兩件事上</strong>:一個開門讓蝕刻發生,一個關門讓蝕刻停止。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 這也是選擇比的來源</div>
+    <p>
+      遮罩頂部雖然一直被離子轟擊,但如果鈍化沉積速率夠快,
+      <strong>淨消耗就低</strong>。同樣地,當蝕刻穿到下層材料時,
+      若下層沒有辦法消耗聚合物,聚合物就會累積起來把蝕刻擋住 —— 這就是自動停止。
+    </p>
+    <p>
+      A18 用的輪廓引擎只有三條規則(離子通量、自由基通量、聚合物收支),
+      <strong>沒有為任何一種缺陷寫規則</strong>。低 F/C 條件下它算出
+      SiO₂ 照刻而 Si 完全停住 —— 選擇比是聚合物收支自己解出來的。
+    </p>
+    <p>
+      這個機制寫對了以後,連 <strong>ARDE(深寬比效應)</strong> 都會自己出現:
+      深窄溝的自由基通量被立體角削掉 → 表面覆蓋率跟著掉 →
+      即使離子照樣打得到,速率還是慢。把 A18 切到多溝槽視圖就看得到,
+      而那並不是另外寫的規則。
+    </p>
+  </div>
+</div>
+
+<h2 id="selectivity">3.1.5 選擇比的三種來源</h2>
+
+<div class="pa-prose">
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      S = R<sub>target</sub> / R<sub>underlayer</sub>
+    </div>
+    <div class="pa-formula__name"><span class="pa-term" data-term="選擇比">選擇比</span> —— 兩個速率的比值,但「怎麼做出這個比值」有三條不同的路</div>
+  </div>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>來源</th><th>機制</th><th>範例</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>化學選擇性</strong></td>
+          <td>產物揮發性差異</td>
+          <td>F 蝕刻 Si 快、蝕刻 SiO₂ 慢(需離子破 Si–O)</td>
+        </tr>
+        <tr>
+          <td><strong>鈍化選擇性</strong></td>
+          <td>聚合物在不同材料上的<strong>淨累積</strong>差異</td>
+          <td>SiO₂ 有氧可消耗聚合物 → 蝕刻;Si 無 → 停止</td>
+        </tr>
+        <tr>
+          <td><strong>閾值選擇性</strong></td>
+          <td>濺鍍閾值能量差異</td>
+          <td>把 IEDF 壓到低於下層材料的閾值</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="selectivity-req">實務要求</h3>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>製程</th><th class="is-num">要求</th><th>為什麼那麼高</th></tr></thead>
+      <tbody>
+        <tr><td>Poly gate 對 gate oxide</td><td class="is-num"><strong>&gt; 100</strong></td><td>oxide 只有 1–2 nm,打穿就完蛋</td></tr>
+        <tr><td>接觸孔 SiO₂ 對 Si</td><td class="is-num">&gt; 20</td><td>深度不均時最深的孔會先到底</td></tr>
+        <tr><td>SiN spacer 對 Si</td><td class="is-num">&gt; 10</td><td>過蝕刻會咬進源汲極</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 工程師直覺:選擇比幾乎永遠是鈍化做出來的</div>
+    <p>
+      化學選擇性通常只有個位數到十幾倍,閾值選擇性的窗又很窄。
+      要 100 倍以上,<strong>只有鈍化辦得到</strong>。
+    </p>
+    <p>
+      所以「提高選擇比」實務上就是這三招:
+      <strong>加聚合性氣體、降 bias、降 O₂</strong>。
+      而這三招在 <a href="../../2/2-6-causal-chain/#matrix">2.6 的 trade-off 矩陣</a>裡
+      <strong>全部都指向蝕刻率下降</strong>。
+    </p>
+    <p>
+      <strong>選擇比與蝕刻率是根本性的 trade-off</strong> ——
+      因為它們共用同一個旋鈕、方向相反。
+      這不是「調得好就能兩全」,而是必須選一個位置站。
+      唯一真正繞開這個 trade-off 的是
+      <a href="../../4/4-4-advanced-tech/">ALE(4.4)</a>:把沉積與移除分成兩個時間段,
+      不讓它們在同一瞬間互相抵銷。
+    </p>
+  </div>
+</div>
+
+<h2 id="yield">3.1.6 濺鍍產額與角度效應</h2>
+
+<div class="pa-prose">
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      Y(E) ∝ ( √E − √E<sub>th</sub> )
+    </div>
+    <div class="pa-formula__name">Sigmund 近似(閾值附近)—— E<sub>th</sub> 是<span class="pa-term" data-term="濺鍍產額">濺鍍</span>閾值能量,低於它幾乎不濺鍍</div>
+  </div>
+
+  <p>
+    但真正造成 profile 缺陷的不是能量依賴,而是<strong>角度依賴</strong>:
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 濺鍍產額在入射角 45–70° 最大 —— 不是 0°</div>
+    <p>
+      垂直入射(0°)時離子把能量帶進材料深處,反衝原子往下走,反而不容易噴出表面。
+      斜向入射時能量沉積在表層,反衝方向更接近表面法線的反面 —— <strong>最容易噴出來</strong>。
+      角度太大(&gt; 70°)則變成掠過,產額回落。
+    </p>
+  </div>
+
+  <h3 id="yield-consequence">兩個直接後果</h3>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong><span class="pa-term" data-term="faceting">Faceting</span></strong>:遮罩肩部一開始只是個直角,但直角附近的局部斜面正好落在高產額角度 → 被削成 45° 斜面 → 斜面持續擴大 → <strong>遮罩開口自己變寬,CD 失控</strong></div>
+    <div class="pa-chain__step"><strong>Microtrenching</strong>:斜面成了<strong>反射面</strong> → 離子鏡面反射後集中打在溝底兩側 → 兩邊各刻出一道深溝</div>
+    <div class="pa-chain__step pa-chain__step--end">兩個缺陷、同一個成因 —— 完整圖鑑見 <a href="../3-3-defect-atlas/">3.3</a></div>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠ 常見誤解:把 faceting 當成 undercut</div>
+    <p>
+      兩者在剖面上都是「上面比下面寬」,只看膜裡的溝分不開。
+      <strong>差別在遮罩</strong>:
+    </p>
+    <ul>
+      <li><strong>Undercut</strong> —— 遮罩完好,只有膜被側蝕。遮罩開口沒變。</li>
+      <li><strong>Faceting</strong> —— <strong>遮罩自己被削寬了</strong>。這時量膜的 CD 已經沒有意義,
+        因為定義 CD 的那個遮罩已經不是原來的尺寸。</li>
+    </ul>
+    <p>
+      A18 因此把「遮罩開口(倍)」列成獨立的讀數 —— 它是這一組判別的關鍵,
+      也是模擬器判定 faceting 的依據。
+    </p>
+  </div>
+
+  <p>
+    A18 把這個角度依賴直接放進模型,所以你在 faceting 預設下看到的斜面
+    <strong>不是畫上去的,是產額的角度依賴算出來的</strong>;
+    把「離子鏡面反射」拉到 0,microtrench 的兩道小溝就會消失。
+  </p>
+</div>
+
+<h2 id="lab-a18">🔬 A18 蝕刻輪廓模擬器</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A18">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A18</span>
+    <span class="pa-lab__title">八種 profile —— L3 的旗艦元件</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。五個旋鈕(離子能量、離子角度發散、鈍化沉積速率、
+      自由基通量、離子鏡面反射)驅動輪廓引擎。判定形狀是<strong>量出來的</strong>
+      (頂部/中段/底部寬度比、溝底橫向分佈、遮罩開口變化),不是看你選了哪個預設。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-prose">
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 A18 為什麼可以當診斷工具用</div>
+    <p>
+      引擎只有三條規則:離子通量(垂直、被遮蔽)、自由基通量(等向、隨深寬比衰減)、
+      聚合物收支。<strong>八種 profile 沒有一種是寫死的</strong> ——
+      全部是這三條規則在不同參數下的自然結果。
+    </p>
+    <p>
+      所以反過來也成立:當你在機台上看到某個 profile,
+      在 A18 上把它調出來所需要的參數,就是機台上真正偏掉的那個方向。
+      這正是 <a href="../3-3-defect-atlas/">3.3 缺陷圖鑑</a> 與
+      <a href="../3-3-defect-atlas/#lab-a21">A21 診斷器</a>的基礎。
+    </p>
+    <p>
+      預設參數也不是 A18 自己定的,而是直接讀
+      <a href="../../../defects/">缺陷圖鑑</a>的資料 ——
+      圖鑑改了模擬器就跟著改,兩邊不可能講不一樣的話。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 三組值得動手驗的對照</div>
+    <ul>
+      <li><strong>Etch stop 不是機台壞了</strong>:鈍化拉到最高時蝕刻幾乎不動,降下來就恢復 ——
+        「降聚合性氣體」的效果直接看得到,而且是聚合物收支自己算出來的。</li>
+      <li><strong>Faceting 不是 undercut</strong>:切到 Faceting 預設,注意「遮罩開口」從 1.00 變大 ——
+        遮罩自己被削寬了。切回其他預設,這個數字回到 1.00。</li>
+      <li><strong>ARDE</strong>:打開多溝槽視圖,三個不同 CD 同時蝕刻,窄的明顯較淺
+        (實測落差約 45 %)。沒有任何一行程式在處理「深寬比」——
+        它來自自由基通量的立體角衰減。</li>
+    </ul>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠ 這個元件目前的限制,請一併知道</div>
+    <p>
+      A18 的驗收條件是「八種 profile 全部可重現」。
+      <strong>目前確實做得到的是四種</strong>:垂直、Footing、Faceting、Etch stop
+      (外加多溝槽視圖的 ARDE)。
+      Undercut、Taper、Bowing、Microtrench 這四種的預設參數還沒收斂 ——
+      調得出方向,但還做不到「特徵明確可辨」。
+    </p>
+    <p>
+      這件事寫在這裡而不是藏起來,因為<strong>模擬器做不出來的形狀,圖鑑就沒有依據</strong>。
+      進度與技術原因記在 <code>docs/11-build-roadmap.md</code> 的 A18 實作紀錄,
+      驗收測試是 <code>npm run check:shapes</code>(目前 22 / 32)。
+    </p>
+  </div>
+</div>
+
+<h2 id="wrap">3.1.7 這一章收束成一句話</h2>
+
+<div class="pa-prose">
+  <div class="pa-chain">
+    <div class="pa-chain__step">離子的工作是<strong>開門</strong>(提供活化能),化學才是<strong>移除量</strong>的來源</div>
+    <div class="pa-chain__step">門只在<strong>離子打得到的地方</strong>開 → 這就是異向性,也是選擇比</div>
+    <div class="pa-chain__step">關門的機制(鈍化)與開門的機制<strong>共用同一個旋鈕</strong> → 選擇比與速率必然衝突</div>
+    <div class="pa-chain__step pa-chain__step--end">離子的<strong>角度</strong>一旦不乾淨(發散、反射),缺陷就跟著出現</div>
+  </div>
+
+  <p>
+    3.2 會把這套機制套到五個真實製程上(poly gate、接觸孔、spacer、金屬、
+    <span class="pa-term" data-term="Bosch 製程">Bosch</span> 深矽);
+    3.3 則把「離子角度不乾淨」的各種後果整理成缺陷圖鑑。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>四種機制中,為什麼純物理與純化學都不能單獨用在圖案化製程上?各自缺什麼?</li>
+    <li>Coburn–Winters 的三個數字是多少?為什麼協同模型必須含乘積項?</li>
+    <li>只用「協同效應」四個字,推導出為什麼側壁會垂直。溝底與側壁的速率比是多少?</li>
+    <li>鈍化層是等向沉積的,為什麼結果卻是異向蝕刻?選擇器是什麼?</li>
+    <li>選擇比的三種來源中,哪一種能做到 100 倍以上?代價是什麼?</li>
+    <li>為什麼濺鍍產額在 0° 不是最高?這件事造成哪兩個缺陷?</li>
+    <li>某製程速率不足。你已知自由基充足。加 bias 會有效嗎?為什麼?(用乘積模型回答)</li>
+    <li>在 A18 上調出 bowing,然後只動一個旋鈕把它改善。你動了哪個?對應機台上的哪個參數?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Coburn &amp; Winters, <em>Ion- and electron-assisted gas-surface chemistry — An important effect in plasma etching</em>, J. Appl. Phys. 50, 3189 (1979) —— 本章的原始論文</li>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 15(表面反應與蝕刻)</li>
+    <li>Donnelly &amp; Kornblit, <em>Plasma etching: Yesterday, today, and tomorrow</em>, J. Vac. Sci. Technol. A 31, 050825 (2013)</li>
+    <li>Gottscho, Jurgensen &amp; Vitkavage, <em>Microscopic uniformity in plasma etching</em>, J. Vac. Sci. Technol. B 10, 2133 (1992) —— ARDE 與角度效應</li>
+  </ul>
+</div>

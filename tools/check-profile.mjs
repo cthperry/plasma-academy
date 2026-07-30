@@ -76,11 +76,40 @@ ok(
   sweep.every((r, i) => i === 0 || r.depth <= sweep[i - 1].depth),
   sweep.map((r) => r.depth).join(" ≥ ")
 );
-ok(
-  "高 F/C(CF₄ 端)側壁無保護 → 遮罩下方被側蝕",
-  at(4.0).widthUnderMask > OPEN_COLS * 1.3,
-  `${at(4.0).widthUnderMask} 格 vs 開口 ${OPEN_COLS}`
-);
+/**
+ * 高 F/C → 側壁無保護 → 側蝕。
+ *
+ * 這一條原本用 SiO₂ 量、門檻訂在 1.3 倍 —— 但**它當時是靠遮罩自己被化學蝕刻
+ * 撐寬才過的**(遮罩的 chem 給了 0.06,太大)。把遮罩的 chem 改成接近零
+ * (它本來就不該被自由基咬)之後才看出來:純化學對 SiO₂ 的側蝕其實很小,
+ * 因為 F 要蝕 SiO₂ 得先靠離子打斷 Si–O —— 這正是 3.1.4 講的化學選擇性。
+ *
+ * 所以改用 **Si** 量:Si 才是 F 自由基真的咬得動的材料,
+ * 「零鈍化 → 側蝕」在它身上才是這個機制本來要展示的東西。
+ */
+{
+  const siHi = run({ film: "silicon", fc: 4.0 });
+  const siMid = run({ film: "silicon", fc: 2.5 });
+  console.log(
+    `    Si:F/C 4.0 遮罩下寬 ${siHi.widthUnderMask}、F/C 2.5 遮罩下寬 ${siMid.widthUnderMask}` +
+      `(開口 ${OPEN_COLS})`
+  );
+  ok(
+    "高 F/C(CF₄ 端)Si 側壁無保護 → 遮罩下方被側蝕",
+    siHi.widthUnderMask > OPEN_COLS,
+    `${siHi.widthUnderMask} 格 vs 開口 ${OPEN_COLS}`
+  );
+  ok(
+    "側蝕確實由 F/C 控制:中 F/C 時 Si 的側蝕被鈍化擋住",
+    siMid.widthUnderMask <= OPEN_COLS && siMid.widthUnderMask < siHi.widthUnderMask,
+    `F/C 2.5 → ${siMid.widthUnderMask} < F/C 4.0 → ${siHi.widthUnderMask}`
+  );
+  ok(
+    "SiO₂ 的純化學側蝕不大於 Si(化學選擇性 —— F 蝕 SiO₂ 需要離子破 Si–O)",
+    at(4.0).widthUnderMask <= siHi.widthUnderMask,
+    `SiO₂ ${at(4.0).widthUnderMask} ≤ Si ${siHi.widthUnderMask}`
+  );
+}
 ok(
   "中 F/C(C₄F₈ 端)側壁有聚合物 → 寬度守住開口,不 undercut",
   at(2.5).widthUnderMask <= OPEN_COLS && at(2.0).widthUnderMask <= OPEN_COLS,

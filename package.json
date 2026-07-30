@@ -13,7 +13,11 @@
     "check:links": "node tools/check-links.mjs",
     "check:glossary": "node tools/check-glossary.mjs",
     "check:gases": "node tools/check-gases.mjs",
-    "check:profile": "node tools/check-profile.mjs"
+    "check:profile": "node tools/check-profile.mjs",
+    "check:defects": "node tools/check-defects.mjs",
+    "check:shapes": "node tools/check-shapes.mjs",
+    "shapes:sweep": "node tools/shapes-sweep.mjs",
+    "shapes:search": "node tools/shapes-search.mjs"
   },
   "engines": {
     "node": ">=18"
