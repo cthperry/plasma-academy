@@ -19,6 +19,7 @@ import { chapterThreeFour } from "../src/content/chapter-3-4.mjs";
 import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
 import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
+import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
 import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
@@ -391,6 +392,7 @@ function packagingCleaningPage() {
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterThreeSeven.summary)}
         ${bodySections}
+        ${l3CasebookHtml(chapterThreeSeven)}
         ${callouts}
         ${labsHtml}
         <section class="self-check">
@@ -409,7 +411,7 @@ function packagingCleaningPage() {
         <div data-unit-converter></div>
       </aside>
     </main>
-  `, { pageType: "chapter" });
+  `, { pageType: "chapter", extraStyles: ["/assets/css/l3-casebook.css"] });
 }
 
 function chapterThreeOnePage() {
@@ -440,6 +442,7 @@ function chapterThreeOnePage() {
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterThreeOne.summary)}
         ${sections}
+        ${l3CasebookHtml(chapterThreeOne)}
         ${callouts}
         ${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
@@ -448,7 +451,7 @@ function chapterThreeOnePage() {
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
-  `, { pageType: "chapter", description: "從 Coburn-Winters 協同效應推導異向性、側壁鈍化、選擇比與蝕刻輪廓診斷。", extraStyles: ["/assets/css/a17-a18.css"] });
+  `, { pageType: "chapter", description: "從 Coburn-Winters 協同效應推導異向性、側壁鈍化、選擇比與蝕刻輪廓診斷。", extraStyles: ["/assets/css/a17-a18.css", "/assets/css/l3-casebook.css"] });
 }
 
 function chapterThreeTwoPage() {
@@ -470,14 +473,14 @@ function chapterThreeTwoPage() {
         <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterThreeTwo.summary)}
-        ${sections}${callouts}${labsHtml}
+        ${sections}${l3CasebookHtml(chapterThreeTwo)}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeOne.route}">上一章：${chapterThreeOne.title}</a><a class="button primary" href="${chapterThreeThree.route}">下一章：${chapterThreeThree.title}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
-  `, { pageType: "chapter", description: "Bosch 深矽蝕刻循環、scallop、深寬比限制與量產驗收。" });
+  `, { pageType: "chapter", description: "Bosch 深矽蝕刻循環、scallop、深寬比限制與量產驗收。", extraStyles: ["/assets/css/l3-casebook.css"] });
 }
 
 function chapterThreeThreePage() {
@@ -499,14 +502,14 @@ function chapterThreeThreePage() {
         <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterThreeThree.summary)}
-        ${sections}${callouts}${labsHtml}
+        ${sections}${l3CasebookHtml(chapterThreeThree)}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeTwo.route}">上一章：${chapterThreeTwo.title}</a><a class="button primary" href="${chapterThreeFour.route}">下一章：${chapterThreeFour.title}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<a href="/defects/">開啟缺陷圖鑑</a><div data-unit-converter></div></aside>
     </main>
-  `, { pageType: "chapter", description: "18 種蝕刻缺陷圖鑑、ARDE 機制拆解與資料驅動診斷流程。", extraStyles: ["/assets/css/a20-a21.css"] });
+  `, { pageType: "chapter", description: "18 種蝕刻缺陷圖鑑、ARDE 機制拆解與資料驅動診斷流程。", extraStyles: ["/assets/css/a20-a21.css", "/assets/css/l3-casebook.css"] });
 }
 
 function chapterThreeFourPage() {
@@ -528,14 +531,14 @@ function chapterThreeFourPage() {
         <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterThreeFour.summary)}
-        ${sections}${callouts}${labsHtml}
+        ${sections}${l3CasebookHtml(chapterThreeFour)}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeThree.route}">上一章：${chapterThreeThree.title}</a><a class="button primary" href="${chapterThreeFive.route}">下一章：${chapterThreeFive.title}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
-  `, { pageType: "chapter", description: "PECVD、HDP-CVD 與 PEALD 的薄膜控制、保形性與高深寬比填溝。", extraStyles: ["/assets/css/a22-a23.css"] });
+  `, { pageType: "chapter", description: "PECVD、HDP-CVD 與 PEALD 的薄膜控制、保形性與高深寬比填溝。", extraStyles: ["/assets/css/a22-a23.css", "/assets/css/l3-casebook.css"] });
 }
 
 function chapterThreeFivePage() {
@@ -577,14 +580,14 @@ function p3ChapterPage(chapter, { labLabel, previous, next, description, extraSt
         <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapter.summary)}
-        ${sections}${callouts}${labsHtml}
+        ${sections}${l3CasebookHtml(chapter)}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${previous.route}">上一章：${previous.title}</a><a class="button primary" href="${next.route}">下一章：${next.title}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
-  `, { pageType: "chapter", description, extraStyles });
+  `, { pageType: "chapter", description, extraStyles: [...extraStyles, "/assets/css/l3-casebook.css"] });
 }
 
 function defectAtlasPage() {
@@ -768,6 +771,41 @@ function engineeringCasesHtml(chapter) {
   return `<section class="engineering-casebook" aria-labelledby="${chapter.id}-casebook-title">
     <h2 id="${chapter.id}-casebook-title">工程案例深讀</h2>
     <p>展開案例，沿著「情境 → 機制 → 診斷 → 處置」完成可反證的工程判讀。</p>
+    <div class="casebook-list">${casesHtml}${exerciseHtml}</div>
+  </section>`;
+}
+
+function l3CasebookHtml(chapter) {
+  const guide = l3FieldGuides[chapter.id];
+  const cases = l3EngineeringCases[chapter.id] ?? [];
+  const exercise = l3ShiftExercises[chapter.id];
+  const guideHtml = guide ? `<section class="l3-field-guide" aria-labelledby="${chapter.id}-field-guide-title">
+    <h2 id="${chapter.id}-field-guide-title">${guide.title}</h2>
+    <dl class="field-guide-grid">
+      <div><dt>判讀範圍</dt><dd>${guide.scope}</dd></div>
+      <div><dt>最低證據</dt><dd>${guide.evidence}</dd></div>
+      <div><dt>區分實驗</dt><dd>${guide.experiment}</dd></div>
+      <div><dt>放行與交班</dt><dd>${guide.release}</dd></div>
+    </dl>
+  </section>` : "";
+  const casesHtml = cases.map((item) => `<details class="check-card case-study" id="${item.id}">
+    <summary><span>${item.title}</span><strong>展開案例</strong></summary>
+    <h3>現場情境</h3><p>${item.context}</p>
+    <h3>機制拆解</h3><p>${item.mechanism}</p>
+    <h3>診斷路徑</h3><p>${item.diagnosis}</p>
+    <h3>處置原則</h3><p>${item.action}</p>
+    <p class="case-checkpoint"><strong>交班前確認：</strong>${item.checkpoint}</p>
+  </details>`).join("");
+  const exerciseHtml = exercise ? `<details class="check-card shift-exercise" id="${chapter.id}-shift-exercise">
+    <summary><span>${exercise.title}</span><strong>開始演練</strong></summary>
+    <h3>事件</h3><p>${exercise.situation}</p>
+    <h3>推理步驟</h3><p>${exercise.walkthrough}</p>
+    <h3>決策界線</h3><p>${exercise.decision}</p>
+    <h3>交班紀錄</h3><p>${exercise.record}</p>
+  </details>` : "";
+  return `${guideHtml}<section class="engineering-casebook" aria-labelledby="${chapter.id}-casebook-title">
+    <h2 id="${chapter.id}-casebook-title">工程案例深讀</h2>
+    <p>先寫下可反證假說，再展開案例比較「情境 → 機制 → 診斷 → 處置」是否形成完整證據鏈。</p>
     <div class="casebook-list">${casesHtml}${exerciseHtml}</div>
   </section>`;
 }

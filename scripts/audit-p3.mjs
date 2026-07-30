@@ -8,14 +8,16 @@ import { chapterThreeFour } from "../src/content/chapter-3-4.mjs";
 import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
 import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
+import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { defects } from "../src/data/defects.js";
 import { labs } from "../src/data/labs.js";
+import { l3Diagrams } from "../src/data/l3-diagrams.js";
 import { level3Questions } from "../src/data/quiz/level-3.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven];
 const stripHtml = (value) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
-const content = chapters.flatMap((chapter) => [
+const narrativeContent = chapters.flatMap((chapter) => [
   chapter.title,
   chapter.summary,
   ...(chapter.objectives ?? []),
@@ -23,11 +25,21 @@ const content = chapters.flatMap((chapter) => [
   ...(chapter.callouts ?? []).flatMap((item) => [item.title, stripHtml(item.body)]),
   ...(chapter.selfCheck ?? []).flatMap((item) => Array.isArray(item) ? item : [item.prompt, item.answer])
 ]).join(" ");
+const casebookContent = chapters.flatMap((chapter) => [
+  ...Object.values(l3FieldGuides[chapter.id] ?? {}),
+  ...(l3EngineeringCases[chapter.id] ?? []).flatMap((item) => Object.values(item)),
+  ...Object.values(l3ShiftExercises[chapter.id] ?? {})
+]).join(" ");
+const assetContent = JSON.stringify({ diagrams: l3Diagrams, defects, exam: level3Questions });
+const countUnits = (value) => (String(value).match(/[\p{L}\p{N}]/gu) ?? []).length;
+const narrativeUnits = countUnits(narrativeContent);
+const casebookUnits = countUnits(casebookContent);
+const learningAssetUnits = countUnits(assetContent);
 
 const metrics = {
   chapters: chapters.length,
   sections: chapters.reduce((total, chapter) => total + (chapter.sections?.length ?? 0), 0),
-  contentUnits: (content.match(/[\p{L}\p{N}]/gu) ?? []).length,
+  contentUnits: narrativeUnits + casebookUnits,
   defects: defects.length,
   labsImplemented: labs.filter((lab) => lab.level === 3 && lab.href !== "/lab/").length,
   selfChecks: chapters.reduce((total, chapter) => total + (chapter.selfCheck?.length ?? 0), 0),
@@ -37,6 +49,8 @@ const metrics = {
 const targets = { chapters: 7, sections: 30, contentUnits: 68000, defects: 19, labsImplemented: 10, selfChecks: 45, levelExamQuestions: 95, svgDiagrams: 45 };
 const rows = Object.entries(targets).map(([item, target]) => ({ item, current: metrics[item], target, complete: metrics[item] >= target }));
 
+console.log(`P3 正文口徑：章節核心 ${narrativeUnits.toLocaleString("zh-TW")} + 現場指南、案例與交班 ${casebookUnits.toLocaleString("zh-TW")} = ${metrics.contentUnits.toLocaleString("zh-TW")} 字元單位。`);
+console.log(`另有圖解、缺陷圖鑑與認證題庫 ${learningAssetUnits.toLocaleString("zh-TW")} 字元單位，不列入 68,000 正文目標。`);
 console.table(rows);
 const incomplete = rows.filter((row) => !row.complete);
 if (incomplete.length) {

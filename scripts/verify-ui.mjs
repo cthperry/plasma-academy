@@ -882,6 +882,7 @@ const l3DiagramRoutes = [
   ["/level/3/3-7-packaging-cleaning/", 6]
 ];
 const l3DiagramChecks = [];
+let l3PackagingCaseText = "";
 for (const [route, expected] of l3DiagramRoutes) {
   await desktop.goto(`${base}${route}`, { waitUntil: "networkidle" });
   const figures = desktop.locator(".instruction-diagram");
@@ -889,7 +890,17 @@ for (const [route, expected] of l3DiagramRoutes) {
   for (let index = 0; index < count; index += 1) await figures.nth(index).scrollIntoViewIfNeeded();
   const diagramsLoaded = await figures.locator("img").evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth === 760));
   const figureNumbersValid = await figures.locator("figcaption strong").evaluateAll((captions) => captions.every((caption) => /^圖 3\.\d-\d+ /.test(caption.textContent ?? "")));
-  l3DiagramChecks.push({ route, expected, count, diagramsLoaded, figureNumbersValid });
+  const fieldGuideCount = await desktop.locator(".l3-field-guide").count();
+  const caseCount = await desktop.locator(".case-study").count();
+  const shiftExerciseCount = await desktop.locator(".shift-exercise").count();
+  if (route.includes("3-7-packaging-cleaning")) {
+    await desktop.locator('[id="3-7-c2"] summary').click();
+    await desktop.locator('[id="3-7-c3"] summary').click();
+    l3PackagingCaseText = await desktop.locator(".engineering-casebook").textContent();
+    await desktop.locator('[id="3-7-c2"]').scrollIntoViewIfNeeded();
+    await desktop.screenshot({ path: path.join(qaDir, "desktop-l3-packaging-cases.png"), fullPage: false });
+  }
+  l3DiagramChecks.push({ route, expected, count, diagramsLoaded, figureNumbersValid, fieldGuideCount, caseCount, shiftExerciseCount });
 }
 
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
@@ -1170,6 +1181,10 @@ const mobileA25PresetCount = await mobile.locator('#lab-a25 [role="radio"]').cou
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a24-a25.png"), fullPage: false });
 
 await mobile.goto(`${base}/level/3/3-7-packaging-cleaning/`, { waitUntil: "networkidle" });
+await mobile.locator('[id="3-7-c3"] summary').click();
+await mobile.locator('[id="3-7-c3"]').scrollIntoViewIfNeeded();
+const mobileL3CasebookOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+await mobile.screenshot({ path: path.join(qaDir, "mobile-l3-packaging-case.png"), fullPage: false });
 await mobile.locator("#lab-a33").scrollIntoViewIfNeeded();
 await mobile.waitForTimeout(400);
 const mobileA33Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
@@ -1242,7 +1257,7 @@ Object.assign(result, { chapterThreeThreeTitle, a20ControlCount, a20ToggleCount,
 Object.assign(result, { chapterThreeFourTitle, a22ControlCount, a22OutputCount, a22InitialCoverage, a22InitialGpc, a22SaturatedThickness, a22OversuppliedThickness, a22PoorPurgeStatus, a22PoorPurgeGpc, a22PecvdCoverage, a22CanvasPixels, a23ControlCount, a23OutputCount, a23InitialPecvd, a23InitialHdp, a23HighDs, a23HighAr, a23CanvasPixels, mobileA22Overflow, mobileA22ControlCount, mobileA22OutputCount, mobileA23Overflow, mobileA23ControlCount, mobileA23OutputCount });
 Object.assign(result, { chapterThreeFiveTitle, a24ControlCount, a24OutputCount, a24InitialEfficiency, a24InitialUtilization, a24NoFieldEfficiency, a24FreshDepth, a24FreshDrift, a24AgedDepth, a24AgedDrift, a24CanvasPixels, chapterThreeSixTitle, a25ControlCount, a25OutputCount, a25PresetCount, a25Classifications, a25InitialHalfRange, a25WornClassification, a25WornHalfRange, a25ChallengeStatus, a25ChallengeClassification, a25ChallengeSelectedCount, a25RevealedClassification, a25CanvasPixels, mobileA24Overflow, mobileA24ControlCount, mobileA24OutputCount, mobileA25Overflow, mobileA25ControlCount, mobileA25OutputCount, mobileA25PresetCount });
 Object.assign(result, { l2DiagramChecks, packagingCaseText, packagingShiftText, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobilePackagingCaseOverflow, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
-Object.assign(result, { l3DiagramChecks, l3ExamLockedStatus, l3ExamLockedLinkHidden, l3ExamUnlockedStatus, l3ExamQuestionCount, l3ExamDraw, l3GraphicLoaded, l3ExamScore, l3ExamReviewCount, l3ExamStoredProgress, l3ExamBadgeStatus, l3ExamBadgeEarned, mobileL3ExamOverflow, mobileL3ExamQuestionCount, mobileL3GraphicLoaded, mobileL3GraphicOverflow });
+Object.assign(result, { l3DiagramChecks, l3PackagingCaseText, l3ExamLockedStatus, l3ExamLockedLinkHidden, l3ExamUnlockedStatus, l3ExamQuestionCount, l3ExamDraw, l3GraphicLoaded, l3ExamScore, l3ExamReviewCount, l3ExamStoredProgress, l3ExamBadgeStatus, l3ExamBadgeEarned, mobileL3CasebookOverflow, mobileL3ExamOverflow, mobileL3ExamQuestionCount, mobileL3GraphicLoaded, mobileL3GraphicOverflow });
 Object.assign(result, { a33ControlCount, a33OutputCount, a33PathCount, a33InitialAngle, a33InitialAdhesion, a33OvertreatedAngle, a33OvertreatedAdhesion, a33OvertreatedStatus, a33ReducedOxide, a33ReducedAdhesion, a33OxidizedOxide, a33OxidizedAdhesion, a33OxidizedStatus, mobileA33Overflow, mobileA33ControlCount, mobileA33OutputCount, mobileA33PathCount });
 console.log(JSON.stringify(result, null, 2));
 
@@ -1343,8 +1358,10 @@ if (mobileL2DiagramOverflow || mobileL2DiagramCount !== 10) throw new Error("L2 
 if (mobilePackagingCaseOverflow) throw new Error("封裝清潔工程案例在手機版發生水平溢位。");
 if (mobileL2ExamOverflow || mobileL2ExamQuestionCount !== 30) throw new Error("L2 測驗手機版發生溢位或題目導覽缺漏。");
 for (const check of l3DiagramChecks) {
-  if (check.count !== check.expected || !check.diagramsLoaded || !check.figureNumbersValid) throw new Error(`L3 圖解驗證失敗：${JSON.stringify(check)}`);
+  if (check.count !== check.expected || !check.diagramsLoaded || !check.figureNumbersValid || check.fieldGuideCount !== 1 || check.caseCount !== 4 || check.shiftExerciseCount !== 1) throw new Error(`L3 圖解或工程案例驗證失敗：${JSON.stringify(check)}`);
 }
+if (!["Cu oxide", "LMWOM", "queue time", "累積 dose", "re-clean", "supplier-specific"].every((term) => l3PackagingCaseText.includes(term))) throw new Error("L3 封裝清潔案例缺少金屬氧化、弱邊界層、超時重清潔或材料差異重點。");
+if (mobileL3CasebookOverflow) throw new Error("L3 封裝清潔案例在手機版發生水平溢位。");
 if (!l3ExamLockedStatus.includes("還需完成 6 章") || !l3ExamLockedLinkHidden || !l3ExamUnlockedStatus.includes("60 分鐘")) throw new Error("L3 測驗的 6/7 章解鎖條件未正確運作。");
 if (l3ExamQuestionCount !== 35 || JSON.stringify(l3ExamDraw) !== JSON.stringify({ single: 10, multi: 5, graphic: 10, scenario: 10 })) throw new Error(`L3 測驗抽題分布錯誤：${JSON.stringify(l3ExamDraw)}`);
 if (!l3GraphicLoaded || l3ExamScore !== 100 || l3ExamReviewCount !== 35 || !l3ExamStoredProgress.passed || l3ExamStoredProgress.bestScore !== 100) throw new Error("L3 圖形題、計分、解析或進度寫入未通過。");

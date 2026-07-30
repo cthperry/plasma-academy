@@ -15,6 +15,7 @@ import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
 import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
+import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { l3Diagrams } from "../src/data/l3-diagrams.js";
@@ -115,6 +116,32 @@ for (const chapter of p3Chapters) {
     if (entry.caption.length < 20 || entry.caption.length > 80) failures.push(`${entry.id} 圖說應為 20–80 字，目前 ${entry.caption.length} 字。`);
     if (!entry.note || !["flow", "compare", "plot", "profile", "wafer"].includes(entry.type)) failures.push(`${entry.id} 缺少有效圖型或教學註記。`);
   }
+
+  const guide = l3FieldGuides[chapter.id];
+  for (const field of ["title", "scope", "evidence", "experiment", "release"]) {
+    if (!guide?.[field]) failures.push(`${chapter.id} 現場判讀指南缺少 ${field}。`);
+  }
+  const guideLength = Object.values(guide ?? {}).join(" ").match(/[\p{L}\p{N}]/gu)?.length ?? 0;
+  if (guideLength < 300) failures.push(`${chapter.id} 現場判讀指南至少需 300 個有效字元，目前 ${guideLength}。`);
+
+  const cases = l3EngineeringCases[chapter.id] ?? [];
+  if (cases.length !== 4) failures.push(`${chapter.id} 應有 4 則進階工程案例，目前 ${cases.length} 則。`);
+  const ids = new Set();
+  for (const item of cases) {
+    if (ids.has(item.id)) failures.push(`${chapter.id} 進階工程案例 ID 重複：${item.id}。`);
+    ids.add(item.id);
+    for (const field of ["id", "title", "context", "mechanism", "diagnosis", "action", "checkpoint"]) {
+      if (!item[field]) failures.push(`${chapter.id}/${item.id ?? "?"} 缺少 ${field}。`);
+    }
+    const length = Object.values(item).join(" ").match(/[\p{L}\p{N}]/gu)?.length ?? 0;
+    if (length < 250) failures.push(`${chapter.id}/${item.id} 進階工程案例至少需 250 個有效字元，目前 ${length}。`);
+  }
+  const exercise = l3ShiftExercises[chapter.id];
+  for (const field of ["title", "situation", "walkthrough", "decision", "record"]) {
+    if (!exercise?.[field]) failures.push(`${chapter.id} 進階交班演練缺少 ${field}。`);
+  }
+  const exerciseLength = Object.values(exercise ?? {}).join(" ").match(/[\p{L}\p{N}]/gu)?.length ?? 0;
+  if (exerciseLength < 220) failures.push(`${chapter.id} 進階交班演練至少需 220 個有效字元，目前 ${exerciseLength}。`);
 }
 
 if (l3Diagrams.length !== 45) failures.push(`L3 應有 45 張圖解資料，目前 ${l3Diagrams.length} 張。`);
@@ -125,4 +152,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、A01–A25/A33 觀察引導。`);
+console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、A01–A25/A33 觀察引導。`);

@@ -1,0 +1,96 @@
+.l3-field-guide,
+.engineering-casebook {
+  border-block-start: 1px solid var(--pa-border);
+  margin-block: 36px;
+  padding-block-start: 28px;
+}
+
+.field-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 18px 0 0;
+}
+
+.field-guide-grid > div {
+  border-block-start: 1px solid var(--pa-border);
+  min-width: 0;
+  padding: 16px 20px 16px 0;
+}
+
+.field-guide-grid > div:nth-child(even) {
+  padding-inline: 20px 0;
+}
+
+.field-guide-grid dt {
+  color: var(--pa-primary);
+  font-weight: 800;
+  margin-block-end: 6px;
+}
+
+.field-guide-grid dd {
+  color: var(--pa-text-muted);
+  line-height: 1.75;
+  margin: 0;
+}
+
+.casebook-list {
+  margin-block-start: 18px;
+}
+
+.case-study,
+.shift-exercise {
+  scroll-margin-top: 96px;
+}
+
+.case-study summary,
+.shift-exercise summary {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.case-study summary strong,
+.shift-exercise summary strong {
+  color: var(--pa-primary);
+  flex: 0 0 auto;
+  font-size: var(--pa-text-sm);
+}
+
+.case-study h3,
+.shift-exercise h3 {
+  font-size: 1rem;
+  margin: 18px 0 4px;
+}
+
+.case-study p,
+.shift-exercise p {
+  line-height: 1.75;
+}
+
+.case-checkpoint {
+  border-inline-start: 3px solid var(--pa-primary);
+  color: var(--pa-text-muted);
+  padding-inline-start: 12px;
+}
+
+@media (max-width: 720px) {
+  .field-guide-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-guide-grid > div,
+  .field-guide-grid > div:nth-child(even) {
+    padding-inline: 0;
+  }
+
+  .case-study summary,
+  .shift-exercise summary {
+    align-items: flex-start;
+  }
+
+  .case-study,
+  .shift-exercise {
+    scroll-margin-top: 152px;
+  }
+}
