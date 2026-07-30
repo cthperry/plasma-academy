@@ -19,6 +19,7 @@
     "check:package": "node tools/check-package.mjs",
     "check:bosch": "node tools/check-bosch.mjs",
     "check:deposit": "node tools/check-deposit.mjs",
+    "check:magnetron": "node tools/check-magnetron.mjs",
     "shapes:sweep": "node tools/shapes-sweep.mjs",
     "shapes:search": "node tools/shapes-search.mjs"
   },

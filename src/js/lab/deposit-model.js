@@ -676,7 +676,7 @@
       ctx.save();
       ctx.font = "700 12px system-ui, sans-serif";
       ctx.textBaseline = "top";
-      ctx.fillStyle = o.phase.grows ? p.vizFilm : p.textMuted || p.text;
+      ctx.fillStyle = o.phase.grows ? p.vizFilm : p.textSubtle || p.text;
       ctx.fillText(o.phase.label, 8, h - 44);
       ctx.restore();
     }

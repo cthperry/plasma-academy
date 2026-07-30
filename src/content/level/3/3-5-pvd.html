@@ -1,0 +1,502 @@
+<!--meta
+{
+  "title": "3.5 濺鍍 PVD 與其他應用 — Plasma Academy",
+  "description": "濺鍍產額與閾值能量、磁控的 Hall 參數與 racetrack 代價、反應式濺鍍的遲滯與雙值區、進階 PVD、光阻灰化與 NF₃ 遠端腔體清潔。",
+  "type": "chapter",
+  "module": "3.5"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>3.5 濺鍍 PVD 與其他應用</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2.5 小時</span>
+    <span>🔬 A24 互動元件</span>
+    <span>L3 進階 · 應用章</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="3.5">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說明磁控濺鍍為什麼比二極濺鍍有效率,並指出關鍵的無因次參數</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋 racetrack 為什麼會出現,以及它和游離效率是同一個取捨</span></label></li>
+    <li><label><input type="checkbox" /><span>說明反應式濺鍍的遲滯從哪裡來,以及為什麼中間那一段不能設製程</span></label></li>
+    <li><label><input type="checkbox" /><span>說出灰化為什麼要用 downstream/remote 電漿</span></label></li>
+    <li><label><input type="checkbox" /><span>說明 NF₃ 遠端清潔的設計邏輯,以及 seasoning 為什麼必要</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../3-1-etch-mechanisms/">3.1 蝕刻機制</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    前面四章都在講「怎麼把材料弄掉」或「怎麼長上去」。這一章講的是
+    <strong>把濺鍍當主業</strong>的製程 —— 以及三個和電漿有關的配角
+    (灰化、腔體清潔、seasoning),它們不做圖形,但沒有它們產線停擺。
+  </p>
+  <ul>
+    <li><strong>磁控的全部好處只有一件事:把電子的路徑拉長。</strong>
+      關鍵參數是 <strong>Hall 參數 h = ω_c·τ</strong>,等效路徑放大 (1+h²) 倍。</li>
+    <li><strong>低壓反而更有效率</strong> —— 因為壓力低 → 碰撞時間 τ 長 → h 大。
+      這是磁控能在 1–5 mTorr 工作、而二極濺鍍非得靠高壓不可的原因。</li>
+    <li><strong>Racetrack 是同一件事的代價</strong>:束縛最強的那一圈被轟得最兇,
+      靶材利用率只剩 <strong>兩三成</strong>。效率與利用率是同一個磁場拱的兩面。</li>
+    <li><strong>反應式濺鍍的遲滯是一個雙值區</strong> —— 製程設在中間會來回跳。
+      而正回饋<strong>不在靶面,在氣體收支</strong>。</li>
+    <li><strong>灰化與腔體清潔刻意不要方向性</strong>:把電漿放上游,只送自由基下來
+      = 高速率 + 零損傷。</li>
+  </ul>
+</div>
+
+<h2 id="basics">3.5.1 濺鍍基礎</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>濺鍍產額 Y</strong>:每個入射離子平均打出幾個靶材原子。
+    它和 <a href="../3-1-etch-mechanisms/#sputter">3.1.5</a> 的物理濺鍍是同一回事 ——
+    差別只在那裡濺的是晶圓,這裡濺的是靶材,而且我們**要**濺出來的東西。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>靶材</th><th>Y(Ar⁺ 500 eV)</th><th>閾值 E<sub>th</sub></th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Al</strong></td><td>1.0</td><td>25 eV</td><td>互連金屬的老本行,產額中等</td></tr>
+        <tr><td><strong>Ti</strong></td><td>0.6</td><td>30 eV</td><td>阻障/黏著層;產額低,要靠功率補</td></tr>
+        <tr><td><strong>Cu</strong></td><td><strong>2.3</strong></td><td>20 eV</td><td>產額最高 —— 但 Cu 不能用電漿蝕刻,只能鍍</td></tr>
+        <tr><td><strong>W</strong></td><td>0.6</td><td>35 eV</td><td>熔點高、鍵結強 → 閾值高、產額低</td></tr>
+        <tr><td><strong>Ta</strong></td><td>0.6</td><td>35 eV</td><td>Cu 製程的阻障層,與 TaN 搭配</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      Y(E) ∝ √E − √E<sub>th</sub>
+    </div>
+    <div class="pa-formula__name">
+      Sigmund 近似 —— 與 3.1.5 用的是同一條。低於 E<sub>th</sub> <strong>完全不濺鍍</strong>
+    </div>
+  </div>
+
+  <p>
+    <strong>閾值能量 E<sub>th</sub> 約為昇華熱的 4 倍</strong>,典型 20–40 eV。
+    表上的排序不是巧合:<strong>鍵結越強的材料,閾值越高、產額越低</strong> ——
+    W 和 Ta 的熔點都在 3000 °C 上下,Cu 只有 1085 °C。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 PVD 的核心優勢藏在「濺出原子的能量」裡</div>
+    <p>
+      濺鍍打出來的原子帶著 <strong>1–10 eV</strong> 的動能,
+      而蒸鍍出來的原子只有 <strong>~0.1 eV</strong> —— 差了兩個數量級。
+    </p>
+    <p>
+      這些能量在原子落到晶圓上時會轉成表面遷移的本錢:
+      <strong>附著力好、膜緻密、階梯覆蓋率也比蒸鍍好</strong>。
+      所以 PVD 取代蒸鍍不是因為速率,是因為<strong>膜質</strong>。
+    </p>
+  </div>
+</div>
+
+<h2 id="magnetron">3.5.2 磁控濺鍍:一個參數說完</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>問題</strong>:單純的二極濺鍍游離效率太低,要靠高壓維持電漿 ——
+    但高壓會<strong>散射濺出的原子</strong>,讓它們到不了晶圓,也失去方向性。
+    這是一個死結:要電漿就得高壓,要膜質就得低壓。
+  </p>
+
+  <p>
+    <strong>解法</strong>:在靶材背後放磁鐵,產生平行靶面的磁場。
+    電子被磁場綁住,在靶面附近繞圈並沿著 <strong>E × B</strong> 方向漂移,
+    路徑長度大增 → 沿路游離的機會大增。
+  </p>
+
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      h = ω<sub>c</sub>·τ ,&nbsp;&nbsp; ω<sub>c</sub> = eB/m<sub>e</sub> ,&nbsp;&nbsp;
+      等效路徑放大 = 1 + h²
+    </div>
+    <div class="pa-formula__name">
+      <strong>Hall 參數</strong> —— 電子在兩次碰撞之間繞了幾圈。
+      來源是跨磁場遷移率 μ<sub>⊥</sub> = μ/(1+h²)
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A24 實測:磁場開與關差多少</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>條件</th><th>Hall 參數 h</th><th>相對游離效率</th><th>靶材利用率</th></tr></thead>
+        <tbody>
+          <tr><td>無磁場(二極),3 mTorr</td><td>0</td><td><strong>1</strong></td><td>~100 %</td></tr>
+          <tr><td>300 G,3 mTorr</td><td>17.6</td><td><strong>310</strong></td><td><strong>23 %</strong></td></tr>
+          <tr><td>300 G,30 mTorr</td><td>1.8</td><td>4.1</td><td>41 %</td></tr>
+          <tr><td>300 G,60 mTorr</td><td>0.9</td><td>1.8</td><td>66 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>磁場關掉,游離效率掉 310 倍。</strong>
+      而第三、四列說的是另一件更重要的事:<strong>同樣的磁場,壓力越高效果越差</strong> ——
+      因為 τ 變短、h 變小。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼磁控「喜歡」低壓 —— 這一點最容易講反</div>
+    <p>
+      直覺會說「壓力低碰撞少,游離應該更差」。但 h = ω_c·<strong>τ</strong>,
+      而 <strong>τ 正比於 1/壓力</strong> —— 壓力低,電子在兩次碰撞之間能繞更多圈,
+      被綁得更牢。
+    </p>
+    <p>
+      所以磁場<strong>把低壓的劣勢反過來變成優勢</strong>:
+      二極濺鍍必須靠幾十 mTorr 補碰撞次數,磁控在 <strong>1–5 mTorr</strong> 就夠,
+      而低壓正好讓濺出的原子直線飛到晶圓 —— <strong>前面那個死結就是這樣解開的</strong>。
+    </p>
+  </div>
+
+  <h3 id="racetrack">代價:Racetrack 侵蝕</h3>
+
+  <p>
+    磁力線在靶面上拱成一道環,<strong>拱頂那一圈的磁力線與靶面平行</strong>,
+    束縛最強 → 電漿密度最高 → 離子轟擊最猛 → 靶材被挖出一圈溝。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 靶材利用率只有 20–40 %</div>
+    <p>
+      靶材壽命結束於<strong>最深的那一點蝕穿</strong>。那一刻,整片靶只被用掉
+      「平均侵蝕深度 ÷ 最深侵蝕深度」這個比例 —— A24 在典型條件下量到
+      <strong>23 %</strong>,也就是說<strong>七成以上的靶材連同那一圈溝一起報廢</strong>。
+      靶材是消耗品裡最貴的一項,這個數字直接寫在 COO 上。
+    </p>
+    <p>
+      連帶的問題:侵蝕輪廓一路在變 → <strong>沉積率與均勻度隨靶齡漂移</strong>
+      → 必須做 <strong>kWh 補償</strong>(依累積功率修正製程時間)。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解:「把磁場加強就好了」</div>
+    <p>
+      <strong>正解:效率與利用率是同一個磁場拱的兩面,加強磁場會讓利用率更差。</strong>
+    </p>
+    <p>
+      A24 實測:磁場歸零時利用率接近 100 %,但那時根本點不起低壓電漿;
+      磁場越強、束縛越集中,效率越好但侵蝕輪廓越尖。
+      <strong>這個取捨沒有免費的解</strong> ——
+      業界的答案是<strong>讓磁鐵轉動</strong>(或用多組磁鐵),
+      把 racetrack 在時間上抹開,而不是去改變單一時刻的物理。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a24">🔬 A24 磁控 E×B 與 racetrack</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A24">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A24</span>
+    <span class="pa-lab__title">電子被綁住之後發生的兩件事</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。四個旋鈕(磁場強度、壓力、功率、靶材累積使用)
+      驅動磁控模型。上半部是把 racetrack 攤平的剖面,電子在磁場中畫出擺線;
+      下半部是靶材的侵蝕輪廓,最深處落在 racetrack 半徑上。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="reactive">3.5.3 反應式濺鍍與遲滯</h2>
+
+<div class="pa-prose">
+  <p>
+    用<strong>金屬靶 + 反應氣體</strong>(N₂ 或 O₂)沉積化合物膜:
+    TiN、TaN、AlN、ITO。好處是靶材便宜、沉積率高;
+    代價是多了一個很難對付的動力學問題。
+  </p>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>金屬模式</strong>(N₂ 少)→ 高沉積率、膜偏金屬</div>
+    <div class="pa-chain__step">N₂ 加到臨界點 → 靶面被氮化</div>
+    <div class="pa-chain__step"><strong>中毒模式</strong>(poisoned)→ 沉積率<strong>驟降</strong></div>
+    <div class="pa-chain__step">N₂ 減少 —— 但要降到<strong>比原臨界點更低</strong>才恢復</div>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A24 模型實測:雙值區真的存在</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>N₂ 流量</th><th>升流量:靶面覆蓋 / 沉積率</th><th>降流量:靶面覆蓋 / 沉積率</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>0.00 / 1.00</td><td>0.00 / 1.00</td></tr>
+          <tr><td>15.0</td><td>0.57 / 0.53</td><td>0.57 / 0.53</td></tr>
+          <tr><td><strong>16.0</strong></td><td>0.60 / <strong>0.50</strong></td><td>0.95 / <strong>0.21</strong></td></tr>
+          <tr><td><strong>19.0</strong></td><td>0.70 / <strong>0.42</strong></td><td>0.97 / <strong>0.19</strong></td></tr>
+          <tr><td>20.0</td><td>0.97 / 0.19</td><td>0.97 / 0.19</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>雙值區:流量 15.25 → 19.75。</strong>
+      在這一段裡,「同一個流量」對應到兩個完全不同的穩定狀態,
+      落在哪一個<strong>取決於你是從哪一邊走過來的</strong>。
+      沉積率相差兩倍以上 —— 製程設在這裡,機台會在兩個狀態之間來回跳,
+      而且每次開機落點還不一定一樣。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 正回饋不在靶面,在氣體收支</div>
+    <p>
+      直覺會把遲滯歸給「靶面氮化 → 產額變低 → 更難清乾淨」。
+      這條回饋確實存在,但<strong>單靠它算不出遲滯</strong> ——
+      建模時第一版只寫靶面的收支,升流量與降流量走的是<strong>同一條線</strong>,
+      完全沒有雙值區。
+    </p>
+    <p>
+      真正的正回饋要三件事一起:
+    </p>
+    <ul>
+      <li>只有<strong>裸金屬</strong>會把反應氣體吃掉(gettering),
+        而<strong>腔壁與基板的面積遠大於靶面</strong> ——
+        所以分壓主要由「基板上還有沒有裸金屬」決定</li>
+      <li>基板上的化合物是靠<strong>新到的金屬原子</strong>埋掉的,
+        而金屬通量正比於靶面的裸露比例</li>
+      <li>化合物的濺鍍產額只有金屬的 <strong>1/6</strong></li>
+    </ul>
+    <p>
+      於是:<strong>靶一中毒 → 金屬通量崩掉 → 基板也中毒 → 沒人再吃氣體 →
+      分壓暴漲 → 靶更中毒。</strong>
+      模型把基板/腔壁的 gettering 拿掉,雙值區就消失了 ——
+      這是驗證這條因果的直接對照,寫在
+      <code>tools/check-magnetron.mjs</code> 裡。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 對策</div>
+    <ul>
+      <li><strong>閉迴路回饋控制</strong>:用 OES 譜線強度或<strong>靶電壓</strong>當回授,
+        把工作點鎖在過渡區。靶電壓最實用 —— 它本來就在量,不必加感測器</li>
+      <li><strong>提高抽速</strong>:讓 S 在分壓公式的分母裡佔更大比重,
+        gettering 的變化影響變小 → <strong>遲滯迴圈變窄</strong></li>
+      <li><strong>脈衝 DC 供電</strong>:週期性把靶面電位翻轉,
+        順便解決介電質靶面累積電荷造成的電弧</li>
+    </ul>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 TiN 的顏色就是製程指標</div>
+    <p>
+      化學計量的 TiN 是<strong>金黃色</strong>,富 Ti 偏<strong>銀灰</strong>,
+      富 N 偏<strong>棕色</strong>。目視就能粗判有沒有跑掉 ——
+      這是少數幾個「肉眼即量測」的製程,老師傅開腔一看就知道。
+    </p>
+  </div>
+</div>
+
+<h2 id="advanced">3.5.4 進階 PVD:把方向性找回來</h2>
+
+<div class="pa-prose">
+  <p>
+    濺出的原子是<strong>四面八方飛的中性原子</strong>,深孔底部因此蓋不好。
+    三種解法,代價各不相同:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>技術</th><th>做法</th><th>代價</th></tr></thead>
+      <tbody>
+        <tr><td><strong>離子化 PVD</strong>(IMP / iPVD)</td>
+          <td>靶與晶圓之間加 ICP 線圈,把濺出的中性原子<strong>游離</strong>
+            → 可以用晶圓 bias 控制入射方向</td>
+          <td>設備複雜、要多一組 RF</td></tr>
+        <tr><td>準直濺鍍(Collimated)</td>
+          <td>加金屬柵格擋掉斜向原子</td>
+          <td><strong>沉積率大降</strong>,柵格本身還會積料剝落</td></tr>
+        <tr><td>長距離濺鍍(Long-throw)</td>
+          <td>拉大靶到晶圓的距離,只有接近垂直的原子飛得到</td>
+          <td>沉積率降、腔體變大</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>三種解法其實是同一個邏輯</strong>:斜的不要,只留垂直的。
+    差別只在「用電場選」(iPVD,不浪費材料)還是
+    「用幾何擋」(準直與長距離,把斜的丟掉)。
+    這也是為什麼 iPVD 最後贏了 —— <strong>選擇比丟棄便宜</strong>。
+  </p>
+</div>
+
+<h2 id="ashing">3.5.5 光阻灰化(Ashing / Strip)</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>目標</strong>:把光阻整層去掉,不損傷下層。
+    <strong>主氣體 O₂</strong> —— O 自由基把光阻(碳氫聚合物)氧化成 CO₂ 與 H₂O 抽走。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>添加氣體</th><th>為什麼加</th></tr></thead>
+      <tbody>
+        <tr><td>N₂ / H₂(取代部分 O₂)</td>
+          <td>low-k 製程專用。O₂ 會把 low-k 膜裡的<strong>碳抽走</strong>,
+            而<strong>碳耗盡會使 k 值上升</strong> —— 等於把 low-k 做白工(見 4.3)</td></tr>
+        <tr><td>微量 CF₄</td>
+          <td>幫助去除離子佈植後<strong>硬化的表層</strong>光阻</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 灰化為什麼刻意「不要」方向性</div>
+    <p>
+      整章到目前為止都在追求方向性,灰化卻反過來 —— 因為:
+    </p>
+    <ul>
+      <li>要移除的是<strong>整層</strong>,不是圖形,方向性毫無用處</li>
+      <li>離子轟擊會造成<strong>閘極損傷與充電</strong>(見 4.3)</li>
+    </ul>
+    <p>
+      所以把電漿放在<strong>上游</strong>(downstream / remote),
+      只讓 O 自由基順著氣流下來,離子在路上就複合掉了。
+      結果是<strong>高速率 + 零損傷</strong> ——
+      這是「先問要不要方向性」這個問題最漂亮的一次應用。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 離子佈植後的光阻:一般灰化去不掉</div>
+    <p>
+      高劑量佈植會把光阻表層<strong>碳化成一層硬殼</strong>。
+      直接用一般 O₂ 灰化,下層的光阻受熱放氣而硬殼透不過去,
+      結果是<strong>爆殼</strong> —— 碎片噴出來變成微粒,污染整批。
+    </p>
+    <p>
+      正解是分段配方:<strong>低溫起步慢慢把硬殼打開,再升溫加速</strong>。
+      這是灰化製程裡最常見的「照抄配方就出事」的項目。
+    </p>
+  </div>
+</div>
+
+<h2 id="clean">3.5.6 腔體清潔與 Seasoning</h2>
+
+<div class="pa-prose">
+  <p>
+    腔內累積的沉積物會<strong>剝落成微粒</strong>,也會讓製程慢慢漂移。
+    所以每跑一段就要清一次 —— 而清潔本身也是一道電漿製程。
+  </p>
+
+  <p>
+    <strong>主流做法:NF₃ 遠端電漿清潔。</strong>
+    遠端源把 NF₃ 解離出大量 F,F 進腔體與 SiO₂ / SiN 反應成 SiF₄ 抽走。
+    關鍵是<strong>沒有離子</strong> —— 不傷腔體零件,所以可以做得很頻繁,
+    先進機台甚至<strong>每片之間都清一次</strong>。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 NF₃ 取代 C₂F₆,三個理由是同一個</div>
+    <p>
+      NF₃ 在遠端源裡<strong>幾乎 100 % 分解</strong>,而 C₂F₆ 分解率低得多。
+      由此:
+    </p>
+    <ul>
+      <li>清潔<strong>快</strong>(同樣時間放出更多 F)</li>
+      <li>氣體<strong>用量少</strong>(不必為了低分解率而超量供應)</li>
+      <li><strong>逃逸的溫室氣體少</strong> —— 沒分解的全氟化物是
+        GWP 上萬的溫室氣體,直接從尾氣跑掉</li>
+    </ul>
+    <p>
+      三個理由其實是<strong>同一個數字</strong>(分解率)的三種後果。
+      這也是 PFC 減量法規推動下,製程選擇與環境責任第一次真正對齊的案例。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 清完就能直接跑片?—— First Wafer Effect</div>
+    <p>
+      清潔之後腔壁變成<strong>裸露的鋁或陽極處理面</strong>,
+      它對自由基的<strong>表面複合係數</strong>與帶製程時的腔壁完全不同。
+      腔壁把自由基吃掉的速率變了,晶圓上拿到的通量就跟著變 ——
+      <strong>第一片的結果會偏掉</strong>。
+    </p>
+    <p>
+      所以清潔後要跑 <strong>seasoning(預膜)</strong>:用 dummy wafer 或空跑沉積,
+      把腔壁恢復到穩態的表面狀態再開始跑正式片。
+    </p>
+    <p>
+      <strong>腔壁是製程的一部分,不是背景。</strong>
+      這件事會在 <a href="../3-6-uniformity/">3.6</a> 展開講。
+    </p>
+  </div>
+</div>
+
+<h2 id="wrap">3.5.7 這一章的三個配角,共用一個問題</h2>
+
+<div class="pa-prose">
+  <p>
+    灰化、腔體清潔、seasoning 看起來是三件雜事,但它們問的是同一個問題:
+    <strong>這道製程到底需不需要方向性?</strong>
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>製程</th><th>要方向性嗎</th><th>因此怎麼設計</th></tr></thead>
+      <tbody>
+        <tr><td>蝕刻圖形(3.1–3.3)</td><td><strong>要</strong></td><td>晶圓上加 bias,離子直直打下來</td></tr>
+        <tr><td>PVD 深孔覆蓋</td><td><strong>要</strong></td><td>iPVD 把中性原子游離,才能用 bias 控制</td></tr>
+        <tr><td>光阻灰化</td><td>不要</td><td>遠端電漿,只送自由基 → 零損傷</td></tr>
+        <tr><td>腔體清潔</td><td>不要</td><td>遠端 NF₃,無離子 → 不傷零件</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>「要不要方向性」決定了電漿放在哪裡</strong> ——
+    放在晶圓旁邊(要)還是放在上游(不要)。
+    整個 L3 的機台設計差異,一大半可以從這一個問題推出來。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>磁控濺鍍相對二極濺鍍的好處<strong>只有一件事</strong>,是什麼?用 Hall 參數說明。</li>
+    <li>為什麼磁控在<strong>低壓</strong>反而更有效率?這和「壓力低碰撞少」的直覺衝突在哪裡?</li>
+    <li>Racetrack 為什麼出現在特定半徑上,而不是靶心或邊緣?</li>
+    <li>靶材利用率大約多少?<strong>為什麼把磁場加強不能改善它?</strong>業界的解法是什麼?</li>
+    <li>反應式濺鍍的遲滯,正回饋來自哪裡?<strong>為什麼只看靶面算不出遲滯?</strong></li>
+    <li>為什麼提高抽速會讓遲滯迴圈變窄?</li>
+    <li>灰化為什麼用遠端電漿?這和蝕刻的設計取向剛好相反,判準是什麼?</li>
+    <li>NF₃ 取代 C₂F₆ 的三個理由,為什麼說它們其實是同一個數字的三種後果?</li>
+    <li>什麼是 first wafer effect?為什麼清完腔體不能直接跑正式片?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Berg &amp; Nyberg, <em>Fundamental understanding and modeling of reactive sputtering processes</em>, Thin Solid Films 476, 215 (2005) —— 遲滯模型的標準文獻</li>
+    <li>Sigmund, <em>Theory of Sputtering I</em>, Phys. Rev. 184, 383 (1969)</li>
+    <li>Rossnagel, <em>Thin film deposition with physical vapor deposition and related technologies</em>, J. Vac. Sci. Technol. A 21, S74 (2003)</li>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 16</li>
+    <li>Kanarik et al., <em>Overview of atomic layer etching in the semiconductor industry</em>, J. Vac. Sci. Technol. A 33, 020802 (2015)(灰化與表面處理的延伸)</li>
+  </ul>
+</div>
