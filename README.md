@@ -8,7 +8,7 @@
 
 一套給**半導體/面板廠製程工程師**的電漿(Plasma)線上教育訓練網站的完整內容規劃。
 
-從「電漿到底是什麼」開始,一路走到「原子層蝕刻與機台匹配」,分成四個階段、24 個模組、約 60 小時的課程。每個關鍵概念都搭配可調參數的互動動畫,讓工程師不是背公式,而是**看見參數怎麼影響電漿、電漿怎麼影響晶圓**。
+從「電漿到底是什麼」開始,一路走到「原子層蝕刻與機台匹配」,分成四個階段、25 個模組、約 62.5 小時的課程。每個關鍵概念都搭配可調參數的互動動畫,讓工程師不是背公式,而是**看見參數怎麼影響電漿、電漿怎麼影響晶圓**。
 
 ## 為什麼要做
 
@@ -53,7 +53,7 @@
 | [`docs/02-level2-intermediate.md`](docs/02-level2-intermediate.md) | L2 中階逐章大綱(含氣體選用核心章) |
 | [`docs/03-level3-advanced.md`](docs/03-level3-advanced.md) | L3 進階逐章大綱 |
 | [`docs/04-level4-expert.md`](docs/04-level4-expert.md) | L4 專家逐章大綱 |
-| [`docs/05-animation-spec.md`](docs/05-animation-spec.md) | 32 個互動元件的實作規格 |
+| [`docs/05-animation-spec.md`](docs/05-animation-spec.md) | 33 個互動元件的實作規格 |
 | [`docs/06-site-architecture.md`](docs/06-site-architecture.md) | 網站資訊架構、頁面模板、進度追蹤 |
 | [`docs/07-design-system.md`](docs/07-design-system.md) | 色彩 token、排版、公式呈現、深色模式 |
 | [`docs/08-assessment.md`](docs/08-assessment.md) | 評量與認證設計、題庫規格 |
@@ -128,7 +128,7 @@ npm run check      # 完整品質門(物理模型 / 對比度 / 建置 / 死鏈 
 | 設計系統 | 4 支 CSS,深淺兩套 token、中文長文排版、公式排版、五種提示方塊、列印樣式 |
 | 核心 JS | 主題切換(防閃爍)、進度追蹤、導覽、術語 tooltip、單位換算、全站搜尋 |
 | 元件共用庫 | 生命週期契約、控制面板、SVG 繪圖、粒子系統、Canvas 主題適配、物理模型 |
-| 資料 | 課程結構(24 模組)、術語表(242 條,由 markdown 自動產生) |
+| 資料 | 課程結構(25 模組)、術語表(242 條,由 markdown 自動產生) |
 | 示範 | 首頁、L1 階層頁、1.1 章節頁、**A01 互動元件** |
 | 品質門 | 物理 38 項 + 對比 38 項 + 瀏覽器 62 項 + 死鏈檢查,全綠 |
 

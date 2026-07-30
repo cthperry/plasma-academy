@@ -1,0 +1,402 @@
+<!--meta
+{
+  "title": "3.7 封裝電漿清潔與表面處理 — Plasma Academy",
+  "description": "封裝端的電漿在做什麼:打線前 pad 清潔、封膠前接著力活化、助焊劑殘留去除、underfill 潤濕、電漿切割。含氣體選用(為何不用氟系)、低壓 vs 大氣電漿、接觸角判準與疏水回復。",
+  "type": "chapter",
+  "module": "3.7"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>3.7 封裝電漿清潔與表面處理</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2.5 小時</span>
+    <span>🔬 A33 互動元件</span>
+    <span>L3 進階 · 後段製程</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="3.7">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說出封裝電漿的四個實際用途,以及各自「不做會怎樣」</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋為什麼封裝端幾乎不用氟系氣體(三個理由)</span></label></li>
+    <li><label><input type="checkbox" /><span>用接觸角判斷處理是否足夠,並說明為什麼會「處理過頭」</span></label></li>
+    <li><label><input type="checkbox" /><span>判斷該用低壓電漿還是大氣電漿</span></label></li>
+    <li><label><input type="checkbox" /><span>說明疏水回復為什麼決定了製程之間的佇留時間上限</span></label></li>
+    <li><label><input type="checkbox" /><span>列出後段與前段在目的、材料、溫度、氣體、指標上的差別</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../1/1-6-process-map/">1.6 製程電漿地圖</a>
+  <a href="../../2/2-2-gas-selection/">2.2 製程氣體選用學</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    前面六章講的都是<strong>晶圓廠</strong>的電漿。這一章換到<strong>封裝廠</strong> ——
+    而它幾乎是另一個世界。
+  </p>
+  <ul>
+    <li><strong>目的不同</strong>:不是把材料刻掉,而是把表面<strong>弄乾淨、弄粗、弄親水</strong>。</li>
+    <li><strong>材料不同</strong>:主角是有機物(封膠料、聚醯亞胺、綠漆),
+      而它們<strong>大約 100–150 °C 就開始劣化</strong>。</li>
+    <li><strong>氣體幾乎完全不重疊</strong>:Ar / O₂ / H₂ / N₂ 為主,
+      而<strong>氟系在這裡幾乎是禁忌</strong>。</li>
+    <li><strong>最反直覺的一點:製程窗有上限。</strong>
+      前段的「刻久一點總會刻穿」在這裡是錯的 —— 做過頭會把基材打壞,
+      <strong>接著力反而比不處理還差</strong>。</li>
+  </ul>
+  <p>
+    <a href="#lab-a33">A33</a> 的主角就是這件事:接觸角是單調下降的,
+    但接著力<strong>先升後降</strong>。只看接觸角的人會把製程開在錯的一邊。
+  </p>
+</div>
+
+<h2 id="uses">3.7.1 四個用途:不做會怎樣</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>用途</th><th>目標</th><th>不做的後果</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>打線前 pad 清潔</strong></td>
+          <td>去除 Al/Cu pad 上的有機殘留與氧化物</td>
+          <td>銲球不沾、<strong>NSOP</strong>(non-stick on pad)、拉力測試不過</td>
+        </tr>
+        <tr>
+          <td><strong>封膠前接著力活化</strong></td>
+          <td>提高 die / 基板 / 銅箔的表面能</td>
+          <td><strong>分層(delamination)</strong>、爆米花現象、可靠性測試失效</td>
+        </tr>
+        <tr>
+          <td><strong>助焊劑殘留去除</strong></td>
+          <td>清掉迴銲後的助焊劑與有機物</td>
+          <td>underfill 有孔洞、離子殘留造成電遷移</td>
+        </tr>
+        <tr>
+          <td><strong>Underfill 潤濕</strong></td>
+          <td>讓底填膠爬得進窄間隙</td>
+          <td>填不滿、空洞、熱循環後開裂</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 這四件事其實是同一件事</div>
+    <p>
+      表面上是四個站別,物理上只有兩個動作:
+      <strong>把有機殘留與氧化物移除</strong>,以及<strong>把表面能拉高</strong>。
+    </p>
+    <p>
+      而兩者都不需要方向性 —— 所以封裝電漿幾乎都是<strong>低偏壓、遠端或下游</strong>的。
+      要的是自由基,不是離子轟擊。這一點與 <a href="../3-1-etch-mechanisms/#anisotropy">3.1</a>
+      整章在追求的東西正好相反。
+    </p>
+  </div>
+
+  <p>
+    另外有一個獨立的題目:<strong>電漿切割(plasma dicing)</strong>。
+    它其實是前段的深矽蝕刻(SF₆ 系、<span class="pa-term" data-term="Bosch 製程">Bosch</span>)
+    被搬到封裝流程裡取代刀輪切割 —— 機制與上面四項完全不同,
+    屬於 <a href="../3-2-etch-applications/">3.2</a> 的範疇。
+    它是這一章唯一會用到氟系氣體的地方,而且它處理的是矽,不是有機物。
+  </p>
+</div>
+
+<h2 id="gases">3.7.2 氣體選用:為什麼不用氟系</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th>作用</th><th>封裝端的角色</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Ar</strong></td><td>純物理濺射</td>
+          <td>最安全的萬用選擇;去氧化層、打粗表面,不引入化學殘留</td></tr>
+        <tr><td><strong>O₂</strong></td><td>氧化、灰化有機物</td>
+          <td>去有機殘留與助焊劑的主力;<strong>但會氧化 Cu/Ag,也最快咬傷有機基板</strong></td></tr>
+        <tr><td><strong>H₂</strong>(常配 Ar 或 N₂)</td><td>還原</td>
+          <td>還原 Cu/Ag 氧化物 —— <strong>O₂ 做不到的事只有它做得到</strong></td></tr>
+        <tr><td><strong>N₂</strong></td><td>稀釋、活化</td>
+          <td>大氣電漿的主要載氣;成本最低</td></tr>
+        <tr><td>CF₄ / SF₆</td><td>氟化</td>
+          <td><strong>一般不用</strong> —— 見下方三個理由</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠ 三個理由,全部與前段相反</div>
+    <ol>
+      <li><strong>殘留的氟會腐蝕。</strong>封裝件有大量 Cu、Ag、Al 與焊料,
+        吸附的 F 遇濕氣形成 HF,造成後續腐蝕與可靠性失效。
+        晶圓廠有完整的後處理去氟,封裝線通常沒有。</li>
+      <li><strong>氟會讓表面變疏水</strong>,正好與「提高表面能」的目標相反 ——
+        CF<sub>x</sub> 是鐵氟龍的成分,那是全世界最不沾的東西。
+        在 <a href="../3-1-etch-mechanisms/#passivation">3.1.4</a> 這是我們刻意要的鈍化層;
+        在這裡它是災難。</li>
+      <li><strong>選擇比在這裡沒有意義</strong>,「不要傷到旁邊的東西」才重要;
+        氟系對有機物與金屬都太兇。</li>
+    </ol>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 Cu pad 的順序題</div>
+    <p>
+      <strong>先 O₂ 去有機、再 H₂ 或 Ar 去氧化。</strong>
+      順序顛倒的話,O₂ 會把剛還原好的 Cu 又氧化回去。
+    </p>
+    <p>
+      A33 把這件事變成可驗證的:同樣 Cu pad、同樣 60 秒,
+      H₂/Ar 把氧化狀態壓到 <strong>16 %</strong>,
+      O₂ 卻推到 <strong>79 %</strong>(比未處理的 60 % 還糟),
+      判定直接變成「打線會不沾(NSOP)」。
+    </p>
+  </div>
+</div>
+
+<h2 id="lp-vs-atm">3.7.3 低壓電漿 vs 大氣電漿</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>低壓電漿(真空腔)</th><th>大氣電漿(APPJ / 電暈 / DBD)</th></tr></thead>
+      <tbody>
+        <tr><td>壓力</td><td>0.1–1 Torr</td><td>1 atm</td></tr>
+        <tr><td>處理方式</td><td>整批一致,<strong>批次處理</strong></td><td>噴嘴掃過,<strong>線上選擇性處理</strong></td></tr>
+        <tr><td>氣體</td><td>Ar / O₂ / H₂ / N₂ 皆可</td><td>多為 N₂ 或空氣(氣體成本主導)</td></tr>
+        <tr><td>產能</td><td>需抽真空,cycle time 長</td><td>inline,無抽真空</td></tr>
+        <tr><td>處理深度</td><td>較均勻,可進窄縫</td><td><strong>只處理視線可及的表面</strong></td></tr>
+        <tr><td>熱負荷</td><td>低</td><td><strong>明顯較高</strong> —— 有機材料要小心</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 選擇邏輯只有兩句</div>
+    <p>
+      要進 BGA 底部或窄縫 → <strong>低壓</strong>。
+      要接在 inline 產線上、只處理特定區域 → <strong>大氣</strong>。
+    </p>
+    <p>
+      <strong>不要用大氣電漿處理深孔或被遮蔽的區域</strong> ——
+      它靠的是視線可及,遮住的地方就是沒處理到。
+      這其實是 <a href="../3-1-etch-mechanisms/#anisotropy">3.1.3</a> 那個遮蔽論證的另一面:
+      同樣的幾何限制,在那裡是我們要的(異向性),在這裡是缺點。
+    </p>
+    <p>
+      A33 實測:同樣 300 W、同樣 60 秒,大氣模式的熱負荷是低壓的
+      <strong>3 倍以上</strong>,所以時間上限短很多 —— 120 秒就已經超過。
+    </p>
+  </div>
+</div>
+
+<h2 id="metrology">3.7.4 怎麼知道處理夠了:接觸角與表面能</h2>
+
+<div class="pa-prose">
+  <p>
+    封裝端沒有「蝕刻深度」可以量,量的是<strong>表面能</strong>。
+    最直接的現場指標是水滴的<strong>接觸角</strong>:
+  </p>
+
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      cos θ = 2 √( γ<sub>s</sub> / γ<sub>l</sub> ) − 1
+    </div>
+    <div class="pa-formula__name">Girifalco–Good 近似 —— 表面能越高,接觸角越小,表面越親水</div>
+  </div>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>階段</th><th class="is-num">接觸角</th><th>意義</th></tr></thead>
+      <tbody>
+        <tr><td>處理前(EMC / PI / 綠漆)</td><td class="is-num">約 <strong>64–70°</strong></td><td>疏水,膠爬不進去</td></tr>
+        <tr><td>常見規格</td><td class="is-num"><strong>&lt; 30°</strong></td><td>多數廠訂在 30°,嚴格的訂 20°</td></tr>
+        <tr><td>A33 實測(O₂、300 W、60 s、EMC)</td><td class="is-num"><strong>17°</strong></td><td>達標,且損傷僅 2 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    產線上的快速版本是<strong>達因筆 / 達因液</strong>。
+    拉力與剪力測試(die shear、wire pull)才是最終驗證,但太慢,不能當製程監控。
+  </p>
+
+  <h3 id="two-curves">兩條非直覺的曲線 —— 本節的重點</h3>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>飽和</strong>:表面能隨處理時間上升,但很快飽和。
+      A33 實測 120 s 與 240 s 的表面能只差 <strong>0.2 mN/m</strong> ——
+      再延長時間<strong>不會更好</strong>,只是多花 cycle time。</div>
+    <div class="pa-chain__step"><strong>處理過頭</strong>:繼續處理會開始<strong>傷害</strong>基材 ——
+      有機物被過度氧化,產生低分子量的降解層(LMWOM),接著力反而<strong>下降</strong>。</div>
+    <div class="pa-chain__step pa-chain__step--end">所以封裝電漿的製程窗有<strong>上限</strong> ——
+      這一點和「刻久一點總會刻穿」完全不同。</div>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠ 常見誤解:「接觸角越小越好」</div>
+    <p>
+      接觸角<strong>是</strong>單調的 —— 做越久確實越小。問題是<strong>接著力不是</strong>。
+    </p>
+    <p>
+      A33 實測(O₂、300 W、EMC):接著力指數在 <strong>60 秒達到峰值 1.41</strong>,
+      到 120 秒掉到 <strong>0.68</strong>,180 秒只剩 <strong>0.22</strong> ——
+      <strong>比完全不處理(1.00)還差</strong>。
+      而同一段時間裡接觸角只從 17° 降到 9°,幾乎看不出異狀。
+    </p>
+    <p>
+      <strong>所以只用接觸角當唯一指標的產線,有可能把製程開在曲線的錯誤一側,
+      而監控數據看起來完全正常。</strong>這是本章最該帶走的一件事。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 不同材料的耐受度差很多</div>
+    <p>
+      同樣 O₂、300 W、90 秒(A33 實測損傷):
+      <strong>PI 5 %</strong>、<strong>EMC 27 %</strong>、<strong>綠漆 74 %</strong>。
+    </p>
+    <p>
+      綠漆最不耐打 —— 處理過頭會粉化與變色,而且它的製程窗窄到必須另外訂 recipe。
+      <strong>不要把封膠前活化的 recipe 直接拿去清助焊劑。</strong>
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a33">🔬 A33 封裝電漿處理計算器</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A33">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A33</span>
+    <span class="pa-lab__title">接觸角、接著力與「做過頭」</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。四個現場情境(封膠前活化、打線前 pad 清潔、
+      助焊劑殘留去除、大氣電漿 inline)驅動表面能模型,輸出接觸角、接著力指數、
+      基材損傷、金屬氧化狀態與 queue time 上限。
+      核心觀察:接觸角單調下降,接著力先升後降。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 A33 的接著力曲線為什麼會轉彎</div>
+  <p>
+    模型只有三條規則:<strong>活化</strong>(表面能指數趨近飽和)、
+    <strong>損傷</strong>(超過門檻劑量後超線性累積)、
+    <strong>回復</strong>(處理後隨時間衰退)。
+  </p>
+  <p>
+    接著力 = 附著功的增益 × (1 − 損傷)。前者飽和、後者持續上升,
+    所以<strong>乘積必然先升後降</strong> —— 轉彎不是畫上去的,是兩條規則的必然結果。
+  </p>
+  <p>
+    所有數字由 <code>tools/check-package.mjs</code> 的 34 項斷言守住,
+    課文寫的每一個值都是模型真的算出來的。
+  </p>
+</div>
+
+<h2 id="recovery">3.7.5 疏水回復:為什麼處理完要趕快接下一站</h2>
+
+<div class="pa-prose">
+  <p>
+    處理後的高表面能<strong>不是永久的</strong>。極性基團會逐漸翻轉回材料內部,
+    低分子量物質也會遷移回表面 —— 接觸角在<strong>數小時到數天</strong>內回升。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A33 實測的回復</div>
+    <p>
+      EMC、O₂、60 秒處理後:接觸角 <strong>17°</strong> →
+      放置 48 小時後回升到 <strong>44°</strong>(已超出 30° 規格)。
+    </p>
+    <p>
+      算出來的 <strong>queue time 上限約 11 小時</strong>。
+      不同材料差很多:回復最快的綠漆只有 <strong>7 小時</strong>,PI 撐到 <strong>20 小時</strong>。
+    </p>
+    <p>
+      但也不會回到完全未處理 —— 有一部分活化是永久的
+      (EMC 從 34 mN/m 永久提升到約 50 mN/m)。
+    </p>
+  </div>
+
+  <p>
+    <strong>現場後果</strong>:電漿處理與下一站(打線 / 封膠 / 底填)之間有
+    <strong>佇留時間上限</strong>(queue time),通常訂在數小時。超過就要重工。
+  </p>
+  <p>
+    這是封裝廠排程的硬約束,而它的成因是純粹的<strong>高分子表面科學</strong>,
+    不是電漿的問題 —— 換機台、加功率都救不了。
+  </p>
+</div>
+
+<h2 id="compare">3.7.6 與晶圓級製程的差異總表</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>前段(晶圓)</th><th>後段(封裝)</th></tr></thead>
+      <tbody>
+        <tr><td>目的</td><td>移除材料、定義圖案</td><td>改變表面狀態</td></tr>
+        <tr><td>材料</td><td>Si、SiO₂、SiN、金屬</td><td><strong>有機物</strong>(EMC / PI / 綠漆)+ 金屬</td></tr>
+        <tr><td>溫度上限</td><td>80 °C 級</td><td><strong>約 100–150 °C 就劣化</strong></td></tr>
+        <tr><td>尺寸</td><td>300 mm 晶圓</td><td>料條、基板、整盤</td></tr>
+        <tr><td>主要氣體</td><td>氟系、氯系</td><td><strong>Ar / O₂ / H₂ / N₂</strong></td></tr>
+        <tr><td>成功指標</td><td>CD、深度、選擇比、profile</td><td><strong>接觸角、接著力、拉力</strong></td></tr>
+        <tr><td>製程窗</td><td>通常「多做一點沒差」</td><td><strong>有上限,做過頭會壞</strong></td></tr>
+        <tr><td>電漿參數</td><td>高 bias、要方向性</td><td><strong>低能量、不需要方向性</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 一句話記住整章</div>
+    <p>
+      <strong>前段要的是方向性,後段要的是溫和而均勻。</strong>
+    </p>
+    <p>
+      所以封裝端幾乎都用低偏壓、遠端或下游電漿 ——
+      而 L2 學的那套因果鏈完全還能用,只是<strong>目標函數換了</strong>:
+      以前調的是「刻多深、多垂直」,現在調的是「表面能多高、有沒有傷到基材」。
+    </p>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>列出封裝電漿的四個用途,並各說出「不做會發生什麼失效」。</li>
+    <li>為什麼封裝端幾乎不用氟系氣體?說出三個理由,並指出哪一個與 3.1.4 的鈍化正好相反。</li>
+    <li>Cu pad 清潔為什麼要「先 O₂ 再 H₂」?顛倒的後果是什麼?</li>
+    <li>某產線用接觸角當唯一監控,數據長期穩定在 10°,但分層不良率偏高。可能發生了什麼?</li>
+    <li>為什麼大氣電漿不能用來處理 BGA 底部?</li>
+    <li>電漿處理完的料條放了兩天才封膠,會有什麼問題?這是電漿的問題嗎?</li>
+    <li>在 A33 上找出「封膠前活化」接著力最高的時間,並說明為什麼再往後就變差。</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lau, <em>Semiconductor Advanced Packaging</em>(Springer, 2021)—— 封裝流程與失效模式的整體脈絡</li>
+    <li>Wolf, Sparavigna, <em>Role of Plasma Surface Treatments on Wetting and Adhesion</em>, Engineering 2, 397 (2010)</li>
+    <li>Owens &amp; Wendt, <em>Estimation of the surface free energy of polymers</em>, J. Appl. Polym. Sci. 13, 1741 (1969)—— 表面能分項法的原始論文</li>
+    <li>Morra et al., <em>On the aging of oxygen plasma-treated polydimethylsiloxane surfaces</em>, J. Colloid Interface Sci. 137, 11 (1990)—— 疏水回復的經典研究</li>
+  </ul>
+  <p class="pa-subtle">
+    ⚠️ 本章的接觸角規格、queue time 與材料耐受度為教學用的典型量級。
+    實際製程窗必須以自家材料與可靠性測試結果為準。
+  </p>
+</div>

@@ -13,10 +13,22 @@
    ========================================================================== */
 
 import { chromium } from "playwright";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const BASE = process.env.BASE_URL || "http://localhost:8081";
+
+/** 課綱的期望值直接從單一來源讀 —— 增補模組時測試不必跟著改 */
+const EXPECT = (() => {
+  const code = readFileSync(
+    new URL("../src/data/curriculum.js", import.meta.url),
+    "utf8"
+  );
+  const sandbox = { window: {} };
+  new Function("window", code)(sandbox.window);
+  const c = sandbox.window.PA.curriculum;
+  return { modules: c.modules.length, hours: c.totalHours, labs: c.totalLabs };
+})();
 let pass = 0;
 let fail = 0;
 
@@ -99,9 +111,27 @@ console.log("\n【首頁】");
     glossaryLoaded: !!PA.glossary,
     labLoaded: !!PA.lab,
   }));
-  ok("課程資料 24 模組", stats.modules === 24, `${stats.modules}`);
-  ok("總時數 60 小時", Math.abs(stats.hours - 60) < 0.01, `${stats.hours}`);
-  ok("互動元件 32 個編號", stats.labs === 32, `${stats.labs}`);
+  /**
+   * 對照 src/data/curriculum.js 本身,而不是寫死數字。
+   * 這一組斷言的意思是「頁面渲染的內容與課綱一致」——
+   * 寫死 24 / 60 / 32 的話,每次增補模組都得回來改測試,
+   * 而那只是在追著資料跑,不是在驗證任何東西。
+   */
+  ok(
+    `課程資料與 curriculum.js 一致(${EXPECT.modules} 模組)`,
+    stats.modules === EXPECT.modules,
+    `頁面 ${stats.modules} vs 課綱 ${EXPECT.modules}`
+  );
+  ok(
+    `總時數與 curriculum.js 一致(${EXPECT.hours} 小時)`,
+    Math.abs(stats.hours - EXPECT.hours) < 0.01,
+    `頁面 ${stats.hours} vs 課綱 ${EXPECT.hours}`
+  );
+  ok(
+    `互動元件編號數與 curriculum.js 一致(${EXPECT.labs} 個)`,
+    stats.labs === EXPECT.labs,
+    `頁面 ${stats.labs} vs 課綱 ${EXPECT.labs}`
+  );
   ok("首頁不載入術語表(無 .pa-term)", stats.glossaryLoaded === false);
   ok("首頁不載入 lab 核心(無 [data-lab])", stats.labLoaded === false);
 
@@ -121,7 +151,11 @@ let chapterErrors = [];
   await page.goto(BASE + "/level/1/1-1-fourth-state/", { waitUntil: "load" });
 
   ok("麵包屑存在", (await page.locator(".pa-breadcrumb li").count()) === 3);
-  ok("側欄列出 24 模組", (await page.locator(".pa-toc a[data-module]").count()) === 24);
+  ok(
+    `側欄列出全部 ${EXPECT.modules} 個模組`,
+    (await page.locator(".pa-toc a[data-module]").count()) === EXPECT.modules,
+    `${await page.locator(".pa-toc a[data-module]").count()}`
+  );
   ok("右側大綱有項目", (await page.locator(".pa-outline a").count()) >= 5);
   ok("上/下章導覽", (await page.locator("[data-nav-next]").count()) === 1);
 

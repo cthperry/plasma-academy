@@ -16,6 +16,7 @@
     "check:profile": "node tools/check-profile.mjs",
     "check:defects": "node tools/check-defects.mjs",
     "check:shapes": "node tools/check-shapes.mjs",
+    "check:package": "node tools/check-package.mjs",
     "shapes:sweep": "node tools/shapes-sweep.mjs",
     "shapes:search": "node tools/shapes-search.mjs"
   },
