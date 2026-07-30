@@ -488,6 +488,18 @@
           var ionAct = fi * yi * angY;
           var gate = ionAct / (3 + ionAct); // 無離子 → 0,離子充足 → 1
           var rem = ionAct * 0.03 + m.oxy * (ionAct * 0.075 + fRad * 0.38 * gate);
+          /**
+           * 聚合物的**自發損失**(一階):熱脫附 + F 自由基把 CFx 咬回氣相。
+           *
+           * 沒有這一項,無離子的側壁上聚合物會**無上限地累積**,
+           * `block` 直接飽和成 0 —— 模型只剩「完全保護 / 完全清開」兩態,
+           * 沒有中間的梯度,側壁因此不可能出現「中段比上下段多被咬一點」。
+           *
+           * 加上之後側壁的膜厚有穩態值 dep/polyLoss,而 dep ∝ 本地自由基通量,
+           * 所以**膜厚自然隨深度變薄**(開口處通量最高、越深越少)——
+           * 這正是 bowing 需要的那個梯度。
+           */
+          if (p.polyLoss) rem += p.polyLoss * poly[i];
           // 上限只是數值保險,避免長時間沉積讓數字跑掉
           var pNew = Math.min(4 * polyCrit, Math.max(0, poly[i] + (dep - rem) * dt));
 
