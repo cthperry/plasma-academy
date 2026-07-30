@@ -114,7 +114,7 @@ export const l1FoundationChapters = [
     title: "1.5 鞘層入門",
     hours: 1.5,
     labs: [
-      { id: "a06", title: "A06 鞘層形成時間軸", module: "/assets/js/labs/l1-foundation-demo.js", observation: "拖動時間軸，看電子先流失、表面帶負電、鞘層形成、離子垂直加速這四步。" }
+      { id: "a06", title: "A06 鞘層形成時間軸", module: "/assets/js/labs/a06-sheath-timeline.js", observation: "拖動時間軸，看電子先流失、表面帶負電、鞘層形成、離子垂直加速這四步；提高電子密度後比較鞘層厚度。" }
     ],
     objectives: [
       "解釋鞘層為什麼必然形成。",

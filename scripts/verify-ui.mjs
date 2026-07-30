@@ -100,6 +100,50 @@ const a05CanvasPixels = await desktop.evaluate(() => {
   return nonBlank;
 });
 
+await desktop.goto(`${base}/level/1/1-5-sheath/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a06").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(800);
+const a06Ranges = desktop.locator('#lab-a06 input[type="range"]');
+await a06Ranges.nth(0).evaluate((input) => {
+  input.value = "3";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+await desktop.waitForTimeout(200);
+const a06SteadyStatus = await desktop.locator("#lab-a06 [data-lab-status]").textContent();
+const a06InitialDrop = parseFloat(await desktop.locator('#lab-a06 [data-value-key="Vp − Vf"]').textContent());
+await a06Ranges.nth(1).evaluate((input) => {
+  input.value = "9";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+const a06LowDensitySheath = parseFloat(await desktop.locator('#lab-a06 [data-value-key="鞘層厚度 s"]').textContent());
+await a06Ranges.nth(1).evaluate((input) => {
+  input.value = "11";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+const a06HighDensitySheath = parseFloat(await desktop.locator('#lab-a06 [data-value-key="鞘層厚度 s"]').textContent());
+await a06Ranges.nth(2).evaluate((input) => {
+  input.value = "4";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+await desktop.waitForTimeout(200);
+const a06DropAt4Ev = parseFloat(await desktop.locator('#lab-a06 [data-value-key="Vp − Vf"]').textContent());
+const a06CurveCount = await desktop.locator("#lab-a06 svg path.plot-line").count();
+const a06PlayButton = await desktop.getByRole("button", { name: "播放形成過程" }).count();
+const a06CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a06 [data-lab-canvas]");
+  const ctx = canvas.getContext("2d");
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  }
+  return nonBlank;
+});
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a06.png"), fullPage: false });
+await desktop.getByRole("button", { name: "播放形成過程" }).click();
+await desktop.waitForTimeout(700);
+const a06PlaybackPosition = Number(await desktop.locator('#lab-a06 input[type="range"]').first().inputValue());
+
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
@@ -147,9 +191,25 @@ const mobileCanvasInfo = await mobile.evaluate(() => {
 });
 await mobile.screenshot({ path: path.join(qaDir, "mobile-lab.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/1/1-5-sheath/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a06").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(800);
+const mobileA06Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA06CanvasPixels = await mobile.evaluate(() => {
+  const canvas = document.querySelector("#lab-a06 [data-lab-canvas]");
+  const ctx = canvas.getContext("2d");
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  }
+  return nonBlank;
+});
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a06.png"), fullPage: false });
+
 await browser.close();
 
-const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, canvasInfo, mobileCanvasInfo, quizText, mobileOverflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, canvasInfo, mobileCanvasInfo, mobileA06CanvasPixels, quizText, mobileOverflow, mobileA06Overflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -169,8 +229,15 @@ if (!a05Initial.includes("0.90 Torr") || !a05Initial.includes("137 V")) throw ne
 if (a05CurveCountInitial < 5) throw new Error("A05 未顯示五種氣體曲線。");
 if (!a05AfterO2.includes("0.70 Torr") || !a05AfterO2.includes("450 V") || !a05Status.includes("點火")) throw new Error("A05 O2 點火判定或谷底資訊未更新。");
 if (a05CanvasPixels < 30000) throw new Error("A05 放電腔 Canvas 看起來是空白。");
+if (!a06SteadyStatus.includes("穩態") || Math.abs(a06InitialDrop - 14.1) > 0.3) throw new Error("A06 穩態或 Ar 浮動電位差不符規格。");
+if (!(a06HighDensitySheath < a06LowDensitySheath)) throw new Error("A06 鞘層厚度未隨電子密度上升而變薄。");
+if (Math.abs(a06DropAt4Ev - 18.7) > 0.3) throw new Error("A06 T_e=4 eV 時 Vp−Vf 未約為 4.7Te。");
+if (a06CurveCount < 3 || a06PlayButton !== 1) throw new Error("A06 三條同步曲線或自動播放控制缺失。");
+if (a06PlaybackPosition < 0.2 || a06PlaybackPosition >= 3) throw new Error(`A06 自動播放未推進時間軸：${a06PlaybackPosition}。`);
+if (a06CanvasPixels < 100000 || mobileA06CanvasPixels < 100000) throw new Error("A06 桌機或手機 Canvas 看起來是空白。");
 if (canvasInfo.nonBlank < canvasInfo.width * canvasInfo.height * 0.5) throw new Error("A01 Canvas 看起來是空白。");
 if (mobileCanvasInfo.nonBlank < mobileCanvasInfo.width * mobileCanvasInfo.height * 0.5) throw new Error("手機 A01 Canvas 看起來是空白。");
 if (!quizText.includes("正確")) throw new Error("自我檢測沒有顯示成功狀態。");
 if (mobileOverflow) throw new Error("手機版有水平溢出。");
+if (mobileA06Overflow) throw new Error("A06 手機版有水平溢出。");
 if (errors.length) throw new Error(`瀏覽器 console/page errors: ${errors.join("; ")}`);

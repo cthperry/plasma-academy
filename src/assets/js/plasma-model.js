@@ -1,7 +1,9 @@
 export const constants = {
   electronCharge: 1.602176634e-19,
+  electronMass: 9.1093837139e-31,
   epsilon0: 8.8541878128e-12,
   boltzmann: 1.380649e-23,
+  argonIonMass: 6.6335209e-26,
   argonIonizationEv: 15.76
 };
 
@@ -9,6 +11,23 @@ export function debyeLengthMm({ electronDensityCm3, electronTemperatureEv }) {
   const ne = electronDensityCm3 * 1e6;
   const teJ = electronTemperatureEv * constants.electronCharge;
   return Math.sqrt((constants.epsilon0 * teJ) / (ne * constants.electronCharge ** 2)) * 1000;
+}
+
+export function floatingPotentialDropEv(electronTemperatureEv, ionMassKg = constants.argonIonMass) {
+  return (electronTemperatureEv / 2) * Math.log(ionMassKg / (2 * Math.PI * constants.electronMass));
+}
+
+export function childLangmuirSheathMm({
+  electronDensityCm3,
+  electronTemperatureEv,
+  potentialDropV = floatingPotentialDropEv(electronTemperatureEv)
+}) {
+  const densityM3 = Math.max(electronDensityCm3, 1) * 1e6;
+  const bohmSpeed = Math.sqrt((constants.electronCharge * electronTemperatureEv) / constants.argonIonMass);
+  const ionCurrentDensity = constants.electronCharge * densityM3 * bohmSpeed;
+  const coefficient = (4 / 9) * constants.epsilon0 * Math.sqrt((2 * constants.electronCharge) / constants.argonIonMass);
+  const thicknessM = Math.sqrt((coefficient * Math.max(potentialDropV, 0.01) ** 1.5) / ionCurrentDensity);
+  return thicknessM * 1000;
 }
 
 export function exaggeratedIonization(electricField, pressure) {

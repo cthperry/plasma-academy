@@ -238,6 +238,68 @@
   width: min(45%, 300px);
 }
 
+.lab-sheath-stage {
+  align-self: start;
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  display: grid;
+  grid-template-rows: auto auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.lab-sheath-stage canvas {
+  aspect-ratio: 12 / 5;
+  border: 0;
+  border-bottom: 1px solid var(--pa-border);
+  border-radius: 0;
+}
+
+.lab-sheath-stage svg {
+  color: var(--pa-text-muted);
+  display: block;
+  width: 100%;
+}
+
+.lab-sheath-stage line.plot-axes {
+  stroke: var(--pa-border-strong);
+  stroke-width: 1;
+}
+
+.plot-line-phi {
+  stroke: var(--pa-primary);
+}
+
+.plot-line-ne {
+  stroke: var(--pa-electron);
+}
+
+.plot-line-ni {
+  stroke: var(--pa-ion);
+}
+
+.sheath-plot-band {
+  fill: color-mix(in srgb, var(--pa-primary) 9%, transparent);
+}
+
+.sheath-plot-guide {
+  stroke: var(--pa-border-strong);
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+}
+
+.sheath-plot-label,
+.sheath-stage-label {
+  fill: var(--pa-text-muted);
+  font: 11px var(--pa-font-sans);
+}
+
+.sheath-stage-label {
+  fill: var(--pa-text);
+  font-weight: 700;
+}
+
 .plot-axes line {
   stroke: var(--pa-border-strong);
   stroke-width: 1;
@@ -520,6 +582,10 @@
   .lab-paschen-stage canvas {
     border-left: 0;
     border-top: 1px solid var(--pa-border);
+    min-height: 170px;
+  }
+
+  .lab-sheath-stage canvas {
     min-height: 170px;
   }
 }

@@ -2,7 +2,7 @@ import { glossary } from "../src/data/glossary.js";
 import { curriculum } from "../src/data/curriculum.js";
 import { labs } from "../src/data/labs.js";
 import { dataSchemas } from "../src/data/schemas.js";
-import { paschenGases, paschenVoltage } from "../src/assets/js/plasma-model.js";
+import { childLangmuirSheathMm, floatingPotentialDropEv, paschenGases, paschenVoltage } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
 
@@ -37,6 +37,17 @@ for (const [gasKey, gas] of Object.entries(paschenGases)) {
   if (error > 0.1) {
     failures.push(`Paschen ${gas.label} 最小值誤差 ${(error * 100).toFixed(1)}%，超過 10%。`);
   }
+}
+
+const argonFloatingDrop = floatingPotentialDropEv(3);
+if (Math.abs(argonFloatingDrop - 14.1) > 0.3) {
+  failures.push(`Ar 浮動電位差應約為 4.7 Te，T_e=3 eV 時計算為 ${argonFloatingDrop.toFixed(2)} V。`);
+}
+
+const lowDensitySheath = childLangmuirSheathMm({ electronDensityCm3: 1e9, electronTemperatureEv: 3 });
+const highDensitySheath = childLangmuirSheathMm({ electronDensityCm3: 1e11, electronTemperatureEv: 3 });
+if (!(highDensitySheath < lowDensitySheath)) {
+  failures.push(`Child-Langmuir 鞘層厚度未隨 n_e 上升而變薄：${lowDensitySheath.toFixed(3)} -> ${highDensitySheath.toFixed(3)} mm。`);
 }
 
 for (const [name, schema] of Object.entries(dataSchemas)) {
