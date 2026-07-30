@@ -81,6 +81,9 @@ for (const id of ["A17", "A18"]) {
   if (!lab || lab.href !== `/level/3/3-1-etch-mechanisms/#lab-${id.toLowerCase()}`) failures.push(`${id} 尚未正確接到 3.1 章節。`);
 }
 if (labs.find((item) => item.id === "A19")?.href !== "/level/3/3-2-deep-silicon-etch/#lab-a19") failures.push("A19 尚未正確接到 3.2 章節。");
+for (const id of ["A20", "A21"]) {
+  if (labs.find((item) => item.id === id)?.href !== `/level/3/3-3-defect-atlas/#lab-${id.toLowerCase()}`) failures.push(`${id} 尚未正確接到 3.3 章節。`);
+}
 
 const expectedProcesses = ["電漿蝕刻", "PECVD", "PVD 濺鍍", "光阻灰化", "腔體清潔", "表面處理"];
 if (processMapEntries.length !== 6 || !expectedProcesses.every((name) => processMapEntries.some((entry) => entry.name === name))) {

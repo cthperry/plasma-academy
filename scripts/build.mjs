@@ -8,9 +8,12 @@ import { formulas } from "../src/data/formulas.js";
 import { gases, gasFamilies, hazardLabels } from "../src/data/gases.js";
 import { sdsEvidenceByGas } from "../src/data/sds-evidence.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
+import { defectCategories, defects } from "../src/data/defects.js";
+import { defectSvg } from "../src/data/defect-visuals.js";
 import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.mjs";
 import { chapterThreeOne } from "../src/content/chapter-3-1.mjs";
 import { chapterThreeTwo } from "../src/content/chapter-3-2.mjs";
+import { chapterThreeThree } from "../src/content/chapter-3-3.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
@@ -456,7 +459,7 @@ function chapterThreeTwoPage() {
   const callouts = chapterThreeTwo.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterThreeTwo.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterThreeTwo.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
-  const sidebar = [chapterThreeOne, chapterThreeTwo].map((item) => `<a class="${item.id === chapterThreeTwo.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree].map((item) => `<a class="${item.id === chapterThreeTwo.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
   return page(chapterThreeTwo.route, chapterThreeTwo.title, `
     <main class="chapter-layout" data-chapter-id="${chapterThreeTwo.id}">
       <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a><a href="/level/3/">L3 模組列表</a></aside>
@@ -469,11 +472,58 @@ function chapterThreeTwoPage() {
         ${sections}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
-        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeOne.route}">上一章：${chapterThreeOne.title}</a><a class="button primary" href="/level/3/">返回 L3</a></nav>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeOne.route}">上一章：${chapterThreeOne.title}</a><a class="button primary" href="${chapterThreeThree.route}">下一章：${chapterThreeThree.title}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
   `, { pageType: "chapter", description: "Bosch 深矽蝕刻循環、scallop、深寬比限制與量產驗收。" });
+}
+
+function chapterThreeThreePage() {
+  const objectives = chapterThreeThree.objectives.map((item, index) => `<label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterThreeThree.id}"><span>${item}</span></label>`).join("");
+  const prerequisites = chapterThreeThree.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapterThreeThree.readings.map((item) => `<li>${item}</li>`).join("");
+  const outline = [...chapterThreeThree.sections, ...chapterThreeThree.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
+  const sections = chapterThreeThree.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const callouts = chapterThreeThree.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapterThreeThree.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapterThreeThree.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
+  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree].map((item) => `<a class="${item.id === chapterThreeThree.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  return page(chapterThreeThree.route, chapterThreeThree.title, `
+    <main class="chapter-layout" data-chapter-id="${chapterThreeThree.id}">
+      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a><a href="/defects/">缺陷圖鑑</a><a href="/level/3/">L3 模組列表</a></aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L3 進階", chapterThreeThree.title])}
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapterThreeThree.hours} h · 互動元件 A20、A21</p><h1>${chapterThreeThree.title}</h1><p>${chapterThreeThree.summary}</p></header>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
+        ${callout("summary", "5 分鐘摘要", chapterThreeThree.summary)}
+        ${sections}${callouts}${labsHtml}
+        <section class="self-check"><h2>自我檢測</h2>${checks}</section>
+        <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeTwo.route}">上一章：${chapterThreeTwo.title}</a><a class="button primary" href="/level/3/3-7-packaging-cleaning/">前往 3.7 封裝清潔</a></nav>
+      </article>
+      <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<a href="/defects/">開啟缺陷圖鑑</a><div data-unit-converter></div></aside>
+    </main>
+  `, { pageType: "chapter", description: "18 種蝕刻缺陷圖鑑、ARDE 機制拆解與資料驅動診斷流程。", extraStyles: ["/assets/css/a20-a21.css"] });
+}
+
+function defectAtlasPage() {
+  const atlasDefects = defects.filter((item) => item.id !== "first-wafer");
+  const filters = defectCategories.map((category) => `<button type="button" data-defect-filter="${category.key}">${category.name}</button>`).join("");
+  const cards = atlasDefects.map((defect) => {
+    const causes = defect.causes.map((item) => `<li>${item}</li>`).join("");
+    const fixes = defect.fixes.map((fix) => `<tr><td>${fix.knob} ${fix.dir}</td><td>${fix.why}</td><td>${fix.sideEffect}</td></tr>`).join("");
+    const related = defect.related.map((id) => defects.find((item) => item.id === id)).filter(Boolean).map((item) => `<a href="#${item.id}">${item.zh}</a>`).join("、");
+    const simulator = defect.profilePresetId ? `<a class="button secondary" href="/level/3/3-1-etch-mechanisms/?profile=${defect.profilePresetId}#lab-a18">帶入 A18</a>` : "";
+    return `<article class="defect-card" id="${defect.id}" data-defect-card data-category="${defect.cat}" data-search="${[defect.zh, defect.en, defect.symptom, ...defect.causes].join(" ").toLowerCase()}">
+      <div class="defect-card__visual">${defectSvg(defect.id, defect.zh)}</div>
+      <div class="defect-card__body"><header><div><p>${defectCategories.find((item) => item.key === defect.cat)?.name}</p><h2>${defect.zh}</h2><span>${defect.en}</span></div>${defect.risk === "high" ? `<strong class="risk-label">高風險</strong>` : ""}</header>
+      <dl><dt>症狀</dt><dd>${defect.symptom}</dd><dt>診斷區分</dt><dd>${defect.distinguish}</dd></dl>
+      <details><summary>物理成因、對策與副作用</summary><h3>物理成因</h3><ol>${causes}</ol><div class="table-wrap"><table><thead><tr><th>旋鈕</th><th>理由</th><th>副作用</th></tr></thead><tbody>${fixes}</tbody></table></div><p><strong>相關：</strong>${related}</p><div class="defect-actions">${simulator}<a class="button secondary" href="${chapterThreeThree.route}#lab-a21">開啟診斷器</a></div></details></div>
+    </article>`;
+  }).join("");
+  return page("/defects/", "缺陷圖鑑", `<main class="page-shell defect-atlas" data-defect-atlas>${breadcrumb(["首頁", "缺陷圖鑑"])}<header class="page-heading"><p class="eyebrow">L3 工程工具</p><h1>蝕刻缺陷圖鑑</h1><p>18 種規畫書缺陷共用同一份症狀、成因、區分、對策與副作用資料。先看位置與形狀，再用證據收斂原因。</p></header><div class="defect-toolbar"><label>搜尋症狀或成因<input type="search" data-defect-search placeholder="例如 bowing、充電、遮罩"></label><div class="filter-row"><button class="active" type="button" data-defect-filter="all">全部 18 種</button>${filters}</div><output data-defect-count>${atlasDefects.length} 種</output></div><div class="defect-list">${cards}</div></main><script type="module">import { initDefectAtlas } from "/assets/js/defect-atlas.js"; initDefectAtlas();</script>`, { pageType: "defects", description: "18 種常見電漿蝕刻缺陷的剖面圖、成因、診斷區分、對策與副作用。", extraStyles: ["/assets/css/a20-a21.css"] });
 }
 
 function chapterTwoOnePage() {
@@ -914,12 +964,14 @@ async function main() {
     chapterTwoSixPage(),
     chapterThreeOnePage(),
     chapterThreeTwoPage(),
+    chapterThreeThreePage(),
     packagingCleaningPage(),
     labPage(),
     progressPage(),
     examPage(1),
     examPage(2),
     gasesPage(),
+    defectAtlasPage(),
     glossaryPage(),
     formulasPage()
   ];

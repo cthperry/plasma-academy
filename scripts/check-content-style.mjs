@@ -9,6 +9,7 @@ import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
 import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
 import { chapterThreeOne } from "../src/content/chapter-3-1.mjs";
 import { chapterThreeTwo } from "../src/content/chapter-3-2.mjs";
+import { chapterThreeThree } from "../src/content/chapter-3-3.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
@@ -16,7 +17,7 @@ import { l2Diagrams } from "../src/data/l2-diagrams.js";
 
 const l1Chapters = expandL1Content([chapterOneOne, ...l1FoundationChapters]);
 const chapters = [...l1Chapters, chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
-const p3Chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeSeven];
+const p3Chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeSeven];
 const failures = [];
 const stripHtml = (value) => String(value ?? "")
   .replace(/<figure[\s\S]*?<\/figure>/g, " ")
@@ -112,4 +113,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、A01–A18/A33 觀察引導。`);
+console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、A01–A21/A33 觀察引導。`);

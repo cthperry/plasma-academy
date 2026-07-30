@@ -580,6 +580,48 @@ const a19CanvasPixels = await desktop.evaluate(() => {
 });
 await desktop.screenshot({ path: path.join(qaDir, "desktop-a19-bosch.png"), fullPage: false });
 
+await desktop.goto(`${base}/level/3/3-3-defect-atlas/`, { waitUntil: "networkidle" });
+const chapterThreeThreeTitle = await desktop.locator("h1").first().textContent();
+await desktop.locator("#lab-a20").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(450);
+const a20ControlCount = await desktop.locator('#lab-a20 input[type="range"]').count();
+const a20ToggleCount = await desktop.locator('#lab-a20 input[type="checkbox"]').count();
+const a20OutputCount = await desktop.locator("#lab-a20 .value-panel dd").count();
+const a20InitialLag = parseFloat(await desktop.locator('#lab-a20 [data-value-key="RIE lag"]').textContent());
+await desktop.locator('#lab-a20 input[type="checkbox"]').first().uncheck();
+const a20NoTransportLag = parseFloat(await desktop.locator('#lab-a20 [data-value-key="RIE lag"]').textContent());
+await desktop.locator("#lab-a20").getByRole("radio", { name: "反向 ARDE" }).click();
+await desktop.locator('#lab-a20 input[type="range"]').nth(2).evaluate((input) => { input.value = "0.9"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a20InverseLag = parseFloat(await desktop.locator('#lab-a20 [data-value-key="RIE lag"]').textContent());
+const a20CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a20 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++;
+  return nonBlank;
+});
+await desktop.locator("#lab-a21").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(450);
+const a21SymptomCount = await desktop.locator("#lab-a21 .symptom-option").count();
+const a21ResultCount = await desktop.locator("#lab-a21 .diagnosis-result").count();
+const a21MethodCount = await desktop.locator("#lab-a21 .diagnosis-result").first().locator("ol li").count();
+await desktop.locator("#lab-a21 .symptom-option").filter({ hasText: "Notching" }).click();
+await desktop.locator("#lab-a21 select").nth(1).selectOption("insulating");
+await desktop.locator("#lab-a21 select").nth(2).selectOption("interface");
+await desktop.locator("#lab-a21 select").nth(3).selectOption("array-edge");
+const a21RankedFirst = await desktop.locator("#lab-a21 .diagnosis-result h4").first().textContent();
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a20-a21.png"), fullPage: false });
+
+await desktop.goto(`${base}/defects/`, { waitUntil: "networkidle" });
+const defectCardCount = await desktop.locator("[data-defect-card]").count();
+const defectHasUndefined = (await desktop.locator("body").innerText()).includes("undefined");
+await desktop.locator('[data-defect-filter="ar"]').click();
+const defectArVisible = await desktop.locator("[data-defect-card]:visible").count();
+await desktop.locator('[data-defect-filter="all"]').click();
+await desktop.locator("[data-defect-search]").fill("腐蝕");
+const defectSearchVisible = await desktop.locator("[data-defect-card]:visible").count();
+await desktop.screenshot({ path: path.join(qaDir, "desktop-defect-atlas.png"), fullPage: false });
+
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
@@ -932,6 +974,24 @@ const mobileA19ControlCount = await mobile.locator('#lab-a19 input[type="range"]
 const mobileA19OutputCount = await mobile.locator("#lab-a19 .value-panel dd").count();
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a19-bosch.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/3/3-3-defect-atlas/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a20").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(350);
+const mobileA20Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA20ControlCount = await mobile.locator('#lab-a20 input[type="range"]').count();
+const mobileA20OutputCount = await mobile.locator("#lab-a20 .value-panel dd").count();
+await mobile.locator("#lab-a21").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(350);
+const mobileA21Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA21SymptomCount = await mobile.locator("#lab-a21 .symptom-option").count();
+const mobileA21ResultCount = await mobile.locator("#lab-a21 .diagnosis-result").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a20-a21.png"), fullPage: false });
+
+await mobile.goto(`${base}/defects/`, { waitUntil: "networkidle" });
+const mobileDefectOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileDefectCardCount = await mobile.locator("[data-defect-card]").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-defect-atlas.png"), fullPage: false });
+
 await mobile.goto(`${base}/level/3/3-7-packaging-cleaning/`, { waitUntil: "networkidle" });
 await mobile.locator("#lab-a33").scrollIntoViewIfNeeded();
 await mobile.waitForTimeout(400);
@@ -982,6 +1042,7 @@ Object.assign(result, { a15InitialReflection, a15MatchedReflection, a15FirstFing
 Object.assign(result, { a16ControlCount, a16OutputCount, a16ChainCount, a16LowSourceTe, a16LowSourceDensity, a16HighSourceTe, a16HighSourceDensity, a16TeDelta, a16ZeroBiasRate, a16ZeroBiasSelectivity, a16ZeroBiasProfile, a16HighBiasRate, a16HighBiasSelectivity, a16ChallengeStatus, a16ChallengeClass, a16CanvasPixels, a16ThemeBefore, a16ThemeAfter, mobileA16Overflow, mobileA16ControlCount, mobileA16ChainCount, mobileA16CanvasPixels });
 Object.assign(result, { chapterThreeOneTitle, a17BarCount, a17OutputCount, a17InitialTotal, a17InitialSynergy, a17NoIonTotal, a17TrenchStatus, a17CanvasPixels, a18ControlCount, a18OutputCount, a18InitialShape, a18BowingWidths, a18FixedBowingWidths, a18StoppedDepth, a18RecoveredDepth, a18FacetedMask, a18FixedMask, a18CanvasPixels, mobileA17Overflow, mobileA17OutputCount, mobileA18Overflow, mobileA18ControlCount, mobileA18OutputCount });
 Object.assign(result, { chapterThreeTwoTitle, a19ControlCount, a19OutputCount, a19ShortScallop, a19ShortRate, a19LongScallop, a19LongRate, a19IsotropicStatus, a19CanvasPixels, mobileA19Overflow, mobileA19ControlCount, mobileA19OutputCount });
+Object.assign(result, { chapterThreeThreeTitle, a20ControlCount, a20ToggleCount, a20OutputCount, a20InitialLag, a20NoTransportLag, a20InverseLag, a20CanvasPixels, a21SymptomCount, a21ResultCount, a21MethodCount, a21RankedFirst, defectCardCount, defectHasUndefined, defectArVisible, defectSearchVisible, mobileA20Overflow, mobileA20ControlCount, mobileA20OutputCount, mobileA21Overflow, mobileA21SymptomCount, mobileA21ResultCount, mobileDefectOverflow, mobileDefectCardCount });
 Object.assign(result, { l2DiagramChecks, packagingCaseText, packagingShiftText, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobilePackagingCaseOverflow, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
 Object.assign(result, { a33ControlCount, a33OutputCount, a33PathCount, a33InitialAngle, a33InitialAdhesion, a33OvertreatedAngle, a33OvertreatedAdhesion, a33OvertreatedStatus, a33ReducedOxide, a33ReducedAdhesion, a33OxidizedOxide, a33OxidizedAdhesion, a33OxidizedStatus, mobileA33Overflow, mobileA33ControlCount, mobileA33OutputCount, mobileA33PathCount });
 console.log(JSON.stringify(result, null, 2));
@@ -1046,6 +1107,12 @@ if (a18CanvasPixels < 150000 || mobileA18Overflow) throw new Error("A18 Canvas �
 if (!chapterThreeTwoTitle.includes("深矽") || a19ControlCount !== 4 || a19OutputCount !== 5 || mobileA19ControlCount !== 4 || mobileA19OutputCount !== 5) throw new Error("3.2 或 A19 控制與讀值未完整渲染。");
 if (!(a19LongScallop > a19ShortScallop * 3) || !(a19LongRate > a19ShortRate) || !a19IsotropicStatus.includes("等向")) throw new Error("A19 未呈現循環時間的粗糙度／速率取捨或關閉沉積後的等向側蝕。");
 if (a19CanvasPixels < 150000 || mobileA19Overflow) throw new Error("A19 Canvas 空白或手機版溢出。");
+if (!chapterThreeThreeTitle.includes("缺陷圖鑑") || a20ControlCount !== 4 || a20ToggleCount !== 4 || a20OutputCount !== 5 || mobileA20ControlCount !== 4 || mobileA20OutputCount !== 5) throw new Error("3.3 或 A20 控制與讀值未完整渲染。");
+if (!(a20InitialLag > 30) || !(a20NoTransportLag < a20InitialLag - 2) || !(a20InverseLag < -20)) throw new Error("A20 未呈現四機制貢獻或反向 ARDE。");
+if (a20CanvasPixels < 150000 || mobileA20Overflow) throw new Error("A20 Canvas 空白或手機版溢出。");
+if (a21SymptomCount !== 18 || a21ResultCount !== 5 || a21MethodCount < 2 || !a21RankedFirst.includes("Notching")) throw new Error("A21 的 18 種症狀、排序或雙重判別法未完整運作。");
+if (mobileA21Overflow || mobileA21SymptomCount !== 18 || mobileA21ResultCount !== 5) throw new Error("A21 手機版溢出或內容缺漏。");
+if (defectCardCount !== 18 || defectHasUndefined || defectArVisible !== 4 || defectSearchVisible !== 1 || mobileDefectCardCount !== 18 || mobileDefectOverflow) throw new Error("缺陷圖鑑的 18 條資料、分類文字、篩選、搜尋或手機版未通過。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);

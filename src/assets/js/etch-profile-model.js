@@ -18,8 +18,12 @@ export const profilePresets = [
   { id: "etch-stop", label: "Etch stop", expected: "Etch stop", why: "溝底聚合物沉積超過離子清膜能力，深度提前停止。", ion: 150, spread: 3, passivation: 96, radicals: 42, reflection: 0, overetch: 5 }
 ];
 
+const linkedProfilePresets = [
+  { id: "arde", label: "ARDE", expected: "ARDE", why: "多 CD 視圖比較同時間內不同開口的局部傳輸與覆蓋率。", ion: 350, spread: 5, passivation: 30, radicals: 55, reflection: 12, overetch: 10, multi: true }
+];
+
 export function profilePresetById(id) {
-  return profilePresets.find((item) => item.id === id) ?? profilePresets[0];
+  return [...profilePresets, ...linkedProfilePresets].find((item) => item.id === id) ?? profilePresets[0];
 }
 
 export function evaluateEtchProfile(input) {

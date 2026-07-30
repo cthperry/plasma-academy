@@ -20,8 +20,8 @@
      fixes[]   { knob, dir, why, sideEffect } 旋鈕方向與副作用
      related[] 相關缺陷 id
      ch        延伸章節
-     profile   對應 A18 輪廓模擬器的預設參數(沒有則為 null)。
-               A18 直接讀這裡,不自己再存一份 —— 兩邊因此不可能漂移
+     profilePresetId  對應 A18 輪廓模擬器的預設 ID(沒有則為 null)。
+                      數值只存於 etch-profile-model.js,圖鑑不重複維護
      risk      "high" 時在頁面上掛安全提醒
    ========================================================================== */
 
@@ -57,7 +57,7 @@ export const defects = [
       ],
       related: ["inverse-lag", "microloading", "etch-stop"],
       ch: "3.3.2",
-      profile: { ion: 300, spread: 5, passiv: 30, radical: 55, reflect: 20, multi: true },
+      profilePresetId: "arde",
       risk: null,
     },
     {
@@ -75,7 +75,7 @@ export const defects = [
       ],
       related: ["arde", "etch-stop", "taper"],
       ch: "3.3.2",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
     {
@@ -91,7 +91,7 @@ export const defects = [
       ],
       related: ["macroloading", "arde"],
       ch: "3.3.2",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
     {
@@ -107,7 +107,7 @@ export const defects = [
       ],
       related: ["microloading", "first-wafer"],
       ch: "3.3.2",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
 
@@ -130,7 +130,7 @@ export const defects = [
       ],
       related: ["bowing", "taper"],
       ch: "3.3.3",
-      profile: { ion: 200, spread: 6, passiv: 5, radical: 95, reflect: 10, multi: false },
+      profilePresetId: "undercut",
       risk: null,
     },
     {
@@ -150,7 +150,7 @@ export const defects = [
       ],
       related: ["undercut", "faceting", "microtrench"],
       ch: "3.3.3",
-      profile: { ion: 550, spread: 6, passiv: 42, radical: 60, reflect: 95, multi: false },
+      profilePresetId: "bowing",
       risk: null,
     },
     {
@@ -171,7 +171,7 @@ export const defects = [
       ],
       related: ["etch-stop", "inverse-lag"],
       ch: "3.3.3",
-      profile: { ion: 250, spread: 3, passiv: 84, radical: 45, reflect: 10, multi: false },
+      profilePresetId: "taper",
       risk: null,
     },
     {
@@ -182,7 +182,7 @@ export const defects = [
         "陣列邊緣的不對稱幾何讓偏折特別嚴重",
       ],
       distinguish:
-        "兩個特徵一起看就很好認:**有方向性**(只咬單側)+ **有位置選擇性**(只在陣列邊緣)。" +
+        "兩個特徵一起看就很好認：有方向性(只咬單側)+ 有位置選擇性(只在陣列邊緣)。" +
         "undercut 則是整片普遍發生、沒有偏好方向。",
       fixes: [
         { knob: "脈衝", dir: "開", why: "off 期讓電子中和累積的正電荷", sideEffect: "平均速率下降" },
@@ -191,7 +191,7 @@ export const defects = [
       ],
       related: ["footing", "twisting", "undercut"],
       ch: "3.3.3",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
     {
@@ -210,7 +210,7 @@ export const defects = [
       ],
       related: ["bowing", "footing"],
       ch: "3.3.3",
-      profile: { ion: 650, spread: 2, passiv: 45, radical: 50, reflect: 100, multi: false },
+      profilePresetId: "microtrench",
       risk: null,
     },
     {
@@ -231,7 +231,7 @@ export const defects = [
       ],
       related: ["notching", "etch-stop", "microtrench"],
       ch: "3.3.3",
-      profile: { ion: 300, spread: 4, passiv: 60, radical: 45, reflect: 15, multi: false },
+      profilePresetId: "footing",
       risk: null,
     },
     {
@@ -250,7 +250,7 @@ export const defects = [
       ],
       related: ["notching", "resist-wiggle"],
       ch: "3.3.3",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
     {
@@ -269,7 +269,7 @@ export const defects = [
       ],
       related: ["resist-wiggle", "faceting"],
       ch: "3.3.3",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
 
@@ -288,7 +288,7 @@ export const defects = [
       ],
       related: ["mask-loss", "bowing"],
       ch: "3.3.4",
-      profile: { ion: 850, spread: 6, passiv: 8, radical: 45, reflect: 30, multi: false },
+      profilePresetId: "faceting",
       risk: null,
     },
     {
@@ -305,7 +305,7 @@ export const defects = [
       ],
       related: ["faceting", "striation"],
       ch: "3.3.4",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
     {
@@ -322,7 +322,7 @@ export const defects = [
       ],
       related: ["twisting", "mask-loss"],
       ch: "3.3.4",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
 
@@ -346,7 +346,7 @@ export const defects = [
       ],
       related: ["taper", "footing", "arde", "inverse-lag"],
       ch: "3.3.5",
-      profile: { ion: 150, spread: 4, passiv: 96, radical: 35, reflect: 10, multi: false },
+      profilePresetId: "etch-stop",
       risk: null,
     },
     {
@@ -362,7 +362,7 @@ export const defects = [
       ],
       related: ["etch-stop", "corrosion"],
       ch: "3.3.5",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
     {
@@ -370,7 +370,7 @@ export const defects = [
       symptom: "Al 線路在出腔數小時後斷線,並長出白色生成物。",
       causes: ["殘留的 Cl 遇大氣濕氣生成 HCl,持續腐蝕 Al"],
       distinguish:
-        "時間軸是關鍵:**出腔當下量測正常,數小時後才失效**。" +
+        "時間軸是關鍵：出腔當下量測正常，數小時後才失效。" +
         "任何「離線後才惡化」的失效都要先懷疑腐蝕。",
       fixes: [
         { knob: "時間", dir: "管制", why: "出腔到後處理的等待時間必須有上限", sideEffect: "排程限制" },
@@ -378,7 +378,7 @@ export const defects = [
       ],
       related: ["veil"],
       ch: "3.3.5",
-      profile: null,
+      profilePresetId: null,
       risk: "high",
     },
     {
@@ -397,7 +397,7 @@ export const defects = [
       ],
       related: ["macroloading"],
       ch: "3.6",
-      profile: null,
+      profilePresetId: null,
       risk: null,
     },
   ];

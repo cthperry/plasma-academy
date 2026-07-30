@@ -1,4 +1,7 @@
 import { defectById, defectCategories, defectKnobs, defects, defectsByKnob, filterDefects } from "../src/data/defects.js";
+import { diagnosticDefects, diagnosticMethods, rankDefectCauses } from "../src/data/defect-diagnosis.js";
+import { defectSvg } from "../src/data/defect-visuals.js";
+import { profilePresetById } from "../src/assets/js/etch-profile-model.js";
 
 const failures = [];
 let checks = 0;
@@ -21,6 +24,7 @@ assert("應有四種有效分類", defectCategories.length === 4 && defectCatego
 
 const required = ["id", "zh", "en", "cat", "symptom", "causes", "distinguish", "fixes", "related", "ch"];
 assert("每條缺陷必填欄位應完整", defects.every((item) => required.every((field) => item[field] && (!Array.isArray(item[field]) || item[field].length))));
+assert("每條缺陷應明確宣告 profilePresetId", defects.every((item) => Object.hasOwn(item, "profilePresetId")));
 assert("每條診斷區分應超過 25 字", defects.every((item) => item.distinguish.length > 25));
 assert("每條至少應有兩個對策", defects.every((item) => item.fixes.length >= 2));
 assert("每個對策應有方向、理由與副作用", defects.every((item) => item.fixes.every((fix) => fix.knob && fix.dir && fix.why && fix.sideEffect)));
@@ -34,16 +38,20 @@ for (const [id, keyword] of [
   ["footing", "microtrench"], ["arde", "密度"], ["etch-stop", "footing"], ["notching", "undercut"]
 ]) assert(`${id} 應用關鍵字區分相似缺陷`, defectById(id).distinguish.includes(keyword));
 
-const withProfile = defects.filter((item) => item.profile);
+const withProfile = defects.filter((item) => item.profilePresetId);
 assert("至少六種缺陷應提供 A18 預設", withProfile.length >= 6);
-assert("A18 缺陷預設應落在來源規格範圍", withProfile.every((item) => item.profile.ion >= 0 && item.profile.ion <= 1000 && item.profile.spread >= 0 && item.profile.spread <= 15 && item.profile.passiv >= 0 && item.profile.passiv <= 100 && item.profile.radical >= 0 && item.profile.radical <= 100));
-assert("Undercut 鈍化應低於 taper", defectById("undercut").profile.passiv < defectById("taper").profile.passiv);
-assert("Faceting 離子能量應為預設最高", withProfile.every((item) => item.profile.ion <= defectById("faceting").profile.ion));
-assert("Etch stop 鈍化應為預設最高", withProfile.every((item) => item.profile.passiv <= defectById("etch-stop").profile.passiv));
-assert("ARDE 應指定多溝槽視圖", defectById("arde").profile.multi === true);
+assert("A18 缺陷連結應全部解析到同名單一預設", withProfile.every((item) => profilePresetById(item.profilePresetId).id === item.profilePresetId));
+assert("Undercut 鈍化應低於 taper", profilePresetById("undercut").passivation < profilePresetById("taper").passivation);
+assert("Faceting 離子能量應為可見預設最高", ["undercut", "bowing", "taper", "microtrench", "footing", "faceting", "etch-stop"].every((id) => profilePresetById(id).ion <= profilePresetById("faceting").ion));
+assert("Etch stop 鈍化應為預設最高", withProfile.every((item) => profilePresetById(item.profilePresetId).passivation <= profilePresetById("etch-stop").passivation));
+assert("ARDE 應指定多溝槽視圖", profilePresetById(defectById("arde").profilePresetId).multi === true);
 assert("金屬腐蝕應標記高風險", defectById("corrosion").risk === "high");
 assert("關鍵字搜尋應找到至少三條充電缺陷", filterDefects({ q: "充電" }).length >= 3);
 assert("脈衝旋鈕應關聯至少三條缺陷", defectsByKnob("脈衝").length >= 3);
+assert("診斷器應只列規畫書 18 種缺陷", diagnosticDefects.length === 18 && diagnosticDefects.every((item) => specIds.includes(item.id)));
+assert("每種缺陷至少應提供兩個判別方法", diagnosticDefects.every((item) => diagnosticMethods(item).length >= 2 && diagnosticMethods(item).every((method) => method.length > 20)));
+assert("每種缺陷都應有可辨識 SVG", diagnosticDefects.every((item) => defectSvg(item.id, item.zh).includes(`aria-label=\"${item.zh} 剖面示意圖\"`)));
+assert("補充條件應能改變候選排序", rankDefectCauses({ symptomId: "notching" })[0].defect.id === "notching" && rankDefectCauses({ symptomId: "footing", substrate: "insulating", location: "interface", distribution: "array-edge" })[0].defect.id === "footing");
 
 if (failures.length) {
   console.error(`缺陷資料檢查失敗（${failures.length}/${checks}）：`);

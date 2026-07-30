@@ -12,7 +12,8 @@ export function init(container) {
   canvas.setAttribute("aria-label", "八種蝕刻輪廓與多 CD 深寬比效應模擬");
   container.querySelector(".lab-stage").classList.add("lab-stage--profile");
   const ctx = canvas.getContext("2d");
-  const initial = profilePresetById("vertical");
+  const requestedPreset = new URLSearchParams(window.location.search).get("profile");
+  const initial = profilePresetById(requestedPreset || "vertical");
   const state = { ...initial, preset: initial.id, multi: false, elapsed: 0, lastTime: 0, theme: readCanvasTheme() };
   const panel = createValuePanel([
     ["判定形狀", "—"], ["蝕刻深度", "—"], ["頂／中／底寬", "—"], ["遮罩開口", "—"], ["底角深溝", "—"], ["聚合物收支", "—"]

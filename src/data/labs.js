@@ -67,6 +67,8 @@ function labHref(id) {
     A17: "/level/3/3-1-etch-mechanisms/#lab-a17",
     A18: "/level/3/3-1-etch-mechanisms/#lab-a18",
     A19: "/level/3/3-2-deep-silicon-etch/#lab-a19",
+    A20: "/level/3/3-3-defect-atlas/#lab-a20",
+    A21: "/level/3/3-3-defect-atlas/#lab-a21",
     A33: "/level/3/3-7-packaging-cleaning/#lab-a33"
   };
   return map[id] ?? "/lab/";

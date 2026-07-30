@@ -18,11 +18,12 @@
     "check:profiles": "node scripts/check-etch-profile-model.mjs",
     "check:defects": "node scripts/check-defects.mjs",
     "check:bosch": "node scripts/check-bosch-model.mjs",
+    "check:arde": "node scripts/check-arde-model.mjs",
     "audit:p1": "node scripts/audit-p1.mjs",
     "audit:p2": "node scripts/audit-p2.mjs",
     "audit:p3": "node scripts/audit-p3.mjs",
     "verify:ui": "node scripts/verify-ui.mjs",
-    "check": "npm run build && npm run check:data && npm run check:content && npm run check:reviews && npm run check:package && npm run check:profiles && npm run check:defects && npm run check:bosch && npm run check:a11y && npm run check:contrast && npm run check:links && npm run check:size",
+    "check": "npm run build && npm run check:data && npm run check:content && npm run check:reviews && npm run check:package && npm run check:profiles && npm run check:defects && npm run check:bosch && npm run check:arde && npm run check:a11y && npm run check:contrast && npm run check:links && npm run check:size",
     "serve": "npx --yes serve dist/client --listen 4173"
   },
   "devDependencies": {
