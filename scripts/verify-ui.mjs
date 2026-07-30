@@ -591,10 +591,19 @@ for (const [route, expected] of l2DiagramRoutes) {
   for (let index = 0; index < count; index += 1) await figures.nth(index).scrollIntoViewIfNeeded();
   const diagramsLoaded = await figures.locator("img").evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth === 760));
   const figureNumbersValid = await figures.locator("figcaption strong").evaluateAll((captions) => captions.every((caption) => /^圖 2\.\d-\d+ /.test(caption.textContent ?? "")));
-  l2DiagramChecks.push({ route, expected, count, diagramsLoaded, figureNumbersValid });
+  const caseCount = await desktop.locator(".case-study").count();
+  const shiftExerciseCount = await desktop.locator(".shift-exercise").count();
+  l2DiagramChecks.push({ route, expected, count, diagramsLoaded, figureNumbersValid, caseCount, shiftExerciseCount });
 }
 await desktop.goto(`${base}/level/2/2-2-process-gases/`, { waitUntil: "networkidle" });
 await desktop.screenshot({ path: path.join(qaDir, "desktop-l2-diagrams.png"), fullPage: true });
+await desktop.goto(`${base}/level/2/2-6-causal-chain/`, { waitUntil: "networkidle" });
+await desktop.locator('[id="2-6-packaging-clean"] summary').click();
+await desktop.locator('[id="2-6-shift-exercise"] summary').click();
+const packagingCaseText = await desktop.locator('[id="2-6-packaging-clean"]').textContent();
+const packagingShiftText = await desktop.locator('[id="2-6-shift-exercise"]').textContent();
+await desktop.locator('[id="2-6-packaging-clean"]').scrollIntoViewIfNeeded();
+await desktop.screenshot({ path: path.join(qaDir, "desktop-packaging-clean-case.png"), fullPage: false });
 
 await desktop.goto(`${base}/level/2/`, { waitUntil: "networkidle" });
 await desktop.waitForFunction(() => !document.querySelector("[data-exam-gate-status]")?.textContent.includes("正在讀取"));
@@ -824,6 +833,10 @@ await mobile.screenshot({ path: path.join(qaDir, "mobile-exam.png"), fullPage: f
 await mobile.goto(`${base}/level/2/2-2-process-gases/`, { waitUntil: "networkidle" });
 const mobileL2DiagramOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
 const mobileL2DiagramCount = await mobile.locator(".instruction-diagram").count();
+await mobile.goto(`${base}/level/2/2-6-causal-chain/`, { waitUntil: "networkidle" });
+await mobile.locator('[id="2-6-packaging-clean"] summary').click();
+const mobilePackagingCaseOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+await mobile.screenshot({ path: path.join(qaDir, "mobile-packaging-clean-case.png"), fullPage: false });
 await mobile.evaluate(() => {
   const chapters = Object.fromEntries(["2-1", "2-2", "2-3", "2-4", "2-5"].map((id) => [id, { visited: true, objectives: [true, true, true, true, true] }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
@@ -844,7 +857,7 @@ Object.assign(result, { a13BarCount, a13LowFrequencyDelta, a13LowFrequencyStatus
 Object.assign(result, { a14At550Up, a14At700Up, a14At550Down, a14At400Down, a14PathCount, a14CanvasPixels, a14ThemeBefore, a14ThemeAfter, mobileA14Overflow, mobileA14PathCount, mobileA14CanvasPixels });
 Object.assign(result, { a15InitialReflection, a15MatchedReflection, a15FirstFingerprint, a15DriftReflection, a15RematchedReflection, a15SecondFingerprint, a15PathCount, a15PointCount, a15CanvasPixels, mobileA15Overflow, mobileA15PathCount, mobileA15CanvasPixels });
 Object.assign(result, { a16ControlCount, a16OutputCount, a16ChainCount, a16LowSourceTe, a16LowSourceDensity, a16HighSourceTe, a16HighSourceDensity, a16TeDelta, a16ZeroBiasRate, a16ZeroBiasSelectivity, a16ZeroBiasProfile, a16HighBiasRate, a16HighBiasSelectivity, a16ChallengeStatus, a16ChallengeClass, a16CanvasPixels, a16ThemeBefore, a16ThemeAfter, mobileA16Overflow, mobileA16ControlCount, mobileA16ChainCount, mobileA16CanvasPixels });
-Object.assign(result, { l2DiagramChecks, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
+Object.assign(result, { l2DiagramChecks, packagingCaseText, packagingShiftText, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobilePackagingCaseOverflow, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -905,13 +918,16 @@ if (examScore !== 100 || examReviewCount !== 20 || !examStoredProgress.passed ||
 if (!examBadgeEarned || !examBadgeStatus.includes("最佳成績 100%")) throw new Error("L1 通過徽章未正確顯示在進度頁。");
 if (mobileExamOverflow || mobileExamQuestionCount !== 20) throw new Error("L1 測驗手機版發生溢位或題目導覽缺漏。");
 for (const check of l2DiagramChecks) {
-  if (check.count !== check.expected || !check.diagramsLoaded || !check.figureNumbersValid) throw new Error(`L2 SVG 圖解驗證失敗：${JSON.stringify(check)}`);
+  if (check.count !== check.expected || !check.diagramsLoaded || !check.figureNumbersValid || check.caseCount !== 6 || check.shiftExerciseCount !== 1) throw new Error(`L2 圖解或工程案例驗證失敗：${JSON.stringify(check)}`);
 }
+if (!["LMWOM", "金屬氧化", "接合窗口", "contact angle"].every((term) => packagingCaseText.includes(term))) throw new Error("封裝清潔工程案例缺少劑量或材料相容重點。");
+if (!["queue time", "重清潔", "累積 dose", "MES"].every((term) => packagingShiftText.includes(term))) throw new Error("封裝清潔交班演練缺少超時與再處理決策。");
 if (!l2ExamLockedStatus.includes("還需") || !l2ExamLockedLinkHidden || !l2ExamUnlockedStatus.includes("45 分鐘")) throw new Error("L2 測驗的 80% 章節解鎖條件未正確運作。");
 if (l2ExamQuestionCount !== 30 || JSON.stringify(l2ExamDraw) !== JSON.stringify({ single: 18, multi: 4, numeric: 4, scenario: 4 })) throw new Error(`L2 測驗抽題分佈錯誤：${JSON.stringify(l2ExamDraw)}`);
 if (l2ExamScore !== 100 || l2ExamReviewCount !== 30 || !l2ExamStoredProgress.passed || l2ExamStoredProgress.bestScore !== 100) throw new Error("L2 測驗計分、解析或進度寫入未通過。");
 if (!l2ExamBadgeEarned || !l2ExamBadgeStatus.includes("最佳成績 100%")) throw new Error("L2 通過徽章未正確顯示在進度頁。");
 if (mobileL2DiagramOverflow || mobileL2DiagramCount !== 10) throw new Error("L2 圖解手機版發生溢位或缺漏。");
+if (mobilePackagingCaseOverflow) throw new Error("封裝清潔工程案例在手機版發生水平溢位。");
 if (mobileL2ExamOverflow || mobileL2ExamQuestionCount !== 30) throw new Error("L2 測驗手機版發生溢位或題目導覽缺漏。");
 if (!a02Initial.includes("0.129 mm") || !a02Initial.includes("0.013 mm")) throw new Error("A02 未顯示 CCP/ICP λD 對照值。");
 if (!a02AfterDensity.includes("0.041 mm")) throw new Error("A02 電子密度滑桿未更新 λD 數值。");

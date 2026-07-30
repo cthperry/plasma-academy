@@ -15,6 +15,7 @@ import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
 import { chapterTwoFour } from "../src/content/chapter-2-4.mjs";
 import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
 import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
+import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l1FoundationChapters as l1FoundationChaptersBase } from "../src/content/l1-foundation-chapters.mjs";
 import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
 import { level1ExamSpec } from "../src/data/quiz/level-1.js";
@@ -430,6 +431,7 @@ function chapterTwoOnePage() {
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterTwoOne.summary)}
         ${sections}
+        ${engineeringCasesHtml(chapterTwoOne)}
         ${chapterFormulas}
         ${callouts}
         ${labsHtml}
@@ -470,6 +472,7 @@ function chapterTwoTwoPage() {
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterTwoTwo.summary)}
         ${sections}
+        ${engineeringCasesHtml(chapterTwoTwo)}
         ${callouts}
         ${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
@@ -506,6 +509,7 @@ function l2ChapterPage(chapter, { previous, next, formulaKeys = [], extraStyles 
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapter.summary)}
         ${sections}
+        ${engineeringCasesHtml(chapter)}
         ${chapterFormulas}
         ${callouts}
         ${labsHtml}
@@ -527,6 +531,31 @@ function l2SectionsHtml(chapter) {
     }).join("");
     return `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}${figures}</section>`;
   }).join("");
+}
+
+function engineeringCasesHtml(chapter) {
+  const cases = l2EngineeringCases[chapter.id] ?? [];
+  const exercise = l2ShiftExercises[chapter.id];
+  const casesHtml = cases.map((item) => `<details class="check-card case-study" id="${item.id}">
+    <summary><span>${item.title}</span><strong>展開案例</strong></summary>
+    <h3>現場情境</h3><p>${item.context}</p>
+    <h3>機制拆解</h3><p>${item.mechanism}</p>
+    <h3>診斷路徑</h3><p>${item.diagnosis}</p>
+    <h3>處置原則</h3><p>${item.action}</p>
+    <p class="case-checkpoint"><strong>交班前確認：</strong>${item.checkpoint}</p>
+  </details>`).join("");
+  const exerciseHtml = exercise ? `<details class="check-card shift-exercise" id="${chapter.id}-shift-exercise">
+    <summary><span>${exercise.title}</span><strong>開始演練</strong></summary>
+    <h3>事件</h3><p>${exercise.situation}</p>
+    <h3>推理步驟</h3><p>${exercise.walkthrough}</p>
+    <h3>決策界線</h3><p>${exercise.decision}</p>
+    <h3>交班紀錄</h3><p>${exercise.record}</p>
+  </details>` : "";
+  return `<section class="engineering-casebook" aria-labelledby="${chapter.id}-casebook-title">
+    <h2 id="${chapter.id}-casebook-title">工程案例深讀</h2>
+    <p>展開案例，沿著「情境 → 機制 → 診斷 → 處置」完成可反證的工程判讀。</p>
+    <div class="casebook-list">${casesHtml}${exerciseHtml}</div>
+  </section>`;
 }
 
 function chapterTwoThreePage() {

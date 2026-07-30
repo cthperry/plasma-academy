@@ -7,6 +7,7 @@ import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
 import { chapterTwoFour } from "../src/content/chapter-2-4.mjs";
 import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
 import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
+import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { formulas } from "../src/data/formulas.js";
 import { gases } from "../src/data/gases.js";
 import { labs } from "../src/data/labs.js";
@@ -21,15 +22,16 @@ const content = chapters.flatMap((chapter) => [
   ...(chapter.objectives ?? []),
   ...(chapter.sections ?? []).flatMap((section) => [section.title, stripHtml(section.body)]),
   ...(chapter.callouts ?? []).flatMap((item) => [item.title, stripHtml(item.body)]),
-  ...(chapter.selfCheck ?? []).flat()
+  ...(chapter.selfCheck ?? []).flat(),
+  ...(l2EngineeringCases[chapter.id] ?? []).flatMap((item) => Object.values(item)),
+  ...Object.values(l2ShiftExercises[chapter.id] ?? {})
 ]).join(" ");
-const hanCharacters = (content.match(/[\p{Script=Han}]/gu) ?? []).length;
-const latinTokens = (content.match(/[A-Za-z0-9_]+/g) ?? []).length;
+const contentCharacters = (content.match(/[\p{L}\p{N}]/gu) ?? []).length;
 
 const metrics = {
   chapters: chapters.length,
   sections: chapters.reduce((total, chapter) => total + (chapter.sections?.length ?? 0), 0),
-  contentUnits: hanCharacters + latinTokens,
+  contentUnits: contentCharacters,
   gases: gases.length,
   sdsVerified: gases.filter((gas) => gas.sdsStatus === "verified").length,
   labsImplemented: labs.filter((lab) => lab.level === 2 && lab.href !== "/lab/").length,
