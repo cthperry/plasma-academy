@@ -1,0 +1,14 @@
+{
+  "gate": "teaching",
+  "status": "pending",
+  "reviewer": { "name": "", "role": "0–3 年資歷的目標讀者" },
+  "reviewed_commit": "",
+  "approved_at": "",
+  "criteria": [
+    "六章可依序完成且前置知識足夠",
+    "摘要、圖解與互動觀察點能支援理解",
+    "自我檢測與結業測驗可辨認學習缺口"
+  ],
+  "evidence": [],
+  "findings": []
+}

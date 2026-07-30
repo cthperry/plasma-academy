@@ -157,6 +157,48 @@
   text-align: center;
 }
 
+.instruction-diagram {
+  margin: 24px 0;
+}
+
+.instruction-diagram img {
+  background: var(--pa-surface);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.instruction-diagram figcaption {
+  color: var(--pa-text-muted);
+  display: grid;
+  font-size: var(--pa-text-sm);
+  gap: 2px;
+  padding: 8px 2px 0;
+}
+
+.instruction-diagram figcaption strong {
+  color: var(--pa-text);
+}
+
+.chapter-support {
+  border-block: 1px solid var(--pa-border);
+  margin: 28px 0;
+  padding: 20px 0;
+}
+
+.chapter-support ul,
+.observation ul {
+  margin: 10px 0 0;
+  padding-inline-start: 22px;
+}
+
+.chapter-support li + li,
+.observation li + li {
+  margin-top: 8px;
+}
+
 .table-wrap {
   overflow-x: auto;
 }

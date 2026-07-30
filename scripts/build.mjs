@@ -5,15 +5,17 @@ import { curriculum, rolePaths } from "../src/data/curriculum.js";
 import { labs } from "../src/data/labs.js";
 import { glossary } from "../src/data/glossary.js";
 import { formulas } from "../src/data/formulas.js";
-import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
+import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
-import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
+import { l1FoundationChapters as l1FoundationChaptersBase } from "../src/content/l1-foundation-chapters.mjs";
+import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
 import { level1ExamSpec } from "../src/data/quiz/level-1.js";
 import { shell, navItems, breadcrumb } from "../src/templates/page-shell.mjs";
 import { formulaCard, callout, labContainer, progressRing } from "../src/templates/components.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const out = path.join(root, "dist", "client");
+const [chapterOneOne, ...l1FoundationChapters] = expandL1Content([chapterOneOneBase, ...l1FoundationChaptersBase]);
 
 const page = (route, title, body, options = {}) => ({
   route,
@@ -153,9 +155,15 @@ function chapterPage() {
     </label>
   `).join("");
 
-  const outline = chapterOneOne.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("");
+  const outline = [...chapterOneOne.sections, ...chapterOneOne.supplements].map((section) => `<a href="#${section.id}">${section.title}</a>`).join("");
   const bodySections = chapterOneOne.sections.map((section) => `
     <section id="${section.id}" class="prose-section">
+      <h2>${section.title}</h2>
+      ${section.body}
+    </section>
+  `).join("");
+  const supplementalSections = chapterOneOne.supplements.map((section) => `
+    <section id="${section.id}" class="prose-section chapter-supplement">
       <h2>${section.title}</h2>
       ${section.body}
     </section>
@@ -166,6 +174,8 @@ function chapterPage() {
       <p>${answer}</p>
     </details>
   `).join("");
+  const prerequisites = chapterOneOne.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapterOneOne.readings.map((item) => `<li>${item}</li>`).join("");
 
   return page("/level/1/1-1-fourth-state/", "1.1 物質第四態", `
     <main class="chapter-layout" data-chapter-id="${chapterOneOne.id}">
@@ -186,8 +196,13 @@ function chapterPage() {
           <h2>學習目標</h2>
           ${objectives}
         </section>
+        <section class="chapter-support" id="prerequisites">
+          <h2>前置知識</h2>
+          <ul>${prerequisites}</ul>
+        </section>
         ${callout("summary", "5 分鐘摘要", chapterOneOne.summary)}
         ${bodySections}
+        ${supplementalSections}
         ${formulaCard(formulas.debyeLength)}
         ${callout("intuition", "工程師直覺", "如果你只記一句話：製程電漿大多是弱游離電漿，帶電粒子很少，但它們決定了能量怎麼被送到晶圓表面。")}
         ${callout("misconception", "常見誤解", "<p><strong>常見說法：</strong>電漿就是很熱的氣體。</p><p><strong>正確理解：</strong>製程電漿常是熱非平衡，電子很有能量，氣體與晶圓仍可維持相對低溫。</p>")}
@@ -195,7 +210,11 @@ function chapterPage() {
           id: "a01",
           title: "A01 氣體到電漿相變",
           module: "/assets/js/labs/a01-fourth-state.js",
-          observation: "把電場拉高，再切到只顯示帶電粒子。注意帶電粒子比例仍然很低，畫面為了可見性刻意放大。"
+          observation: [
+            "把電場由低拉高，找出開始出現持續游離事件的區間；注意這是反應門檻，不是所有粒子一起變成離子。",
+            "切到只顯示帶電粒子，比較游離前後的粒子總量；帶電比例仍很低，畫面為了可見性刻意放大。",
+            "按下重設後改變氣體，再比較相同電場下的游離事件；指出哪一個差異可能來自游離閾值。"
+          ]
         })}
         <section class="self-check" id="self-check">
           <h2>自我檢測</h2>
@@ -204,6 +223,10 @@ function chapterPage() {
           <button class="quiz-choice" type="button" data-correct="true">製程電漿通常是弱游離、熱非平衡的氣體。</button>
           <button class="quiz-choice" type="button">所有粒子都被游離後才叫電漿。</button>
           <p class="quiz-result" aria-live="polite"></p>
+        </section>
+        <section class="chapter-support" id="further-reading">
+          <h2>延伸閱讀</h2>
+          <ul>${readings}</ul>
         </section>
         <nav class="chapter-nav" aria-label="章節導覽">
           <a class="button secondary" href="/level/1/">返回 L1</a>
@@ -232,9 +255,15 @@ function l1ChapterPage(chapter, index) {
       <span>${item}</span>
     </label>
   `).join("");
-  const outline = chapter.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("");
+  const outline = [...chapter.sections, ...chapter.supplements].map((section) => `<a href="#${section.id}">${section.title}</a>`).join("");
   const bodySections = chapter.sections.map((section) => `
     <section id="${section.id}" class="prose-section">
+      <h2>${section.title}</h2>
+      ${section.body}
+    </section>
+  `).join("");
+  const supplementalSections = chapter.supplements.map((section) => `
+    <section id="${section.id}" class="prose-section chapter-supplement">
       <h2>${section.title}</h2>
       ${section.body}
     </section>
@@ -247,6 +276,8 @@ function l1ChapterPage(chapter, index) {
       <p>${answer}</p>
     </details>
   `).join("");
+  const prerequisites = chapter.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapter.readings.map((item) => `<li>${item}</li>`).join("");
   const sidebar = [
     ["1.1 物質第四態", "/level/1/1-1-fourth-state/"],
     ...l1FoundationChapters.map((item) => [item.title, item.route])
@@ -270,13 +301,22 @@ function l1ChapterPage(chapter, index) {
           <h2>學習目標</h2>
           ${objectives}
         </section>
+        <section class="chapter-support" id="prerequisites">
+          <h2>前置知識</h2>
+          <ul>${prerequisites}</ul>
+        </section>
         ${callout("summary", "5 分鐘摘要", chapter.summary)}
         ${bodySections}
+        ${supplementalSections}
         ${callouts}
         ${labsHtml}
         <section class="self-check">
           <h2>自我檢測</h2>
           ${checks}
+        </section>
+        <section class="chapter-support" id="further-reading">
+          <h2>延伸閱讀</h2>
+          <ul>${readings}</ul>
         </section>
         <nav class="chapter-nav" aria-label="章節導覽">
           <a class="button secondary" href="${previous.href}">上一章：${previous.title}</a>

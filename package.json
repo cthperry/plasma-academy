@@ -4,17 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "node scripts/build-l1-diagrams.mjs && node scripts/build.mjs",
     "build:search": "node scripts/build-search-index.mjs",
     "sync:glossary": "node scripts/sync-glossary-from-doc.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
+    "check:content": "node scripts/check-content-style.mjs",
     "check:data": "node scripts/check-data.mjs",
     "check:links": "node scripts/check-links.mjs",
     "check:size": "node scripts/check-size.mjs",
+    "check:reviews": "node scripts/check-review-packets.mjs",
     "audit:p1": "node scripts/audit-p1.mjs",
     "verify:ui": "node scripts/verify-ui.mjs",
-    "check": "npm run build && npm run check:data && npm run check:a11y && npm run check:contrast && npm run check:links && npm run check:size",
+    "check": "npm run build && npm run check:data && npm run check:content && npm run check:reviews && npm run check:a11y && npm run check:contrast && npm run check:links && npm run check:size",
     "serve": "npx --yes serve dist/client --listen 4173"
   },
   "devDependencies": {

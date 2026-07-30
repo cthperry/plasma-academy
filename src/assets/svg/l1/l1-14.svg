@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">平均自由徑隨壓力縮短</title>
+  <desc id="desc">Ar 近似 λ[cm]≈5/P[mTorr]，壓力提高十倍，λ 約縮短十倍。 比較 λ 與 gap 或鞘層厚度，才能判斷碰撞性。</desc>
+  <style>
+    .bg{fill:#fff}.panel{fill:#f2f5f8;stroke:#b7c1cc}.line{fill:none;stroke:#0f6fd6;stroke-width:3}.muted-line{fill:none;stroke:#8a95a3;stroke-width:2}.axis{stroke:#4a5560;stroke-width:1.5}.title{fill:#1a1f26;font:700 22px system-ui,sans-serif}.label{fill:#1a1f26;font:700 15px system-ui,sans-serif}.small{fill:#4a5560;font:14px system-ui,sans-serif}.note{fill:#4a5560;font:13px system-ui,sans-serif}.accent{fill:#0f6fd6}.success{fill:#1a7f4b}.warning{fill:#8a5500}.border{fill:none;stroke:#d9e0e8}
+    @media(prefers-color-scheme:dark){.bg{fill:#161b22}.panel{fill:#0b0e13;stroke:#3d4753}.title,.label{fill:#e6edf3}.small,.note{fill:#9aa7b4}.axis{stroke:#9aa7b4}.line{stroke:#4d9df0}.border{stroke:#2a323c}}
+  </style>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="accent"/></marker></defs>
+  <rect class="bg" width="760" height="360" rx="8"/><rect class="border" x="1" y="1" width="758" height="358" rx="8"/>
+  <text class="title" x="34" y="44">平均自由徑隨壓力縮短</text>
+  <path class="axis" d="M92 274 V82 M92 274 H704"/><text class="small" x="646" y="300">壓力 P（log）</text><text class="small" transform="translate(28 174) rotate(-90)">平均自由徑 λ（log）</text><path class="line" d="M106 104 L690 254"/><circle class="accent" cx="106" cy="104" r="6"/><circle class="accent" cx="300" cy="154" r="6"/><circle class="accent" cx="690" cy="254" r="6"/><text class="small" x="126" y="112">1 mTorr：5 cm</text><text class="small" x="486" y="244">100 mTorr：0.5 mm</text>
+  <text class="note" x="34" y="334">比較 λ 與 gap 或鞘層厚度，才能判斷碰撞性。</text>
+</svg>

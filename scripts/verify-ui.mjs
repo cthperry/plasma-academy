@@ -25,16 +25,21 @@ const searchCount = await desktop.locator("[data-search-results] a").count();
 const packagingSearchHit = await desktop.locator("[data-search-results]").textContent();
 
 const l1Routes = [
-  ["/level/1/1-2-parameters/", "1.2 電漿基本參數", 6],
-  ["/level/1/1-3-collisions-mfp/", "1.3 碰撞與平均自由徑", 6],
-  ["/level/1/1-4-glow-breakdown/", "1.4 輝光放電與點火", 6],
-  ["/level/1/1-5-sheath/", "1.5 鞘層入門", 7],
-  ["/level/1/1-6-process-map/", "1.6 製程電漿地圖", 5]
+  ["/level/1/1-2-parameters/", "1.2 電漿基本參數", 6, 6],
+  ["/level/1/1-3-collisions-mfp/", "1.3 碰撞與平均自由徑", 6, 7],
+  ["/level/1/1-4-glow-breakdown/", "1.4 輝光放電與點火", 6, 6],
+  ["/level/1/1-5-sheath/", "1.5 鞘層入門", 7, 7],
+  ["/level/1/1-6-process-map/", "1.6 製程電漿地圖", 5, 4]
 ];
 const l1Checks = [];
-for (const [route, expectedTitle, expectedSelfChecks] of l1Routes) {
+for (const [route, expectedTitle, expectedSelfChecks, expectedDiagrams] of l1Routes) {
   await desktop.goto(`${base}${route}`, { waitUntil: "networkidle" });
   const title = await desktop.locator("h1").first().textContent();
+  await desktop.locator(".instruction-diagram img").evaluateAll((images) => images.forEach((image) => { image.loading = "eager"; }));
+  await desktop.waitForFunction((count) => {
+    const images = [...document.querySelectorAll(".instruction-diagram img")];
+    return images.length === count && images.every((image) => image.complete && image.naturalWidth === 760);
+  }, expectedDiagrams);
   const firstLab = desktop.locator("[data-lab-container]").first();
   await firstLab.scrollIntoViewIfNeeded();
   await desktop.waitForTimeout(600);
@@ -53,7 +58,13 @@ for (const [route, expectedTitle, expectedSelfChecks] of l1Routes) {
     return svg ? svg.querySelectorAll("rect, path, line, text").length * 10000 : 0;
   });
   const selfCheckCount = await desktop.locator(".self-check details.check-card").count();
-  l1Checks.push({ route, title, expectedTitle, expectedSelfChecks, selfCheckCount, labPixels });
+  const diagramCount = await desktop.locator(".instruction-diagram img").count();
+  const diagramsLoaded = await desktop.locator(".instruction-diagram img").evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth === 760));
+  const figureNumbersValid = await desktop.locator(".instruction-diagram figcaption strong").evaluateAll((captions) => captions.every((caption) => /^圖 1\.\d-\d+ /.test(caption.textContent ?? "")));
+  const chapterSupportCount = await desktop.locator(".chapter-support").count();
+  const observationCounts = await desktop.locator("[data-lab-container] .observation ul").evaluateAll((lists) => lists.map((list) => list.querySelectorAll("li").length));
+  const observationsValid = observationCounts.every((count) => count >= 2 && count <= 4);
+  l1Checks.push({ route, title, expectedTitle, expectedSelfChecks, selfCheckCount, expectedDiagrams, diagramCount, diagramsLoaded, figureNumbersValid, chapterSupportCount, observationCounts, observationsValid, labPixels });
 }
 
 await desktop.goto(`${base}/formulas/`, { waitUntil: "networkidle" });
@@ -254,6 +265,10 @@ const canvasInfo = await desktop.evaluate(() => {
   return { width: canvas.width, height: canvas.height, nonBlank };
 });
 const chapterOneOneSelfChecks = await desktop.locator(".self-check details.check-card").count();
+const chapterOneOneDiagramCount = await desktop.locator(".instruction-diagram img").count();
+const chapterOneOneSupportCount = await desktop.locator(".chapter-support").count();
+const chapterOneOneObservationCount = await desktop.locator("#lab-a01 .observation li").count();
+const chapterOneOneFigureNumbersValid = await desktop.locator(".instruction-diagram figcaption strong").evaluateAll((captions) => captions.every((caption) => /^圖 1\.1-\d+ /.test(caption.textContent ?? "")));
 await desktop.click('[data-objective="0"]');
 await desktop.click('.quiz-choice[data-correct="true"]');
 const quizText = await desktop.locator(".quiz-result").textContent();
@@ -390,19 +405,19 @@ await mobile.screenshot({ path: path.join(qaDir, "mobile-exam.png"), fullPage: f
 
 await browser.close();
 
-const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, formulaCardCount, formulaPageText, chapterOneOneSelfChecks, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, formulaCardCount, formulaPageText, chapterOneOneSelfChecks, chapterOneOneDiagramCount, chapterOneOneSupportCount, chapterOneOneObservationCount, chapterOneOneFigureNumbersValid, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
 if (searchCount < 1) throw new Error("搜尋沒有回傳結果。");
 if (!packagingSearchHit.includes("封裝") || !packagingH1.includes("封裝清潔")) throw new Error("封裝清潔頁或搜尋入口未通過驗證。");
 for (const check of l1Checks) {
-  if (!check.title.includes(check.expectedTitle) || check.labPixels < 100000 || check.selfCheckCount !== check.expectedSelfChecks) {
+  if (!check.title.includes(check.expectedTitle) || check.labPixels < 100000 || check.selfCheckCount !== check.expectedSelfChecks || check.diagramCount !== check.expectedDiagrams || !check.diagramsLoaded || !check.figureNumbersValid || check.chapterSupportCount !== 2 || !check.observationsValid) {
     throw new Error(`L1 章節驗證失敗: ${JSON.stringify(check)}`);
   }
 }
 if (formulaCardCount !== 12 || !formulaPageText.includes("Townsend 自持條件") || !formulaPageText.includes("浮動電位差")) throw new Error("L1 公式手冊未完整渲染 12 條公式。");
-if (chapterOneOneSelfChecks !== 5) throw new Error("1.1 自我檢測未顯示 5 題。");
+if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);
 if (examScore !== 100 || examReviewCount !== 20 || !examStoredProgress.passed || examStoredProgress.bestScore !== 100) throw new Error("L1 測驗計分、解析或進度寫入未通過。");

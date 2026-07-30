@@ -5,7 +5,7 @@ export const l1FoundationChapters = [
     title: "1.2 電漿基本參數",
     hours: 1.5,
     labs: [
-      { id: "a02", title: "A02 Debye 遮蔽互動", module: "/assets/js/labs/a02-debye-shielding.js", observation: "把電子密度提高十倍，觀察 Debye 長度如何縮小；切換正/負測試電荷，確認電子雲與離子排斥方向會反轉。重點是 λD ∝ √(Te/ne)。" }
+      { id: "a02", title: "A02 Debye 遮蔽互動", module: "/assets/js/labs/a02-debye-shielding.js", observation: ["把電子密度提高十倍，記下遮蔽圈縮小的比例；用結果驗證 λD ∝ 1/√ne。", "把電子溫度提高四倍，觀察遮蔽圈是否約放大兩倍；比較密度與溫度對 λD 的方向。", "切換正、負測試電荷，確認電子聚集與排斥方向反轉，但遮蔽長度量級不變。"] }
     ],
     objectives: [
       "說出 n_e、T_e、T_i 的典型數值與單位。",
@@ -61,7 +61,7 @@ export const l1FoundationChapters = [
     title: "1.3 碰撞與平均自由徑",
     hours: 1.5,
     labs: [
-      { id: "a03", title: "A03 平均自由徑粒子模擬", module: "/assets/js/labs/a03-mean-free-path.js", observation: "把壓力從 1 mTorr 拉到 100 mTorr，觀察碰撞閃光增加、離子路徑偏折，以及入射角分佈由窄變寬。" }
+      { id: "a03", title: "A03 平均自由徑粒子模擬", module: "/assets/js/labs/a03-mean-free-path.js", observation: ["把壓力從 1 mTorr 拉到 100 mTorr，數出同一飛行距離內碰撞閃光的量級變化。", "固定鞘層厚度後比較低壓與高壓軌跡，指出哪一組離子入射角分佈較窄。", "把平均自由徑分別和 gap、鞘層厚度比較，說明兩個比值各回答哪一種傳輸問題。"] }
     ],
     objectives: [
       "由壓力估算平均自由徑。",
@@ -93,8 +93,8 @@ export const l1FoundationChapters = [
     title: "1.4 輝光放電與點火",
     hours: 1.5,
     labs: [
-      { id: "a04", title: "A04 電子雪崩動畫", module: "/assets/js/labs/a04-townsend-avalanche.js", observation: "先把 γ 調到 0，看單次雪崩抵達陽極後熄滅；再提高 γ，觀察離子撞陰極產生的二次電子如何補回下一個種子。" },
-      { id: "a05", title: "A05 Paschen 曲線互動", module: "/assets/js/labs/a05-paschen-curve.js", observation: "切換氣體並顯示所有曲線，找出 Paschen 谷底；把壓力固定在 0.01 Torr、間距 3 cm 時，會落在左支，這就是常先衝壓力點火的原因。" }
+      { id: "a04", title: "A04 電子雪崩動畫", module: "/assets/js/labs/a04-townsend-avalanche.js", observation: ["先把 γ 調到 0，播放到電子抵達陽極；確認單次雪崩為什麼仍會熄滅。", "逐步提高 γ，找出能補回下一代種子的區間；觀察二次電子如何建立自持回授。", "保持 γ 不變並調整 αd，比較電子成長速度；指出氣體碰撞與表面回授缺一不可的原因。"] },
+      { id: "a05", title: "A05 Paschen 曲線互動", module: "/assets/js/labs/a05-paschen-curve.js", observation: ["切換氣體並顯示所有曲線，找出各自谷底；比較最低崩潰電壓與對應 pd 是否相同。", "把壓力固定在 0.01 Torr、間距設為 3 cm，定位工作點在左支或右支，並說明碰撞不足或過多。", "提高壓力直到工作點靠近谷底，觀察崩潰電壓如何改變；把結果連回先衝壓力的 ignition step。"] }
     ],
     objectives: [
       "說明 Townsend 雪崩如何導致崩潰。",
@@ -126,7 +126,7 @@ export const l1FoundationChapters = [
     title: "1.5 鞘層入門",
     hours: 1.5,
     labs: [
-      { id: "a06", title: "A06 鞘層形成時間軸", module: "/assets/js/labs/a06-sheath-timeline.js", observation: "拖動時間軸，看電子先流失、表面帶負電、鞘層形成、離子垂直加速這四步；提高電子密度後比較鞘層厚度。" }
+      { id: "a06", title: "A06 鞘層形成時間軸", module: "/assets/js/labs/a06-sheath-timeline.js", observation: ["拖動時間軸，依序指出電子先流失、表面帶負電、鞘層形成與離子加速四個階段。", "停在鞘層剛形成的時刻，比較 bulk 與表面附近的電荷分佈；指出準中性在哪裡失效。", "提高電子密度後比較鞘層厚度，再加入較高壓力；觀察厚度與碰撞對方向性的不同影響。"] }
     ],
     objectives: [
       "解釋鞘層為什麼必然形成。",
@@ -160,7 +160,7 @@ export const l1FoundationChapters = [
     title: "1.6 製程電漿地圖",
     hours: 1,
     labs: [
-      { id: "a07", title: "A07 製程電漿地圖", module: "/assets/js/labs/a07-process-map.js", observation: "切換製程類別並點選區塊，注意蝕刻與 PVD 為何偏低壓，而 PECVD、灰化與 remote clean 為何移到高壓區。" }
+      { id: "a07", title: "A07 製程電漿地圖", module: "/assets/js/labs/a07-process-map.js", observation: ["切換蝕刻與 PVD，找出兩者都偏低壓但目的不同的原因：一個保留離子方向，一個保留濺出原子路徑。", "比較 PECVD、灰化與 remote clean 的位置，指出高壓與自由基產率、方向性需求之間的關係。", "把你熟悉的 recipe 壓力與設備型式放上地圖，寫下一個密度或傳輸量測來驗證定位。"] }
     ],
     objectives: [
       "說出六大類電漿製程的目的、氣體與壓力窗。",
@@ -172,7 +172,7 @@ export const l1FoundationChapters = [
       { id: "applications", title: "六大類應用", body: `<div class="table-wrap"><table><thead><tr><th>類別</th><th>目的</th><th>主要氣體</th><th>壓力</th><th>機台</th></tr></thead><tbody><tr><td>電漿蝕刻</td><td>移除材料、定義圖形</td><td>氟/氯/溴系 + Ar/O2</td><td>5–100 mTorr</td><td>CCP / ICP</td></tr><tr><td>PECVD</td><td>低溫沉積</td><td>SiH4、TEOS、NH3</td><td>1–10 Torr</td><td>CCP</td></tr><tr><td>PVD</td><td>沉積金屬</td><td>Ar</td><td>1–10 mTorr</td><td>Magnetron</td></tr><tr><td>灰化</td><td>去除光阻</td><td>O2、N2/H2</td><td>0.5–2 Torr</td><td>Downstream</td></tr><tr><td>腔體清潔</td><td>去除腔內沉積</td><td>NF3、C2F6</td><td>1–5 Torr</td><td>Remote</td></tr><tr><td>表面處理</td><td>活化、除膠、親水化</td><td>O2、Ar、N2、H2</td><td>0.1–1 Torr</td><td>多樣</td></tr></tbody></table></div>` },
       { id: "pressure-logic", title: "為什麼壓力差這麼多", body: `<p>蝕刻需要方向性，所以低壓；沉積要覆蓋與產率，所以較高壓；濺鍍要靶材原子飛到晶圓，所以低壓；灰化不需要方向性，反而希望少離子損傷，所以常用下游高壓自由基。</p>` },
       { id: "tool-types", title: "機台型式速覽", body: `<p>CCP 結構簡單、離子能量高；ICP 密度高、source/bias 可解耦；remote plasma 把電漿放在上游，只送自由基到製程區；magnetron PVD 用磁場束縛電子提升游離率。</p>` },
-      { id: "recipe", title: "讀一支 poly gate recipe", body: `<p>Breakthrough 壓力低、bias 較高，是為了打穿原生氧化層；main etch 加 HBr 與 O2，是為了側壁鈍化與選擇比；over etch 壓力升高、bias 降低，是為了保護下方 gate oxide。</p>` }
+      { id: "recipe", title: "讀一支 poly gate recipe", body: `<p>Breakthrough 壓力低、bias 高，是為了打穿原生氧化層；main etch 加 HBr 與 O2，是為了側壁鈍化與選擇比；over etch 壓力升高、bias 降低，是為了保護下方 gate oxide。</p>` }
     ],
     callouts: [
       { type: "intuition", title: "工程師直覺", body: "recipe 每一欄都是物理折衷：壓力管碰撞，source power 管密度，bias 管離子能量，氣體管化學與鈍化。" }

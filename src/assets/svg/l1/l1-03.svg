@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">弱游離的數量與作用</title>
+  <desc id="desc">中性粒子佔絕大多數；自由基主導化學量，離子以電荷取得方向性。 弱游離描述比例，不代表製程作用弱。</desc>
+  <style>
+    .bg{fill:#fff}.panel{fill:#f2f5f8;stroke:#b7c1cc}.line{fill:none;stroke:#0f6fd6;stroke-width:3}.muted-line{fill:none;stroke:#8a95a3;stroke-width:2}.axis{stroke:#4a5560;stroke-width:1.5}.title{fill:#1a1f26;font:700 22px system-ui,sans-serif}.label{fill:#1a1f26;font:700 15px system-ui,sans-serif}.small{fill:#4a5560;font:14px system-ui,sans-serif}.note{fill:#4a5560;font:13px system-ui,sans-serif}.accent{fill:#0f6fd6}.success{fill:#1a7f4b}.warning{fill:#8a5500}.border{fill:none;stroke:#d9e0e8}
+    @media(prefers-color-scheme:dark){.bg{fill:#161b22}.panel{fill:#0b0e13;stroke:#3d4753}.title,.label{fill:#e6edf3}.small,.note{fill:#9aa7b4}.axis{stroke:#9aa7b4}.line{stroke:#4d9df0}.border{stroke:#2a323c}}
+  </style>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="accent"/></marker></defs>
+  <rect class="bg" width="760" height="360" rx="8"/><rect class="border" x="1" y="1" width="758" height="358" rx="8"/>
+  <text class="title" x="34" y="44">弱游離的數量與作用</text>
+  <rect class="panel" x="34" y="92" width="331" height="190" rx="6"/><rect class="accent" x="34" y="92" width="8" height="190" rx="4"/><text class="label" x="58" y="128">中性粒子 / 自由基</text><text class="small" x="58" y="166">數量多</text><text class="small" x="58" y="200">化學反應</text><rect class="panel" x="395" y="92" width="331" height="190" rx="6"/><rect class="success" x="395" y="92" width="8" height="190" rx="4"/><text class="label" x="419" y="128">正離子</text><text class="small" x="419" y="166">數量少</text><text class="small" x="419" y="200">方向與活化</text>
+  <text class="note" x="34" y="334">弱游離描述比例，不代表製程作用弱。</text>
+</svg>

@@ -30,6 +30,8 @@ export function callout(type, title, body) {
 }
 
 export function labContainer({ id, title, module, observation }) {
+  const observations = Array.isArray(observation) ? observation : [observation];
+  const observationItems = observations.map((item) => `<li>${item}</li>`).join("");
   return `<section class="lab-container" id="lab-${id}" data-lab-container data-lab-module="${module}" aria-label="${title}">
     <header class="lab-container__header">
       <h2>${title}</h2>
@@ -40,7 +42,7 @@ export function labContainer({ id, title, module, observation }) {
       <div class="lab-panel" data-lab-controls></div>
     </div>
     <p class="lab-status" data-lab-status aria-live="polite">等待元件載入。</p>
-    <div class="observation"><strong>觀察點：</strong>${observation}</div>
+    <div class="observation"><strong>觀察點</strong><ul>${observationItems}</ul></div>
     <noscript>此互動元件需要 JavaScript。你仍可閱讀本章文字說明。</noscript>
   </section>`;
 }

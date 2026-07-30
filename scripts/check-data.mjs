@@ -7,6 +7,7 @@ import { formulas } from "../src/data/formulas.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
 import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
+import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { childLangmuirSheathMm, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, paschenGases, paschenVoltage, townsendDischarge } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
@@ -88,6 +89,16 @@ const expectedBankDistribution = { single: 30, multi: 9, numeric: 8, scenario: 8
 for (const [type, expected] of Object.entries(expectedBankDistribution)) {
   const actual = level1Questions.filter((question) => question.type === type).length;
   if (actual !== expected) failures.push(`L1 ${type} 題庫分佈應為 ${expected} 題，目前 ${actual} 題。`);
+}
+
+if (l1Diagrams.length !== 35) failures.push(`L1 教學 SVG 目錄應為 35 張，目前 ${l1Diagrams.length} 張。`);
+const diagramIds = new Set();
+for (const diagram of l1Diagrams) {
+  if (diagramIds.has(diagram.id)) failures.push(`L1 圖解 ID 重複：${diagram.id}。`);
+  diagramIds.add(diagram.id);
+  for (const field of ["id", "chapter", "section", "title", "caption", "type", "items", "note"]) {
+    if (!diagram[field] || (field === "items" && !Array.isArray(diagram.items))) failures.push(`L1 圖解 ${diagram.id} 缺少 ${field}。`);
+  }
 }
 
 for (const [gasKey, gas] of Object.entries(paschenGases)) {
