@@ -1,0 +1,17 @@
+#lab-a22 canvas,
+#lab-a23 canvas {
+  aspect-ratio: auto;
+  background: var(--pa-surface-sunken);
+  min-height: 360px;
+}
+
+#lab-a22 .segmented-group {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 640px) {
+  #lab-a22 canvas,
+  #lab-a23 canvas {
+    min-height: 230px;
+  }
+}

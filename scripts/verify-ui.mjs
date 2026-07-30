@@ -622,6 +622,46 @@ await desktop.locator("[data-defect-search]").fill("腐蝕");
 const defectSearchVisible = await desktop.locator("[data-defect-card]:visible").count();
 await desktop.screenshot({ path: path.join(qaDir, "desktop-defect-atlas.png"), fullPage: false });
 
+await desktop.goto(`${base}/level/3/3-4-plasma-deposition/`, { waitUntil: "networkidle" });
+const chapterThreeFourTitle = await desktop.locator("h1").first().textContent();
+await desktop.locator("#lab-a22").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(450);
+const a22ControlCount = await desktop.locator('#lab-a22 input[type="range"]').count();
+const a22OutputCount = await desktop.locator("#lab-a22 .value-panel dd").count();
+const a22InitialCoverage = parseFloat(await desktop.locator('#lab-a22 [data-value-key="階梯覆蓋率"]').textContent());
+const a22InitialGpc = parseFloat(await desktop.locator('#lab-a22 [data-value-key="GPC"]').textContent());
+const a22Ranges = desktop.locator('#lab-a22 input[type="range"]');
+await a22Ranges.nth(1).evaluate((input) => { input.value = "12"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a22SaturatedThickness = parseFloat(await desktop.locator('#lab-a22 [data-value-key="頂部厚度"]').textContent());
+await a22Ranges.nth(1).evaluate((input) => { input.value = "20"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a22OversuppliedThickness = parseFloat(await desktop.locator('#lab-a22 [data-value-key="頂部厚度"]').textContent());
+await a22Ranges.nth(2).evaluate((input) => { input.value = "0.2"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a22PoorPurgeStatus = await desktop.locator("#lab-a22 [data-lab-status]").textContent();
+const a22PoorPurgeGpc = parseFloat(await desktop.locator('#lab-a22 [data-value-key="GPC"]').textContent());
+await desktop.locator("#lab-a22").getByRole("radio", { name: "PECVD 對照" }).click();
+const a22PecvdCoverage = parseFloat(await desktop.locator('#lab-a22 [data-value-key="階梯覆蓋率"]').textContent());
+const a22CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a22 canvas"); const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data; let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++; return nonBlank;
+});
+await desktop.locator("#lab-a23").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(400);
+const a23ControlCount = await desktop.locator('#lab-a23 input[type="range"]').count();
+const a23OutputCount = await desktop.locator("#lab-a23 .value-panel dd").count();
+const a23InitialPecvd = await desktop.locator('#lab-a23 [data-value-key="PECVD 判定"]').textContent();
+const a23InitialHdp = await desktop.locator('#lab-a23 [data-value-key="HDP 判定"]').textContent();
+const a23Ranges = desktop.locator('#lab-a23 input[type="range"]');
+await a23Ranges.nth(0).evaluate((input) => { input.value = "15"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a23HighDs = await desktop.locator('#lab-a23 [data-value-key="HDP 判定"]').textContent();
+await a23Ranges.nth(0).evaluate((input) => { input.value = "5"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+await a23Ranges.nth(1).evaluate((input) => { input.value = "8"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a23HighAr = await desktop.locator('#lab-a23 [data-value-key="HDP 判定"]').textContent();
+const a23CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a23 canvas"); const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data; let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++; return nonBlank;
+});
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a22-a23.png"), fullPage: false });
+
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
@@ -992,6 +1032,19 @@ const mobileDefectOverflow = await mobile.evaluate(() => document.documentElemen
 const mobileDefectCardCount = await mobile.locator("[data-defect-card]").count();
 await mobile.screenshot({ path: path.join(qaDir, "mobile-defect-atlas.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/3/3-4-plasma-deposition/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a22").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(350);
+const mobileA22Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA22ControlCount = await mobile.locator('#lab-a22 input[type="range"]').count();
+const mobileA22OutputCount = await mobile.locator("#lab-a22 .value-panel dd").count();
+await mobile.locator("#lab-a23").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(350);
+const mobileA23Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA23ControlCount = await mobile.locator('#lab-a23 input[type="range"]').count();
+const mobileA23OutputCount = await mobile.locator("#lab-a23 .value-panel dd").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a22-a23.png"), fullPage: false });
+
 await mobile.goto(`${base}/level/3/3-7-packaging-cleaning/`, { waitUntil: "networkidle" });
 await mobile.locator("#lab-a33").scrollIntoViewIfNeeded();
 await mobile.waitForTimeout(400);
@@ -1043,6 +1096,7 @@ Object.assign(result, { a16ControlCount, a16OutputCount, a16ChainCount, a16LowSo
 Object.assign(result, { chapterThreeOneTitle, a17BarCount, a17OutputCount, a17InitialTotal, a17InitialSynergy, a17NoIonTotal, a17TrenchStatus, a17CanvasPixels, a18ControlCount, a18OutputCount, a18InitialShape, a18BowingWidths, a18FixedBowingWidths, a18StoppedDepth, a18RecoveredDepth, a18FacetedMask, a18FixedMask, a18CanvasPixels, mobileA17Overflow, mobileA17OutputCount, mobileA18Overflow, mobileA18ControlCount, mobileA18OutputCount });
 Object.assign(result, { chapterThreeTwoTitle, a19ControlCount, a19OutputCount, a19ShortScallop, a19ShortRate, a19LongScallop, a19LongRate, a19IsotropicStatus, a19CanvasPixels, mobileA19Overflow, mobileA19ControlCount, mobileA19OutputCount });
 Object.assign(result, { chapterThreeThreeTitle, a20ControlCount, a20ToggleCount, a20OutputCount, a20InitialLag, a20NoTransportLag, a20InverseLag, a20CanvasPixels, a21SymptomCount, a21ResultCount, a21MethodCount, a21RankedFirst, defectCardCount, defectHasUndefined, defectArVisible, defectSearchVisible, mobileA20Overflow, mobileA20ControlCount, mobileA20OutputCount, mobileA21Overflow, mobileA21SymptomCount, mobileA21ResultCount, mobileDefectOverflow, mobileDefectCardCount });
+Object.assign(result, { chapterThreeFourTitle, a22ControlCount, a22OutputCount, a22InitialCoverage, a22InitialGpc, a22SaturatedThickness, a22OversuppliedThickness, a22PoorPurgeStatus, a22PoorPurgeGpc, a22PecvdCoverage, a22CanvasPixels, a23ControlCount, a23OutputCount, a23InitialPecvd, a23InitialHdp, a23HighDs, a23HighAr, a23CanvasPixels, mobileA22Overflow, mobileA22ControlCount, mobileA22OutputCount, mobileA23Overflow, mobileA23ControlCount, mobileA23OutputCount });
 Object.assign(result, { l2DiagramChecks, packagingCaseText, packagingShiftText, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobilePackagingCaseOverflow, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
 Object.assign(result, { a33ControlCount, a33OutputCount, a33PathCount, a33InitialAngle, a33InitialAdhesion, a33OvertreatedAngle, a33OvertreatedAdhesion, a33OvertreatedStatus, a33ReducedOxide, a33ReducedAdhesion, a33OxidizedOxide, a33OxidizedAdhesion, a33OxidizedStatus, mobileA33Overflow, mobileA33ControlCount, mobileA33OutputCount, mobileA33PathCount });
 console.log(JSON.stringify(result, null, 2));
@@ -1113,6 +1167,11 @@ if (a20CanvasPixels < 150000 || mobileA20Overflow) throw new Error("A20 Canvas �
 if (a21SymptomCount !== 18 || a21ResultCount !== 5 || a21MethodCount < 2 || !a21RankedFirst.includes("Notching")) throw new Error("A21 的 18 種症狀、排序或雙重判別法未完整運作。");
 if (mobileA21Overflow || mobileA21SymptomCount !== 18 || mobileA21ResultCount !== 5) throw new Error("A21 手機版溢出或內容缺漏。");
 if (defectCardCount !== 18 || defectHasUndefined || defectArVisible !== 4 || defectSearchVisible !== 1 || mobileDefectCardCount !== 18 || mobileDefectOverflow) throw new Error("缺陷圖鑑的 18 條資料、分類文字、篩選、搜尋或手機版未通過。");
+if (!chapterThreeFourTitle.includes("電漿沉積") || a22ControlCount !== 4 || a22OutputCount !== 6 || mobileA22ControlCount !== 4 || mobileA22OutputCount !== 6) throw new Error("3.4 或 A22 控制與讀值未完整渲染。");
+if (!(a22InitialCoverage > 95) || Math.abs(a22InitialGpc - 0.08) > 0.005 || Math.abs(a22OversuppliedThickness - a22SaturatedThickness) > 0.02 || !a22PoorPurgeStatus.includes("寄生 CVD") || !(a22PoorPurgeGpc > 0.12) || !(a22PecvdCoverage < 50)) throw new Error("A22 未呈現 PEALD 自限制、purge 失效或 PECVD 對照。");
+if (a22CanvasPixels < 150000 || mobileA22Overflow) throw new Error("A22 Canvas 空白或手機版溢出。");
+if (a23ControlCount !== 3 || a23OutputCount !== 5 || mobileA23ControlCount !== 3 || mobileA23OutputCount !== 5 || !a23InitialPecvd.includes("void") || !a23InitialHdp.includes("窗口") || !a23HighDs.includes("void") || !a23HighAr.includes("void")) throw new Error("A23 未呈現 PECVD/HDP 填溝窗口與邊界失效。");
+if (a23CanvasPixels < 150000 || mobileA23Overflow) throw new Error("A23 Canvas 空白或手機版溢出。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);

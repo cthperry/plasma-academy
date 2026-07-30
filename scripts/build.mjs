@@ -14,6 +14,7 @@ import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.m
 import { chapterThreeOne } from "../src/content/chapter-3-1.mjs";
 import { chapterThreeTwo } from "../src/content/chapter-3-2.mjs";
 import { chapterThreeThree } from "../src/content/chapter-3-3.mjs";
+import { chapterThreeFour } from "../src/content/chapter-3-4.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
@@ -501,11 +502,40 @@ function chapterThreeThreePage() {
         ${sections}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
-        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeTwo.route}">上一章：${chapterThreeTwo.title}</a><a class="button primary" href="/level/3/3-7-packaging-cleaning/">前往 3.7 封裝清潔</a></nav>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeTwo.route}">上一章：${chapterThreeTwo.title}</a><a class="button primary" href="${chapterThreeFour.route}">下一章：${chapterThreeFour.title}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<a href="/defects/">開啟缺陷圖鑑</a><div data-unit-converter></div></aside>
     </main>
   `, { pageType: "chapter", description: "18 種蝕刻缺陷圖鑑、ARDE 機制拆解與資料驅動診斷流程。", extraStyles: ["/assets/css/a20-a21.css"] });
+}
+
+function chapterThreeFourPage() {
+  const objectives = chapterThreeFour.objectives.map((item, index) => `<label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterThreeFour.id}"><span>${item}</span></label>`).join("");
+  const prerequisites = chapterThreeFour.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapterThreeFour.readings.map((item) => `<li>${item}</li>`).join("");
+  const outline = [...chapterThreeFour.sections, ...chapterThreeFour.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
+  const sections = chapterThreeFour.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const callouts = chapterThreeFour.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapterThreeFour.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapterThreeFour.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
+  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour].map((item) => `<a class="${item.id === chapterThreeFour.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  return page(chapterThreeFour.route, chapterThreeFour.title, `
+    <main class="chapter-layout" data-chapter-id="${chapterThreeFour.id}">
+      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a><a href="/level/3/">L3 模組列表</a></aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L3 進階", chapterThreeFour.title])}
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapterThreeFour.hours} h · 互動元件 A22、A23</p><h1>${chapterThreeFour.title}</h1><p>${chapterThreeFour.summary}</p></header>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
+        ${callout("summary", "5 分鐘摘要", chapterThreeFour.summary)}
+        ${sections}${callouts}${labsHtml}
+        <section class="self-check"><h2>自我檢測</h2>${checks}</section>
+        <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeThree.route}">上一章：${chapterThreeThree.title}</a><a class="button primary" href="/level/3/">返回 L3</a></nav>
+      </article>
+      <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
+    </main>
+  `, { pageType: "chapter", description: "PECVD、HDP-CVD 與 PEALD 的薄膜控制、保形性與高深寬比填溝。", extraStyles: ["/assets/css/a22-a23.css"] });
 }
 
 function defectAtlasPage() {
@@ -965,6 +995,7 @@ async function main() {
     chapterThreeOnePage(),
     chapterThreeTwoPage(),
     chapterThreeThreePage(),
+    chapterThreeFourPage(),
     packagingCleaningPage(),
     labPage(),
     progressPage(),
