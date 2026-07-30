@@ -436,8 +436,100 @@
     });
   }
 
+  /* ---------------------------------------------------------------------
+     診斷流程(§3.3.6)—— A21 用的「還能做什麼實驗」表
+     --------------------------------------------------------------------- */
+
+  /**
+   * 每一條都是**可以真的去做的實驗**,不是「再檢查一次」這種空話。
+   * 依缺陷類別給,因為同一類缺陷的收斂路徑是一樣的。
+   */
+  var FLOW_TESTS = {
+    ar: [
+      { do: "換一組 CD 重跑", tells: "深度差跟著 CD 走 → ARDE;跟著圖形密度走 → microloading" },
+      { do: "只延長時間再量一次", tells: "差距**拉大**才是 ARDE(傳輸限制);差距不變比較像量測或膜厚問題" },
+    ],
+    profile: [
+      { do: "把晶圓轉 90° 重跑", tells: "圖形跟著轉 → 圖形/光罩問題;不跟著轉 → 腔體幾何(見 3.6)" },
+      { do: "看缺陷出現在陣列的哪個位置", tells: "只在陣列邊緣 → 充電效應(notching);全面出現 → 化學或鈍化問題" },
+      { do: "換絕緣/導電下層各跑一片", tells: "只有絕緣下層出事 → 充電;兩者都出事 → 與充電無關" },
+    ],
+    mask: [
+      { do: "量遮罩剩餘厚度的橫向分布", tells: "肩部比遠處薄 → faceting(角度依賴濺鍍);整片一起薄 → 選擇比不足" },
+      { do: "降 bias 再跑一片", tells: "改善 → 離子轟擊主導;沒改善 → 化學或熱的問題" },
+    ],
+    residue: [
+      { do: "加一段 O₂ 灰化再看", tells: "殘留消失 → 聚合物;還在 → 無機殘留或腐蝕生成物" },
+      { do: "比較首片與第 25 片", tells: "只有首片異常 → first wafer effect / seasoning;逐片漂移 → 腔體累積" },
+    ],
+  };
+
+  /**
+   * 某個缺陷的**判別方法**清單。
+   *
+   * A21 的驗收條件是「每種至少列出 2 個判別方法」,而且必須誠實顯示
+   * 「這個症狀有多個可能成因」—— 所以這裡不給單一答案,給的是一組可執行的區分方式:
+   *   1. 圖鑑本身的「診斷區分」欄
+   *   2. 對每個相關缺陷,指出要跟誰分開
+   *   3. 該類別的診斷流程實驗
+   * 三種來源都是資料驅動的,改資料就會跟著變。
+   */
+  function methodsFor(id) {
+    var d = byId(id);
+    if (!d) return [];
+    var out = [];
+    if (d.distinguish) out.push({ kind: "diff", text: d.distinguish });
+    (d.related || []).forEach(function (rid) {
+      var r = byId(rid);
+      if (!r) return;
+      out.push({
+        kind: "vs",
+        text: "要和「" + r.zh + "」分開:" + r.symptom,
+        target: rid,
+      });
+    });
+    (FLOW_TESTS[d.cat] || []).forEach(function (t) {
+      out.push({ kind: "test", text: t.do + " —— " + t.tells });
+    });
+    return out;
+  }
+
+  /**
+   * 依症狀 + 條件排出可能成因。
+   * 條件只用來**調整排序與提示**,不用來刪掉選項 ——
+   * 診斷器的價值在於誠實呈現「還有哪些可能」,不是給一個武斷答案。
+   */
+  function rank(id, cond) {
+    var d = byId(id);
+    if (!d) return [];
+    var c = cond || {};
+    return d.causes.map(function (text, i) {
+      var score = d.causes.length - i; // 資料本身已依可能性排序
+      var notes = [];
+      if (c.insulator && /充電|charge/i.test(text)) {
+        score += 3;
+        notes.push("下層是絕緣體 → 充電類成因的可能性明顯上升");
+      }
+      if (c.arrayEdge && /充電|不對稱|偏折/.test(text)) {
+        score += 2;
+        notes.push("只出現在陣列邊緣 → 與充電造成的離子偏折吻合");
+      }
+      if (c.recipeChanged) {
+        notes.push("recipe 有動過 → 先回頭對照 2.6 的因果鏈,不要急著查硬體");
+      }
+      if (c.wholeWafer === false && /腔|均勻|供應/.test(text)) {
+        score += 1;
+        notes.push("只有局部 → 與腔體均勻度相關(見 3.6)");
+      }
+      return { text: text, score: score, notes: notes };
+    }).sort(function (a, b) { return b.score - a.score; });
+  }
+
   PA.defects = {
     categories: CATEGORIES,
+    FLOW_TESTS: FLOW_TESTS,
+    methodsFor: methodsFor,
+    rank: rank,
     knobs: KNOBS,
     all: DEFECTS,
     byId: byId,

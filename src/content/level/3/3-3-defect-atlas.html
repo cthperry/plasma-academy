@@ -1,0 +1,468 @@
+<!--meta
+{
+  "title": "3.3 缺陷圖鑑 — Plasma Academy",
+  "description": "18 種蝕刻缺陷的症狀、成因鏈、診斷區分與對策旋鈕。含 ARDE 四個成因的分項拆解、profile 形狀缺陷的判別、遮罩與殘留問題,以及一套可操作的診斷收斂流程。",
+  "type": "chapter",
+  "module": "3.3"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>3.3 缺陷圖鑑</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 4.0 小時</span>
+    <span>🔬 A20 · A21 互動元件</span>
+    <span>★ L3 旗艦模組</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="3.3">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>由剖面特徵辨識常見缺陷,並說出主要成因</span></label></li>
+    <li><label><input type="checkbox" /><span>對每種缺陷說出 2–3 個對策旋鈕,以及各自的副作用</span></label></li>
+    <li><label><input type="checkbox" /><span>拆解 ARDE 的四個成因,並說明為什麼延長時間解決不了</span></label></li>
+    <li><label><input type="checkbox" /><span>理解「同一個症狀可能有多個成因」,並知道用什麼實驗區分</span></label></li>
+    <li><label><input type="checkbox" /><span>跑完一次診斷收斂流程:從症狀走到可執行的下一步</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../3-1-etch-mechanisms/">3.1 蝕刻機制</a>
+  <a href="../3-2-etch-applications/">3.2 主要蝕刻應用</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    這是工程師最常回頭查的一章。它的價值不在「認識 18 種缺陷的名字」,
+    而在<strong>「看到這個症狀,下一步該做什麼實驗」</strong>。
+  </p>
+  <ul>
+    <li><strong>症狀 ≠ 成因。</strong>同一個症狀常常有 2–4 個可能成因,
+      圖鑑真正有用的欄位是<strong>「診斷區分」</strong> —— 怎麼把它們分開。</li>
+    <li><strong>ARDE 不是一個效應,是四個傳輸限制疊加</strong>:Knudsen 傳輸、
+      離子遮蔽、產物排出、孔底充電。A20 讓你把它們一個一個關掉。</li>
+    <li><strong>延長時間救不了 ARDE</strong> —— 窄溝槽越刻越慢,
+      多給的時間寬的拿走得比窄的多,<strong>差距反而拉大</strong>。</li>
+    <li><strong>充電效應是一整族缺陷的共同成因</strong>:notching、twisting、
+      footing、ARDE 的第四項。它們的共同前提是<strong>絕緣下層</strong>,
+      共同解方是<strong>脈衝電漿</strong>。</li>
+    <li><strong>每個對策都有副作用。</strong>看到只講好處的建議要提高警覺。</li>
+  </ul>
+</div>
+
+<h2 id="format">3.3.1 圖鑑條目的固定格式</h2>
+
+<div class="pa-prose">
+  <p>每一條缺陷固定五個欄位,順序就是現場查閱的順序:</p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>欄位</th><th>回答什麼問題</th></tr></thead>
+      <tbody>
+        <tr><td><strong>症狀</strong></td><td>我看到的是不是這個?</td></tr>
+        <tr><td><strong>物理成因</strong></td><td>為什麼會這樣?(完整因果鏈,依可能性排序)</td></tr>
+        <tr><td><strong>診斷區分</strong></td><td><strong>怎麼跟長得像的其他缺陷分開?</strong></td></tr>
+        <tr><td><strong>對策</strong></td><td>動哪個旋鈕、往哪個方向、<strong>會付出什麼代價</strong></td></tr>
+        <tr><td><strong>相關</strong></td><td>還要看哪幾條</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼「診斷區分」才是圖鑑的價值</div>
+    <p>
+      認出 bowing 不難 —— 側壁鼓出來,看一眼就知道。難的是
+      <strong>「它為什麼鼓」</strong>:是遮罩肩部被削出斜面把離子反射到中段,
+      還是中段的鈍化不足?兩者的對策完全不同,而<strong>剖面看起來一樣</strong>。
+    </p>
+    <p>
+      所以圖鑑不能只給「症狀 → 對策」的對照表。<strong>那種表會讓人動錯旋鈕</strong>,
+      而且因為「有時候剛好會好」,錯誤的因果會被長期保留下來。
+    </p>
+  </div>
+</div>
+
+<h2 id="ar">3.3.2 深寬比與負載相關</h2>
+
+<div class="pa-prose">
+  <h3 id="arde">① ARDE / RIE Lag</h3>
+  <p>
+    <strong>症狀</strong>:窄溝槽比寬溝槽淺。同時蝕刻,深度卻不同。
+  </p>
+  <p>
+    <strong>成因是四個獨立的傳輸限制疊在一起</strong> ——
+    這是本節最重要的一句話,因為<strong>四個成因的對策各不相同</strong>:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>成因</th><th>物理</th><th>主要對策</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Knudsen 傳輸限制</strong></td>
+          <td>自由基要在孔壁上彈很多次才到得了底,途中被吸附掉</td>
+          <td>降低自由基<strong>黏著係數</strong></td></tr>
+        <tr><td><strong>離子遮蔽</strong></td>
+          <td>有角度分佈的離子被孔口攔截</td>
+          <td><strong>降壓</strong>(減少鞘層碰撞 → 角度收斂)</td></tr>
+        <tr><td><strong>產物排出困難</strong></td>
+          <td>SiF₄ 出不來,佔住表面</td>
+          <td>降壓、提高抽速</td></tr>
+        <tr><td><strong>孔底充電</strong></td>
+          <td>電子角度分佈較寬,先被孔壁擋掉 → 孔底淨正電 → 排斥離子</td>
+          <td><strong>脈衝電漿</strong>(off 期讓電子中和)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A20 實測:四個成因各貢獻多少</div>
+    <p>
+      典型條件(20 mTorr、黏著係數 0.25、連續波),五種 CD 並排,
+      蝕到最寬的那條達到深度 3 為止 —— <strong>ARDE 36.8 %</strong>。
+      把成因逐一關掉:
+    </p>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>關掉哪一項</th><th>ARDE 少掉</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Knudsen 傳輸限制</strong></td><td><strong>12.6</strong> 個百分點</td></tr>
+          <tr><td><strong>孔底充電</strong></td><td><strong>8.8</strong> 個百分點</td></tr>
+          <tr><td>離子遮蔽</td><td>3.7 個百分點</td></tr>
+          <tr><td>產物排出困難</td><td>1.5 個百分點</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>四項全部關掉時 ARDE 歸零</strong> ——
+      深度差不是憑空冒出來的,就是這四項的總和。
+      而它們的量級差了將近十倍:<strong>先動哪個旋鈕不是隨便選的。</strong>
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解:「刻久一點,窄的就會追上來」</div>
+    <p>
+      <strong>正解:延長時間會讓差距<em>拉大</em>,不是縮小。</strong>
+    </p>
+    <p>
+      A20 實測(同一組參數,只改時間):
+    </p>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>時間</th><th>最寬 CD 深度</th><th>最窄 CD 深度</th><th>ARDE</th></tr></thead>
+        <tbody>
+          <tr><td>4</td><td>2.37</td><td>1.56</td><td>34.2 %</td></tr>
+          <tr><td>8</td><td>3.48</td><td>2.15</td><td>38.1 %</td></tr>
+          <tr><td>16</td><td>4.86</td><td>2.92</td><td>40.0 %</td></tr>
+          <tr><td>32</td><td>6.62</td><td>3.92</td><td>40.8 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      原因很直接:<strong>速率隨深寬比持續下降</strong>,而窄溝槽的深寬比一直比寬的高。
+      多給的每一秒,寬溝槽都比窄溝槽多刻一些 —— <strong>時間是站在寬溝槽那一邊的。</strong>
+    </p>
+  </div>
+
+  <h3 id="inverse">② Inverse RIE Lag(反向 ARDE)</h3>
+  <p>
+    <strong>症狀</strong>:窄的反而深。<br />
+    <strong>成因</strong>:聚合物前驅物是大分子、黏著係數接近 1,
+    <strong>比自由基更進不去窄孔</strong> → 窄孔的鈍化反而薄 → 刻得比寬孔快。<br />
+    <strong>診斷意義</strong>:看到這個現象就代表製程<strong>落在高聚合區</strong> ——
+    它本身就是一條線索,不只是一個缺陷。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📐 A20 在這一條的已知限制</div>
+    <p>
+      A20 做得到「高聚合區把 ARDE <strong>壓小</strong>」(實測 27 % → 18 %),
+      但<strong>做不到翻負</strong>(窄的反而更深)。
+    </p>
+    <p>
+      原因:模型裡聚合物在深寬比趨近 0 時供應最大,
+      所以在它強到足以翻轉深度排序之前,會先<strong>把最寬的溝在開口就封死</strong>
+      —— 那變成 etch stop(第 ⑯ 條),不是反向 ARDE。
+      要跨過這一步得把「離子驅動的聚合物清除」也算進去,
+      而那一項又會把深度依賴反轉回來,需要完整的聚合物收支。
+    </p>
+    <p>
+      <strong>所以 A20 的「高聚合區」預設請當成「ARDE 被壓小」來看,
+      不要當成反向 ARDE 的重現。</strong>這一項記在 <code>docs/11</code> 的待辦裡。
+    </p>
+  </div>
+
+  <h3 id="loading">③④ Microloading 與 Macroloading</h3>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>比較的對象</th><th>成因</th><th>怎麼確認</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ARDE</strong></td><td>不同<strong>深寬比</strong>的圖形</td>
+          <td>傳輸限制(上面四項)</td><td>換 CD 就重現</td></tr>
+        <tr><td><strong>Microloading</strong></td><td>不同<strong>圖形密度</strong>的區域</td>
+          <td>局部自由基被大量消耗</td><td>換密度才重現</td></tr>
+        <tr><td><strong>Macroloading</strong></td><td>不同<strong>開口率</strong>的晶圓</td>
+          <td>全腔體自由基被消耗</td><td>換開口率的片子就重現</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <strong>三者的區別只在「比較的對象」。</strong>
+    這也是為什麼診斷時第一個問題永遠是
+    <strong>「你是拿什麼跟什麼比?」</strong> ——
+    問清楚這一句,三選一就先去掉兩個。
+  </p>
+</div>
+
+<h2 id="lab-a20">🔬 A20 ARDE 深寬比效應</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A20">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A20</span>
+    <span class="pa-lab__title">把四個成因一個一個關掉</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。五條不同 CD 的溝槽並排同時蝕刻,
+      四個成因(Knudsen 傳輸、離子遮蔽、產物排出、孔底充電)可個別開關,
+      右側顯示各自對 ARDE 的貢獻。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="profile">3.3.3 Profile 形狀缺陷</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>缺陷</th><th>症狀</th><th>診斷區分的關鍵</th></tr></thead>
+      <tbody>
+        <tr><td><strong>⑤ Undercut</strong></td><td>遮罩下方被橫向咬入</td>
+          <td>最寬處在<strong>最頂端</strong>(緊貼遮罩)</td></tr>
+        <tr><td><strong>⑥ Bowing</strong></td><td>側壁中段向外鼓出,像個桶子</td>
+          <td>最寬處在<strong>中段</strong> —— 量剖面最寬處的深度就能和 undercut 分開</td></tr>
+        <tr><td><strong>⑦ Taper</strong></td><td>上寬下窄</td>
+          <td>側壁有明顯<strong>角度</strong>,不是局部鼓出</td></tr>
+        <tr><td><strong>⑧ Notching</strong></td><td>底部界面處橫向凹口</td>
+          <td><strong>只在陣列邊緣</strong>,而且有方向性 —— undercut 是普遍發生</td></tr>
+        <tr><td><strong>⑨ Microtrenching</strong></td><td>溝底兩側各一道更深的小溝</td>
+          <td>看<strong>溝底</strong>的形狀,不是側壁</td></tr>
+        <tr><td><strong>⑩ Footing</strong></td><td>底部界面處外擴的「腳」</td>
+          <td>中段正常,<strong>只有最底下</strong>沒清乾淨</td></tr>
+        <tr><td><strong>⑪ Twisting</strong></td><td>HAR 孔在深處歪掉、甚至相交</td>
+          <td>要剖到<strong>深處</strong>才看得到;淺處正常</td></tr>
+        <tr><td><strong>⑫ Striation</strong></td><td>側壁垂直細紋</td>
+          <td>紋路<strong>沿深度連續</strong> → 來自遮罩邊緣粗糙度(LER)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 充電效應是一整族缺陷的共同成因</div>
+    <p>
+      Notching、twisting、footing,以及 ARDE 的第四項 —— 這四個看起來完全不同,
+      但<strong>物理是同一個</strong>:電子的角度分佈比離子寬,
+      先被結構擋掉,於是絕緣的底部或孔底累積正電荷,把後續離子的軌跡推歪。
+    </p>
+    <ul>
+      <li><strong>共同前提</strong>:下層是<strong>絕緣體</strong>(電荷跑不掉)</li>
+      <li><strong>共同解方</strong>:<strong>脈衝電漿</strong> ——
+        off 期電子進得來,把累積的正電中和掉</li>
+      <li><strong>共同的確認實驗</strong>:換一片<strong>導電下層</strong>跑同一支配方。
+        症狀消失 → 就是充電</li>
+    </ul>
+    <p>
+      <strong>把這四條當成一族來記,比分開記省力得多</strong> ——
+      而且在現場,認出「這是充電族」就已經把對策範圍縮到很小了。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📐 A18 輪廓模擬器在這一節的涵蓋範圍</div>
+    <p>
+      圖鑑的診斷區分,能用 <a href="../3-1-etch-mechanisms/#lab-a18">A18</a>
+      親手做出來的目前有<strong>五種</strong>:
+      垂直、<strong>Taper</strong>、<strong>Footing</strong>、
+      <strong>Faceting</strong>、<strong>Etch stop</strong>,外加 ARDE 的多溝槽比較。
+    </p>
+    <p>
+      <strong>做不出來的三種:Undercut、Bowing、Microtrench。</strong>
+      不是課文寫錯,是模擬器尚未收斂 —— 目前的判別指標把
+      「遮罩開口變寬」同時算給 faceting 與 undercut,兩者先天分不開;
+      bowing 與 microtrench 則卡在「溝底中央永遠比兩側快」。
+      技術診斷記在 <code>docs/11</code>。
+    </p>
+    <p>
+      <strong>所以這三條請以本頁的文字與 A21 的判別方法為準,
+      不要因為 A18 做不出來就以為現場不會發生</strong> ——
+      它們是最常見的 profile 缺陷之一。
+    </p>
+  </div>
+</div>
+
+<h2 id="mask">3.3.4 遮罩相關</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>缺陷</th><th>成因</th><th>後果</th></tr></thead>
+      <tbody>
+        <tr><td><strong>⑬ Faceting</strong>(肩部削角)</td>
+          <td><strong>濺鍍產額的角度依賴</strong>(3.1.6)—— 45–70° 面被削得最快</td>
+          <td>CD 放大、遮罩過早消耗</td></tr>
+        <tr><td><strong>⑭ 遮罩耗盡</strong></td>
+          <td>選擇比不足</td><td>CD 失控、圖形消失</td></tr>
+        <tr><td><strong>⑮ Resist Wiggling</strong></td>
+          <td>光阻高深寬比 + 應力 + 加熱軟化</td><td>圖形倒塌</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <strong>三者的對策高度重疊</strong>:降 bias、加聚合、換硬遮罩(非晶碳或金屬)。
+    這不是巧合 —— 它們都是「遮罩撐不住製程強度」的不同表現。
+  </p>
+  <p>
+    Faceting 特別值得記住,因為它把 <a href="../3-1-etch-mechanisms/#sputter-angle">3.1.6</a>
+    的 Y(θ) 直接搬到了遮罩上:<strong>斜面比平面濺得快,所以直角的肩部會自己變成斜角</strong>,
+    而且一旦變成斜角就會加速擴大。
+  </p>
+</div>
+
+<h2 id="residue">3.3.5 殘留與污染</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>缺陷</th><th>症狀</th><th>對策</th></tr></thead>
+      <tbody>
+        <tr><td><strong>⑯ Etch Stop</strong></td>
+          <td>HAR 孔蝕到一半完全停住</td>
+          <td>降聚合、加 O₂、提高離子能量、分段 recipe</td></tr>
+        <tr><td><strong>⑰ 聚合物殘留 / Veil</strong></td>
+          <td>圖形周圍一圈膜狀殘留</td>
+          <td>加 O₂ 灰化步、濕式清洗、降低鈍化強度</td></tr>
+        <tr><td><strong>⑱ 金屬腐蝕</strong></td>
+          <td>Al 線路出腔<strong>數小時後</strong>斷線、長白色生成物</td>
+          <td><strong>強制後處理</strong> + 等待時間管制</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--safety">
+    <div class="pa-note__title">🔴 金屬腐蝕:唯一會在「出腔之後」持續惡化的缺陷</div>
+    <p>
+      殘留的 Cl 遇到大氣中的濕氣生成 HCl,而 HCl 腐蝕 Al 又會釋放出更多 Cl ——
+      這是一個<strong>自我維持的反應</strong>。所以它不是「量到才算數」的缺陷:
+      <strong>出腔時量起來好好的,幾小時後才斷線。</strong>
+    </p>
+    <p>
+      對策必須是<strong>流程上的強制規定</strong>,不是製程參數:
+      H₂O 電漿 / NH₃ 處理 / DI 沖洗,而且<strong>出腔到後處理的等待時間必須管制</strong>。
+      這一條在 A21 裡標記為高風險。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a21">🔬 A21 缺陷診斷器</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A21">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A21</span>
+    <span class="pa-lab__title">症狀 → 可能成因排序 → 怎麼區分 → 動哪個旋鈕</span>
+  </div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此診斷器需要 JavaScript。選擇症狀與條件(下層是否絕緣、是否只在陣列邊緣、
+      recipe 是否變動、是否全片一致),輸出可能成因的排序、判別方法與對策旋鈕。
+      資料源與本頁相同,見 <a href="../../../defects/">缺陷圖鑑</a>。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 診斷器刻意<strong>不</strong>給單一答案</div>
+  <p>
+    勾選條件只會改變成因的<strong>排序</strong>,不會把選項刪掉。
+    這是刻意的設計:<strong>一個看起來很篤定的答案,比一個誠實的清單危險得多</strong> ——
+    因為它會讓人跳過驗證直接動旋鈕,而「有時候剛好會好」會把錯誤的因果保留下來。
+  </p>
+  <p>
+    每一種缺陷都會列出至少 4 個判別方法,其中包含<strong>可以真的去做的實驗</strong>
+    (轉片、換 CD、換密度、換下層、比首片與第 25 片)。
+    <strong>診斷的產出應該是「下一個實驗」,不是「下一個參數」。</strong>
+  </p>
+</div>
+
+<h2 id="flow">3.3.6 診斷收斂流程</h2>
+
+<div class="pa-prose">
+  <p>
+    問題不是「這是什麼缺陷」,而是<strong>「下一步做什麼」</strong>。
+    四個問題,每個都把範圍砍一半:
+  </p>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>1. Recipe 有沒有動過?</strong><br />
+      有 → 對照 <a href="../../2/2-6-causal-chain/">2.6 因果鏈</a>回推。
+      <strong>這一步最常被跳過,也最浪費時間</strong> —— 有人改了參數,
+      卻先去拆機台查硬體。</div>
+    <div class="pa-chain__step"><strong>2. 是全片還是局部?</strong><br />
+      全片均勻 → 電漿整體(氣體、功率、壓力、腔體結垢)<br />
+      中心/邊緣 → 均勻度問題,轉到 <a href="../3-6-uniformity/">3.6</a><br />
+      <strong>陣列邊緣 → 充電效應</strong><br />
+      隨機分佈 → 微粒、缺陷</div>
+    <div class="pa-chain__step"><strong>3. 是這台還是每台?</strong><br />
+      單台 → 腔體狀態(匹配位置、He 洩漏、閥位、零件壽命)<br />
+      全部 → 上游製程、材料批次、量測系統</div>
+    <div class="pa-chain__step"><strong>4. 是這批還是每批?</strong><br />
+      首片異常 → first wafer effect / seasoning(見 3.6.5)<br />
+      逐片漂移 → 腔體累積、零件消耗</div>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 這四個問題的共同點:都不需要動製程</div>
+    <p>
+      四個問題全部靠<strong>既有資料</strong>或<strong>一片測試片</strong>就能回答 ——
+      不必改配方、不必拆機、不必等備品。
+    </p>
+    <p>
+      而它們合起來能把「18 種缺陷 × 各自 2–4 個成因」縮到剩下一兩個候選。
+      <strong>先問完這四題再動旋鈕</strong>,是這一章最實用的一句話。
+    </p>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>剖面看到側壁最寬處在中段,和最寬處在頂端 —— 分別是什麼缺陷?對策差在哪?</li>
+    <li>ARDE 的四個成因各是什麼?<strong>它們的對策為什麼不能混用?</strong></li>
+    <li>為什麼延長蝕刻時間會讓 ARDE <strong>變嚴重</strong>?</li>
+    <li>ARDE、microloading、macroloading 的差別只在一件事,是什麼?各用什麼實驗確認?</li>
+    <li>看到反向 ARDE(窄的反而深),這告訴你製程落在什麼狀態?</li>
+    <li>notching、twisting、footing、ARDE 的第四項有什麼共同的物理?
+      <strong>共同的確認實驗是什麼?</strong></li>
+    <li>Faceting 的成因和 3.1.6 的哪一條直接相關?為什麼它一旦開始就會加速?</li>
+    <li>金屬腐蝕為什麼不能只靠製程參數解決?它和其他 17 種缺陷最大的差別是什麼?</li>
+    <li>診斷流程的第一個問題是什麼?為什麼它最常被跳過?</li>
+    <li>為什麼說「一個看起來很篤定的診斷答案,比一個誠實的清單危險」?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Gottscho, Jurgensen &amp; Vitkavage, <em>Microscopic uniformity in plasma etching</em>, J. Vac. Sci. Technol. B 10, 2133 (1992) —— ARDE 與 loading 的經典整理</li>
+    <li>Hwang &amp; Giapis, <em>On the origin of the notching effect during etching in uniform high density plasmas</em>, J. Vac. Sci. Technol. B 15, 70 (1997)</li>
+    <li>Wu, Kumar &amp; Pan, <em>High aspect ratio silicon etch: A review</em>, J. Appl. Phys. 108, 051101 (2010)</li>
+    <li>Donnelly &amp; Kornblit, <em>Plasma etching: Yesterday, today, and tomorrow</em>, J. Vac. Sci. Technol. A 31, 050825 (2013)</li>
+  </ul>
+</div>

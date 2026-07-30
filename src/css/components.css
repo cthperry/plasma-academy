@@ -1341,3 +1341,57 @@
   border-top: 1px solid var(--pa-border);
   color: var(--pa-text-muted);
 }
+
+/* 缺陷診斷器(A21)—— 三段式輸出:成因排序 / 判別方法 / 對策旋鈕 */
+.pa-diag {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pa-space-3);
+}
+
+.pa-diag__sec {
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+  padding: var(--pa-space-3);
+  background: var(--pa-surface);
+}
+
+.pa-diag__title {
+  font-weight: 650;
+  margin-bottom: var(--pa-space-2);
+  color: var(--pa-text);
+}
+
+.pa-diag__list {
+  margin: 0;
+  padding-left: 1.3em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pa-space-2);
+}
+
+.pa-diag__list li {
+  line-height: 1.65;
+}
+
+.pa-diag__note {
+  color: var(--pa-primary);
+  font-size: var(--pa-text-sm);
+  margin-top: 2px;
+}
+
+.pa-diag__tag {
+  display: inline-block;
+  padding: 0 var(--pa-space-1);
+  border-radius: var(--pa-radius-sm);
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  font-size: var(--pa-text-xs);
+  color: var(--pa-text-muted);
+  white-space: nowrap;
+}
+
+.pa-diag__risk {
+  color: var(--pa-danger);
+  font-weight: 600;
+}
