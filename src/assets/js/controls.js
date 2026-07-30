@@ -1,13 +1,15 @@
-export function createSlider({ label, min, max, value, step = 1, unit = "", onInput }) {
+export function createSlider({ label, min, max, value, step = 1, unit = "", formatValue, onInput }) {
   const wrap = document.createElement("div");
   wrap.className = "control";
   const id = `control-${crypto.randomUUID()}`;
-  wrap.innerHTML = `<label for="${id}"><span>${label}</span><output>${value} ${unit}</output></label><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}">`;
+  const display = formatValue ? formatValue(value) : `${value} ${unit}`.trim();
+  wrap.innerHTML = `<label for="${id}"><span>${label}</span><output>${display}</output></label><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}">`;
   const input = wrap.querySelector("input");
   const output = wrap.querySelector("output");
   input.addEventListener("input", () => {
-    output.value = `${input.value} ${unit}`.trim();
-    onInput(Number(input.value));
+    const next = Number(input.value);
+    output.value = formatValue ? formatValue(next) : `${input.value} ${unit}`.trim();
+    onInput(next);
   });
   return wrap;
 }
@@ -51,6 +53,26 @@ export function createToggle({ label, checked, onChange }) {
   wrap.innerHTML = `<span>${label}</span><input type="checkbox" ${checked ? "checked" : ""}>`;
   const input = wrap.querySelector("input");
   input.addEventListener("change", () => onChange(input.checked));
+  return wrap;
+}
+
+export function createSelect({ label, options, value, onChange }) {
+  const wrap = document.createElement("label");
+  wrap.className = "control";
+  const id = `control-${crypto.randomUUID()}`;
+  const span = document.createElement("span");
+  span.textContent = label;
+  const select = document.createElement("select");
+  select.id = id;
+  for (const option of options) {
+    const item = document.createElement("option");
+    item.value = option.value;
+    item.textContent = option.label;
+    item.selected = option.value === value;
+    select.append(item);
+  }
+  select.addEventListener("change", () => onChange(select.value));
+  wrap.append(span, select);
   return wrap;
 }
 

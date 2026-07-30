@@ -243,6 +243,11 @@
   stroke-width: 1;
 }
 
+.plot-grid line {
+  stroke: var(--pa-border);
+  stroke-width: 0.7;
+}
+
 .plot-axes text,
 .plot-legend text,
 .plot-caption {
@@ -288,10 +293,76 @@
   width: 100%;
 }
 
+.control select {
+  background: var(--pa-surface);
+  border: 1px solid var(--pa-border-strong);
+  border-radius: 6px;
+  color: var(--pa-text);
+  font: 700 var(--pa-text-sm) var(--pa-font-sans);
+  min-height: 36px;
+  padding: 6px 8px;
+  width: 100%;
+}
+
 .segmented-group {
   display: grid;
   gap: 6px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.lab-paschen-stage {
+  aspect-ratio: 2 / 1;
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 28%);
+  max-width: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
+.lab-paschen-stage svg {
+  color: var(--pa-text-muted);
+  height: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.lab-paschen-stage canvas {
+  align-self: stretch;
+  aspect-ratio: auto;
+  border: 0;
+  border-left: 1px solid var(--pa-border);
+  border-radius: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.plot-line-gas-0 { stroke: var(--pa-primary); }
+.plot-line-gas-1 { stroke: var(--pa-ion); }
+.plot-line-gas-2 { stroke: var(--pa-electron); }
+.plot-line-gas-3 { stroke: var(--pa-warning); }
+.plot-line-gas-4 { stroke: var(--pa-info); }
+
+.plot-minimum {
+  fill: var(--pa-surface);
+  stroke-width: 2;
+}
+
+.plot-point {
+  fill: var(--pa-surface);
+  stroke: var(--pa-danger);
+  stroke-width: 3;
+}
+
+.plot-point.ignites {
+  stroke: var(--pa-success);
+}
+
+.plot-region-label {
+  fill: var(--pa-text-muted);
+  font: 700 12px var(--pa-font-sans);
 }
 
 .value-panel {
@@ -435,6 +506,21 @@
 
   .lab-thumb {
     min-height: 70px;
+  }
+
+  .lab-paschen-stage {
+    aspect-ratio: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .lab-paschen-stage svg {
+    aspect-ratio: 14 / 9;
+  }
+
+  .lab-paschen-stage canvas {
+    border-left: 0;
+    border-top: 1px solid var(--pa-border);
+    min-height: 170px;
   }
 }
 

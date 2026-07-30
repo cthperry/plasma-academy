@@ -76,6 +76,30 @@ const a02CanvasPixels = await desktop.evaluate(() => {
   return nonBlank;
 });
 
+await desktop.goto(`${base}/level/1/1-4-glow-breakdown/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a05").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(800);
+const a05Initial = await desktop.locator("#lab-a05 .value-panel").textContent();
+const a05CurveCountInitial = await desktop.locator("#lab-a05 svg path.plot-line").count();
+await desktop.locator("#lab-a05 select").selectOption("O2");
+await desktop.locator('#lab-a05 input[type="range"]').nth(2).evaluate((input) => {
+  input.value = "1000";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+await desktop.waitForTimeout(300);
+const a05AfterO2 = await desktop.locator("#lab-a05 .value-panel").textContent();
+const a05Status = await desktop.locator("#lab-a05 [data-lab-status]").textContent();
+const a05CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a05 [data-lab-canvas]");
+  const ctx = canvas.getContext("2d");
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  }
+  return nonBlank;
+});
+
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
@@ -125,7 +149,7 @@ await mobile.screenshot({ path: path.join(qaDir, "mobile-lab.png"), fullPage: fa
 
 await browser.close();
 
-const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, canvasInfo, mobileCanvasInfo, quizText, mobileOverflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, canvasInfo, mobileCanvasInfo, quizText, mobileOverflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -141,6 +165,10 @@ if (!a02AfterDensity.includes("0.041 mm")) throw new Error("A02 電子密度滑�
 if (!a02Polarity.includes("負電荷")) throw new Error("A02 極性切換未更新選取狀態。");
 if (a02SvgPathCount < 1) throw new Error("A02 沒有 SVG 電位曲線。");
 if (a02CanvasPixels < 100000) throw new Error("A02 Canvas 看起來是空白。");
+if (!a05Initial.includes("0.90 Torr") || !a05Initial.includes("137 V")) throw new Error("A05 未顯示 Ar Paschen 谷底對照。");
+if (a05CurveCountInitial < 5) throw new Error("A05 未顯示五種氣體曲線。");
+if (!a05AfterO2.includes("0.70 Torr") || !a05AfterO2.includes("450 V") || !a05Status.includes("點火")) throw new Error("A05 O2 點火判定或谷底資訊未更新。");
+if (a05CanvasPixels < 30000) throw new Error("A05 放電腔 Canvas 看起來是空白。");
 if (canvasInfo.nonBlank < canvasInfo.width * canvasInfo.height * 0.5) throw new Error("A01 Canvas 看起來是空白。");
 if (mobileCanvasInfo.nonBlank < mobileCanvasInfo.width * mobileCanvasInfo.height * 0.5) throw new Error("手機 A01 Canvas 看起來是空白。");
 if (!quizText.includes("正確")) throw new Error("自我檢測沒有顯示成功狀態。");

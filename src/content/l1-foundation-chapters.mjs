@@ -86,7 +86,7 @@ export const l1FoundationChapters = [
     hours: 1.5,
     labs: [
       { id: "a04", title: "A04 電子雪崩動畫", module: "/assets/js/labs/l1-foundation-demo.js", observation: "提高二次電子係數 γ，觀察雪崩更容易自持。PM 後點火條件改變常和表面狀態有關。" },
-      { id: "a05", title: "A05 Paschen 曲線互動", module: "/assets/js/labs/l1-foundation-demo.js", observation: "固定 gap 改變壓力，找出 Paschen 谷底；太低壓與太高壓都不容易點火。" }
+      { id: "a05", title: "A05 Paschen 曲線互動", module: "/assets/js/labs/a05-paschen-curve.js", observation: "切換氣體並顯示所有曲線，找出 Paschen 谷底；把壓力固定在 0.01 Torr、間距 3 cm 時，會落在左支，這就是常先衝壓力點火的原因。" }
     ],
     objectives: [
       "說明 Townsend 雪崩如何導致崩潰。",
@@ -96,7 +96,7 @@ export const l1FoundationChapters = [
     summary: "點火不是單純把電壓加大。電子必須在電極間累積足夠能量並撞到足夠多中性分子，才能形成 Townsend 雪崩；同時表面必須提供二次電子，放電才會自持。Paschen 曲線把這件事濃縮成 pd 乘積：太低壓碰撞太少，太高壓每次碰撞間能量累積不足，兩邊都需要更高電壓。",
     sections: [
       { id: "townsend", title: "Townsend 雪崩", body: `<p>一個種子電子被電場加速，撞出更多電子，電子數沿距離呈指數成長：n(d)=n0·e^(αd)。但雪崩衝到陽極就結束了，必須靠離子撞擊陰極產生二次電子 γ 才能自持。</p>` },
-      { id: "paschen", title: "Paschen 曲線", body: `<p>崩潰電壓主要依賴 pd。右支高壓時平均自由徑太短，電子累積不到游離能；左支低壓時平均自由徑太長，電子還沒撞到分子就到陽極。</p><div class="table-wrap"><table><thead><tr><th>氣體</th><th>p·d(Torr·cm)</th><th>Vmin</th></tr></thead><tbody><tr><td>Ar</td><td>0.9</td><td>137 V</td></tr><tr><td>He</td><td>4.0</td><td>156 V</td></tr><tr><td>N2</td><td>0.67</td><td>251 V</td></tr><tr><td>Air</td><td>0.57</td><td>327 V</td></tr></tbody></table></div>` },
+      { id: "paschen", title: "Paschen 曲線", body: `<p>崩潰電壓主要依賴 pd。右支高壓時平均自由徑太短，電子累積不到游離能；左支低壓時平均自由徑太長，電子還沒撞到分子就到陽極。</p><div class="table-wrap"><table><thead><tr><th>氣體</th><th>p·d(Torr·cm)</th><th>Vmin</th></tr></thead><tbody><tr><td>Ar</td><td>0.9</td><td>137 V</td></tr><tr><td>He</td><td>4.0</td><td>156 V</td></tr><tr><td>N2</td><td>0.67</td><td>251 V</td></tr><tr><td>Air</td><td>0.57</td><td>327 V</td></tr><tr><td>O2</td><td>0.70</td><td>450 V</td></tr></tbody></table></div>` },
       { id: "glow-regions", title: "DC 輝光分區", body: `<p>陰極暗區中電位降最大，負輝光最亮，正柱區則接近準中性。RF 電漿裡靠近電極的暗帶可視為鞘層的視覺線索。</p>` },
       { id: "rf", title: "為什麼用 RF", body: `<p>DC 放電遇到絕緣表面會累積電荷並熄滅。RF 電場不斷反轉，讓介電質也能透過電容耦合維持電漿，這正是半導體蝕刻與沉積需要 RF 的原因。</p>` }
     ],

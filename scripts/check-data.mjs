@@ -2,6 +2,7 @@ import { glossary } from "../src/data/glossary.js";
 import { curriculum } from "../src/data/curriculum.js";
 import { labs } from "../src/data/labs.js";
 import { dataSchemas } from "../src/data/schemas.js";
+import { paschenGases, paschenVoltage } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
 
@@ -28,6 +29,14 @@ for (const requiredTerm of ["重佈線層", "凸塊下金屬層", "底填膠", "
 
 if (labs.length !== 32) {
   failures.push(`互動元件清單應為 A01-A32 共 32 件，目前 ${labs.length} 件。`);
+}
+
+for (const [gasKey, gas] of Object.entries(paschenGases)) {
+  const modeled = paschenVoltage(gas.pdMinTorrCm, gasKey);
+  const error = Math.abs(modeled - gas.vMin) / gas.vMin;
+  if (error > 0.1) {
+    failures.push(`Paschen ${gas.label} 最小值誤差 ${(error * 100).toFixed(1)}%，超過 10%。`);
+  }
 }
 
 for (const [name, schema] of Object.entries(dataSchemas)) {
