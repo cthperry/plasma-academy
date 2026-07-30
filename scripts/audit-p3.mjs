@@ -2,12 +2,13 @@ import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chapterThreeOne } from "../src/content/chapter-3-1.mjs";
+import { chapterThreeTwo } from "../src/content/chapter-3-2.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { defects } from "../src/data/defects.js";
 import { labs } from "../src/data/labs.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const chapters = [chapterThreeOne, chapterThreeSeven];
+const chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeSeven];
 const stripHtml = (value) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
 const content = chapters.flatMap((chapter) => [
   chapter.title,

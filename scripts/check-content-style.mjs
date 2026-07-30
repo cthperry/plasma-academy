@@ -8,6 +8,7 @@ import { chapterTwoFour } from "../src/content/chapter-2-4.mjs";
 import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
 import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
 import { chapterThreeOne } from "../src/content/chapter-3-1.mjs";
+import { chapterThreeTwo } from "../src/content/chapter-3-2.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
@@ -15,7 +16,7 @@ import { l2Diagrams } from "../src/data/l2-diagrams.js";
 
 const l1Chapters = expandL1Content([chapterOneOne, ...l1FoundationChapters]);
 const chapters = [...l1Chapters, chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
-const p3Chapters = [chapterThreeOne, chapterThreeSeven];
+const p3Chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeSeven];
 const failures = [];
 const stripHtml = (value) => String(value ?? "")
   .replace(/<figure[\s\S]*?<\/figure>/g, " ")

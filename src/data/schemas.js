@@ -8,8 +8,8 @@ export const dataSchemas = {
     notes: "supplier-reviewed 只代表核對供應商公開文件；localApprovalStatus=approved 才能視為廠區版本已驗證。"
   },
   defect: {
-    required: ["id", "nameZh", "nameEn", "symptoms", "causes", "disambiguation", "countermeasures", "relatedLabs"],
-    notes: "P3 缺陷診斷器以此矩陣排序可能成因。"
+    required: ["id", "zh", "en", "cat", "symptom", "causes", "distinguish", "fixes", "related", "ch", "profile", "risk"],
+    notes: "P3 缺陷圖鑑與 A21 共用；fixes 必須含旋鈕、方向、理由與副作用。"
   },
   formula: {
     required: ["id", "name", "expression", "summary", "symbols", "conditions", "source"],

@@ -10,6 +10,7 @@ import { sdsEvidenceByGas } from "../src/data/sds-evidence.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.mjs";
 import { chapterThreeOne } from "../src/content/chapter-3-1.mjs";
+import { chapterThreeTwo } from "../src/content/chapter-3-2.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
@@ -439,11 +440,40 @@ function chapterThreeOnePage() {
         ${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
-        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="/level/2/2-6-causal-chain/">上一章：2.6 參數因果鏈</a><a class="button primary" href="/level/3/">返回 L3</a></nav>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="/level/2/2-6-causal-chain/">上一章：2.6 參數因果鏈</a><a class="button primary" href="${chapterThreeTwo.route}">下一章：${chapterThreeTwo.title}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
   `, { pageType: "chapter", description: "從 Coburn-Winters 協同效應推導異向性、側壁鈍化、選擇比與蝕刻輪廓診斷。", extraStyles: ["/assets/css/a17-a18.css"] });
+}
+
+function chapterThreeTwoPage() {
+  const objectives = chapterThreeTwo.objectives.map((item, index) => `<label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterThreeTwo.id}"><span>${item}</span></label>`).join("");
+  const prerequisites = chapterThreeTwo.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapterThreeTwo.readings.map((item) => `<li>${item}</li>`).join("");
+  const outline = [...chapterThreeTwo.sections, ...chapterThreeTwo.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
+  const sections = chapterThreeTwo.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const callouts = chapterThreeTwo.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapterThreeTwo.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapterThreeTwo.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
+  const sidebar = [chapterThreeOne, chapterThreeTwo].map((item) => `<a class="${item.id === chapterThreeTwo.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  return page(chapterThreeTwo.route, chapterThreeTwo.title, `
+    <main class="chapter-layout" data-chapter-id="${chapterThreeTwo.id}">
+      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a><a href="/level/3/">L3 模組列表</a></aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L3 進階", chapterThreeTwo.title])}
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapterThreeTwo.hours} h · 互動元件 A19</p><h1>${chapterThreeTwo.title}</h1><p>${chapterThreeTwo.summary}</p></header>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
+        ${callout("summary", "5 分鐘摘要", chapterThreeTwo.summary)}
+        ${sections}${callouts}${labsHtml}
+        <section class="self-check"><h2>自我檢測</h2>${checks}</section>
+        <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeOne.route}">上一章：${chapterThreeOne.title}</a><a class="button primary" href="/level/3/">返回 L3</a></nav>
+      </article>
+      <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
+    </main>
+  `, { pageType: "chapter", description: "Bosch 深矽蝕刻循環、scallop、深寬比限制與量產驗收。" });
 }
 
 function chapterTwoOnePage() {
@@ -883,6 +913,7 @@ async function main() {
     chapterTwoFivePage(),
     chapterTwoSixPage(),
     chapterThreeOnePage(),
+    chapterThreeTwoPage(),
     packagingCleaningPage(),
     labPage(),
     progressPage(),

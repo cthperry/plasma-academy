@@ -556,6 +556,30 @@ const a18CanvasPixels = await desktop.evaluate(() => {
 });
 await desktop.screenshot({ path: path.join(qaDir, "desktop-a17-a18.png"), fullPage: false });
 
+await desktop.goto(`${base}/level/3/3-2-deep-silicon-etch/`, { waitUntil: "networkidle" });
+const chapterThreeTwoTitle = await desktop.locator("h1").first().textContent();
+await desktop.locator("#lab-a19").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(450);
+const a19ControlCount = await desktop.locator('#lab-a19 input[type="range"]').count();
+const a19OutputCount = await desktop.locator("#lab-a19 .value-panel dd").count();
+const a19Ranges = desktop.locator('#lab-a19 input[type="range"]');
+await a19Ranges.nth(1).evaluate((input) => { input.value = "2"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a19ShortScallop = parseFloat(await desktop.locator('#lab-a19 [data-value-key="Scallop 深度"]').textContent());
+const a19ShortRate = parseFloat(await desktop.locator('#lab-a19 [data-value-key="有效蝕刻率"]').textContent());
+await a19Ranges.nth(1).evaluate((input) => { input.value = "15"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a19LongScallop = parseFloat(await desktop.locator('#lab-a19 [data-value-key="Scallop 深度"]').textContent());
+const a19LongRate = parseFloat(await desktop.locator('#lab-a19 [data-value-key="有效蝕刻率"]').textContent());
+await a19Ranges.nth(0).evaluate((input) => { input.value = "0"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a19IsotropicStatus = await desktop.locator("#lab-a19 [data-lab-status]").textContent();
+const a19CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a19 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++;
+  return nonBlank;
+});
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a19-bosch.png"), fullPage: false });
+
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
@@ -900,6 +924,14 @@ const mobileA18ControlCount = await mobile.locator('#lab-a18 input[type="range"]
 const mobileA18OutputCount = await mobile.locator("#lab-a18 .value-panel dd").count();
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a17-a18.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/3/3-2-deep-silicon-etch/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a19").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(350);
+const mobileA19Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA19ControlCount = await mobile.locator('#lab-a19 input[type="range"]').count();
+const mobileA19OutputCount = await mobile.locator("#lab-a19 .value-panel dd").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a19-bosch.png"), fullPage: false });
+
 await mobile.goto(`${base}/level/3/3-7-packaging-cleaning/`, { waitUntil: "networkidle" });
 await mobile.locator("#lab-a33").scrollIntoViewIfNeeded();
 await mobile.waitForTimeout(400);
@@ -949,6 +981,7 @@ Object.assign(result, { a14At550Up, a14At700Up, a14At550Down, a14At400Down, a14P
 Object.assign(result, { a15InitialReflection, a15MatchedReflection, a15FirstFingerprint, a15DriftReflection, a15RematchedReflection, a15SecondFingerprint, a15PathCount, a15PointCount, a15CanvasPixels, mobileA15Overflow, mobileA15PathCount, mobileA15CanvasPixels });
 Object.assign(result, { a16ControlCount, a16OutputCount, a16ChainCount, a16LowSourceTe, a16LowSourceDensity, a16HighSourceTe, a16HighSourceDensity, a16TeDelta, a16ZeroBiasRate, a16ZeroBiasSelectivity, a16ZeroBiasProfile, a16HighBiasRate, a16HighBiasSelectivity, a16ChallengeStatus, a16ChallengeClass, a16CanvasPixels, a16ThemeBefore, a16ThemeAfter, mobileA16Overflow, mobileA16ControlCount, mobileA16ChainCount, mobileA16CanvasPixels });
 Object.assign(result, { chapterThreeOneTitle, a17BarCount, a17OutputCount, a17InitialTotal, a17InitialSynergy, a17NoIonTotal, a17TrenchStatus, a17CanvasPixels, a18ControlCount, a18OutputCount, a18InitialShape, a18BowingWidths, a18FixedBowingWidths, a18StoppedDepth, a18RecoveredDepth, a18FacetedMask, a18FixedMask, a18CanvasPixels, mobileA17Overflow, mobileA17OutputCount, mobileA18Overflow, mobileA18ControlCount, mobileA18OutputCount });
+Object.assign(result, { chapterThreeTwoTitle, a19ControlCount, a19OutputCount, a19ShortScallop, a19ShortRate, a19LongScallop, a19LongRate, a19IsotropicStatus, a19CanvasPixels, mobileA19Overflow, mobileA19ControlCount, mobileA19OutputCount });
 Object.assign(result, { l2DiagramChecks, packagingCaseText, packagingShiftText, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobilePackagingCaseOverflow, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
 Object.assign(result, { a33ControlCount, a33OutputCount, a33PathCount, a33InitialAngle, a33InitialAdhesion, a33OvertreatedAngle, a33OvertreatedAdhesion, a33OvertreatedStatus, a33ReducedOxide, a33ReducedAdhesion, a33OxidizedOxide, a33OxidizedAdhesion, a33OxidizedStatus, mobileA33Overflow, mobileA33ControlCount, mobileA33OutputCount, mobileA33PathCount });
 console.log(JSON.stringify(result, null, 2));
@@ -1010,6 +1043,9 @@ if (a17CanvasPixels < 100000 || mobileA17Overflow) throw new Error("A17 Canvas �
 if (a18ControlCount !== 6 || a18OutputCount !== 6 || mobileA18ControlCount !== 6 || mobileA18OutputCount !== 6 || a18InitialShape !== "垂直") throw new Error("A18 控制、讀值或垂直基準未完整渲染。");
 if (a18BowingWidths === a18FixedBowingWidths || !(a18RecoveredDepth > a18StoppedDepth + 30) || !(a18FixedMask < a18FacetedMask - 0.1)) throw new Error("A18 bowing、etch stop 或 faceting 對策未產生量測改善。");
 if (a18CanvasPixels < 150000 || mobileA18Overflow) throw new Error("A18 Canvas 空白或手機版溢出。");
+if (!chapterThreeTwoTitle.includes("深矽") || a19ControlCount !== 4 || a19OutputCount !== 5 || mobileA19ControlCount !== 4 || mobileA19OutputCount !== 5) throw new Error("3.2 或 A19 控制與讀值未完整渲染。");
+if (!(a19LongScallop > a19ShortScallop * 3) || !(a19LongRate > a19ShortRate) || !a19IsotropicStatus.includes("等向")) throw new Error("A19 未呈現循環時間的粗糙度／速率取捨或關閉沉積後的等向側蝕。");
+if (a19CanvasPixels < 150000 || mobileA19Overflow) throw new Error("A19 Canvas 空白或手機版溢出。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);
