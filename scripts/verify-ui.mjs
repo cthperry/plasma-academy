@@ -40,14 +40,17 @@ for (const [route, expectedTitle] of l1Routes) {
   await desktop.waitForTimeout(600);
   const labPixels = await desktop.evaluate(() => {
     const canvas = document.querySelector("[data-lab-canvas]");
-    if (!canvas) return 0;
-    const ctx = canvas.getContext("2d");
-    const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    let nonBlank = 0;
-    for (let i = 0; i < data.length; i += 4) {
-      if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let nonBlank = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+      }
+      return nonBlank;
     }
-    return nonBlank;
+    const svg = document.querySelector("[data-lab-container] svg");
+    return svg ? svg.querySelectorAll("rect, path, line, text").length * 10000 : 0;
   });
   l1Checks.push({ route, title, expectedTitle, labPixels });
 }
@@ -206,6 +209,25 @@ await desktop.getByRole("button", { name: "播放形成過程" }).click();
 await desktop.waitForTimeout(700);
 const a06PlaybackPosition = Number(await desktop.locator('#lab-a06 input[type="range"]').first().inputValue());
 
+await desktop.goto(`${base}/level/1/1-6-process-map/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a07").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(700);
+const a07InitialRegions = await desktop.locator("#lab-a07 [data-process-id]").count();
+const a07InitialInfo = await desktop.locator("#lab-a07 .process-info").textContent();
+await desktop.locator("#lab-a07").getByRole("radio", { name: "清潔" }).click();
+const a07CleaningRegions = await desktop.locator("#lab-a07 [data-process-id]").count();
+await desktop.locator('#lab-a07 input[type="search"]').fill("NF₃");
+await desktop.waitForTimeout(200);
+const a07SearchRegions = await desktop.locator("#lab-a07 [data-process-id]").count();
+const a07SearchInfo = await desktop.locator("#lab-a07 .process-info").textContent();
+const a07SearchLink = await desktop.locator("#lab-a07 .process-info a").getAttribute("href");
+await desktop.locator('#lab-a07 input[type="search"]').fill("");
+await desktop.locator("#lab-a07").getByRole("radio", { name: "全部" }).click();
+await desktop.locator('#lab-a07 [data-process-id="pvd"]').click();
+const a07PvdInfo = await desktop.locator("#lab-a07 .process-info").textContent();
+const a07PvdLink = await desktop.locator("#lab-a07 .process-info a").getAttribute("href");
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a07.png"), fullPage: false });
+
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
@@ -301,9 +323,16 @@ const mobileA04CanvasPixels = await mobile.evaluate(() => {
 });
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a04.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/1/1-6-process-map/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a07").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(700);
+const mobileA07Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA07Regions = await mobile.locator("#lab-a07 [data-process-id]").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a07.png"), fullPage: false });
+
 await browser.close();
 
-const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -337,6 +366,10 @@ if (Math.abs(a06DropAt4Ev - 18.7) > 0.3) throw new Error("A06 T_e=4 eV 時 Vp−
 if (a06CurveCount < 3 || a06PlayButton !== 1) throw new Error("A06 三條同步曲線或自動播放控制缺失。");
 if (a06PlaybackPosition < 0.2 || a06PlaybackPosition >= 3) throw new Error(`A06 自動播放未推進時間軸：${a06PlaybackPosition}。`);
 if (a06CanvasPixels < 100000 || mobileA06CanvasPixels < 100000) throw new Error("A06 桌機或手機 Canvas 看起來是空白。");
+if (a07InitialRegions !== 6 || !a07InitialInfo.includes("電漿蝕刻")) throw new Error("A07 未完整顯示六大製程或初始資訊卡。");
+if (a07CleaningRegions !== 2 || a07SearchRegions !== 1 || !a07SearchInfo.includes("腔體清潔") || !/^\/level\/[23]\/$/.test(a07SearchLink ?? "")) throw new Error("A07 清潔篩選、NF3 搜尋或章節連結未生效。");
+if (!a07PvdInfo.includes("PVD 濺鍍") || !/^\/level\/[23]\/$/.test(a07PvdLink ?? "")) throw new Error("A07 PVD 點選或資訊卡連結未更新。");
+if (mobileA07Regions !== 6) throw new Error("A07 手機版未顯示六大製程區塊。");
 if (canvasInfo.nonBlank < canvasInfo.width * canvasInfo.height * 0.5) throw new Error("A01 Canvas 看起來是空白。");
 if (mobileCanvasInfo.nonBlank < mobileCanvasInfo.width * mobileCanvasInfo.height * 0.5) throw new Error("手機 A01 Canvas 看起來是空白。");
 if (!quizText.includes("正確")) throw new Error("自我檢測沒有顯示成功狀態。");
@@ -344,4 +377,5 @@ if (mobileOverflow) throw new Error("手機版有水平溢出。");
 if (mobileA03Overflow) throw new Error("A03 手機版有水平溢出。");
 if (mobileA04Overflow) throw new Error("A04 手機版有水平溢出。");
 if (mobileA06Overflow) throw new Error("A06 手機版有水平溢出。");
+if (mobileA07Overflow) throw new Error("A07 手機版有水平溢出。");
 if (errors.length) throw new Error(`瀏覽器 console/page errors: ${errors.join("; ")}`);

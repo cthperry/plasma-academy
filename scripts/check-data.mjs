@@ -2,6 +2,7 @@ import { glossary } from "../src/data/glossary.js";
 import { curriculum } from "../src/data/curriculum.js";
 import { labs } from "../src/data/labs.js";
 import { dataSchemas } from "../src/data/schemas.js";
+import { processMapEntries } from "../src/assets/js/data/process-map.js";
 import { childLangmuirSheathMm, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, paschenGases, paschenVoltage, townsendDischarge } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
@@ -29,6 +30,19 @@ for (const requiredTerm of ["重佈線層", "凸塊下金屬層", "底填膠", "
 
 if (labs.length !== 32) {
   failures.push(`互動元件清單應為 A01-A32 共 32 件，目前 ${labs.length} 件。`);
+}
+
+const expectedProcesses = ["電漿蝕刻", "PECVD", "PVD 濺鍍", "光阻灰化", "腔體清潔", "表面處理"];
+if (processMapEntries.length !== 6 || !expectedProcesses.every((name) => processMapEntries.some((entry) => entry.name === name))) {
+  failures.push("A07 製程地圖必須完整包含 1.6.1 的六大類應用。");
+}
+for (const entry of processMapEntries) {
+  for (const field of ["purpose", "gases", "pressure", "power", "tool", "challenge"]) {
+    if (!entry[field]) failures.push(`A07 ${entry.name} 缺少 ${field}。`);
+  }
+  if (!/^\/level\/[23]\/$/.test(entry.link?.href ?? "")) {
+    failures.push(`A07 ${entry.name} 缺少有效的 L2/L3 章節連結。`);
+  }
 }
 
 for (const [gasKey, gas] of Object.entries(paschenGases)) {

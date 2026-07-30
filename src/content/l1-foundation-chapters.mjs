@@ -143,7 +143,7 @@ export const l1FoundationChapters = [
     title: "1.6 製程電漿地圖",
     hours: 1,
     labs: [
-      { id: "a07", title: "A07 製程電漿地圖", module: "/assets/js/labs/l1-foundation-demo.js", observation: "切換製程類別，注意蝕刻、PECVD、PVD、灰化、腔體清潔為何落在不同壓力區間。" }
+      { id: "a07", title: "A07 製程電漿地圖", module: "/assets/js/labs/a07-process-map.js", observation: "切換製程類別並點選區塊，注意蝕刻與 PVD 為何偏低壓，而 PECVD、灰化與 remote clean 為何移到高壓區。" }
     ],
     objectives: [
       "說出六大類電漿製程的目的、氣體與壓力窗。",
