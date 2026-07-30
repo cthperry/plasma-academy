@@ -91,6 +91,7 @@ const fcLabelsDoNotOverlap = await desktop.locator(".fc-axis li").evaluateAll((i
   return boxes.every((box, index) => index === 0 || box.left >= boxes[index - 1].right);
 });
 const gasSdsStatusCount = await desktop.locator(".sds-status").count();
+const gasSupplierReviewedCount = await desktop.locator('[data-sds-status="supplier-reviewed"]').count();
 await desktop.screenshot({ path: path.join(qaDir, "desktop-gases.png"), fullPage: false });
 
 await desktop.goto(`${base}/formulas/`, { waitUntil: "networkidle" });
@@ -852,6 +853,7 @@ await browser.close();
 
 const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, gasCardCount, fluorocarbonCardCount, extremeGasCount, gasSearchTitle, fcLabelsDoNotOverlap, gasSdsStatusCount, mobileGasOverflow, mobileGasCardCount, formulaCardCount, formulaPageText, a08InitialPanel, a08InitialDensity, a08HighFlowResidence, a08HighFlowDensity, a08HighPressureResidence, a08HighPressureDensity, a08CanvasPixels, a08ThemePixelBefore, a08ThemePixelAfter, mobileA08Overflow, mobileA08CanvasPixels, chapterOneOneSelfChecks, chapterOneOneDiagramCount, chapterOneOneSupportCount, chapterOneOneObservationCount, chapterOneOneFigureNumbersValid, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
 Object.assign(result, { a09NodeCount, a09Cases, a09CuText, a10InitialStatus, a10InitialFc, a10HighStatus, a10LowStatus, a10OxideRate, a10SiRate, a10CanvasPixels, mobileA10Overflow, mobileA10CanvasPixels });
+Object.assign(result, { gasSupplierReviewedCount });
 Object.assign(result, { a12PathCount, a12OverlapCount, a12RateBarCount, a12Ionization2Ev, a12Ionization3Ev, a12DruyvesteynIonization, a12Cf4Status, a12Cf4Dissociation, mobileA12Overflow, mobileA12PathCount });
 Object.assign(result, { a13BarCount, a13LowFrequencyDelta, a13LowFrequencyStatus, a13HighFrequencyDelta, a13HighFrequencyStatus, a13HighPressureTail, a13HighPressureStatus, a13ArDelta, a13Cf3Delta, a13CanvasPixels, a13ThemeBefore, a13ThemeAfter, mobileA13Overflow, mobileA13BarCount, mobileA13CanvasPixels });
 Object.assign(result, { a14At550Up, a14At700Up, a14At550Down, a14At400Down, a14PathCount, a14CanvasPixels, a14ThemeBefore, a14ThemeAfter, mobileA14Overflow, mobileA14PathCount, mobileA14CanvasPixels });
@@ -863,7 +865,7 @@ console.log(JSON.stringify(result, null, 2));
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
 if (searchCount < 1) throw new Error("搜尋沒有回傳結果。");
 if (!packagingSearchHit.includes("封裝") || !packagingH1.includes("封裝清潔")) throw new Error("封裝清潔頁或搜尋入口未通過驗證。");
-if (gasCardCount !== 32 || fluorocarbonCardCount !== 8 || extremeGasCount !== 3 || gasSearchTitle !== "三氟化氮" || !fcLabelsDoNotOverlap || gasSdsStatusCount !== 32) throw new Error("A11 氣體百科資料、篩選、F/C 標尺或 SDS 狀態未通過驗證。");
+if (gasCardCount !== 32 || fluorocarbonCardCount !== 8 || extremeGasCount !== 3 || gasSearchTitle !== "三氟化氮" || !fcLabelsDoNotOverlap || gasSdsStatusCount !== 32 || gasSupplierReviewedCount !== 27) throw new Error("A11 氣體百科資料、篩選、F/C 標尺或 SDS 證據狀態未通過驗證。");
 if (mobileGasOverflow || mobileGasCardCount !== 32) throw new Error("A11 氣體百科手機版發生溢位或卡片缺漏。");
 for (const check of l1Checks) {
   if (!check.title.includes(check.expectedTitle) || check.labPixels < 100000 || check.selfCheckCount !== check.expectedSelfChecks || check.diagramCount !== check.expectedDiagrams || !check.diagramsLoaded || !check.figureNumbersValid || check.chapterSupportCount !== 2 || !check.observationsValid) {

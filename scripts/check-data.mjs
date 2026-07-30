@@ -11,6 +11,7 @@ import { level2ExamSpec, level2Questions } from "../src/data/quiz/level-2.js";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { gases, gasFamilies, hazardLevels } from "../src/data/gases.js";
+import { sdsEvidence } from "../src/data/sds-evidence.js";
 import { childLangmuirSheathMm, eedfReactionModel, effectivePumpingSpeedLps, findAutoMatch, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, simulateIedf, sourceCouplingModel, townsendDischarge, virtualToolModel } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
@@ -31,6 +32,24 @@ for (const gas of gases) {
 }
 for (const [id, level] of Object.entries({ sih4: "extreme", b2h6: "extreme", ph3: "extreme", cl2: "high", hbr: "high", bcl3: "high", wf6: "high", nf3: "high", f2: "high" })) {
   if (gases.find((gas) => gas.id === id)?.hazardLevel !== level) failures.push(`氣體 ${id} 的危害分級必須是 ${level}。`);
+}
+
+if (sdsEvidence.length !== gases.length) failures.push(`SDS 證據應與 32 種氣體一一對應，目前 ${sdsEvidence.length} 筆。`);
+const evidenceIds = new Set();
+for (const evidence of sdsEvidence) {
+  if (evidenceIds.has(evidence.gasId)) failures.push(`SDS 證據 gasId 重複：${evidence.gasId}。`);
+  evidenceIds.add(evidence.gasId);
+  const gas = gases.find((item) => item.id === evidence.gasId);
+  if (!gas || gas.cas !== evidence.cas) failures.push(`SDS 證據 ${evidence.gasId} 的 CAS 與氣體資料不一致。`);
+  if (!/^https:\/\//.test(evidence.sourceUrl)) failures.push(`SDS 證據 ${evidence.gasId} 缺少 HTTPS 來源。`);
+  if (!["directory-only", "supplier-reviewed"].includes(evidence.reviewStatus)) failures.push(`SDS 證據 ${evidence.gasId} 使用未知 reviewStatus。`);
+  if (evidence.reviewStatus === "supplier-reviewed") {
+    for (const field of ["supplier", "reviewedAt", "documentId", "revisionDate", "version", "note"]) {
+      if (!evidence[field]) failures.push(`SDS 證據 ${evidence.gasId} 已標示核對但缺少 ${field}。`);
+    }
+    if (evidence.reviewScope.length < 4) failures.push(`SDS 證據 ${evidence.gasId} 的核對範圍不完整。`);
+  }
+  if (evidence.localApprovalStatus === "approved" && evidence.reviewStatus !== "supplier-reviewed") failures.push(`SDS 證據 ${evidence.gasId} 不可在供應商文件未核對前標示廠區核准。`);
 }
 
 if (glossary.length < 242) {

@@ -6,6 +6,7 @@ import { labs } from "../src/data/labs.js";
 import { glossary } from "../src/data/glossary.js";
 import { formulas } from "../src/data/formulas.js";
 import { gases, gasFamilies, hazardLabels } from "../src/data/gases.js";
+import { sdsEvidenceByGas } from "../src/data/sds-evidence.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
@@ -722,7 +723,13 @@ function gasesPage() {
   const useOptions = [...new Set(gases.flatMap((gas) => gas.uses))].sort((a, b) => a.localeCompare(b, "zh-Hant"))
     .map((use) => `<option value="${use}">${use}</option>`).join("");
   const hazardOptions = Object.entries(hazardLabels).map(([value, label]) => `<option value="${value}">${label}</option>`).join("");
-  const cards = gases.map((gas) => `
+  const cards = gases.map((gas) => {
+    const evidence = sdsEvidenceByGas[gas.id];
+    const evidenceLabel = evidence.reviewStatus === "supplier-reviewed"
+      ? `已核對供應商 SDS ${evidence.documentId}（${evidence.revisionDate}，v${evidence.version}）；仍待廠區核准版。`
+      : "已有供應商 SDS 目錄入口；待定位文件並核對廠區核准版。";
+    const linkLabel = evidence.reviewStatus === "supplier-reviewed" ? "開啟已核對文件" : "搜尋供應商 SDS";
+    return `
     <article class="gas-card" data-gas-card data-family="${gas.family}" data-hazard="${gas.hazardLevel}" data-uses="${gas.uses.join("|")}" data-query="${[gas.formula, gas.nameZh, gas.nameEn, ...gas.uses, ...gas.dissociationProducts].join(" ").toLowerCase()}">
       <header class="gas-card__header">
         <div><span class="gas-formula">${gas.formula}</span><h2>${gas.nameZh}</h2><p>${gas.nameEn}</p></div>
@@ -753,9 +760,10 @@ function gasesPage() {
           <div><dt>排氣處理</dt><dd>${gas.scrubber}</dd></div>
           <div><dt>常見故障</dt><dd>${gas.failureModes.join("、")}</dd></div>
         </dl>
-        <p class="sds-status"><strong>SDS 狀態：</strong>待廠區核准版本複核。<a href="${gas.sdsSource}" target="_blank" rel="noopener noreferrer">供應商 SDS 搜尋</a></p>
+        <p class="sds-status" data-sds-status="${evidence.reviewStatus}"><strong>SDS 狀態：</strong>${evidenceLabel}<a href="${evidence.sourceUrl}" target="_blank" rel="noopener noreferrer">${linkLabel}</a></p>
       </details>
-    </article>`).join("");
+    </article>`;
+  }).join("");
   const fcAxis = gases.filter((gas) => gas.fcRatio !== null).sort((a, b) => a.fcRatio - b.fcRatio).map((gas) => `
     <li><strong>${gas.formula}</strong><span>${gas.fcRatio}</span></li>
   `).join("");

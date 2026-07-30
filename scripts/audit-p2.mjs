@@ -12,6 +12,7 @@ import { formulas } from "../src/data/formulas.js";
 import { gases } from "../src/data/gases.js";
 import { labs } from "../src/data/labs.js";
 import { level2Questions } from "../src/data/quiz/level-2.js";
+import { sdsEvidence } from "../src/data/sds-evidence.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const chapters = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
@@ -56,6 +57,7 @@ const targets = {
 };
 const rows = Object.entries(targets).map(([item, target]) => ({ item, current: metrics[item], target, complete: metrics[item] >= target }));
 console.table(rows);
+console.log(`SDS 證據進度：供應商文件已核對 ${sdsEvidence.filter((item) => item.reviewStatus === "supplier-reviewed").length}/32；廠區核准 ${sdsEvidence.filter((item) => item.localApprovalStatus === "approved").length}/32。`);
 const incomplete = rows.filter((row) => !row.complete);
 if (incomplete.length) {
   console.log(`P2 尚有 ${incomplete.length} 個量化缺口：${incomplete.map((row) => row.item).join(", ")}。`);

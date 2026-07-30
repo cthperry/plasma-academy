@@ -3,6 +3,10 @@ export const dataSchemas = {
     required: ["id", "formula", "cas", "nameZh", "nameEn", "family", "molecularWeight", "boilingPointC", "vaporPressure", "dissociationProducts", "ionizationEnergyEv", "bondEnergy", "uses", "typicalFlowSccm", "hazardLevel", "hazards", "gwp", "fcRatio", "compatibleMaterials", "incompatibleMaterials", "etchProducts", "scrubber", "failureModes", "sdsSource", "sdsStatus"],
     notes: "P2 前必須以 SDS 核實 hazardLevel、相容材質與排放風險。"
   },
+  sdsEvidence: {
+    required: ["gasId", "cas", "supplier", "sourceUrl", "reviewStatus", "localApprovalStatus", "reviewedAt", "documentId", "revisionDate", "version", "reviewScope", "note"],
+    notes: "supplier-reviewed 只代表核對供應商公開文件；localApprovalStatus=approved 才能視為廠區版本已驗證。"
+  },
   defect: {
     required: ["id", "nameZh", "nameEn", "symptoms", "causes", "disambiguation", "countermeasures", "relatedLabs"],
     notes: "P3 缺陷診斷器以此矩陣排序可能成因。"
