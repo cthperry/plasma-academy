@@ -20,6 +20,7 @@ import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
 import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
+import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
 import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
@@ -393,6 +394,7 @@ function packagingCleaningPage() {
         ${callout("summary", "5 分鐘摘要", chapterThreeSeven.summary)}
         ${bodySections}
         ${l3CasebookHtml(chapterThreeSeven)}
+        ${packagingCleaningHandbookHtml()}
         ${callouts}
         ${labsHtml}
         <section class="self-check">
@@ -807,6 +809,24 @@ function l3CasebookHtml(chapter) {
     <h2 id="${chapter.id}-casebook-title">工程案例深讀</h2>
     <p>先寫下可反證假說，再展開案例比較「情境 → 機制 → 診斷 → 處置」是否形成完整證據鏈。</p>
     <div class="casebook-list">${casesHtml}${exerciseHtml}</div>
+  </section>`;
+}
+
+function packagingCleaningHandbookHtml() {
+  const protocols = packagingCleaningProtocols.map((item) => `<details class="check-card packaging-protocol" id="${item.id}">
+    <summary><span>${item.title}</span><strong>展開手冊</strong></summary>
+    <h3>工程目的</h3><p>${item.purpose}</p>
+    <h3>最低證據</h3><p>${item.evidence}</p>
+    <h3>區分實驗</h3><p>${item.experiment}</p>
+    <h3>放行界線</h3><p>${item.release}</p>
+    <h3>常見失誤</h3><p>${item.pitfalls}</p>
+    <p class="case-checkpoint"><strong>交班紀錄：</strong>${item.handoff}</p>
+  </details>`).join("");
+  return `<section class="packaging-handbook" aria-labelledby="packaging-handbook-title">
+    <p class="eyebrow">封裝清潔工程手冊</p>
+    <h2 id="packaging-handbook-title">從表面活化到可靠度放行</h2>
+    <p>八份可展開工作手冊把清潔開發拆成材料、設備、量測、物流、再處理與變更管制，供 DOE 規畫與交班使用。</p>
+    <div class="protocol-list">${protocols}</div>
   </section>`;
 }
 

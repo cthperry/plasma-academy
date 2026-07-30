@@ -1,5 +1,6 @@
 .l3-field-guide,
-.engineering-casebook {
+.engineering-casebook,
+.packaging-handbook {
   border-block-start: 1px solid var(--pa-border);
   margin-block: 36px;
   padding-block-start: 28px;
@@ -38,12 +39,14 @@
 }
 
 .case-study,
-.shift-exercise {
+.shift-exercise,
+.packaging-protocol {
   scroll-margin-top: 96px;
 }
 
 .case-study summary,
-.shift-exercise summary {
+.shift-exercise summary,
+.packaging-protocol summary {
   align-items: center;
   display: flex;
   gap: 16px;
@@ -51,20 +54,23 @@
 }
 
 .case-study summary strong,
-.shift-exercise summary strong {
+.shift-exercise summary strong,
+.packaging-protocol summary strong {
   color: var(--pa-primary);
   flex: 0 0 auto;
   font-size: var(--pa-text-sm);
 }
 
 .case-study h3,
-.shift-exercise h3 {
+.shift-exercise h3,
+.packaging-protocol h3 {
   font-size: 1rem;
   margin: 18px 0 4px;
 }
 
 .case-study p,
-.shift-exercise p {
+.shift-exercise p,
+.packaging-protocol p {
   line-height: 1.75;
 }
 
@@ -85,12 +91,14 @@
   }
 
   .case-study summary,
-  .shift-exercise summary {
+  .shift-exercise summary,
+  .packaging-protocol summary {
     align-items: flex-start;
   }
 
   .case-study,
-  .shift-exercise {
+  .shift-exercise,
+  .packaging-protocol {
     scroll-margin-top: 152px;
   }
 }

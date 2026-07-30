@@ -16,6 +16,7 @@ import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
+import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { l3Diagrams } from "../src/data/l3-diagrams.js";
@@ -146,10 +147,22 @@ for (const chapter of p3Chapters) {
 
 if (l3Diagrams.length !== 45) failures.push(`L3 應有 45 張圖解資料，目前 ${l3Diagrams.length} 張。`);
 
+if (packagingCleaningProtocols.length !== 8) failures.push(`3-7 封裝清潔工程手冊應有 8 單元，目前 ${packagingCleaningProtocols.length} 單元。`);
+const protocolIds = new Set();
+for (const item of packagingCleaningProtocols) {
+  if (protocolIds.has(item.id)) failures.push(`3-7 封裝清潔工程手冊 ID 重複：${item.id}。`);
+  protocolIds.add(item.id);
+  for (const field of ["id", "title", "purpose", "evidence", "experiment", "release", "pitfalls", "handoff"]) {
+    if (!item[field]) failures.push(`3-7/${item.id ?? "?"} 封裝清潔工程手冊缺少 ${field}。`);
+  }
+  const length = Object.values(item).join(" ").match(/[\p{L}\p{N}]/gu)?.length ?? 0;
+  if (length < 650) failures.push(`3-7/${item.id} 封裝清潔工程手冊至少需 650 個有效字元，目前 ${length}。`);
+}
+
 if (failures.length) {
   console.error(`內容規範檢查失敗（${failures.length} 項）：`);
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、A01–A25/A33 觀察引導。`);
+console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3-7 封裝清潔工程手冊 8 單元、A01–A25/A33 觀察引導。`);
