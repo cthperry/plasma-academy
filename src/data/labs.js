@@ -55,6 +55,8 @@ function labHref(id) {
     A06: "/level/1/1-5-sheath/#lab-a06",
     A07: "/level/1/1-6-process-map/#lab-a07",
     A08: "/level/2/2-1-gas-vacuum/#lab-a08",
+    A09: "/level/2/2-2-process-gases/#lab-a09",
+    A10: "/level/2/2-2-process-gases/#lab-a10",
     A11: "/gases/"
   };
   return map[id] ?? "/lab/";

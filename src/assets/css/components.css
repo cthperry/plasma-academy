@@ -247,6 +247,144 @@
   width: 100%;
 }
 
+.lab-stage--decision {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lab-stage--decision .lab-panel {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.decision-visual {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.decision-path {
+  color: var(--pa-text);
+  display: block;
+  width: 100%;
+}
+
+.decision-node {
+  fill: var(--pa-surface);
+  stroke: var(--pa-border-strong);
+}
+
+.decision-node.current {
+  fill: color-mix(in srgb, var(--pa-primary) 18%, var(--pa-surface));
+  stroke: var(--pa-primary);
+}
+
+.decision-edge {
+  fill: none;
+  stroke: var(--pa-primary);
+  stroke-width: 2;
+}
+
+.decision-path text {
+  fill: var(--pa-text);
+  font: 700 12px var(--pa-font-sans);
+}
+
+.decision-path .decision-step {
+  fill: var(--pa-text-muted);
+  font-size: 10px;
+}
+
+.decision-result {
+  border-top: 1px solid var(--pa-border);
+  padding: 16px;
+}
+
+.decision-result h3 {
+  font-size: var(--pa-text-lg);
+  margin-bottom: 10px;
+}
+
+.decision-result li {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: 80px 1fr;
+  margin: 8px 0;
+}
+
+.decision-result dl {
+  display: grid;
+  gap: 6px 12px;
+  grid-template-columns: 80px 1fr;
+}
+
+.decision-result dd {
+  margin: 0;
+}
+
+.fc-lab-axis {
+  padding-bottom: 20px;
+}
+
+.fc-lab-track {
+  border-top: 3px solid var(--pa-border-strong);
+  height: 45px;
+  margin: 30px 10px 0;
+  position: relative;
+}
+
+.fc-lab-track span,
+.fc-lab-track i {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.lab-link-panel {
+  align-items: flex-start;
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  grid-column: 1 / -1;
+  min-height: 220px;
+  padding: 28px;
+}
+
+.fc-lab-track span {
+  display: grid;
+  font-size: 10px;
+  gap: 2px;
+  justify-items: center;
+  top: 8px;
+  white-space: nowrap;
+}
+
+.fc-lab-track i {
+  background: var(--pa-danger);
+  border-radius: 50%;
+  height: 12px;
+  top: -8px;
+  width: 12px;
+}
+
+@media (max-width: 800px) {
+  .lab-stage--decision .lab-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .decision-path {
+    min-width: 680px;
+  }
+
+  .decision-visual {
+    overflow-x: auto;
+  }
+}
+
 .lab-visual {
   aspect-ratio: 2 / 1;
   display: grid;

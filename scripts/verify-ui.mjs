@@ -126,6 +126,46 @@ await desktop.waitForTimeout(200);
 const a08ThemePixelAfter = await desktop.evaluate(() => [...document.querySelector("#lab-a08 [data-lab-canvas]").getContext("2d").getImageData(0, 0, 1, 1).data]);
 await desktop.screenshot({ path: path.join(qaDir, "desktop-a08.png"), fullPage: false });
 
+await desktop.goto(`${base}/level/2/2-2-process-gases/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a09").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(500);
+const a09NodeCount = await desktop.locator("#lab-a09 .decision-node").count();
+const a09Cases = {};
+for (const [material, expectedGas] of Object.entries({ "poly-Si": "Cl₂", SiO2: "C₄F₈", SiN: "CH₂F₂", Al: "BCl₃", Si: "SF₆" })) {
+  await desktop.locator("#lab-a09 select").first().selectOption(material);
+  a09Cases[material] = (await desktop.locator("#lab-a09 .decision-result").textContent()).includes(expectedGas);
+}
+await desktop.locator("#lab-a09 select").first().selectOption("Cu");
+const a09CuText = await desktop.locator("#lab-a09 .decision-result").textContent();
+
+await desktop.locator("#lab-a10").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(700);
+const a10InitialStatus = await desktop.locator("#lab-a10 [data-lab-status]").textContent();
+const a10InitialFc = await desktop.locator('#lab-a10 [data-value-key="有效 F/C"]').textContent();
+const a10Ranges = desktop.locator('#lab-a10 input[type="range"]');
+await desktop.locator("#lab-a10 select").selectOption("CF4");
+await a10Ranges.nth(0).evaluate((input) => { input.value = "20"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a10HighStatus = await desktop.locator("#lab-a10 [data-lab-status]").textContent();
+await desktop.locator("#lab-a10 select").selectOption("CH3F");
+await a10Ranges.nth(1).evaluate((input) => { input.value = "20"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+await a10Ranges.nth(2).evaluate((input) => { input.value = "0"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a10LowStatus = await desktop.locator("#lab-a10 [data-lab-status]").textContent();
+await desktop.locator("#lab-a10 select").selectOption("C4F8");
+await a10Ranges.nth(0).evaluate((input) => { input.value = "8"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+await a10Ranges.nth(1).evaluate((input) => { input.value = "0"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+await a10Ranges.nth(2).evaluate((input) => { input.value = "250"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a10OxideRate = parseFloat(await desktop.locator('#lab-a10 [data-value-key="溝底淨速率"]').textContent());
+await desktop.locator("#lab-a10").getByRole("radio", { name: "Si", exact: true }).click();
+const a10SiRate = parseFloat(await desktop.locator('#lab-a10 [data-value-key="溝底淨速率"]').textContent());
+const a10CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a10 [data-lab-canvas]");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  return nonBlank;
+});
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a09-a10.png"), fullPage: false });
+
 await desktop.goto(`${base}/level/1/1-2-parameters/`, { waitUntil: "networkidle" });
 await desktop.locator("#lab-a02").scrollIntoViewIfNeeded();
 await desktop.waitForTimeout(700);
@@ -466,6 +506,19 @@ const mobileA08CanvasPixels = await mobile.evaluate(() => {
 });
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a08.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/2/2-2-process-gases/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a10").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(700);
+const mobileA10Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA10CanvasPixels = await mobile.evaluate(() => {
+  const canvas = document.querySelector("#lab-a10 [data-lab-canvas]");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  return nonBlank;
+});
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a09-a10.png"), fullPage: false });
+
 await mobile.evaluate(() => {
   const chapters = Object.fromEntries(["1-1", "1-2", "1-3", "1-4", "1-5"].map((id) => [id, { visited: true, objectives: [true, true, true, true] }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
@@ -480,6 +533,7 @@ await mobile.screenshot({ path: path.join(qaDir, "mobile-exam.png"), fullPage: f
 await browser.close();
 
 const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, gasCardCount, fluorocarbonCardCount, extremeGasCount, gasSearchTitle, fcLabelsDoNotOverlap, gasSdsStatusCount, mobileGasOverflow, mobileGasCardCount, formulaCardCount, formulaPageText, a08InitialPanel, a08InitialDensity, a08HighFlowResidence, a08HighFlowDensity, a08HighPressureResidence, a08HighPressureDensity, a08CanvasPixels, a08ThemePixelBefore, a08ThemePixelAfter, mobileA08Overflow, mobileA08CanvasPixels, chapterOneOneSelfChecks, chapterOneOneDiagramCount, chapterOneOneSupportCount, chapterOneOneObservationCount, chapterOneOneFigureNumbersValid, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
+Object.assign(result, { a09NodeCount, a09Cases, a09CuText, a10InitialStatus, a10InitialFc, a10HighStatus, a10LowStatus, a10OxideRate, a10SiRate, a10CanvasPixels, mobileA10Overflow, mobileA10CanvasPixels });
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -499,6 +553,13 @@ if (Math.abs(a08HighPressureResidence - 1.185) > 0.003 || !a08HighPressureDensit
 if (a08CanvasPixels < 100000 || mobileA08CanvasPixels < 100000) throw new Error("A08 桌機或手機 Canvas 看起來是空白。");
 if (JSON.stringify(a08ThemePixelBefore) === JSON.stringify(a08ThemePixelAfter)) throw new Error("A08 Canvas 未隨主題切換重新取色。");
 if (mobileA08Overflow) throw new Error("A08 手機版有水平溢出。");
+if (a09NodeCount !== 6 || Object.values(a09Cases).some((passed) => !passed)) throw new Error("A09 決策路徑或五個標準案例未通過。");
+if (!a09CuText.includes("大馬士革") || a09CuText.includes("一般 Cu RIE 配方：Cl")) throw new Error("A09 Cu 特殊路徑未正確阻止錯誤 RIE 配方。");
+if (!a10InitialStatus.includes("製程窗") || a10InitialFc !== "2.36") throw new Error("A10 預設中 F/C 製程窗不符規格。");
+if (!a10HighStatus.includes("等向") || !a10LowStatus.includes("etch stop")) throw new Error("A10 未能重現高 F/C 或低 F/C 狀態。");
+if (!(a10SiRate < a10OxideRate * 0.5)) throw new Error("A10 Si 與 SiO2 的表面選擇比趨勢不符規格。");
+if (a10CanvasPixels < 100000 || mobileA10CanvasPixels < 100000) throw new Error("A10 桌機或手機 Canvas 看起來是空白。");
+if (mobileA10Overflow) throw new Error("A09/A10 手機版有水平溢出。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);

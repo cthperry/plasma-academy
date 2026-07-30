@@ -9,7 +9,7 @@ import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs"
 import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { gases, gasFamilies, hazardLevels } from "../src/data/gases.js";
-import { childLangmuirSheathMm, effectivePumpingSpeedLps, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, townsendDischarge } from "../src/assets/js/plasma-model.js";
+import { childLangmuirSheathMm, effectivePumpingSpeedLps, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, townsendDischarge } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
 
@@ -20,7 +20,7 @@ for (const gas of gases) {
   gasIds.add(gas.id);
   for (const field of dataSchemas.gas.required) {
     const value = gas[field];
-    const missing = value === undefined || value === null && field !== "fcRatio" || value === "" || Array.isArray(value) && value.length === 0;
+    const missing = value === undefined || (value === null && field !== "fcRatio") || value === "" || (Array.isArray(value) && value.length === 0);
     if (missing) failures.push(`氣體 ${gas.id} 缺少 ${field}。`);
   }
   if (!gasFamilies.includes(gas.family)) failures.push(`氣體 ${gas.id} 使用未知家族 ${gas.family}。`);
@@ -85,6 +85,12 @@ for (const [key, formula] of Object.entries(formulas)) {
 
 const residenceExample = residenceTimeSeconds({ pressureMtorr: 20, volumeL: 30, flowSccm: 200 });
 if (Math.abs(residenceExample - 0.237) > 0.005) failures.push(`A08 滯留時間範例應約 0.24 s，目前 ${residenceExample.toFixed(3)} s。`);
+const fcWindow = fluorocarbonProfile({ gas: "C4F8", oxygenPercent: 8, hydrogenPercent: 0, biasW: 250, substrate: "SiO2" });
+const fcHigh = fluorocarbonProfile({ gas: "CF4", oxygenPercent: 20, hydrogenPercent: 0, biasW: 250, substrate: "SiO2" });
+const fcLow = fluorocarbonProfile({ gas: "CH3F", oxygenPercent: 0, hydrogenPercent: 20, biasW: 0, substrate: "SiO2" });
+const fcSilicon = fluorocarbonProfile({ gas: "C4F8", oxygenPercent: 8, hydrogenPercent: 0, biasW: 250, substrate: "Si" });
+if (fcWindow.regime !== "process-window" || fcHigh.regime !== "isotropic" || fcLow.regime !== "etch-stop") failures.push("A10 必須可重現中 F/C 製程窗、高 F/C 等向蝕刻與低 F/C etch stop。");
+if (!(fcSilicon.bottomNetRate < fcWindow.bottomNetRate * 0.5)) failures.push("A10 同條件下 Si 淨速率應顯著低於 SiO2。 ");
 const densityExample = neutralGasDensityCm3(10, 300);
 if (Math.abs(densityExample / 3.22e14 - 1) > 0.02) failures.push(`10 mTorr、300 K 中性密度應約 3.2×10^14 cm^-3，目前 ${densityExample.toExponential(2)}。`);
 const pumpingExample = effectivePumpingSpeedLps({ pressureMtorr: 20, flowSccm: 200 });

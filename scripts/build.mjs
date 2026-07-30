@@ -9,6 +9,7 @@ import { gases, gasFamilies, hazardLabels } from "../src/data/gases.js";
 import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
+import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
 import { l1FoundationChapters as l1FoundationChaptersBase } from "../src/content/l1-foundation-chapters.mjs";
 import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
 import { level1ExamSpec } from "../src/data/quiz/level-1.js";
@@ -411,6 +412,7 @@ function chapterTwoOnePage() {
       <aside class="chapter-sidebar">
         <strong>課程目錄</strong>
         <a class="current" href="${chapterTwoOne.route}">${chapterTwoOne.title}</a>
+        <a href="${chapterTwoTwo.route}">${chapterTwoTwo.title}</a>
         <a href="/level/2/">L2 模組列表</a>
         <a href="/gases/">氣體百科</a>
       </aside>
@@ -426,11 +428,50 @@ function chapterTwoOnePage() {
         ${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
-        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="/level/1/1-6-process-map/">上一章：1.6 製程電漿地圖</a><a class="button primary" href="/level/2/">返回 L2</a></nav>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="/level/1/1-6-process-map/">上一章：1.6 製程電漿地圖</a><a class="button primary" href="${chapterTwoTwo.route}">下一章：${chapterTwoTwo.title}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
   `, { pageType: "chapter" });
+}
+
+function chapterTwoTwoPage() {
+  const objectives = chapterTwoTwo.objectives.map((item, index) => `
+    <label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterTwoTwo.id}"><span>${item}</span></label>
+  `).join("");
+  const prerequisites = chapterTwoTwo.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapterTwoTwo.readings.map((item) => `<li>${item}</li>`).join("");
+  const outline = [...chapterTwoTwo.sections, ...chapterTwoTwo.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
+  const sections = chapterTwoTwo.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const callouts = chapterTwoTwo.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapterTwoTwo.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapterTwoTwo.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
+
+  return page(chapterTwoTwo.route, chapterTwoTwo.title, `
+    <main class="chapter-layout" data-chapter-id="${chapterTwoTwo.id}">
+      <aside class="chapter-sidebar">
+        <strong>課程目錄</strong>
+        <a href="${chapterTwoOne.route}">${chapterTwoOne.title}</a>
+        <a class="current" href="${chapterTwoTwo.route}">${chapterTwoTwo.title}</a>
+        <a href="/level/2/">L2 模組列表</a>
+        <a href="/gases/">氣體百科</a>
+      </aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L2 中階", chapterTwoTwo.title])}
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapterTwoTwo.hours} h · 互動元件 A09、A10、A11</p><h1>${chapterTwoTwo.title}</h1><p>${chapterTwoTwo.summary}</p></header>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
+        ${callout("summary", "5 分鐘摘要", chapterTwoTwo.summary)}
+        ${sections}
+        ${callouts}
+        ${labsHtml}
+        <section class="self-check"><h2>自我檢測</h2>${checks}</section>
+        <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterTwoOne.route}">上一章：${chapterTwoOne.title}</a><a class="button primary" href="/level/2/">返回 L2</a></nav>
+      </article>
+      <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
+    </main>
+  `, { pageType: "chapter", description: "製程氣體選用、F/C 比、鈍化、材料相容與安全的工程教材。" });
 }
 
 function labPage() {
@@ -658,6 +699,7 @@ async function main() {
     chapterPage(),
     ...l1FoundationChapters.map(l1ChapterPage),
     chapterTwoOnePage(),
+    chapterTwoTwoPage(),
     packagingCleaningPage(),
     labPage(),
     progressPage(),

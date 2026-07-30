@@ -21,6 +21,41 @@ export function effectivePumpingSpeedLps({ pressureMtorr, flowSccm }) {
   return throughputTorrLps / Math.max(pressureMtorr / 1000, 1e-9);
 }
 
+export const fluorocarbonGases = {
+  CF4: { label: "CF₄", fcRatio: 4 },
+  CHF3: { label: "CHF₃", fcRatio: 3 },
+  C4F8: { label: "C₄F₈", fcRatio: 2 },
+  C4F6: { label: "C₄F₆", fcRatio: 1.5 },
+  CH3F: { label: "CH₃F", fcRatio: 1 }
+};
+
+export function fluorocarbonProfile({ gas = "C4F8", oxygenPercent = 8, hydrogenPercent = 0, biasW = 250, substrate = "SiO2" }) {
+  const baseFc = fluorocarbonGases[gas]?.fcRatio ?? 2;
+  const effectiveFc = Math.max(0.4, baseFc + oxygenPercent * 0.045 - hydrogenPercent * 0.035);
+  const polymerSupply = 90 / effectiveFc;
+  const ionRemoval = Math.sqrt(Math.max(biasW, 0)) * 4.2;
+  const oxygenAssist = substrate === "SiO2" ? 24 : 4;
+  const materialFactor = substrate === "SiO2" ? 1 : 0.24;
+  const chemicalEtch = Math.max(0, effectiveFc - 0.75) * 38 * materialFactor;
+  const bottomNetRate = Math.max(0, chemicalEtch + ionRemoval + oxygenAssist - polymerSupply);
+  const maskRate = Math.max(1, effectiveFc * 5 + biasW * 0.018);
+  const sidewallPolymer = Math.max(0, polymerSupply - effectiveFc * 7);
+  let regime = "process-window";
+  if (effectiveFc >= 3.25 && biasW >= 60) regime = "isotropic";
+  if (effectiveFc < 1.65 || biasW < 45 || bottomNetRate < 8) regime = "etch-stop";
+  return {
+    baseFc,
+    effectiveFc,
+    polymerSupply,
+    ionRemoval,
+    bottomNetRate,
+    maskRate,
+    sidewallPolymer,
+    selectivityToMask: bottomNetRate / maskRate,
+    regime
+  };
+}
+
 export function debyeLengthMm({ electronDensityCm3, electronTemperatureEv }) {
   const ne = electronDensityCm3 * 1e6;
   const teJ = electronTemperatureEv * constants.electronCharge;
