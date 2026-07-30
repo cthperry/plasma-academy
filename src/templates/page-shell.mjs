@@ -1,13 +1,15 @@
 export const navItems = [
   ["學習路徑", "/"],
   ["實驗室", "/lab/"],
+  ["氣體", "/gases/"],
   ["公式", "/formulas/"],
   ["術語", "/glossary/"],
   ["進度", "/progress/"]
 ];
 
-export function shell({ title, description, navItems, body, pageType, extraBodyClass }) {
+export function shell({ title, description, navItems, body, pageType, extraBodyClass, extraStyles = [] }) {
   const nav = navItems.map(([label, href]) => `<a href="${href}">${label}</a>`).join("");
+  const pageStyles = extraStyles.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n  ");
   return `<!doctype html>
 <html lang="zh-Hant" data-theme="auto">
 <head>
@@ -19,6 +21,7 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
   <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/layout.css">
   <link rel="stylesheet" href="/assets/css/components.css">
+  ${pageStyles}
   <link rel="stylesheet" href="/assets/css/print.css" media="print">
 </head>
 <body data-page-type="${pageType}" class="${extraBodyClass}">
@@ -40,7 +43,7 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
   </div>
   <div id="main">${body}</div>
   <footer class="site-footer">
-    <span>P0 靜態骨架 · 進度僅儲存在本機瀏覽器</span>
+    <span>Plasma Academy · 進度僅儲存在本機瀏覽器</span>
   </footer>
   <script type="module" src="/assets/js/app.js"></script>
 </body>

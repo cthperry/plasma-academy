@@ -1,9 +1,11 @@
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
 import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
+import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 
-const chapters = expandL1Content([chapterOneOne, ...l1FoundationChapters]);
+const l1Chapters = expandL1Content([chapterOneOne, ...l1FoundationChapters]);
+const chapters = [...l1Chapters, chapterTwoOne];
 const failures = [];
 const stripHtml = (value) => String(value ?? "")
   .replace(/<figure[\s\S]*?<\/figure>/g, " ")
@@ -58,4 +60,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：${chapters.length} 章、${l1Diagrams.length} 張圖、A01–A07 觀察引導。`);
+console.log(`內容規範檢查通過：${chapters.length} 章、${l1Diagrams.length} 張圖、A01–A08 觀察引導。`);

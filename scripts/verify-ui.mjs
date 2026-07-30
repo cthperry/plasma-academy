@@ -67,10 +67,64 @@ for (const [route, expectedTitle, expectedSelfChecks, expectedDiagrams] of l1Rou
   l1Checks.push({ route, title, expectedTitle, expectedSelfChecks, selfCheckCount, expectedDiagrams, diagramCount, diagramsLoaded, figureNumbersValid, chapterSupportCount, observationCounts, observationsValid, labPixels });
 }
 
+await desktop.goto(`${base}/gases/`, { waitUntil: "networkidle" });
+const gasCardCount = await desktop.locator("[data-gas-card]").count();
+await desktop.selectOption("[data-gas-family]", "氟碳");
+const fluorocarbonCardCount = await desktop.locator("[data-gas-card]:visible").count();
+await desktop.selectOption("[data-gas-family]", "all");
+await desktop.selectOption("[data-gas-hazard]", "extreme");
+const extremeGasCount = await desktop.locator("[data-gas-card]:visible").count();
+await desktop.selectOption("[data-gas-hazard]", "all");
+await desktop.fill("[data-gas-search]", "三氟化氮");
+const gasSearchTitle = await desktop.locator("[data-gas-card]:visible h2").textContent();
+await desktop.fill("[data-gas-search]", "");
+const fcLabelsDoNotOverlap = await desktop.locator(".fc-axis li").evaluateAll((items) => {
+  const boxes = items.map((item) => item.getBoundingClientRect());
+  return boxes.every((box, index) => index === 0 || box.left >= boxes[index - 1].right);
+});
+const gasSdsStatusCount = await desktop.locator(".sds-status").count();
+await desktop.screenshot({ path: path.join(qaDir, "desktop-gases.png"), fullPage: false });
+
 await desktop.goto(`${base}/formulas/`, { waitUntil: "networkidle" });
 const formulaCardCount = await desktop.locator(".formula-card").count();
 const formulaPageText = await desktop.locator("main").textContent();
 await desktop.screenshot({ path: path.join(qaDir, "desktop-formulas.png"), fullPage: false });
+
+await desktop.goto(`${base}/level/2/2-1-gas-vacuum/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a08").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(800);
+const a08InitialPanel = await desktop.locator("#lab-a08 .value-panel").textContent();
+const a08InitialDensity = await desktop.locator('#lab-a08 [data-value-key="中性密度 n"]').textContent();
+const a08Ranges = desktop.locator('#lab-a08 input[type="range"]');
+await a08Ranges.nth(0).evaluate((input) => {
+  input.value = "400";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+await desktop.waitForTimeout(200);
+const a08HighFlowResidence = parseFloat(await desktop.locator('#lab-a08 [data-value-key="滯留時間 τ"]').textContent());
+const a08HighFlowDensity = await desktop.locator('#lab-a08 [data-value-key="中性密度 n"]').textContent();
+await a08Ranges.nth(1).evaluate((input) => {
+  input.value = "200";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+await desktop.waitForTimeout(200);
+const a08HighPressureResidence = parseFloat(await desktop.locator('#lab-a08 [data-value-key="滯留時間 τ"]').textContent());
+const a08HighPressureDensity = await desktop.locator('#lab-a08 [data-value-key="中性密度 n"]').textContent();
+const a08CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a08 [data-lab-canvas]");
+  const ctx = canvas.getContext("2d");
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  }
+  return nonBlank;
+});
+const a08ThemePixelBefore = await desktop.evaluate(() => [...document.querySelector("#lab-a08 [data-lab-canvas]").getContext("2d").getImageData(0, 0, 1, 1).data]);
+await desktop.click("[data-theme-toggle]");
+await desktop.waitForTimeout(200);
+const a08ThemePixelAfter = await desktop.evaluate(() => [...document.querySelector("#lab-a08 [data-lab-canvas]").getContext("2d").getImageData(0, 0, 1, 1).data]);
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a08.png"), fullPage: false });
 
 await desktop.goto(`${base}/level/1/1-2-parameters/`, { waitUntil: "networkidle" });
 await desktop.locator("#lab-a02").scrollIntoViewIfNeeded();
@@ -319,6 +373,10 @@ mobile.on("pageerror", (error) => errors.push(error.message));
 mobile.on("console", (message) => {
   if (message.type() === "error") errors.push(message.text());
 });
+await mobile.goto(`${base}/gases/`, { waitUntil: "networkidle" });
+const mobileGasOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileGasCardCount = await mobile.locator("[data-gas-card]").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-gases.png"), fullPage: false });
 await mobile.goto(`${base}/level/1/1-1-fourth-state/`, { waitUntil: "networkidle" });
 await mobile.waitForTimeout(800);
 const mobileOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
@@ -392,6 +450,22 @@ const mobileA07Overflow = await mobile.evaluate(() => document.documentElement.s
 const mobileA07Regions = await mobile.locator("#lab-a07 [data-process-id]").count();
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a07.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/2/2-1-gas-vacuum/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a08").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(700);
+const mobileA08Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA08CanvasPixels = await mobile.evaluate(() => {
+  const canvas = document.querySelector("#lab-a08 [data-lab-canvas]");
+  const ctx = canvas.getContext("2d");
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  }
+  return nonBlank;
+});
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a08.png"), fullPage: false });
+
 await mobile.evaluate(() => {
   const chapters = Object.fromEntries(["1-1", "1-2", "1-3", "1-4", "1-5"].map((id) => [id, { visited: true, objectives: [true, true, true, true] }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
@@ -405,18 +479,26 @@ await mobile.screenshot({ path: path.join(qaDir, "mobile-exam.png"), fullPage: f
 
 await browser.close();
 
-const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, formulaCardCount, formulaPageText, chapterOneOneSelfChecks, chapterOneOneDiagramCount, chapterOneOneSupportCount, chapterOneOneObservationCount, chapterOneOneFigureNumbersValid, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, gasCardCount, fluorocarbonCardCount, extremeGasCount, gasSearchTitle, fcLabelsDoNotOverlap, gasSdsStatusCount, mobileGasOverflow, mobileGasCardCount, formulaCardCount, formulaPageText, a08InitialPanel, a08InitialDensity, a08HighFlowResidence, a08HighFlowDensity, a08HighPressureResidence, a08HighPressureDensity, a08CanvasPixels, a08ThemePixelBefore, a08ThemePixelAfter, mobileA08Overflow, mobileA08CanvasPixels, chapterOneOneSelfChecks, chapterOneOneDiagramCount, chapterOneOneSupportCount, chapterOneOneObservationCount, chapterOneOneFigureNumbersValid, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
 if (searchCount < 1) throw new Error("搜尋沒有回傳結果。");
 if (!packagingSearchHit.includes("封裝") || !packagingH1.includes("封裝清潔")) throw new Error("封裝清潔頁或搜尋入口未通過驗證。");
+if (gasCardCount !== 32 || fluorocarbonCardCount !== 8 || extremeGasCount !== 3 || gasSearchTitle !== "三氟化氮" || !fcLabelsDoNotOverlap || gasSdsStatusCount !== 32) throw new Error("A11 氣體百科資料、篩選、F/C 標尺或 SDS 狀態未通過驗證。");
+if (mobileGasOverflow || mobileGasCardCount !== 32) throw new Error("A11 氣體百科手機版發生溢位或卡片缺漏。");
 for (const check of l1Checks) {
   if (!check.title.includes(check.expectedTitle) || check.labPixels < 100000 || check.selfCheckCount !== check.expectedSelfChecks || check.diagramCount !== check.expectedDiagrams || !check.diagramsLoaded || !check.figureNumbersValid || check.chapterSupportCount !== 2 || !check.observationsValid) {
     throw new Error(`L1 章節驗證失敗: ${JSON.stringify(check)}`);
   }
 }
-if (formulaCardCount !== 12 || !formulaPageText.includes("Townsend 自持條件") || !formulaPageText.includes("浮動電位差")) throw new Error("L1 公式手冊未完整渲染 12 條公式。");
+if (formulaCardCount !== 18 || !formulaPageText.includes("Townsend 自持條件") || !formulaPageText.includes("浮動電位差") || !formulaPageText.includes("滯留時間")) throw new Error("公式手冊未完整渲染 18 條公式。");
+if (!a08InitialPanel.includes("0.237 s") || !a08InitialDensity.includes("6.44e+14")) throw new Error("A08 預設滯留時間或中性密度不符規格。");
+if (Math.abs(a08HighFlowResidence - 0.119) > 0.002 || a08HighFlowDensity !== a08InitialDensity) throw new Error("A08 流量加倍後，滯留時間或密度變化不符規格。");
+if (Math.abs(a08HighPressureResidence - 1.185) > 0.003 || !a08HighPressureDensity.includes("6.44e+15")) throw new Error("A08 壓力提高十倍後，滯留時間或密度變化不符規格。");
+if (a08CanvasPixels < 100000 || mobileA08CanvasPixels < 100000) throw new Error("A08 桌機或手機 Canvas 看起來是空白。");
+if (JSON.stringify(a08ThemePixelBefore) === JSON.stringify(a08ThemePixelAfter)) throw new Error("A08 Canvas 未隨主題切換重新取色。");
+if (mobileA08Overflow) throw new Error("A08 手機版有水平溢出。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);

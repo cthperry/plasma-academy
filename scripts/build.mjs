@@ -5,8 +5,10 @@ import { curriculum, rolePaths } from "../src/data/curriculum.js";
 import { labs } from "../src/data/labs.js";
 import { glossary } from "../src/data/glossary.js";
 import { formulas } from "../src/data/formulas.js";
+import { gases, gasFamilies, hazardLabels } from "../src/data/gases.js";
 import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
+import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { l1FoundationChapters as l1FoundationChaptersBase } from "../src/content/l1-foundation-chapters.mjs";
 import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
 import { level1ExamSpec } from "../src/data/quiz/level-1.js";
@@ -27,7 +29,8 @@ const page = (route, title, body, options = {}) => ({
     description: options.description ?? "半導體製程工程師的電漿學習網站。",
     pageType: options.pageType ?? "",
     activePath: route,
-    extraBodyClass: options.extraBodyClass ?? ""
+    extraBodyClass: options.extraBodyClass ?? "",
+    extraStyles: options.extraStyles ?? []
   })
 });
 
@@ -87,6 +90,7 @@ function homepage() {
 
       <section class="quick-grid" aria-label="快速入口">
         <a href="/lab/"><strong>互動實驗室</strong><span>28 件元件的獨立入口</span></a>
+        <a href="/gases/"><strong>氣體百科</strong><span>32 種製程氣體與安全欄位</span></a>
         <a href="/progress/"><strong>個人進度</strong><span>匯出與匯入瀏覽器進度</span></a>
         <a href="/glossary/"><strong>術語表</strong><span>中英並列與 tooltip 來源</span></a>
         <a href="/formulas/"><strong>公式手冊</strong><span>可展開的公式卡資料</span></a>
@@ -389,6 +393,46 @@ function packagingCleaningPage() {
   `, { pageType: "chapter" });
 }
 
+function chapterTwoOnePage() {
+  const objectives = chapterTwoOne.objectives.map((item, index) => `
+    <label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterTwoOne.id}"><span>${item}</span></label>
+  `).join("");
+  const prerequisites = chapterTwoOne.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapterTwoOne.readings.map((item) => `<li>${item}</li>`).join("");
+  const outline = chapterTwoOne.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("");
+  const sections = chapterTwoOne.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const callouts = chapterTwoOne.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapterTwoOne.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapterTwoOne.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
+  const chapterFormulas = [formulas.idealGasDensity, formulas.residenceTime, formulas.knudsenNumber].map(formulaCard).join("");
+
+  return page(chapterTwoOne.route, chapterTwoOne.title, `
+    <main class="chapter-layout" data-chapter-id="${chapterTwoOne.id}">
+      <aside class="chapter-sidebar">
+        <strong>課程目錄</strong>
+        <a class="current" href="${chapterTwoOne.route}">${chapterTwoOne.title}</a>
+        <a href="/level/2/">L2 模組列表</a>
+        <a href="/gases/">氣體百科</a>
+      </aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L2 中階", chapterTwoOne.title])}
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapterTwoOne.hours} h · 互動元件 A08</p><h1>${chapterTwoOne.title}</h1><p>${chapterTwoOne.summary}</p></header>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
+        ${callout("summary", "5 分鐘摘要", chapterTwoOne.summary)}
+        ${sections}
+        ${chapterFormulas}
+        ${callouts}
+        ${labsHtml}
+        <section class="self-check"><h2>自我檢測</h2>${checks}</section>
+        <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="/level/1/1-6-process-map/">上一章：1.6 製程電漿地圖</a><a class="button primary" href="/level/2/">返回 L2</a></nav>
+      </article>
+      <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
+    </main>
+  `, { pageType: "chapter" });
+}
+
 function labPage() {
   const cards = labs.map((lab) => `
     <article class="lab-card" data-level="${lab.level}" data-kind="${lab.kind}">
@@ -505,6 +549,75 @@ function glossaryPage() {
   `);
 }
 
+function gasesPage() {
+  const familyOptions = gasFamilies.map((family) => `<option value="${family}">${family}</option>`).join("");
+  const useOptions = [...new Set(gases.flatMap((gas) => gas.uses))].sort((a, b) => a.localeCompare(b, "zh-Hant"))
+    .map((use) => `<option value="${use}">${use}</option>`).join("");
+  const hazardOptions = Object.entries(hazardLabels).map(([value, label]) => `<option value="${value}">${label}</option>`).join("");
+  const cards = gases.map((gas) => `
+    <article class="gas-card" data-gas-card data-family="${gas.family}" data-hazard="${gas.hazardLevel}" data-uses="${gas.uses.join("|")}" data-query="${[gas.formula, gas.nameZh, gas.nameEn, ...gas.uses, ...gas.dissociationProducts].join(" ").toLowerCase()}">
+      <header class="gas-card__header">
+        <div><span class="gas-formula">${gas.formula}</span><h2>${gas.nameZh}</h2><p>${gas.nameEn}</p></div>
+        <span class="hazard-badge hazard-${gas.hazardLevel}">${gas.hazardLabel}</span>
+      </header>
+      <div class="tag-row">${gas.uses.slice(0, 4).map((use) => `<span>${use}</span>`).join("")}</div>
+      <dl class="gas-summary">
+        <div><dt>家族</dt><dd>${gas.family}</dd></div>
+        <div><dt>分子量</dt><dd>${gas.molecularWeight} g/mol</dd></div>
+        <div><dt>F/C</dt><dd>${gas.fcRatio ?? "—"}</dd></div>
+        <div><dt>GWP100</dt><dd>${gas.gwp || "0 / 未列"}</dd></div>
+      </dl>
+      <details>
+        <summary>展開完整資料</summary>
+        <dl class="gas-details">
+          <div><dt>CAS</dt><dd>${gas.cas}</dd></div>
+          <div><dt>沸點</dt><dd>${gas.boilingPointC}°C</dd></div>
+          <div><dt>蒸氣壓／供應</dt><dd>${gas.vaporPressure}</dd></div>
+          <div><dt>解離產物</dt><dd>${gas.dissociationProducts.join("、")}</dd></div>
+          <div><dt>第一游離能</dt><dd>約 ${gas.ionizationEnergyEv} eV</dd></div>
+          <div><dt>主要鍵結</dt><dd>${gas.bondEnergy}</dd></div>
+          <div><dt>典型流量</dt><dd>${gas.typicalFlowSccm}</dd></div>
+          <div><dt>危害</dt><dd>${gas.hazards.join("、")}</dd></div>
+          <div><dt>控制措施</dt><dd>${gas.controls}</dd></div>
+          <div><dt>相容材質</dt><dd>${gas.compatibleMaterials.join("、")}</dd></div>
+          <div><dt>禁用／待確認</dt><dd>${gas.incompatibleMaterials.join("、")}</dd></div>
+          <div><dt>蝕刻／沉積產物</dt><dd>${gas.etchProducts.join("、")}</dd></div>
+          <div><dt>排氣處理</dt><dd>${gas.scrubber}</dd></div>
+          <div><dt>常見故障</dt><dd>${gas.failureModes.join("、")}</dd></div>
+        </dl>
+        <p class="sds-status"><strong>SDS 狀態：</strong>待廠區核准版本複核。<a href="${gas.sdsSource}" target="_blank" rel="noopener noreferrer">供應商 SDS 搜尋</a></p>
+      </details>
+    </article>`).join("");
+  const fcAxis = gases.filter((gas) => gas.fcRatio !== null).sort((a, b) => a.fcRatio - b.fcRatio).map((gas) => `
+    <li><strong>${gas.formula}</strong><span>${gas.fcRatio}</span></li>
+  `).join("");
+
+  return page("/gases/", "氣體百科", `
+    <main class="content-shell" data-gas-browser>
+      ${breadcrumb(["首頁", "氣體百科"])}
+      <section class="page-intro gas-intro">
+        <p class="chapter-meta">P2 資料模組 · A11 氣體百科瀏覽器 · 32 種製程氣體</p>
+        <h1>氣體百科</h1>
+        <p>用同一份資料查氣體角色、F/C 比、危害、材質與排氣處理。安全欄位是教材索引，不取代廠區核准 SDS、EH&amp;S 規範或設備相容性審查。</p>
+      </section>
+      <section class="gas-toolbar" aria-label="氣體篩選">
+        <label>搜尋<input type="search" data-gas-search placeholder="分子式、名稱、用途或自由基"></label>
+        <label>家族<select data-gas-family><option value="all">全部家族</option>${familyOptions}</select></label>
+        <label>用途<select data-gas-use><option value="all">全部用途</option>${useOptions}</select></label>
+        <label>危害<select data-gas-hazard><option value="all">全部等級</option>${hazardOptions}</select></label>
+        <label>排序<select data-gas-sort><option value="family">家族與名稱</option><option value="fc">F/C 由高到低</option><option value="hazard">危害由高到低</option></select></label>
+      </section>
+      <p class="gas-result-count" data-gas-count aria-live="polite">顯示 32 種氣體</p>
+      <section class="fc-axis" aria-labelledby="fc-axis-title">
+        <div><h2 id="fc-axis-title">氟碳氣體 F/C 比</h2><p>由左至右自由 F 傾向增加；低 F/C 端的 CFx 聚合傾向較強。實際有效 F/C 還會受 O₂、H₂、功率與表面消耗影響。</p></div>
+        <ol>${fcAxis}</ol>
+      </section>
+      <section class="gas-grid" data-gas-grid aria-label="氣體卡片">${cards}</section>
+      <p class="empty-state" data-gas-empty hidden>沒有符合目前條件的氣體。</p>
+    </main>
+  `, { pageType: "gases", description: "32 種半導體製程氣體的用途、F/C 比、危害與排氣處理資料。", extraStyles: ["/assets/css/gases.css"] });
+}
+
 function formulasPage() {
   const cards = Object.values(formulas).map(formulaCard).join("");
   return page("/formulas/", "公式手冊", `
@@ -544,10 +657,12 @@ async function main() {
     levelPage(4),
     chapterPage(),
     ...l1FoundationChapters.map(l1ChapterPage),
+    chapterTwoOnePage(),
     packagingCleaningPage(),
     labPage(),
     progressPage(),
     examPage(),
+    gasesPage(),
     glossaryPage(),
     formulasPage()
   ];

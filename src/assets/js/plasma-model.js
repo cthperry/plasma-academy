@@ -7,6 +7,20 @@ export const constants = {
   argonIonizationEv: 15.76
 };
 
+export function neutralGasDensityCm3(pressureMtorr, temperatureK = 300) {
+  const pressurePa = Math.max(pressureMtorr, 0) * 0.133322368;
+  return pressurePa / (constants.boltzmann * Math.max(temperatureK, 1)) / 1e6;
+}
+
+export function residenceTimeSeconds({ pressureMtorr, volumeL, flowSccm }) {
+  return 79 * (Math.max(pressureMtorr, 0) / 1000) * Math.max(volumeL, 0) / Math.max(flowSccm, 0.001);
+}
+
+export function effectivePumpingSpeedLps({ pressureMtorr, flowSccm }) {
+  const throughputTorrLps = Math.max(flowSccm, 0) * (760 / 60000);
+  return throughputTorrLps / Math.max(pressureMtorr / 1000, 1e-9);
+}
+
 export function debyeLengthMm({ electronDensityCm3, electronTemperatureEv }) {
   const ne = electronDensityCm3 * 1e6;
   const teJ = electronTemperatureEv * constants.electronCharge;

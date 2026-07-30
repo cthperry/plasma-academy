@@ -26,7 +26,7 @@ export const curriculum = {
       summary: "建立氣體選用、電漿化學、鞘層進階與機台控制的因果鏈。",
       labs: ["A08", "A09", "A10", "A11", "A12", "A13", "A14", "A15", "A16"],
       modules: [
-        { id: "2.1", title: "氣體動力學與真空", hours: 2, labs: ["A08"], prerequisites: "1.3", href: "/level/1/", description: "壓力、流量、滯留時間與真空量測。" },
+        { id: "2.1", title: "氣體動力學與真空", hours: 2, labs: ["A08"], prerequisites: "1.3", href: "/level/2/2-1-gas-vacuum/", description: "壓力、流量、滯留時間與真空量測。" },
         { id: "2.2", title: "製程氣體選用學", hours: 4, labs: ["A09", "A10", "A11"], prerequisites: "1.6, 2.1", href: "/level/1/", description: "F/C 比、選擇比、鈍化與安全。" },
         { id: "2.3", title: "電漿化學基礎", hours: 2.5, labs: ["A12"], prerequisites: "1.3, 2.2", href: "/level/1/", description: "EEDF 和反應速率係數。" },
         { id: "2.4", title: "鞘層物理進階", hours: 2.5, labs: ["A13"], prerequisites: "1.5, 2.3", href: "/level/1/", description: "IEDF、RF 鞘層與碰撞尾巴。" },

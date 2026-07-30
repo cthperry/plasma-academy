@@ -178,7 +178,10 @@
   gap: 16px;
 }
 
-.quick-grid,
+.quick-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
 .role-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }

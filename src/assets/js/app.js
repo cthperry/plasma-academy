@@ -16,3 +16,6 @@ initLabContainers();
 if (document.querySelector("[data-exam-page], [data-exam-gate]")) {
   import("./exam.js").then(({ initExam }) => initExam());
 }
+if (document.querySelector("[data-gas-browser]")) {
+  import("./gas-browser.js").then(({ initGasBrowser }) => initGasBrowser());
+}

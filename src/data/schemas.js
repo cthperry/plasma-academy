@@ -1,6 +1,6 @@
 export const dataSchemas = {
   gas: {
-    required: ["id", "formula", "nameZh", "nameEn", "family", "uses", "hazardLevel", "gwp", "fcRatio", "sdsStatus"],
+    required: ["id", "formula", "cas", "nameZh", "nameEn", "family", "molecularWeight", "boilingPointC", "vaporPressure", "dissociationProducts", "ionizationEnergyEv", "bondEnergy", "uses", "typicalFlowSccm", "hazardLevel", "hazards", "gwp", "fcRatio", "compatibleMaterials", "incompatibleMaterials", "etchProducts", "scrubber", "failureModes", "sdsSource", "sdsStatus"],
     notes: "P2 前必須以 SDS 核實 hazardLevel、相容材質與排放風險。"
   },
   defect: {

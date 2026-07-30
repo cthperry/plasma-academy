@@ -8,9 +8,28 @@ import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
 import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
-import { childLangmuirSheathMm, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, paschenGases, paschenVoltage, townsendDischarge } from "../src/assets/js/plasma-model.js";
+import { gases, gasFamilies, hazardLevels } from "../src/data/gases.js";
+import { childLangmuirSheathMm, effectivePumpingSpeedLps, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, townsendDischarge } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
+
+if (gases.length !== 32) failures.push(`P2 氣體百科必須包含 32 種氣體，目前 ${gases.length} 種。`);
+const gasIds = new Set();
+for (const gas of gases) {
+  if (gasIds.has(gas.id)) failures.push(`氣體 ID 重複：${gas.id}。`);
+  gasIds.add(gas.id);
+  for (const field of dataSchemas.gas.required) {
+    const value = gas[field];
+    const missing = value === undefined || value === null && field !== "fcRatio" || value === "" || Array.isArray(value) && value.length === 0;
+    if (missing) failures.push(`氣體 ${gas.id} 缺少 ${field}。`);
+  }
+  if (!gasFamilies.includes(gas.family)) failures.push(`氣體 ${gas.id} 使用未知家族 ${gas.family}。`);
+  if (!hazardLevels.includes(gas.hazardLevel)) failures.push(`氣體 ${gas.id} 使用未知危害等級 ${gas.hazardLevel}。`);
+  if (!/^https:\/\//.test(gas.sdsSource)) failures.push(`氣體 ${gas.id} 缺少 HTTPS SDS 來源。`);
+}
+for (const [id, level] of Object.entries({ sih4: "extreme", b2h6: "extreme", ph3: "extreme", cl2: "high", hbr: "high", bcl3: "high", wf6: "high", nf3: "high", f2: "high" })) {
+  if (gases.find((gas) => gas.id === id)?.hazardLevel !== level) failures.push(`氣體 ${id} 的危害分級必須是 ${level}。`);
+}
 
 if (glossary.length < 242) {
   failures.push(`術語表至少應包含來源文件 242 條，目前 ${glossary.length} 條。`);
@@ -55,14 +74,21 @@ if (l1SelfCheckCount !== 35) {
   failures.push(`P1 章末自我檢測應為 35 題，目前 ${l1SelfCheckCount} 題。`);
 }
 
-if (Object.keys(formulas).length < 12) {
-  failures.push(`P1 公式手冊應至少 12 條，目前 ${Object.keys(formulas).length} 條。`);
+if (Object.keys(formulas).length < 18) {
+  failures.push(`P2 公式手冊應至少 18 條，目前 ${Object.keys(formulas).length} 條。`);
 }
 for (const [key, formula] of Object.entries(formulas)) {
-  for (const field of ["id", "name", "expression", "summary", "symbols"]) {
+  for (const field of dataSchemas.formula.required) {
     if (!formula[field] || (field === "symbols" && !Array.isArray(formula.symbols))) failures.push(`公式 ${key} 缺少 ${field}。`);
   }
 }
+
+const residenceExample = residenceTimeSeconds({ pressureMtorr: 20, volumeL: 30, flowSccm: 200 });
+if (Math.abs(residenceExample - 0.237) > 0.005) failures.push(`A08 滯留時間範例應約 0.24 s，目前 ${residenceExample.toFixed(3)} s。`);
+const densityExample = neutralGasDensityCm3(10, 300);
+if (Math.abs(densityExample / 3.22e14 - 1) > 0.02) failures.push(`10 mTorr、300 K 中性密度應約 3.2×10^14 cm^-3，目前 ${densityExample.toExponential(2)}。`);
+const pumpingExample = effectivePumpingSpeedLps({ pressureMtorr: 20, flowSccm: 200 });
+if (Math.abs(pumpingExample - 126.67) > 0.2) failures.push(`A08 有效抽速範例應約 126.7 L/s，目前 ${pumpingExample.toFixed(2)} L/s。`);
 
 if (level1Questions.length !== 55) failures.push(`L1 結業題庫應為 55 題，目前 ${level1Questions.length} 題。`);
 const quizIds = new Set();
