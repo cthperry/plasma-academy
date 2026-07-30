@@ -205,6 +205,64 @@
   width: 100%;
 }
 
+.lab-visual {
+  aspect-ratio: 2 / 1;
+  display: grid;
+  min-width: 0;
+  position: relative;
+}
+
+.lab-visual canvas {
+  grid-area: 1 / 1;
+}
+
+.lab-visual--overlay canvas {
+  cursor: grab;
+}
+
+.lab-visual--overlay canvas:active {
+  cursor: grabbing;
+}
+
+.lab-plot-overlay {
+  background: color-mix(in srgb, var(--pa-surface) 88%, transparent);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  bottom: 16px;
+  color: var(--pa-text-muted);
+  height: min(42%, 150px);
+  padding: 8px;
+  pointer-events: none;
+  position: absolute;
+  right: 16px;
+  width: min(45%, 300px);
+}
+
+.plot-axes line {
+  stroke: var(--pa-border-strong);
+  stroke-width: 1;
+}
+
+.plot-axes text,
+.plot-legend text,
+.plot-caption {
+  fill: var(--pa-text-muted);
+  font: 11px var(--pa-font-sans);
+}
+
+.plot-line {
+  stroke: var(--pa-primary);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+}
+
+.plot-line-muted {
+  stroke: var(--pa-border-strong);
+  stroke-dasharray: 4 4;
+  stroke-width: 1.5;
+}
+
 .lab-panel {
   align-content: start;
   display: grid;
@@ -228,6 +286,12 @@
 
 .control input[type="range"] {
   width: 100%;
+}
+
+.segmented-group {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .value-panel {

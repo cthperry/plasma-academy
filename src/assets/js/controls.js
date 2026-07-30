@@ -12,6 +12,39 @@ export function createSlider({ label, min, max, value, step = 1, unit = "", onIn
   return wrap;
 }
 
+export function createSegmentedControl({ label, options, value, onChange }) {
+  const wrap = document.createElement("div");
+  wrap.className = "control";
+  const legend = document.createElement("span");
+  legend.textContent = label;
+  const group = document.createElement("div");
+  group.className = "segmented-group";
+  group.setAttribute("role", "radiogroup");
+  group.setAttribute("aria-label", label);
+
+  for (const option of options) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `segmented${option.value === value ? " active" : ""}`;
+    button.textContent = option.label;
+    button.setAttribute("role", "radio");
+    button.setAttribute("aria-checked", option.value === value ? "true" : "false");
+    button.addEventListener("click", () => {
+      for (const item of group.querySelectorAll(".segmented")) {
+        item.classList.remove("active");
+        item.setAttribute("aria-checked", "false");
+      }
+      button.classList.add("active");
+      button.setAttribute("aria-checked", "true");
+      onChange(option.value);
+    });
+    group.append(button);
+  }
+
+  wrap.append(legend, group);
+  return wrap;
+}
+
 export function createToggle({ label, checked, onChange }) {
   const wrap = document.createElement("label");
   wrap.className = "control";

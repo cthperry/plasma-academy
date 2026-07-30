@@ -52,6 +52,30 @@ for (const [route, expectedTitle] of l1Routes) {
   l1Checks.push({ route, title, expectedTitle, labPixels });
 }
 
+await desktop.goto(`${base}/level/1/1-2-parameters/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a02").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(700);
+const a02Initial = await desktop.locator("#lab-a02 .value-panel").textContent();
+await desktop.locator('#lab-a02 input[type="range"]').first().evaluate((input) => {
+  input.value = "11";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+await desktop.waitForTimeout(300);
+const a02AfterDensity = await desktop.locator("#lab-a02 .value-panel").textContent();
+await desktop.getByRole("radio", { name: "負電荷" }).click();
+const a02Polarity = await desktop.locator('#lab-a02 .segmented[aria-checked="true"]').textContent();
+const a02SvgPathCount = await desktop.locator("#lab-a02 svg path.plot-line").count();
+const a02CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a02 [data-lab-canvas]");
+  const ctx = canvas.getContext("2d");
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  }
+  return nonBlank;
+});
+
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
@@ -101,7 +125,7 @@ await mobile.screenshot({ path: path.join(qaDir, "mobile-lab.png"), fullPage: fa
 
 await browser.close();
 
-const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, canvasInfo, mobileCanvasInfo, quizText, mobileOverflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, canvasInfo, mobileCanvasInfo, quizText, mobileOverflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -112,6 +136,11 @@ for (const check of l1Checks) {
     throw new Error(`L1 章節驗證失敗: ${JSON.stringify(check)}`);
   }
 }
+if (!a02Initial.includes("0.129 mm") || !a02Initial.includes("0.013 mm")) throw new Error("A02 未顯示 CCP/ICP λD 對照值。");
+if (!a02AfterDensity.includes("0.041 mm")) throw new Error("A02 電子密度滑桿未更新 λD 數值。");
+if (!a02Polarity.includes("負電荷")) throw new Error("A02 極性切換未更新選取狀態。");
+if (a02SvgPathCount < 1) throw new Error("A02 沒有 SVG 電位曲線。");
+if (a02CanvasPixels < 100000) throw new Error("A02 Canvas 看起來是空白。");
 if (canvasInfo.nonBlank < canvasInfo.width * canvasInfo.height * 0.5) throw new Error("A01 Canvas 看起來是空白。");
 if (mobileCanvasInfo.nonBlank < mobileCanvasInfo.width * mobileCanvasInfo.height * 0.5) throw new Error("手機 A01 Canvas 看起來是空白。");
 if (!quizText.includes("正確")) throw new Error("自我檢測沒有顯示成功狀態。");

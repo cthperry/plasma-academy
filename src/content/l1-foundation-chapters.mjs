@@ -5,7 +5,7 @@ export const l1FoundationChapters = [
     title: "1.2 電漿基本參數",
     hours: 1.5,
     labs: [
-      { id: "a02", title: "A02 Debye 遮蔽互動", module: "/assets/js/labs/l1-foundation-demo.js", observation: "把電子密度提高十倍，觀察 Debye 長度如何縮小。重點是 λD ∝ √(Te/ne)。" }
+      { id: "a02", title: "A02 Debye 遮蔽互動", module: "/assets/js/labs/a02-debye-shielding.js", observation: "把電子密度提高十倍，觀察 Debye 長度如何縮小；切換正/負測試電荷，確認電子雲與離子排斥方向會反轉。重點是 λD ∝ √(Te/ne)。" }
     ],
     objectives: [
       "說出 n_e、T_e、T_i 的典型數值與單位。",
