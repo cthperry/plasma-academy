@@ -2,7 +2,7 @@ import { glossary } from "../src/data/glossary.js";
 import { curriculum } from "../src/data/curriculum.js";
 import { labs } from "../src/data/labs.js";
 import { dataSchemas } from "../src/data/schemas.js";
-import { childLangmuirSheathMm, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, paschenGases, paschenVoltage } from "../src/assets/js/plasma-model.js";
+import { childLangmuirSheathMm, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, paschenGases, paschenVoltage, townsendDischarge } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
 
@@ -58,6 +58,20 @@ const pressureSamples = [1, 10, 100, 200];
 const angularWidths = pressureSamples.map((pressureMtorr) => ionAngularFwhmDeg({ pressureMtorr, gas: "Ar" }));
 if (!angularWidths.every((value, index) => index === 0 || value > angularWidths[index - 1])) {
   failures.push(`Ar 入射角 FWHM 未隨壓力單調增加：${angularWidths.map((value) => value.toFixed(1)).join(", ")}。`);
+}
+
+const noSecondaryTownsend = townsendDischarge({ reducedFieldVPerCmTorr: 120, gamma: 0, gapCm: 1 });
+if (noSecondaryTownsend.feedback !== 0 || noSecondaryTownsend.selfSustaining) {
+  failures.push("Townsend 模型在 γ=0 時不應自持。");
+}
+
+const criticalTownsend = townsendDischarge({
+  reducedFieldVPerCmTorr: 120,
+  gamma: noSecondaryTownsend.criticalGamma,
+  gapCm: 1
+});
+if (Math.abs(criticalTownsend.feedback - 1) > 1e-9) {
+  failures.push(`Townsend 臨界條件應為 1，目前 ${criticalTownsend.feedback.toFixed(6)}。`);
 }
 
 for (const [name, schema] of Object.entries(dataSchemas)) {

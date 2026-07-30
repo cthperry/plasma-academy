@@ -44,6 +44,28 @@ export function ionAngularFwhmDeg({ pressureMtorr, gas = "Ar", pathLengthCm = 5 
   return Math.min(85, 2.5 + 5.2 * Math.sqrt(expectedCollisions));
 }
 
+export function townsendDischarge({
+  reducedFieldVPerCmTorr,
+  gamma,
+  gapCm,
+  pressureTorr = 1,
+  coefficientA = 15,
+  coefficientB = 180
+}) {
+  const reducedField = Math.max(reducedFieldVPerCmTorr, 1);
+  const alphaPerCm = pressureTorr * coefficientA * Math.exp(-coefficientB / reducedField);
+  const exponent = Math.min(14, alphaPerCm * Math.max(gapCm, 0));
+  const gain = Math.exp(exponent);
+  const feedback = Math.max(gamma, 0) * (gain - 1);
+  return {
+    alphaPerCm,
+    gain,
+    feedback,
+    selfSustaining: feedback >= 1,
+    criticalGamma: gain > 1 ? 1 / (gain - 1) : Number.POSITIVE_INFINITY
+  };
+}
+
 export const paschenGases = {
   Ar: paschenGasFromMinimum({ label: "Ar", pdMinTorrCm: 0.9, vMin: 137, gamma: 0.01, glow: "#c26be8" }),
   He: paschenGasFromMinimum({ label: "He", pdMinTorrCm: 4.0, vMin: 156, gamma: 0.01, glow: "#f2b04b" }),

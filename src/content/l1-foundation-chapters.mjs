@@ -85,7 +85,7 @@ export const l1FoundationChapters = [
     title: "1.4 輝光放電與點火",
     hours: 1.5,
     labs: [
-      { id: "a04", title: "A04 電子雪崩動畫", module: "/assets/js/labs/l1-foundation-demo.js", observation: "提高二次電子係數 γ，觀察雪崩更容易自持。PM 後點火條件改變常和表面狀態有關。" },
+      { id: "a04", title: "A04 電子雪崩動畫", module: "/assets/js/labs/a04-townsend-avalanche.js", observation: "先把 γ 調到 0，看單次雪崩抵達陽極後熄滅；再提高 γ，觀察離子撞陰極產生的二次電子如何補回下一個種子。" },
       { id: "a05", title: "A05 Paschen 曲線互動", module: "/assets/js/labs/a05-paschen-curve.js", observation: "切換氣體並顯示所有曲線，找出 Paschen 谷底；把壓力固定在 0.01 Torr、間距 3 cm 時，會落在左支，這就是常先衝壓力點火的原因。" }
     ],
     objectives: [
