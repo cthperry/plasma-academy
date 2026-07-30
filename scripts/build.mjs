@@ -15,6 +15,8 @@ import { chapterThreeOne } from "../src/content/chapter-3-1.mjs";
 import { chapterThreeTwo } from "../src/content/chapter-3-2.mjs";
 import { chapterThreeThree } from "../src/content/chapter-3-3.mjs";
 import { chapterThreeFour } from "../src/content/chapter-3-4.mjs";
+import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
+import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
@@ -376,8 +378,8 @@ function packagingCleaningPage() {
     <main class="chapter-layout" data-chapter-id="${chapterThreeSeven.id}">
       <aside class="chapter-sidebar">
         <strong>課程目錄</strong>
+        ${[chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven].map((item) => `<a class="${item.id === chapterThreeSeven.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("")}
         <a href="/level/3/">L3 模組列表</a>
-        <a class="current" href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔</a>
         <a href="/glossary/">術語表</a>
       </aside>
       <article class="chapter-main">
@@ -399,7 +401,7 @@ function packagingCleaningPage() {
         </section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽">
-          <a class="button secondary" href="/level/3/">返回 L3</a>
+          <a class="button secondary" href="${chapterThreeSix.route}">上一章：${chapterThreeSix.title}</a>
           <a class="button primary" href="/lab/">前往互動實驗室</a>
         </nav>
       </article>
@@ -518,10 +520,10 @@ function chapterThreeFourPage() {
   const callouts = chapterThreeFour.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterThreeFour.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterThreeFour.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
-  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour].map((item) => `<a class="${item.id === chapterThreeFour.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven].map((item) => `<a class="${item.id === chapterThreeFour.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
   return page(chapterThreeFour.route, chapterThreeFour.title, `
     <main class="chapter-layout" data-chapter-id="${chapterThreeFour.id}">
-      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a><a href="/level/3/">L3 模組列表</a></aside>
+      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/">L3 模組列表</a></aside>
       <article class="chapter-main">
         ${breadcrumb(["首頁", "L3 進階", chapterThreeFour.title])}
         <header class="chapter-header"><p class="chapter-meta">時數 ${chapterThreeFour.hours} h · 互動元件 A22、A23</p><h1>${chapterThreeFour.title}</h1><p>${chapterThreeFour.summary}</p></header>
@@ -531,11 +533,60 @@ function chapterThreeFourPage() {
         ${sections}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
-        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeThree.route}">上一章：${chapterThreeThree.title}</a><a class="button primary" href="/level/3/">返回 L3</a></nav>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeThree.route}">上一章：${chapterThreeThree.title}</a><a class="button primary" href="${chapterThreeFive.route}">下一章：${chapterThreeFive.title}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
   `, { pageType: "chapter", description: "PECVD、HDP-CVD 與 PEALD 的薄膜控制、保形性與高深寬比填溝。", extraStyles: ["/assets/css/a22-a23.css"] });
+}
+
+function chapterThreeFivePage() {
+  return p3ChapterPage(chapterThreeFive, {
+    labLabel: "A24",
+    previous: chapterThreeFour,
+    next: chapterThreeSix,
+    description: "磁控濺鍍、靶材利用率、反應式濺鍍與遠端電漿腔體清潔。",
+    extraStyles: ["/assets/css/a24-a25.css"]
+  });
+}
+
+function chapterThreeSixPage() {
+  return p3ChapterPage(chapterThreeSix, {
+    labLabel: "A25",
+    previous: chapterThreeFive,
+    next: chapterThreeSeven,
+    description: "晶圓均勻度定義、map 形狀診斷、腔體記憶與量產穩定度。",
+    extraStyles: ["/assets/css/a24-a25.css"]
+  });
+}
+
+function p3ChapterPage(chapter, { labLabel, previous, next, description, extraStyles }) {
+  const objectives = chapter.objectives.map((item, index) => `<label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapter.id}"><span>${item}</span></label>`).join("");
+  const prerequisites = chapter.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapter.readings.map((item) => `<li>${item}</li>`).join("");
+  const outline = [...chapter.sections, ...chapter.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
+  const sections = chapter.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const callouts = chapter.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapter.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapter.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
+  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven].map((item) => `<a class="${item.id === chapter.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  return page(chapter.route, chapter.title, `
+    <main class="chapter-layout" data-chapter-id="${chapter.id}">
+      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/">L3 模組列表</a></aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L3 進階", chapter.title])}
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapter.hours} h · 互動元件 ${labLabel}</p><h1>${chapter.title}</h1><p>${chapter.summary}</p></header>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
+        ${callout("summary", "5 分鐘摘要", chapter.summary)}
+        ${sections}${callouts}${labsHtml}
+        <section class="self-check"><h2>自我檢測</h2>${checks}</section>
+        <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${previous.route}">上一章：${previous.title}</a><a class="button primary" href="${next.route}">下一章：${next.title}</a></nav>
+      </article>
+      <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
+    </main>
+  `, { pageType: "chapter", description, extraStyles });
 }
 
 function defectAtlasPage() {
@@ -996,6 +1047,8 @@ async function main() {
     chapterThreeTwoPage(),
     chapterThreeThreePage(),
     chapterThreeFourPage(),
+    chapterThreeFivePage(),
+    chapterThreeSixPage(),
     packagingCleaningPage(),
     labPage(),
     progressPage(),

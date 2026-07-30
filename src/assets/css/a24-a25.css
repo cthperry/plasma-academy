@@ -1,0 +1,27 @@
+#lab-a24 canvas,
+#lab-a25 canvas {
+  aspect-ratio: auto;
+  background: var(--pa-surface-sunken);
+  min-height: 360px;
+}
+
+#lab-a25 .segmented-group {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.wafer-map-actions {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 640px) {
+  #lab-a24 canvas,
+  #lab-a25 canvas {
+    min-height: 230px;
+  }
+
+  #lab-a25 .segmented-group {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

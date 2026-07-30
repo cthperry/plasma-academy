@@ -1,5 +1,6 @@
 export const chapterThreeSeven = {
   id: "3-7",
+  route: "/level/3/3-7-packaging-cleaning/",
   title: "3.7 封裝清潔與表面活化",
   hours: 3,
   prerequisites: ["2.1 氣體動力學與真空", "2.2 製程氣體選用學", "3.4 電漿沉積與界面"],

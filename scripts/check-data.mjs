@@ -87,6 +87,8 @@ for (const id of ["A20", "A21"]) {
 for (const id of ["A22", "A23"]) {
   if (labs.find((item) => item.id === id)?.href !== `/level/3/3-4-plasma-deposition/#lab-${id.toLowerCase()}`) failures.push(`${id} 尚未正確接到 3.4 章節。`);
 }
+if (labs.find((item) => item.id === "A24")?.href !== "/level/3/3-5-pvd-cleaning/#lab-a24") failures.push("A24 尚未正確接到 3.5 章節。");
+if (labs.find((item) => item.id === "A25")?.href !== "/level/3/3-6-uniformity-chamber/#lab-a25") failures.push("A25 尚未正確接到 3.6 章節。");
 
 const expectedProcesses = ["電漿蝕刻", "PECVD", "PVD 濺鍍", "光阻灰化", "腔體清潔", "表面處理"];
 if (processMapEntries.length !== 6 || !expectedProcesses.every((name) => processMapEntries.some((entry) => entry.name === name))) {

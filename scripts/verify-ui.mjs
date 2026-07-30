@@ -662,6 +662,59 @@ const a23CanvasPixels = await desktop.evaluate(() => {
 });
 await desktop.screenshot({ path: path.join(qaDir, "desktop-a22-a23.png"), fullPage: false });
 
+await desktop.goto(`${base}/level/3/3-5-pvd-cleaning/`, { waitUntil: "networkidle" });
+const chapterThreeFiveTitle = await desktop.locator("h1").first().textContent();
+await desktop.locator("#lab-a24").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(450);
+const a24ControlCount = await desktop.locator('#lab-a24 input[type="range"]').count();
+const a24OutputCount = await desktop.locator("#lab-a24 .value-panel dd").count();
+const a24InitialEfficiency = parseFloat(await desktop.locator('#lab-a24 [data-value-key="游離效率"]').textContent());
+const a24InitialUtilization = parseFloat(await desktop.locator('#lab-a24 [data-value-key="靶材利用率"]').textContent());
+const a24Ranges = desktop.locator('#lab-a24 input[type="range"]');
+await a24Ranges.nth(0).evaluate((input) => { input.value = "0"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a24NoFieldEfficiency = parseFloat(await desktop.locator('#lab-a24 [data-value-key="游離效率"]').textContent());
+await a24Ranges.nth(3).evaluate((input) => { input.value = "0"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a24FreshDepth = parseFloat(await desktop.locator('#lab-a24 [data-value-key="Racetrack 深度"]').textContent());
+const a24FreshDrift = parseFloat(await desktop.locator('#lab-a24 [data-value-key="速率漂移"]').textContent());
+await a24Ranges.nth(0).evaluate((input) => { input.value = "300"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+await a24Ranges.nth(3).evaluate((input) => { input.value = "1000"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a24AgedDepth = parseFloat(await desktop.locator('#lab-a24 [data-value-key="Racetrack 深度"]').textContent());
+const a24AgedDrift = parseFloat(await desktop.locator('#lab-a24 [data-value-key="速率漂移"]').textContent());
+const a24CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a24 canvas"); const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data; let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++; return nonBlank;
+});
+
+await desktop.goto(`${base}/level/3/3-6-uniformity-chamber/`, { waitUntil: "networkidle" });
+const chapterThreeSixTitle = await desktop.locator("h1").first().textContent();
+await desktop.locator("#lab-a25").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(450);
+const a25ControlCount = await desktop.locator('#lab-a25 input[type="range"]').count();
+const a25OutputCount = await desktop.locator("#lab-a25 .value-panel dd").count();
+const a25PresetCount = await desktop.locator('#lab-a25 [role="radio"]').count();
+const a25Classifications = [];
+for (const label of ["中心快", "邊緣快", "W 形", "單邊偏斜", "同心環", "Edge roll"]) {
+  await desktop.locator("#lab-a25").getByRole("radio", { name: label, exact: true }).click();
+  a25Classifications.push(await desktop.locator('#lab-a25 [data-value-key="Map 判定"]').textContent());
+}
+await desktop.locator("#lab-a25").getByRole("radio", { name: "中心快", exact: true }).click();
+const a25InitialHalfRange = parseFloat(await desktop.locator('#lab-a25 [data-value-key="半幅不均勻度"]').textContent());
+const a25Ranges = desktop.locator('#lab-a25 input[type="range"]');
+await a25Ranges.nth(5).evaluate((input) => { input.value = "100"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a25WornClassification = await desktop.locator('#lab-a25 [data-value-key="Map 判定"]').textContent();
+const a25WornHalfRange = parseFloat(await desktop.locator('#lab-a25 [data-value-key="半幅不均勻度"]').textContent());
+await desktop.locator("#lab-a25").getByRole("button", { name: "隨機出題" }).click();
+const a25ChallengeStatus = await desktop.locator("#lab-a25 [data-lab-status]").textContent();
+const a25ChallengeClassification = await desktop.locator('#lab-a25 [data-value-key="Map 判定"]').textContent();
+const a25ChallengeSelectedCount = await desktop.locator('#lab-a25 [role="radio"][aria-checked="true"]').count();
+await desktop.locator("#lab-a25").getByRole("button", { name: "揭曉" }).click();
+const a25RevealedClassification = await desktop.locator('#lab-a25 [data-value-key="Map 判定"]').textContent();
+const a25CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a25 canvas"); const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data; let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++; return nonBlank;
+});
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a24-a25.png"), fullPage: false });
+
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
@@ -1045,6 +1098,21 @@ const mobileA23ControlCount = await mobile.locator('#lab-a23 input[type="range"]
 const mobileA23OutputCount = await mobile.locator("#lab-a23 .value-panel dd").count();
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a22-a23.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/3/3-5-pvd-cleaning/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a24").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(350);
+const mobileA24Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA24ControlCount = await mobile.locator('#lab-a24 input[type="range"]').count();
+const mobileA24OutputCount = await mobile.locator("#lab-a24 .value-panel dd").count();
+await mobile.goto(`${base}/level/3/3-6-uniformity-chamber/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a25").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(350);
+const mobileA25Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA25ControlCount = await mobile.locator('#lab-a25 input[type="range"]').count();
+const mobileA25OutputCount = await mobile.locator("#lab-a25 .value-panel dd").count();
+const mobileA25PresetCount = await mobile.locator('#lab-a25 [role="radio"]').count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a24-a25.png"), fullPage: false });
+
 await mobile.goto(`${base}/level/3/3-7-packaging-cleaning/`, { waitUntil: "networkidle" });
 await mobile.locator("#lab-a33").scrollIntoViewIfNeeded();
 await mobile.waitForTimeout(400);
@@ -1097,6 +1165,7 @@ Object.assign(result, { chapterThreeOneTitle, a17BarCount, a17OutputCount, a17In
 Object.assign(result, { chapterThreeTwoTitle, a19ControlCount, a19OutputCount, a19ShortScallop, a19ShortRate, a19LongScallop, a19LongRate, a19IsotropicStatus, a19CanvasPixels, mobileA19Overflow, mobileA19ControlCount, mobileA19OutputCount });
 Object.assign(result, { chapterThreeThreeTitle, a20ControlCount, a20ToggleCount, a20OutputCount, a20InitialLag, a20NoTransportLag, a20InverseLag, a20CanvasPixels, a21SymptomCount, a21ResultCount, a21MethodCount, a21RankedFirst, defectCardCount, defectHasUndefined, defectArVisible, defectSearchVisible, mobileA20Overflow, mobileA20ControlCount, mobileA20OutputCount, mobileA21Overflow, mobileA21SymptomCount, mobileA21ResultCount, mobileDefectOverflow, mobileDefectCardCount });
 Object.assign(result, { chapterThreeFourTitle, a22ControlCount, a22OutputCount, a22InitialCoverage, a22InitialGpc, a22SaturatedThickness, a22OversuppliedThickness, a22PoorPurgeStatus, a22PoorPurgeGpc, a22PecvdCoverage, a22CanvasPixels, a23ControlCount, a23OutputCount, a23InitialPecvd, a23InitialHdp, a23HighDs, a23HighAr, a23CanvasPixels, mobileA22Overflow, mobileA22ControlCount, mobileA22OutputCount, mobileA23Overflow, mobileA23ControlCount, mobileA23OutputCount });
+Object.assign(result, { chapterThreeFiveTitle, a24ControlCount, a24OutputCount, a24InitialEfficiency, a24InitialUtilization, a24NoFieldEfficiency, a24FreshDepth, a24FreshDrift, a24AgedDepth, a24AgedDrift, a24CanvasPixels, chapterThreeSixTitle, a25ControlCount, a25OutputCount, a25PresetCount, a25Classifications, a25InitialHalfRange, a25WornClassification, a25WornHalfRange, a25ChallengeStatus, a25ChallengeClassification, a25ChallengeSelectedCount, a25RevealedClassification, a25CanvasPixels, mobileA24Overflow, mobileA24ControlCount, mobileA24OutputCount, mobileA25Overflow, mobileA25ControlCount, mobileA25OutputCount, mobileA25PresetCount });
 Object.assign(result, { l2DiagramChecks, packagingCaseText, packagingShiftText, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobilePackagingCaseOverflow, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
 Object.assign(result, { a33ControlCount, a33OutputCount, a33PathCount, a33InitialAngle, a33InitialAdhesion, a33OvertreatedAngle, a33OvertreatedAdhesion, a33OvertreatedStatus, a33ReducedOxide, a33ReducedAdhesion, a33OxidizedOxide, a33OxidizedAdhesion, a33OxidizedStatus, mobileA33Overflow, mobileA33ControlCount, mobileA33OutputCount, mobileA33PathCount });
 console.log(JSON.stringify(result, null, 2));
@@ -1172,6 +1241,13 @@ if (!(a22InitialCoverage > 95) || Math.abs(a22InitialGpc - 0.08) > 0.005 || Math
 if (a22CanvasPixels < 150000 || mobileA22Overflow) throw new Error("A22 Canvas 空白或手機版溢出。");
 if (a23ControlCount !== 3 || a23OutputCount !== 5 || mobileA23ControlCount !== 3 || mobileA23OutputCount !== 5 || !a23InitialPecvd.includes("void") || !a23InitialHdp.includes("窗口") || !a23HighDs.includes("void") || !a23HighAr.includes("void")) throw new Error("A23 未呈現 PECVD/HDP 填溝窗口與邊界失效。");
 if (a23CanvasPixels < 150000 || mobileA23Overflow) throw new Error("A23 Canvas 空白或手機版溢出。");
+if (!chapterThreeFiveTitle.includes("磁控濺鍍") || a24ControlCount !== 4 || a24OutputCount !== 5 || mobileA24ControlCount !== 4 || mobileA24OutputCount !== 5) throw new Error("3.5 或 A24 控制與讀值未完整渲染。");
+if (!(a24InitialEfficiency / a24NoFieldEfficiency > 9) || !(a24InitialUtilization >= 20 && a24InitialUtilization <= 40) || !(a24AgedDepth > a24FreshDepth + 5) || !(a24AgedDrift > a24FreshDrift + 5)) throw new Error("A24 未呈現磁場游離增益、靶材利用率或 racetrack 漂移。");
+if (a24CanvasPixels < 150000 || mobileA24Overflow) throw new Error("A24 Canvas 空白或手機版溢出。");
+if (!chapterThreeSixTitle.includes("均勻度") || a25ControlCount !== 7 || a25OutputCount !== 4 || a25PresetCount !== 6 || mobileA25ControlCount !== 7 || mobileA25OutputCount !== 4 || mobileA25PresetCount !== 6) throw new Error("3.6 或 A25 控制、預設與讀值未完整渲染。");
+if (JSON.stringify(a25Classifications) !== JSON.stringify(["中心快", "邊緣快", "W 形", "單邊偏斜", "同心環", "Edge roll"]) || a25WornClassification !== "Edge roll" || !(a25WornHalfRange > a25InitialHalfRange)) throw new Error("A25 六種 map 辨識或聚焦環 edge roll 趨勢未通過。");
+if (!a25ChallengeStatus.includes("反向練習") || a25ChallengeClassification !== "待揭曉" || a25ChallengeSelectedCount !== 0 || !["中心快", "邊緣快", "W 形", "單邊偏斜", "同心環", "Edge roll"].includes(a25RevealedClassification)) throw new Error("A25 反向練習未正確隱藏或揭曉標準圖形答案。");
+if (a25CanvasPixels < 150000 || mobileA25Overflow) throw new Error("A25 Canvas 空白或手機版溢出。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);
