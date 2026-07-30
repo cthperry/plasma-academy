@@ -21,6 +21,7 @@ const STEPS = [
   ["Bosch 循環的兩個觀察點", "tools/check-bosch.mjs"],
   ["沉積與填溝的四個宣稱", "tools/check-deposit.mjs"],
   ["磁控與反應式濺鍍", "tools/check-magnetron.mjs"],
+  ["均勻度 map 的六種形狀", "tools/check-uniformity.mjs"],
   // A18 的八種 profile 驗收(tools/check-shapes.mjs)刻意**不放進**品質門:
   // 它目前只有五種通得過,是一份還沒達成的驗收條件,不是回歸測試。
   // 用 `npm run check:shapes` 單獨跑,狀態記在 docs/11 的 A18 狀態表。

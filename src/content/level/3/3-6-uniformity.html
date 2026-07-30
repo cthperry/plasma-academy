@@ -1,0 +1,454 @@
+<!--meta
+{
+  "title": "3.6 均勻度與腔體工程 — Plasma Academy",
+  "description": "兩種不均勻度定義的差異、由 map 形狀反推成因與轉片實驗、影響均勻度的硬體與聚焦環、ESC 兩種夾持原理與 He 背吹、first wafer effect 與 seasoning、微粒與電弧。",
+  "type": "chapter",
+  "module": "3.6"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>3.6 均勻度與腔體工程</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2.5 小時</span>
+    <span>🔬 A25 互動元件</span>
+    <span>L3 進階 · 整合章</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="3.6">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說出兩種不均勻度定義的差別,並知道為什麼一定要先問清楚</span></label></li>
+    <li><label><input type="checkbox" /><span>由均勻度 map 的形狀推論成因</span></label></li>
+    <li><label><input type="checkbox" /><span>說明轉片實驗在判什麼,以及它為什麼是標配</span></label></li>
+    <li><label><input type="checkbox" /><span>說明 ESC 的兩種夾持原理與 He 背吹的角色</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋 first wafer effect 與 seasoning 的物理原因</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../3-2-etch-applications/">3.2 主要蝕刻應用</a>
+  <a href="../3-4-deposition/">3.4 電漿沉積</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    前面幾章講的都是「一個點」上的物理。這一章問的是:
+    <strong>同一片晶圓上,為什麼各處不一樣?</strong>
+  </p>
+  <ul>
+    <li><strong>先問定義</strong> —— 半幅法算出來的數字是 1σ 法的
+      <strong>1.5–2.3 倍</strong>。不講清楚用哪個,兩邊會一直雞同鴨講。</li>
+    <li><strong>Map 的形狀就是成因的指紋</strong>。六種常見形狀各有各的來源,
+      而 A25 讓你把它們一個一個做出來。</li>
+    <li><strong>W 形不是一種缺陷,是兩個正常效應的疊加</strong> ——
+      中心快的氣體項撞上邊緣快的電場項。</li>
+    <li><strong>轉片實驗是最便宜的診斷</strong>:轉 90° 再跑一次,
+      圖形跟著轉是晶圓問題,不跟著轉是<strong>腔體幾何</strong>問題。</li>
+    <li><strong>腔壁是製程的一部分,不是背景。</strong>
+      清完腔的第一片一定不一樣 —— 這不是玄學,是表面複合係數變了。</li>
+  </ul>
+</div>
+
+<h2 id="metric">3.6.1 先把定義講清楚</h2>
+
+<div class="pa-prose">
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      半幅法:(Max − Min) / (2 × Mean) × 100 %<br />
+      標準差法:1σ / Mean × 100 %
+    </div>
+    <div class="pa-formula__name">兩種都叫「不均勻度」,數字差很多</div>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A25 實測:同一張 map,兩種定義差多少</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>Map 形狀</th><th>半幅法</th><th>1σ 法</th><th>比值</th></tr></thead>
+        <tbody>
+          <tr><td>中心快</td><td>35.8 %</td><td>23.9 %</td><td>1.50 ×</td></tr>
+          <tr><td>邊緣快</td><td>34.7 %</td><td>23.2 %</td><td>1.50 ×</td></tr>
+          <tr><td>W 形</td><td>10.8 %</td><td>7.2 %</td><td>1.49 ×</td></tr>
+          <tr><td>同心環紋</td><td>13.5 %</td><td>8.9 %</td><td>1.51 ×</td></tr>
+          <tr><td>單邊偏斜</td><td>30.1 %</td><td>13.8 %</td><td><strong>2.18 ×</strong></td></tr>
+          <tr><td>Edge roll</td><td>40.8 %</td><td>17.7 %</td><td><strong>2.30 ×</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>比值本身也是資訊。</strong>軸對稱的形狀比值大約 1.5;
+      而<strong>單邊偏斜與 edge roll 的比值明顯更高</strong> ——
+      因為它們的極值集中在少數位置,拉大了 Max−Min 卻沒怎麼拉大標準差。
+      比值特別高,往往就代表「壞的只是一小塊區域」。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 「我們的均勻度是 3 %」—— 這句話沒有資訊</div>
+    <p>
+      3 % 用半幅法算,大約等於 1σ 法的 1.3–2 %;
+      反過來 3 % 的 1σ 可能是半幅法的 5–7 %。
+      <strong>同一台機台可以同時「達標」和「不達標」,只看報表用哪個定義。</strong>
+    </p>
+    <p>
+      規格書、機台驗收、供應商比較 —— <strong>先確認定義,再看數字。</strong>
+      這是本章最沒有技術含量、卻最常出事的一件事。
+    </p>
+  </div>
+</div>
+
+<h2 id="shapes">3.6.2 由 Map 形狀反推成因</h2>
+
+<div class="pa-prose">
+  <p>這是全章最實用的一張表:</p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>Map 形狀</th><th>可能成因</th></tr></thead>
+      <tbody>
+        <tr><td><strong>中心快</strong>(bull's eye)</td>
+          <td>氣體從中心進、電漿密度中心高、中心溫度低</td></tr>
+        <tr><td><strong>邊緣快</strong></td>
+          <td>邊緣自由基供應足、聚焦環消耗、邊緣鞘層畸變</td></tr>
+        <tr><td><strong>W 形 / M 形</strong></td>
+          <td>氣流與電場效應<strong>疊加</strong>,或噴淋頭孔徑分佈</td></tr>
+        <tr><td><strong>單邊偏斜</strong>(tilt)</td>
+          <td><strong>泵口方向的抽氣不對稱</strong>、機械傾斜、RF 進入點不對稱</td></tr>
+        <tr><td><strong>同心圓環紋</strong></td>
+          <td>噴淋頭多區的分區邊界、多區溫控邊界</td></tr>
+        <tr><td><strong>Edge roll</strong>(極邊緣急降/急升)</td>
+          <td>聚焦環高度與消耗、edge exclusion、晶圓夾持</td></tr>
+        <tr><td>隨機斑點</td>
+          <td>微粒、背面污染造成的局部溫度異常</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 轉片實驗:最便宜、最該先做的一個</div>
+    <p>
+      <strong>把晶圓轉 90° 再跑一次。</strong>
+    </p>
+    <ul>
+      <li>圖形<strong>跟著轉</strong> → 問題在<strong>晶圓或圖形</strong>
+        (入射膜厚不均、圖形密度分佈)</li>
+      <li>圖形<strong>不跟著轉</strong> → 問題在<strong>腔體幾何</strong>
+        (泵口方向、RF 饋入點、機械傾斜)</li>
+    </ul>
+    <p>
+      這個實驗不用拆機、不用備品、一片測試片就能做,
+      卻能一刀把問題切成兩半。<strong>它應該是每個製程工程師的標配。</strong>
+    </p>
+    <p>
+      模型層面的對應很乾淨:A25 裡<strong>只有抽氣不對稱這一項有方位依賴</strong>,
+      其餘五項全部是軸對稱的 —— 所以只有它產生的圖形固定在腔體座標上。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 W 形不是一種缺陷,是兩個正常效應打架</div>
+    <p>
+      氣體供應通常<strong>中心快</strong>(噴淋頭從中心進氣,而高壓讓自由基橫向跑不動);
+      電場/鞘層效應通常<strong>邊緣快</strong>(gap 越小,邊緣的電場終結效應越強)。
+    </p>
+    <p>
+      兩個方向相反的項疊在一起,<strong>中間半徑兩頭都不討好</strong> ——
+      W 形就是這樣塌出來的。A25 把 gap 拉回 5 cm(關掉電場項),
+      W 就消失了,剩下單純的中心快。
+    </p>
+    <p>
+      所以看到 W 形不要急著找「一個壞掉的東西」:
+      <strong>它更常是兩個都正常的東西沒有配好。</strong>
+    </p>
+  </div>
+</div>
+
+<h2 id="hardware">3.6.3 影響均勻度的硬體</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>零件</th><th>影響什麼</th><th>消耗特性</th></tr></thead>
+      <tbody>
+        <tr><td><strong>噴淋頭</strong>(Showerhead)</td><td>氣流分佈、RF 電場分佈</td>
+          <td>孔徑被沉積物堵塞 → 分佈改變</td></tr>
+        <tr><td><strong>聚焦環</strong>(Focus Ring)</td><td>晶圓邊緣的鞘層形狀</td>
+          <td><strong>消耗最快的零件</strong> → 邊緣速率隨壽命漂移</td></tr>
+        <tr><td>邊緣環 / Edge ring</td><td>邊緣電場終結</td><td>同上</td></tr>
+        <tr><td>腔體內襯(Liner)</td><td>自由基表面複合、熱環境</td><td>沉積累積</td></tr>
+        <tr><td>ESC 表面</td><td>熱接觸、夾持</td><td>磨損、He 洩漏上升</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 聚焦環為什麼是先進製程的關鍵消耗件</div>
+    <p>
+      環是新的時候,它把鞘層平順地延伸到晶圓外,邊緣沒有異常。
+      環一消耗、高度降低,晶圓最外圈的鞘層就開始<strong>彎曲</strong> →
+      離子入射角傾斜 → <strong>邊緣圖形跟著傾斜(edge tilt)</strong>。
+    </p>
+    <p>
+      A25 掃過 27 種其他旋鈕組合驗證:<strong>只要聚焦環磨光,27 組全部出現
+      edge roll;環是新的時候,27 組一個都沒有。</strong>
+      這條因果非常乾淨 —— 也因此它是<strong>先進機台導入「可動聚焦環」
+      (自動補償高度)</strong>的直接理由。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 判 edge roll 不能量「外圈比肩部高多少」</div>
+    <p>
+      中心快的 map 本來就一路往下掉,最外圈當然比肩部低 ——
+      用「外圈 − 肩部」當判據,<strong>每一張 bull's eye 都會被誤判成 edge roll</strong>
+      (建模時實測就是這樣)。
+    </p>
+    <p>
+      <strong>正解:量最外圈偏離「內部趨勢外推」多少。</strong>
+      Edge roll 的定義本來就是「最後幾 mm 做了別的事」,
+      不是「邊緣比較低」。改用殘差之後,真的 edge roll 量到 0.54,
+      其餘五種形狀都在 0.05 以內 —— 差了十倍,判讀才穩。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a25">🔬 A25 晶圓分佈熱圖與反向練習</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A25">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A25</span>
+    <span class="pa-lab__title">六種 map,以及怎麼從形狀回推成因</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。八個物理旋鈕(gap、壓力、噴淋頭分區、聚焦環消耗、
+      抽氣不對稱、三區溫度)產生晶圓熱圖與徑向剖面,並同時顯示兩種不均勻度定義。
+      六種 map 形狀全部由物理旋鈕疊加而成,沒有「形狀」這個參數;
+      判讀來自量測值,所以「反向練習」模式不會偷看答案。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="esc">3.6.4 溫度控制:ESC 與 He 背吹</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>ESC 型式</th><th>原理</th><th>材料</th><th>特性</th></tr></thead>
+      <tbody>
+        <tr><td><strong>庫倫式</strong>(Coulombic)</td>
+          <td>純靜電吸引,介電質完全絕緣</td><td>Al₂O₃</td>
+          <td>需高電壓(數 kV),<strong>脫附快</strong></td></tr>
+        <tr><td><strong>Johnsen–Rahbek</strong></td>
+          <td>微弱漏電流讓電荷累積在<strong>界面</strong>,間距極小 → 吸力大</td>
+          <td>摻雜陶瓷(半導體性)</td>
+          <td>低電壓(數百 V)、吸力強,但<strong>脫附較慢</strong>(殘留吸附)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 He 背吹:真空裡沒有對流,熱要靠氣體「搭橋」</div>
+    <p>
+      晶圓貼在 ESC 上看起來密合,但微觀上只有<strong>零星的點接觸</strong> ——
+      真空中沒有對流、輻射又太慢,熱根本傳不出去。
+      晶圓會在電漿轟擊下一路升溫,製程完全失控。
+    </p>
+    <p>
+      解法是在背面灌 <strong>5–20 Torr 的 He</strong> 填滿那些微觀間隙,
+      讓熱有路可走 —— <strong>熱傳導係數提升數十倍</strong>。
+      用 He 是因為它導熱好、又是惰性氣體不參與反應。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 He 洩漏率是最重要的機台健康指標之一</div>
+    <p>
+      洩漏率上升 → 夾持不良或 ESC 表面磨損 → 晶圓局部過熱 →
+      製程漂移、嚴重時<strong>光阻直接燒焦</strong>。
+    </p>
+    <p>
+      所以 He 洩漏率應該<strong>每片監控</strong>並納入 FDC
+      (見 <a href="../../4/4-2-endpoint-apc/">4.2</a>)。
+      它是少數「便宜、即時、而且直接對應到晶圓溫度」的訊號。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 多區溫控:修均勻度最直接的旋鈕</div>
+    <p>
+      先進 ESC 有 <strong>2–10 個獨立控溫區</strong>,
+      可以刻意做出徑向溫度梯度來<strong>補償</strong>速率不均。
+    </p>
+    <p>
+      為什麼溫度這麼有效?因為速率對溫度是 <strong>Arrhenius 指數依賴</strong> ——
+      A25 的模型裡每 10 °C 約差 <strong>13 %</strong>,幾度的差就看得出來。
+      實測:一張半幅 35.8 % 的中心快 map,把中心區降溫、邊緣區升溫之後
+      降到 <strong>21.4 %</strong>。
+    </p>
+    <p>
+      代價是:<strong>分區的交界會自己留下一圈痕跡</strong> ——
+      這正是同心環紋的來源。溫控修掉一種不均勻,可能換來另一種。
+    </p>
+  </div>
+</div>
+
+<h2 id="memory">3.6.5 腔體記憶:First Wafer Effect 與 Seasoning</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>現象</strong>:PM 或清潔之後的第一片(甚至前幾片),
+    結果與穩態不同 —— 而且是<strong>可重現</strong>的不同,不是隨機。
+  </p>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>表面複合係數改變</strong> ——
+      乾淨的金屬壁對 F、O 自由基的複合率高 → 自由基被腔壁吃掉 → 晶圓上速率低</div>
+    <div class="pa-chain__step"><strong>腔壁溫度未達穩態</strong> —— 前幾片的熱環境不同</div>
+    <div class="pa-chain__step"><strong>腔壁吸附的水氣與殘留氣體</strong>慢慢釋放</div>
+    <div class="pa-chain__step"><strong>腔體記憶</strong> —— 前一道製程的殘留物還在參與反應</div>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 腔壁是製程的一部分,不是背景</div>
+    <p>
+      第一條最違反直覺:<strong>腔壁會「吃」自由基</strong>。
+      同樣的氣體、同樣的功率,腔壁狀態一變,
+      到得了晶圓的自由基就變了 —— 速率跟著變。
+    </p>
+    <p>
+      這也解釋了 <a href="../3-5-pvd/#clean">3.5.6</a> 為什麼清完腔要跑 seasoning:
+      不是儀式,是<strong>把腔壁的表面狀態調回製程時的樣子</strong>。
+    </p>
+  </div>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>對策</th><th>做什麼</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Seasoning(預膜)</strong></td>
+          <td>清潔後跑數片 dummy,讓腔壁回到製程狀態</td></tr>
+        <tr><td><strong>Idle time 管制</strong></td>
+          <td>機台閒置越久腔壁偏離越多 → 設 idle 上限,超時要預跑</td></tr>
+        <tr><td>腔壁溫控</td><td>主動加熱腔壁到定溫,減少熱漂移</td></tr>
+        <tr><td><strong>監控指標</strong></td>
+          <td><strong>OES 基線</strong>與<strong>匹配電容位置</strong> ——
+            兩個最靈敏的腔體狀態指標</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 匹配電容位置為什麼是好指標</div>
+    <p>
+      匹配網路要把電漿的阻抗調到 50 Ω(見
+      <a href="../../2/2-5-plasma-sources/">2.5</a>)。腔體狀態一變,
+      電漿阻抗跟著變,<strong>調諧電容就得停在不同位置</strong>。
+    </p>
+    <p>
+      它是<strong>免費的</strong>:機台本來就在記錄,不必加任何感測器。
+      同一支配方的匹配位置慢慢漂,通常比製程結果更早告訴你腔體在變。
+    </p>
+  </div>
+</div>
+
+<h2 id="particle">3.6.6 微粒與電弧</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>微粒來源</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>腔壁沉積物剝落</td><td>熱應力循環讓膜龜裂剝離</td></tr>
+        <tr><td><strong>電漿中懸浮的負電微粒</strong></td>
+          <td>微粒帶負電,被鞘層電場困在 bulk 邊界<strong>浮著</strong></td></tr>
+        <tr><td>零件磨損、機械手臂</td><td>機械性來源</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 關電漿的那一瞬間,才是微粒落下來的時候</div>
+    <p>
+      電漿開著的時候,帶負電的微粒被鞘層電場<strong>托住</strong>,
+      浮在 bulk 與鞘層的交界 —— 它們並沒有落到晶圓上。
+    </p>
+    <p>
+      <strong>硬切電源的瞬間,電場消失,所有微粒同時掉下來。</strong>
+      所以對策是<strong>緩降功率(ramp down)</strong>:
+      讓電場慢慢弱化,微粒有時間被氣流帶走,而不是一次全部倒在晶圓上。
+    </p>
+    <p>
+      這是一個很好的例子:<strong>問題發生在「關機」這個沒有人在看的步驟裡。</strong>
+    </p>
+  </div>
+
+  <p>
+    <strong>電弧(arcing)</strong>是微粒與零件損傷的主因。成因:
+    局部電場集中(尖角、剝落處)、絕緣件表面污染、
+    <strong>Paschen 谷底附近的寄生放電</strong>(見
+    <a href="../../1/1-4-glow-discharge/">1.4</a> —— 那條曲線在這裡回來了:
+    腔體裡任何 p·d 落在谷底的縫隙都可能點火)。
+    現代 RF 電源都有 arc detection,偵測到會在微秒級切斷。
+  </p>
+</div>
+
+<h2 id="wrap">3.6.7 這一章其實在講同一件事</h2>
+
+<div class="pa-prose">
+  <p>
+    均勻度、腔體記憶、微粒、電弧看起來是四個題目,但它們共用一個前提:
+    <strong>晶圓不是孤立的,它泡在一個有歷史、有幾何、會消耗的腔體裡。</strong>
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>現象</th><th>腔體的哪一面</th></tr></thead>
+      <tbody>
+        <tr><td>Map 形狀</td><td><strong>幾何</strong>(噴淋頭、泵口、gap、聚焦環)</td></tr>
+        <tr><td>First wafer effect</td><td><strong>歷史</strong>(腔壁表面狀態)</td></tr>
+        <tr><td>邊緣漂移</td><td><strong>消耗</strong>(聚焦環壽命)</td></tr>
+        <tr><td>微粒</td><td><strong>累積</strong>(沉積物、懸浮微粒)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    L4 的診斷(<a href="../../4/4-1-diagnostics/">4.1</a>)與
+    APC(<a href="../../4/4-2-endpoint-apc/">4.2</a>)要處理的,
+    大半就是這四件事隨時間的漂移。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>兩種不均勻度定義是什麼?<strong>為什麼比值特別高常常代表「壞的只是一小塊」?</strong></li>
+    <li>看到 W 形的 map,為什麼不該急著找「一個壞掉的零件」?</li>
+    <li>轉片實驗怎麼做?兩種結果各指向什麼?</li>
+    <li>為什麼判 edge roll 不能用「外圈比肩部高多少」?正確的量法是什麼?</li>
+    <li>聚焦環消耗會造成什麼?為什麼先進機台要做可動聚焦環?</li>
+    <li>庫倫式與 Johnsen–Rahbek 式 ESC 各有什麼優缺點?</li>
+    <li>He 背吹在做什麼?<strong>為什麼真空中非它不可?</strong>He 洩漏率上升代表什麼?</li>
+    <li>多區溫控為什麼是修均勻度最直接的旋鈕?它可能帶來什麼新的不均勻?</li>
+    <li>First wafer effect 的四個物理原因,哪一個最違反直覺?</li>
+    <li>為什麼關電漿要緩降功率而不是硬切?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 10–11</li>
+    <li>Selwyn, <em>Particle contamination formation in magnetron sputtering processes</em>, J. Vac. Sci. Technol. A 11, 1132 (1993) —— 懸浮微粒的經典觀察</li>
+    <li>Donnelly &amp; Kornblit, <em>Plasma etching: Yesterday, today, and tomorrow</em>, J. Vac. Sci. Technol. A 31, 050825 (2013)</li>
+    <li>SEMI E10 / E79 —— 機台可用率與生產力的標準定義(PM 與 seasoning 的成本觀點)</li>
+  </ul>
+</div>

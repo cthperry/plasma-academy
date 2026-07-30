@@ -309,6 +309,25 @@
     return wrap;
   }
 
+  /**
+   * 動作按鈕。slider/segmented/toggle 都是「設定一個值」,
+   * 但有些互動是**做一件事**(重新出題、重設、單步推進),沒有對應的值。
+   * A25 的反向練習需要它,所以補上這個原本缺的基本元件。
+   */
+  function button(opts) {
+    // 用 .pa-seg 當容器,直接沿用既有的按鈕樣式(CSS 選的是 .pa-seg button)
+    var wrap = el("div", "pa-ctrl pa-seg");
+    var btn = el("button", null, { type: "button" });
+    btn.textContent = opts.label;
+    if (opts.ariaLabel) btn.setAttribute("aria-label", opts.ariaLabel);
+    btn.addEventListener("click", function () {
+      if (opts.onClick) opts.onClick();
+    });
+    wrap.appendChild(btn);
+    wrap.setDisabled = function (v) { btn.disabled = !!v; };
+    return wrap;
+  }
+
   PA.controls = {
     el: el,
     fmt: fmt,
@@ -316,6 +335,7 @@
     slider: slider,
     segmented: segmented,
     toggle: toggle,
+    button: button,
     transport: transport,
     readout: readout,
     observations: observations,

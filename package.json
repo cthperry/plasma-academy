@@ -20,6 +20,7 @@
     "check:bosch": "node tools/check-bosch.mjs",
     "check:deposit": "node tools/check-deposit.mjs",
     "check:magnetron": "node tools/check-magnetron.mjs",
+    "check:uniformity": "node tools/check-uniformity.mjs",
     "shapes:sweep": "node tools/shapes-sweep.mjs",
     "shapes:search": "node tools/shapes-search.mjs"
   },
