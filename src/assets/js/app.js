@@ -13,3 +13,6 @@ initTooltips();
 initSearch();
 initUnitConverters();
 initLabContainers();
+if (document.querySelector("[data-exam-page], [data-exam-gate]")) {
+  import("./exam.js").then(({ initExam }) => initExam());
+}

@@ -259,6 +259,46 @@ await desktop.click('.quiz-choice[data-correct="true"]');
 const quizText = await desktop.locator(".quiz-result").textContent();
 await desktop.screenshot({ path: path.join(qaDir, "desktop-chapter.png"), fullPage: true });
 
+await desktop.goto(`${base}/level/1/`, { waitUntil: "networkidle" });
+await desktop.waitForFunction(() => !document.querySelector("[data-exam-gate-status]")?.textContent.includes("正在讀取"));
+const examLockedStatus = await desktop.locator("[data-exam-gate-status]").textContent();
+const examLockedLinkHidden = await desktop.locator("[data-exam-link]").isHidden();
+await desktop.evaluate(() => {
+  const chapters = Object.fromEntries(["1-1", "1-2", "1-3", "1-4", "1-5"].map((id) => [id, { visited: true, objectives: [true, true, true, true], quizScore: 1, lastVisit: new Date().toISOString() }]));
+  localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, role: null, chapters, quizzes: {}, labUsage: {}, bookmarks: [], settings: { theme: "auto", reducedMotion: false, showEnglishTerms: true } }));
+});
+await desktop.goto(`${base}/level/1/exam/?seed=qa`, { waitUntil: "networkidle" });
+const examUnlockedStatus = await desktop.locator("[data-exam-unlock-status]").textContent();
+await desktop.click("[data-exam-start]");
+await desktop.waitForSelector(".exam-question");
+const examQuestionCount = await desktop.locator("[data-exam-question-nav] button").count();
+const examDraw = { single: 0, multi: 0, numeric: 0, scenario: 0 };
+const examBank = await desktop.evaluate(async () => (await import("/assets/data/quiz/level-1.js")).level1Questions);
+for (let index = 0; index < examQuestionCount; index += 1) {
+  await desktop.locator("[data-exam-question-nav] button").nth(index).click();
+  const typeText = await desktop.locator("[data-exam-type]").textContent();
+  const typeKey = { "單選題": "single", "多選題": "multi", "計算題": "numeric", "情境題": "scenario" }[typeText];
+  examDraw[typeKey] += 1;
+  const questionId = await desktop.locator(".exam-question").getAttribute("data-question-id");
+  const question = examBank.find((item) => item.id === questionId);
+  if (question.type === "numeric") {
+    await desktop.fill(".exam-question input[type=number]", String(question.answer));
+  } else {
+    for (const option of question.options.filter((item) => item.correct)) {
+      await desktop.locator(`.exam-question input[value="${option.id}"]`).click();
+    }
+  }
+}
+await desktop.screenshot({ path: path.join(qaDir, "desktop-exam.png"), fullPage: false });
+await desktop.click("[data-exam-submit]");
+const examScore = Number(await desktop.locator(".exam-score > div > strong").first().textContent());
+const examReviewCount = await desktop.locator(".exam-review").count();
+const examStoredProgress = await desktop.evaluate(() => JSON.parse(localStorage.getItem("plasma-academy.progress")).quizzes.L1);
+await desktop.screenshot({ path: path.join(qaDir, "desktop-exam-results.png"), fullPage: false });
+await desktop.goto(`${base}/progress/`, { waitUntil: "networkidle" });
+const examBadgeStatus = await desktop.locator("[data-progress-l1-status]").textContent();
+const examBadgeEarned = await desktop.locator("[data-progress-l1-badge]").evaluate((element) => element.classList.contains("earned"));
+
 const mobile = await browser.newPage({ viewport: { width: 375, height: 900 }, deviceScaleFactor: 1, isMobile: true });
 mobile.on("pageerror", (error) => errors.push(error.message));
 mobile.on("console", (message) => {
@@ -337,9 +377,20 @@ const mobileA07Overflow = await mobile.evaluate(() => document.documentElement.s
 const mobileA07Regions = await mobile.locator("#lab-a07 [data-process-id]").count();
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a07.png"), fullPage: false });
 
+await mobile.evaluate(() => {
+  const chapters = Object.fromEntries(["1-1", "1-2", "1-3", "1-4", "1-5"].map((id) => [id, { visited: true, objectives: [true, true, true, true] }]));
+  localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
+});
+await mobile.goto(`${base}/level/1/exam/?seed=qa`, { waitUntil: "networkidle" });
+await mobile.click("[data-exam-start]");
+await mobile.waitForSelector(".exam-question");
+const mobileExamOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileExamQuestionCount = await mobile.locator("[data-exam-question-nav] button").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-exam.png"), fullPage: false });
+
 await browser.close();
 
-const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, formulaCardCount, formulaPageText, chapterOneOneSelfChecks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, formulaCardCount, formulaPageText, chapterOneOneSelfChecks, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -352,6 +403,11 @@ for (const check of l1Checks) {
 }
 if (formulaCardCount !== 12 || !formulaPageText.includes("Townsend 自持條件") || !formulaPageText.includes("浮動電位差")) throw new Error("L1 公式手冊未完整渲染 12 條公式。");
 if (chapterOneOneSelfChecks !== 5) throw new Error("1.1 自我檢測未顯示 5 題。");
+if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
+if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);
+if (examScore !== 100 || examReviewCount !== 20 || !examStoredProgress.passed || examStoredProgress.bestScore !== 100) throw new Error("L1 測驗計分、解析或進度寫入未通過。");
+if (!examBadgeEarned || !examBadgeStatus.includes("最佳成績 100%")) throw new Error("L1 通過徽章未正確顯示在進度頁。");
+if (mobileExamOverflow || mobileExamQuestionCount !== 20) throw new Error("L1 測驗手機版發生溢位或題目導覽缺漏。");
 if (!a02Initial.includes("0.129 mm") || !a02Initial.includes("0.013 mm")) throw new Error("A02 未顯示 CCP/ICP λD 對照值。");
 if (!a02AfterDensity.includes("0.041 mm")) throw new Error("A02 電子密度滑桿未更新 λD 數值。");
 if (!a02Polarity.includes("負電荷")) throw new Error("A02 極性切換未更新選取狀態。");

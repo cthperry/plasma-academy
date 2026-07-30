@@ -67,6 +67,15 @@ function initProgressPage() {
     page.querySelector("[data-progress-visited]").textContent = Object.values(progress.chapters).filter((item) => item.visited).length;
     page.querySelector("[data-progress-objectives]").textContent = Object.values(progress.chapters).flatMap((item) => item.objectives ?? []).filter(Boolean).length;
     page.querySelector("[data-progress-labs]").textContent = Object.values(progress.labUsage).reduce((sum, value) => sum + value, 0);
+    const l1Exam = progress.quizzes?.L1;
+    const badge = page.querySelector("[data-progress-l1-badge]");
+    const examStatus = page.querySelector("[data-progress-l1-status]");
+    badge.classList.toggle("earned", Boolean(l1Exam?.passed));
+    examStatus.textContent = l1Exam?.passed
+      ? `已通過 · 最佳成績 ${l1Exam.bestScore}%`
+      : l1Exam?.attempts?.length
+        ? `已作答 ${l1Exam.attempts.length} 次 · 最佳成績 ${l1Exam.bestScore}%`
+        : "尚未通過 L1 結業測驗";
     page.querySelector("[data-progress-json]").value = JSON.stringify(progress, null, 2);
   };
   render();

@@ -6,6 +6,7 @@ import { processMapEntries } from "../src/assets/js/data/process-map.js";
 import { formulas } from "../src/data/formulas.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
+import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
 import { childLangmuirSheathMm, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, paschenGases, paschenVoltage, townsendDischarge } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
@@ -60,6 +61,33 @@ for (const [key, formula] of Object.entries(formulas)) {
   for (const field of ["id", "name", "expression", "summary", "symbols"]) {
     if (!formula[field] || (field === "symbols" && !Array.isArray(formula.symbols))) failures.push(`公式 ${key} 缺少 ${field}。`);
   }
+}
+
+if (level1Questions.length !== 55) failures.push(`L1 結業題庫應為 55 題，目前 ${level1Questions.length} 題。`);
+const quizIds = new Set();
+for (const question of level1Questions) {
+  if (quizIds.has(question.id)) failures.push(`L1 題庫 ID 重複：${question.id}。`);
+  quizIds.add(question.id);
+  for (const field of ["id", "chapter", "type", "difficulty", "tags", "question", "explanation", "reference"]) {
+    if (question[field] === undefined || question[field] === null || question[field] === "") failures.push(`題目 ${question.id} 缺少 ${field}。`);
+  }
+  if (!Object.hasOwn(level1ExamSpec.draw, question.type)) failures.push(`題目 ${question.id} 使用不支援的 L1 題型 ${question.type}。`);
+  if (["single", "multi", "scenario"].includes(question.type)) {
+    if (!Array.isArray(question.options) || question.options.length < 2) failures.push(`題目 ${question.id} 缺少有效選項。`);
+    for (const option of question.options ?? []) {
+      if (!option.id || !option.text || typeof option.correct !== "boolean" || !option.why) failures.push(`題目 ${question.id} 的選項 ${option.id ?? "?"} 未包含完整 why 解析。`);
+    }
+  }
+  if (question.type === "numeric" && (!["number", "string"].includes(typeof question.answer) || typeof question.tolerance !== "number")) failures.push(`計算題 ${question.id} 缺少答案或容差。`);
+}
+for (const [type, drawCount] of Object.entries(level1ExamSpec.draw)) {
+  const available = level1Questions.filter((question) => question.type === type).length;
+  if (available < drawCount) failures.push(`L1 ${type} 題不足：需抽 ${drawCount}，目前 ${available}。`);
+}
+const expectedBankDistribution = { single: 30, multi: 9, numeric: 8, scenario: 8 };
+for (const [type, expected] of Object.entries(expectedBankDistribution)) {
+  const actual = level1Questions.filter((question) => question.type === type).length;
+  if (actual !== expected) failures.push(`L1 ${type} 題庫分佈應為 ${expected} 題，目前 ${actual} 題。`);
 }
 
 for (const [gasKey, gas] of Object.entries(paschenGases)) {

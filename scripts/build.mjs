@@ -8,6 +8,7 @@ import { formulas } from "../src/data/formulas.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
+import { level1ExamSpec } from "../src/data/quiz/level-1.js";
 import { shell, navItems, breadcrumb } from "../src/templates/page-shell.mjs";
 import { formulaCard, callout, labContainer, progressRing } from "../src/templates/components.mjs";
 
@@ -115,6 +116,19 @@ function levelPage(levelId) {
     </article>
   `).join("");
 
+  const assessment = level.id === 1 ? `
+      <section class="assessment-gate" data-exam-gate>
+        <h2>L1 結業測驗</h2>
+        <p>${level1ExamSpec.durationMinutes} 分鐘抽考 20 題，達 ${level1ExamSpec.passPercent}% 通過。完成 6 章中的 5 章學習目標後啟用。</p>
+        <p class="meta" data-exam-gate-status aria-live="polite">正在讀取本機進度…</p>
+        <a class="button primary" href="/level/1/exam/" data-exam-link hidden>進入 L1 測驗</a>
+      </section>` : `
+      <section class="assessment-gate">
+        <h2>L${level.id} 結業測驗</h2>
+        <p>需完成 80% 章節後啟用。此階段題庫將依建置路線逐步加入。</p>
+        <button class="button secondary" type="button" disabled>尚未啟用</button>
+      </section>`;
+
   return page(`/level/${level.id}/`, `L${level.id} ${level.name}`, `
     <main class="content-shell">
       ${breadcrumb(["首頁", `L${level.id} ${level.name}`])}
@@ -126,11 +140,7 @@ function levelPage(levelId) {
         <h2>模組列表</h2>
         <div class="module-grid">${modules}</div>
       </section>
-      <section class="assessment-gate">
-        <h2>L${level.id} 結業測驗</h2>
-        <p>需完成 80% 章節後啟用。P0 先保留入口與狀態邏輯，題庫在後續 phase 補齊。</p>
-        <button class="button secondary" type="button" disabled>尚未啟用</button>
-      </section>
+      ${assessment}
     </main>
   `);
 }
@@ -215,7 +225,7 @@ function l1ChapterPage(chapter, index) {
     : { href: l1FoundationChapters[index - 1].route, title: l1FoundationChapters[index - 1].title };
   const next = index < l1FoundationChapters.length - 1
     ? { href: l1FoundationChapters[index + 1].route, title: l1FoundationChapters[index + 1].title }
-    : { href: "/level/1/", title: "L1 結業測驗" };
+    : { href: "/level/1/exam/", title: "L1 結業測驗" };
   const objectives = chapter.objectives.map((item, objectiveIndex) => `
     <label class="objective">
       <input type="checkbox" aria-label="完成目標：${item}" data-objective="${objectiveIndex}" data-chapter-id="${chapter.id}">
@@ -389,6 +399,13 @@ function progressPage() {
           <div><dt>完成目標</dt><dd data-progress-objectives>0</dd></div>
           <div><dt>實驗室使用</dt><dd data-progress-labs>0</dd></div>
         </div>
+        <section class="progress-badge" data-progress-l1-badge>
+          <div>
+            <span class="badge-mark" aria-hidden="true">L1</span>
+            <div><strong>電漿入門</strong><p data-progress-l1-status>尚未通過 L1 結業測驗</p></div>
+          </div>
+          <a class="button secondary" href="/level/1/exam/">查看測驗</a>
+        </section>
         <div class="progress-actions">
           <button class="button primary" type="button" data-export-progress>匯出 JSON</button>
           <label class="button secondary file-button">匯入 JSON<input type="file" accept="application/json" data-import-progress></label>
@@ -398,6 +415,41 @@ function progressPage() {
       </section>
     </main>
   `);
+}
+
+function examPage() {
+  return page("/level/1/exam/", level1ExamSpec.title, `
+    <main class="content-shell narrow" data-exam-page>
+      ${breadcrumb(["首頁", "L1 初階", "結業測驗"])}
+      <section class="page-intro">
+        <p class="chapter-meta">L1 認證 · ${level1ExamSpec.durationMinutes} 分鐘 · ${level1ExamSpec.passPercent}% 通過</p>
+        <h1>${level1ExamSpec.title}</h1>
+        <p>每次從 55 題中重抽 20 題。交卷前不顯示答案，交卷後提供逐選項解析並把最佳成績保存在這台瀏覽器。</p>
+      </section>
+      <section class="exam-entry" data-exam-entry>
+        <div class="exam-entry__status">
+          <strong data-exam-unlock-title>正在確認學習進度</strong>
+          <p data-exam-unlock-status aria-live="polite">完成 6 章中的 5 章學習目標後可開始。</p>
+        </div>
+        <button class="button primary" type="button" data-exam-start disabled>開始測驗</button>
+      </section>
+      <section class="exam-shell" data-exam-shell hidden>
+        <header class="exam-toolbar">
+          <div><strong data-exam-position>第 1 / 20 題</strong><span data-exam-type>單選題</span></div>
+          <div class="exam-timer" role="timer" aria-label="剩餘時間"><span aria-hidden="true">◷</span><strong data-exam-timer>30:00</strong></div>
+          <progress data-exam-progress max="20" value="1">1 / 20</progress>
+        </header>
+        <nav class="exam-question-nav" data-exam-question-nav aria-label="題目導覽"></nav>
+        <form data-exam-form></form>
+        <div class="exam-actions">
+          <button class="button secondary" type="button" data-exam-previous>上一題</button>
+          <button class="button primary" type="button" data-exam-next>下一題</button>
+          <button class="button primary" type="button" data-exam-submit hidden>交卷</button>
+        </div>
+      </section>
+      <section class="exam-results" data-exam-results hidden aria-live="polite"></section>
+    </main>
+  `, { pageType: "exam" });
 }
 
 function glossaryPage() {
@@ -455,6 +507,7 @@ async function main() {
     packagingCleaningPage(),
     labPage(),
     progressPage(),
+    examPage(),
     glossaryPage(),
     formulasPage()
   ];
