@@ -150,6 +150,12 @@ function chapterPage() {
       ${section.body}
     </section>
   `).join("");
+  const checks = chapterOneOne.selfCheck.map(([prompt, answer]) => `
+    <details class="check-card">
+      <summary>${prompt}</summary>
+      <p>${answer}</p>
+    </details>
+  `).join("");
 
   return page("/level/1/1-1-fourth-state/", "1.1 物質第四態", `
     <main class="chapter-layout" data-chapter-id="${chapterOneOne.id}">
@@ -183,6 +189,8 @@ function chapterPage() {
         })}
         <section class="self-check" id="self-check">
           <h2>自我檢測</h2>
+          ${checks}
+          <h3>快速判斷</h3>
           <button class="quiz-choice" type="button" data-correct="true">製程電漿通常是弱游離、熱非平衡的氣體。</button>
           <button class="quiz-choice" type="button">所有粒子都被游離後才叫電漿。</button>
           <p class="quiz-result" aria-live="polite"></p>

@@ -25,14 +25,14 @@ const searchCount = await desktop.locator("[data-search-results] a").count();
 const packagingSearchHit = await desktop.locator("[data-search-results]").textContent();
 
 const l1Routes = [
-  ["/level/1/1-2-parameters/", "1.2 電漿基本參數"],
-  ["/level/1/1-3-collisions-mfp/", "1.3 碰撞與平均自由徑"],
-  ["/level/1/1-4-glow-breakdown/", "1.4 輝光放電與點火"],
-  ["/level/1/1-5-sheath/", "1.5 鞘層入門"],
-  ["/level/1/1-6-process-map/", "1.6 製程電漿地圖"]
+  ["/level/1/1-2-parameters/", "1.2 電漿基本參數", 6],
+  ["/level/1/1-3-collisions-mfp/", "1.3 碰撞與平均自由徑", 6],
+  ["/level/1/1-4-glow-breakdown/", "1.4 輝光放電與點火", 6],
+  ["/level/1/1-5-sheath/", "1.5 鞘層入門", 7],
+  ["/level/1/1-6-process-map/", "1.6 製程電漿地圖", 5]
 ];
 const l1Checks = [];
-for (const [route, expectedTitle] of l1Routes) {
+for (const [route, expectedTitle, expectedSelfChecks] of l1Routes) {
   await desktop.goto(`${base}${route}`, { waitUntil: "networkidle" });
   const title = await desktop.locator("h1").first().textContent();
   const firstLab = desktop.locator("[data-lab-container]").first();
@@ -52,8 +52,14 @@ for (const [route, expectedTitle] of l1Routes) {
     const svg = document.querySelector("[data-lab-container] svg");
     return svg ? svg.querySelectorAll("rect, path, line, text").length * 10000 : 0;
   });
-  l1Checks.push({ route, title, expectedTitle, labPixels });
+  const selfCheckCount = await desktop.locator(".self-check details.check-card").count();
+  l1Checks.push({ route, title, expectedTitle, expectedSelfChecks, selfCheckCount, labPixels });
 }
+
+await desktop.goto(`${base}/formulas/`, { waitUntil: "networkidle" });
+const formulaCardCount = await desktop.locator(".formula-card").count();
+const formulaPageText = await desktop.locator("main").textContent();
+await desktop.screenshot({ path: path.join(qaDir, "desktop-formulas.png"), fullPage: false });
 
 await desktop.goto(`${base}/level/1/1-2-parameters/`, { waitUntil: "networkidle" });
 await desktop.locator("#lab-a02").scrollIntoViewIfNeeded();
@@ -247,6 +253,7 @@ const canvasInfo = await desktop.evaluate(() => {
   }
   return { width: canvas.width, height: canvas.height, nonBlank };
 });
+const chapterOneOneSelfChecks = await desktop.locator(".self-check details.check-card").count();
 await desktop.click('[data-objective="0"]');
 await desktop.click('.quiz-choice[data-correct="true"]');
 const quizText = await desktop.locator(".quiz-result").textContent();
@@ -332,17 +339,19 @@ await mobile.screenshot({ path: path.join(qaDir, "mobile-a07.png"), fullPage: fa
 
 await browser.close();
 
-const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, formulaCardCount, formulaPageText, chapterOneOneSelfChecks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
 if (searchCount < 1) throw new Error("搜尋沒有回傳結果。");
 if (!packagingSearchHit.includes("封裝") || !packagingH1.includes("封裝清潔")) throw new Error("封裝清潔頁或搜尋入口未通過驗證。");
 for (const check of l1Checks) {
-  if (!check.title.includes(check.expectedTitle) || check.labPixels < 100000) {
+  if (!check.title.includes(check.expectedTitle) || check.labPixels < 100000 || check.selfCheckCount !== check.expectedSelfChecks) {
     throw new Error(`L1 章節驗證失敗: ${JSON.stringify(check)}`);
   }
 }
+if (formulaCardCount !== 12 || !formulaPageText.includes("Townsend 自持條件") || !formulaPageText.includes("浮動電位差")) throw new Error("L1 公式手冊未完整渲染 12 條公式。");
+if (chapterOneOneSelfChecks !== 5) throw new Error("1.1 自我檢測未顯示 5 題。");
 if (!a02Initial.includes("0.129 mm") || !a02Initial.includes("0.013 mm")) throw new Error("A02 未顯示 CCP/ICP λD 對照值。");
 if (!a02AfterDensity.includes("0.041 mm")) throw new Error("A02 電子密度滑桿未更新 λD 數值。");
 if (!a02Polarity.includes("負電荷")) throw new Error("A02 極性切換未更新選取狀態。");

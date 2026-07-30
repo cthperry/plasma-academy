@@ -12,6 +12,7 @@
     "check:data": "node scripts/check-data.mjs",
     "check:links": "node scripts/check-links.mjs",
     "check:size": "node scripts/check-size.mjs",
+    "audit:p1": "node scripts/audit-p1.mjs",
     "verify:ui": "node scripts/verify-ui.mjs",
     "check": "npm run build && npm run check:data && npm run check:a11y && npm run check:contrast && npm run check:links && npm run check:size",
     "serve": "npx --yes serve dist/client --listen 4173"

@@ -3,6 +3,9 @@ import { curriculum } from "../src/data/curriculum.js";
 import { labs } from "../src/data/labs.js";
 import { dataSchemas } from "../src/data/schemas.js";
 import { processMapEntries } from "../src/assets/js/data/process-map.js";
+import { formulas } from "../src/data/formulas.js";
+import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
+import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
 import { childLangmuirSheathMm, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, paschenGases, paschenVoltage, townsendDischarge } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
@@ -42,6 +45,20 @@ for (const entry of processMapEntries) {
   }
   if (!/^\/level\/[23]\/$/.test(entry.link?.href ?? "")) {
     failures.push(`A07 ${entry.name} 缺少有效的 L2/L3 章節連結。`);
+  }
+}
+
+const l1SelfCheckCount = [chapterOneOne, ...l1FoundationChapters].reduce((total, chapter) => total + (chapter.selfCheck?.length ?? 0), 0);
+if (l1SelfCheckCount !== 35) {
+  failures.push(`P1 章末自我檢測應為 35 題，目前 ${l1SelfCheckCount} 題。`);
+}
+
+if (Object.keys(formulas).length < 12) {
+  failures.push(`P1 公式手冊應至少 12 條，目前 ${Object.keys(formulas).length} 條。`);
+}
+for (const [key, formula] of Object.entries(formulas)) {
+  for (const field of ["id", "name", "expression", "summary", "symbols"]) {
+    if (!formula[field] || (field === "symbols" && !Array.isArray(formula.symbols))) failures.push(`公式 ${key} 缺少 ${field}。`);
   }
 }
 
