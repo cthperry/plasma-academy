@@ -9,6 +9,7 @@ import { gases, gasFamilies, hazardLabels } from "../src/data/gases.js";
 import { sdsEvidenceByGas } from "../src/data/sds-evidence.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.mjs";
+import { chapterThreeOne } from "../src/content/chapter-3-1.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
@@ -347,7 +348,9 @@ function l1ChapterPage(chapter, index) {
 }
 
 function packagingCleaningPage() {
-  const objectives = chapterThreeSeven.objectives.map((item) => `<li>${item}</li>`).join("");
+  const objectives = chapterThreeSeven.objectives.map((item, index) => `<label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterThreeSeven.id}"><span>${item}</span></label>`).join("");
+  const prerequisites = chapterThreeSeven.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapterThreeSeven.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = `${chapterThreeSeven.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("")}<a href="#lab-a33">A33 封裝處理計算器</a>`;
   const bodySections = chapterThreeSeven.sections.map((section) => `
     <section id="${section.id}" class="prose-section">
@@ -379,10 +382,8 @@ function packagingCleaningPage() {
           <h1>${chapterThreeSeven.title}</h1>
           <p>把電漿清潔從「去殘留」提升到「界面可靠度控制」。</p>
         </header>
-        <section class="learning-card">
-          <h2>學習目標</h2>
-          <ul>${objectives}</ul>
-        </section>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterThreeSeven.summary)}
         ${bodySections}
         ${callouts}
@@ -391,6 +392,7 @@ function packagingCleaningPage() {
           <h2>自我檢測</h2>
           ${checks}
         </section>
+        <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽">
           <a class="button secondary" href="/level/3/">返回 L3</a>
           <a class="button primary" href="/lab/">前往互動實驗室</a>
@@ -403,6 +405,45 @@ function packagingCleaningPage() {
       </aside>
     </main>
   `, { pageType: "chapter" });
+}
+
+function chapterThreeOnePage() {
+  const objectives = chapterThreeOne.objectives.map((item, index) => `
+    <label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterThreeOne.id}"><span>${item}</span></label>
+  `).join("");
+  const prerequisites = chapterThreeOne.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapterThreeOne.readings.map((item) => `<li>${item}</li>`).join("");
+  const outline = [...chapterThreeOne.sections, ...chapterThreeOne.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
+  const sections = chapterThreeOne.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const callouts = chapterThreeOne.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapterThreeOne.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapterThreeOne.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
+
+  return page(chapterThreeOne.route, chapterThreeOne.title, `
+    <main class="chapter-layout" data-chapter-id="${chapterThreeOne.id}">
+      <aside class="chapter-sidebar">
+        <strong>課程目錄</strong>
+        <a class="current" href="${chapterThreeOne.route}">${chapterThreeOne.title}</a>
+        <a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a>
+        <a href="/level/3/">L3 模組列表</a>
+        <a href="/lab/">互動實驗室</a>
+      </aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L3 進階", chapterThreeOne.title])}
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapterThreeOne.hours} h · 互動元件 A17、A18</p><h1>${chapterThreeOne.title}</h1><p>${chapterThreeOne.summary}</p></header>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
+        ${callout("summary", "5 分鐘摘要", chapterThreeOne.summary)}
+        ${sections}
+        ${callouts}
+        ${labsHtml}
+        <section class="self-check"><h2>自我檢測</h2>${checks}</section>
+        <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="/level/2/2-6-causal-chain/">上一章：2.6 參數因果鏈</a><a class="button primary" href="/level/3/">返回 L3</a></nav>
+      </article>
+      <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
+    </main>
+  `, { pageType: "chapter", description: "從 Coburn-Winters 協同效應推導異向性、側壁鈍化、選擇比與蝕刻輪廓診斷。", extraStyles: ["/assets/css/a17-a18.css"] });
 }
 
 function chapterTwoOnePage() {
@@ -841,6 +882,7 @@ async function main() {
     chapterTwoFourPage(),
     chapterTwoFivePage(),
     chapterTwoSixPage(),
+    chapterThreeOnePage(),
     packagingCleaningPage(),
     labPage(),
     progressPage(),

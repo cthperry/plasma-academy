@@ -7,12 +7,15 @@ import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
 import { chapterTwoFour } from "../src/content/chapter-2-4.mjs";
 import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
 import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
+import { chapterThreeOne } from "../src/content/chapter-3-1.mjs";
+import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 
 const l1Chapters = expandL1Content([chapterOneOne, ...l1FoundationChapters]);
 const chapters = [...l1Chapters, chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
+const p3Chapters = [chapterThreeOne, chapterThreeSeven];
 const failures = [];
 const stripHtml = (value) => String(value ?? "")
   .replace(/<figure[\s\S]*?<\/figure>/g, " ")
@@ -85,10 +88,27 @@ for (const chapter of [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwo
   }
 }
 
+for (const chapter of p3Chapters) {
+  const summaryLength = stripHtml(chapter.summary).length;
+  if (summaryLength < 150 || summaryLength > 400) failures.push(`${chapter.id} 的 5 分鐘摘要應為 150–400 字，目前 ${summaryLength} 字。`);
+  if (chapter.objectives.length < 5 || chapter.objectives.length > 6) failures.push(`${chapter.id} 應有 5–6 個可驗證學習目標，目前 ${chapter.objectives.length} 個。`);
+  if (chapter.objectives.some((item) => /了解|認識|熟悉/.test(item))) failures.push(`${chapter.id} 的學習目標使用了無法驗證的動詞。`);
+  if ((chapter.prerequisites?.length ?? 0) < 2) failures.push(`${chapter.id} 至少需要 2 筆前置知識。`);
+  if ((chapter.readings?.length ?? 0) < 2) failures.push(`${chapter.id} 至少需要 2 筆延伸閱讀。`);
+  if (chapter.selfCheck.length < 5 || chapter.selfCheck.length > 8) failures.push(`${chapter.id} 應有 5–8 題自我檢測，目前 ${chapter.selfCheck.length} 題。`);
+  for (const section of chapter.sections) {
+    const length = stripHtml(section.body).length;
+    if (length < 190 || length > 1200) failures.push(`${chapter.id}/${section.id} 應為 190–1,200 字，目前 ${length} 字。`);
+  }
+  for (const lab of chapter.labs ?? []) {
+    if (!Array.isArray(lab.observation) || lab.observation.length < 2 || lab.observation.length > 4) failures.push(`${chapter.id}/${lab.id} 應有 2–4 條可執行觀察點。`);
+  }
+}
+
 if (failures.length) {
   console.error(`內容規範檢查失敗（${failures.length} 項）：`);
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：${chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、A01–A16 觀察引導。`);
+console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、A01–A18/A33 觀察引導。`);

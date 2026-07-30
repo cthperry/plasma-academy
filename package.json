@@ -15,10 +15,12 @@
     "check:size": "node scripts/check-size.mjs",
     "check:reviews": "node scripts/check-review-packets.mjs",
     "check:package": "node scripts/check-package-model.mjs",
+    "check:profiles": "node scripts/check-etch-profile-model.mjs",
     "audit:p1": "node scripts/audit-p1.mjs",
     "audit:p2": "node scripts/audit-p2.mjs",
+    "audit:p3": "node scripts/audit-p3.mjs",
     "verify:ui": "node scripts/verify-ui.mjs",
-    "check": "npm run build && npm run check:data && npm run check:content && npm run check:reviews && npm run check:package && npm run check:a11y && npm run check:contrast && npm run check:links && npm run check:size",
+    "check": "npm run build && npm run check:data && npm run check:content && npm run check:reviews && npm run check:package && npm run check:profiles && npm run check:a11y && npm run check:contrast && npm run check:links && npm run check:size",
     "serve": "npx --yes serve dist/client --listen 4173"
   },
   "devDependencies": {

@@ -76,6 +76,10 @@ for (const requiredTerm of ["重佈線層", "凸塊下金屬層", "底填膠", "
 if (labs.length !== 33 || !labs.some((lab) => lab.id === "A33" && lab.chapter === "3.7")) {
   failures.push(`互動元件清單應為 A01-A33 共 33 件，且 A33 必須屬於 3.7，目前 ${labs.length} 件。`);
 }
+for (const id of ["A17", "A18"]) {
+  const lab = labs.find((item) => item.id === id);
+  if (!lab || lab.href !== `/level/3/3-1-etch-mechanisms/#lab-${id.toLowerCase()}`) failures.push(`${id} 尚未正確接到 3.1 章節。`);
+}
 
 const expectedProcesses = ["電漿蝕刻", "PECVD", "PVD 濺鍍", "光阻灰化", "腔體清潔", "表面處理"];
 if (processMapEntries.length !== 6 || !expectedProcesses.every((name) => processMapEntries.some((entry) => entry.name === name))) {

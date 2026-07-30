@@ -4,7 +4,7 @@ export function initSearch() {
   const input = document.querySelector("[data-search-input]");
   const results = document.querySelector("[data-search-results]");
   if (!button || !popover || !input || !results) return;
-  let indexPromise;
+  let index;
   button.addEventListener("click", () => {
     popover.hidden = !popover.hidden;
     if (!popover.hidden) input.focus();
@@ -15,11 +15,13 @@ export function initSearch() {
       results.textContent = "";
       return;
     }
-    indexPromise ??= fetch("/assets/search-index.json").then((response) => response.json());
-    const searchIndex = await indexPromise;
+    index ??= fetch("/assets/search-index.json").then((response) => response.json());
+    const data = await index;
     const tokens = tokenize(query);
-    const ids = new Set(tokens.flatMap((token) => searchIndex.index[token] ?? []));
-    const matches = [...ids].slice(0, 8).map((id) => searchIndex.docs[id]);
+    const docs = data.docs;
+    const ids = new Set(tokens.flatMap((token) => data.index[token] ?? []));
+    const exact = (id) => +docs[id].title.toLowerCase().includes(query);
+    const matches = [...ids].sort((a, b) => exact(b) - exact(a) || a - b).slice(0, 8).map((id) => docs[id]);
     results.innerHTML = matches.length
       ? matches.map((item) => `<a href="${item.url}">${item.title}</a>`).join("")
       : "<p>沒有找到結果。</p>";

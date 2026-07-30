@@ -2,6 +2,7 @@ export const chapterThreeSeven = {
   id: "3-7",
   title: "3.7 封裝清潔與表面活化",
   hours: 3,
+  prerequisites: ["2.1 氣體動力學與真空", "2.2 製程氣體選用學", "3.4 電漿沉積與界面"],
   labs: [{
     id: "a33",
     title: "A33 封裝電漿處理計算器",
@@ -93,6 +94,23 @@ export const chapterThreeSeven = {
     {
       prompt: "為什麼接觸角不能單獨當作封裝清潔成功的證據？",
       answer: "接觸角只反映部分表面能，無法直接證明離子污染、化學殘留、附著力與長期可靠度都合格。"
+    },
+    {
+      prompt: "O2 電漿清潔 Cu pad 的主要上限風險是什麼？",
+      answer: "O2 能去除有機物，卻會增加 Cu 氧化；接觸角改善不代表打線或銲接潤濕一定改善。"
+    },
+    {
+      prompt: "為什麼大量助焊劑或可見殘留不應只靠低功率電漿處理？",
+      answer: "電漿適合調整最後幾奈米界面；大量污染應先用具選擇性的濕洗、刷洗與乾燥移除，否則可能碳化、再沉積或耗盡製程窗。"
+    },
+    {
+      prompt: "Clean-to-bond queue time 超時後，為什麼不能直接重跑相同 recipe？",
+      answer: "重清潔會累積聚合物損失、粗化、金屬氧化與離子劑量；只有在核准規範已涵蓋重清潔次數與累積 dose 時才能照流程執行。"
     }
+  ],
+  readings: [
+    "封裝材料供應商的 plasma treatment、接著與儲存條件技術資料。",
+    "廠區核准的 clean-to-bond、重清潔次數、離子污染與可靠度規範。",
+    "JEDEC MSL、溫循環、HAST 與封裝界面失效分析程序。"
   ]
 };

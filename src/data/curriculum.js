@@ -43,7 +43,7 @@ export const curriculum = {
       summary: "把蝕刻、沉積、缺陷、均勻度與封裝清潔轉成可診斷的工程工具。",
       labs: ["A17", "A18", "A19", "A20", "A21", "A22", "A23", "A24", "A25", "A33"],
       modules: [
-        { id: "3.1", title: "異向性蝕刻與協同效應", hours: 3, labs: ["A17", "A18"], prerequisites: "2.2, 2.4", href: "/level/3/", description: "從 Coburn-Winters 實驗一路連到 profile 控制。" },
+        { id: "3.1", title: "異向性蝕刻與協同效應", hours: 3, labs: ["A17", "A18"], prerequisites: "2.2, 2.4", href: "/level/3/3-1-etch-mechanisms/", description: "從 Coburn-Winters 實驗一路連到 profile 控制。" },
         { id: "3.2", title: "深矽與循環蝕刻", hours: 2.5, labs: ["A19"], prerequisites: "3.1", href: "/level/3/", description: "Bosch 製程、scallop 與高深寬比限制。" },
         { id: "3.3", title: "缺陷圖鑑與診斷", hours: 4, labs: ["A20", "A21"], prerequisites: "3.1", href: "/level/3/", description: "把 profile 症狀轉成可能成因與對策。" },
         { id: "3.4", title: "電漿沉積與填溝", hours: 3.5, labs: ["A22", "A23"], prerequisites: "2.3", href: "/level/3/", description: "PECVD、HDP-CVD、PEALD 與階梯覆蓋率。" },
