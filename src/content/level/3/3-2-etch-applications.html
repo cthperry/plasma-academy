@@ -1,0 +1,385 @@
+<!--meta
+{
+  "title": "3.2 主要蝕刻應用 — Plasma Academy",
+  "description": "五大蝕刻應用的氣體、參數策略與關鍵挑戰:Poly-Si gate 三步法、介電質高深寬比孔、SiN spacer、金屬 Al/W 與 Cu 的困境、深矽 Bosch 循環。",
+  "type": "chapter",
+  "module": "3.2"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>3.2 主要蝕刻應用</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 4.0 小時</span>
+    <span>🔬 A19 互動元件</span>
+    <span>L3 進階 · 應用章</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="3.2">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>對五大蝕刻應用,說出材料、氣體、機台型式與關鍵挑戰</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋 poly gate 的 OE 步為什麼要改成高壓低 bias</span></label></li>
+    <li><label><input type="checkbox" /><span>說明為什麼 BCl₃ 在 Al 蝕刻裡不可取代</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋為什麼 Cu 不能用電漿蝕刻,以及業界怎麼繞過去</span></label></li>
+    <li><label><input type="checkbox" /><span>說明 Bosch 的循環邏輯與 scallop 的來源</span></label></li>
+    <li><label><input type="checkbox" /><span>指出 Bosch 循環時間的 trade-off,以及它為什麼成立</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../3-1-etch-mechanisms/">3.1 蝕刻機制</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    3.1 講的是機制,這一章把同一套機制套到<strong>五個真實製程</strong>上。
+    每個應用的敘述格式都一樣:<strong>目標 → 挑戰 → 氣體設計 → 參數策略 → 常見問題</strong>。
+  </p>
+  <ul>
+    <li><strong>Poly gate</strong> —— 三步法(BT/ME/OE),而 OE 步刻意
+      <strong>高壓低 bias</strong>:把離子能量壓到 gate oxide 的濺鍍閾值以下。
+      這是<strong>閾值選擇性的教科書應用</strong>。</li>
+    <li><strong>介電質高深寬比孔</strong> —— 數 kV 級離子能量,而 O₂ 是最敏感的旋鈕。</li>
+    <li><strong>金屬 Al</strong> —— 三個獨特難題,其中「側壁殘留 Cl 造成腐蝕」是
+      <strong>出腔後幾小時內金屬線就被吃斷</strong>的等級。</li>
+    <li><strong>Cu 不能蝕刻</strong> —— 所有鹵化物沸點都太高。業界的解法是整個製程轉彎
+      (大馬士革)。</li>
+    <li><strong>深矽 Bosch</strong> —— 把保護與移除<strong>分到不同的時間段</strong>,
+      而 scallop 是這件事的必然副產品。</li>
+  </ul>
+</div>
+
+<h2 id="poly">3.2.1 Poly-Si Gate 蝕刻</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>目標</strong>:在 1–2 nm 的閘極氧化層上蝕刻 50–100 nm 的多晶矽,CD 控制到 nm 級。<br />
+    <strong>挑戰</strong>:對 gate oxide 選擇比要 &gt; 100;CD 均勻度;不能有 footing 或 notching。<br />
+    <strong>氣體</strong>:<code>Cl₂ / HBr / O₂</code>(BT 步另加含氟氣體)
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>步驟</th><th>目的</th><th>特徵</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BT</strong>(Breakthrough)</td><td>打穿原生氧化層</td>
+          <td>低壓、高 bias、含氟或純 Cl₂、<strong>時間控制</strong>(沒有終點訊號可用)</td></tr>
+        <tr><td><strong>ME</strong>(Main Etch)</td><td>主要蝕刻,建立 profile</td>
+          <td>中壓、Cl₂ + HBr + O₂、OES 終點</td></tr>
+        <tr><td><strong>OE</strong>(Over Etch)</td><td>清乾淨殘留、保護 oxide</td>
+          <td><strong>高壓、低 bias、高 HBr</strong> → 轉向化學、高選擇比</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼 OE 要反過來調成高壓低 bias</div>
+    <p>
+      這一步已經接近 gate oxide,而 oxide 只有 1–2 nm —— <strong>打穿就完蛋</strong>。
+      所以必須把離子能量降到 <strong>oxide 的濺鍍閾值以下</strong>,
+      靠純化學把殘留的 Si 清掉。
+    </p>
+    <p>
+      這正是 <a href="../3-1-etch-mechanisms/#selectivity">3.1.5</a> 說的
+      <strong>閾值選擇性</strong>:不是靠鈍化、也不是靠產物揮發性差異,
+      而是靠「把 IEDF 整條壓到下層材料的閾值以下」。
+      三種選擇比來源裡,它的窗最窄,但在這裡是唯一可行的。
+    </p>
+    <p>
+      代價是 OE 步的蝕刻率很低 —— 又是
+      <a href="../3-1-etch-mechanisms/#selectivity">選擇比與速率的那個 trade-off</a>。
+    </p>
+  </div>
+
+  <p><strong>常見問題</strong>:notching(SOI 或高選擇比 OE 時)、微負載、footing。</p>
+</div>
+
+<h2 id="har">3.2.2 介電質接觸孔 / 高深寬比蝕刻</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>目標</strong>:在 SiO₂ / SiN / ONO 疊層蝕出 AR 10:1 到 60:1 的孔
+    (3D NAND 可到 100:1)。<br />
+    <strong>挑戰</strong>:<span class="pa-term" data-term="ARDE">ARDE</span>、
+    <span class="pa-term" data-term="bowing">bowing</span>、twisting、遮罩選擇比、底部殘留。<br />
+    <strong>氣體</strong>:<code>C₄F₈ 或 C₄F₆ / Ar / O₂</code>(+ CO、CH₂F₂ 微調)
+  </p>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>CCP、數 kV 級離子能量</strong> —— 必須打斷 Si–O 鍵,而且要能穿透深孔</div>
+    <div class="pa-chain__step"><strong>低壓</strong> —— 維持方向性(離子角度發散小,見 3.1.6)</div>
+    <div class="pa-chain__step"><strong>高聚合氣體</strong> —— 側壁保護 + 對遮罩的選擇比</div>
+    <div class="pa-chain__step pa-chain__step--end"><strong>O₂ 微調聚合物厚度 —— 這是最敏感的旋鈕</strong></div>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 為什麼 O₂ 這麼敏感</div>
+    <p>
+      O₂ 同時做兩件方向相反的事:提高有效 F/C(消耗 C、放出 F)<strong>並且</strong>
+      直接燒掉已經沉積的聚合物。所以它是唯一能連續微調「側壁保護厚度」的旋鈕。
+    </p>
+    <p>
+      加太少 → 聚合物過厚 → <strong>etch stop</strong>(孔刻不到底)。
+      加太多 → 側壁沒保護 → <strong>bowing</strong>。
+      製程窗窄到常常以 <strong>1 sccm</strong> 為單位在調。
+    </p>
+  </div>
+
+  <p><strong>先進節點的手段</strong>:</p>
+  <ul>
+    <li>低溫 / cryo 蝕刻(−20 到 −60 °C)提升鈍化與選擇比</li>
+    <li>高能量 + <strong>脈衝偏壓</strong>,把 IEDF 壓窄(見 <a href="../../4/4-4-advanced-tech/">4.4</a>)</li>
+    <li>利用負離子中和深孔充電(否則離子被自己造成的電場推歪 → twisting)</li>
+  </ul>
+</div>
+
+<h2 id="spacer">3.2.3 SiN Spacer 蝕刻</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>目標</strong>:在 Si 與 SiO₂ 上蝕刻 SiN,<strong>保留側壁 spacer</strong>,不咬進基板。<br />
+    <strong>氣體</strong>:<code>CH₂F₂ / CH₃F + O₂ + Ar</code>(低 F/C,高聚合)
+  </p>
+  <p>
+    <strong>關鍵</strong>:對 Si 的選擇比靠聚合物<strong>在 Si 上淨累積、在 SiN 上被 N 消耗</strong>
+    的差異 —— 與 <a href="../3-1-etch-mechanisms/#passivation">3.1.4</a> 講的
+    SiO₂ 用氧消耗聚合物是同一個機制,只是換成氮。O₂ 比例是選擇比的主旋鈕。
+  </p>
+  <p>
+    <strong>現代替代</strong>:<strong>準原子層蝕刻(Quasi-ALE)</strong> ——
+    沉積一層薄聚合物,再用 Ar 電漿活化反應,循環進行。
+    選擇比與 CD 控制遠優於連續蝕刻(見 <a href="../../4/4-4-advanced-tech/">4.4</a>)。
+  </p>
+  <p class="pa-subtle">
+    注意這個「沉積 → 活化 → 重複」的結構,與本章最後的 Bosch 是同一個想法:
+    <strong>把互相衝突的兩件事分到不同的時間段</strong>。
+  </p>
+</div>
+
+<h2 id="metal">3.2.4 金屬蝕刻:Al、W 與 Cu 的困境</h2>
+
+<div class="pa-prose">
+  <p><strong>Al 蝕刻</strong>:<code>Cl₂ / BCl₃ / N₂</code>(+ CHF₃)</p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>難題</th><th>成因</th><th>對策</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>原生 Al₂O₃ 擋在最前面</strong></td>
+          <td>Al 一碰空氣就長一層氧化鋁,Cl₂ 蝕不動它</td>
+          <td><strong>BCl₃ 提供 B 去抓氧</strong> —— 這是 BCl₃ 不可取代的原因</td>
+        </tr>
+        <tr>
+          <td><strong>出腔後腐蝕</strong></td>
+          <td>側壁殘留的 Cl 遇到大氣中的水氣形成 HCl</td>
+          <td>出腔後必須做 H₂O 電漿或 NH₃ 處理、DI 水沖洗</td>
+        </tr>
+        <tr>
+          <td><strong>Cu 殘留</strong>(Al-Cu 合金)</td>
+          <td>CuCl<sub>x</sub> 不揮發,留在表面</td>
+          <td>額外的物理轟擊把它打掉</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠ 腐蝕不是「慢慢劣化」,是幾小時內就斷線</div>
+    <p>
+      未做後處理的晶圓,<strong>金屬線在幾小時內就會被吃斷</strong>。
+      這不是可靠性測試才會看到的問題,是當班就會發現的問題。
+    </p>
+    <p>
+      這也是 <a href="../3-3-defect-atlas/">3.3 圖鑑</a>裡
+      <strong>唯一被標成高風險</strong>的缺陷 —— 因為它會在下游才爆,
+      而且整批都跑掉了。
+    </p>
+  </div>
+
+  <p>
+    <strong>W 蝕刻</strong>:<code>SF₆ / NF₃ + O₂</code>。產物 WF₆ 揮發性佳,相對容易。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 Cu 為什麼不能蝕刻 —— 製程被材料化學逼著轉彎</div>
+    <p>
+      所有 Cu 鹵化物的沸點都太高(<strong>CuCl₂ 沸點 993 °C</strong>)。
+      蝕刻的第一原理是「產物必須揮發掉」,而 Cu 在任何可用的溫度下都做不到。
+    </p>
+    <p>
+      業界的解法不是換氣體,而是<strong>整個製程反過來做</strong>:
+      <strong>大馬士革製程</strong> —— 先蝕介電質溝槽,電鍍填 Cu,再 CMP 磨平。
+    </p>
+    <p>
+      這是製程整合被材料化學逼著轉彎最著名的案例,
+      也是 <a href="../../2/2-2-gas-selection/#lab-a09">A09 決策樹</a>裡唯一的「否決題」:
+      不管你怎麼選氣體,答案都是不行。
+    </p>
+  </div>
+</div>
+
+<h2 id="bosch">3.2.5 深矽蝕刻:Bosch 製程</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>目標</strong>:MEMS、TSV,深度數十到數百 µm,AR 可達 30:1 以上。
+  </p>
+
+  <div class="pa-chain">
+    <div class="pa-chain__step"><strong>沉積</strong> —— C₄F₈ 電漿,全表面鋪一層 Teflon 狀聚合物(~50 nm)</div>
+    <div class="pa-chain__step"><strong>清底</strong> —— 高 bias 短脈衝,<strong>只把溝底的聚合物打掉</strong>(側壁保留)</div>
+    <div class="pa-chain__step pa-chain__step--end"><strong>蝕刻</strong> —— SF₆ 電漿,F 等向性快速蝕刻裸露的 Si(~0.5–2 µm),然後回到第一步</div>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼非得分開不可</div>
+    <p>
+      SF₆ 蝕 Si 的速率極高,但<strong>完全等向</strong> ——
+      單獨用會把側壁咬爛,溝變成一個大肚子。
+    </p>
+    <p>
+      分成循環之後,側壁在蝕刻步<strong>只暴露很短的時間</strong>就被下一輪聚合物蓋住;
+      而溝底因為被離子打到,聚合物每一輪都會被清開 → 只有往下的方向持續前進。
+    </p>
+    <p>
+      <strong>Bosch 的全部祕密就是這一句:把「保護」與「移除」分到不同的時間段。</strong>
+      3.1 的側壁鈍化是<em>同時</em>做這兩件事,Bosch 是<em>輪流</em>做 ——
+      而輪流做的代價,就是下面的 scallop。
+    </p>
+  </div>
+
+  <h3 id="scallop">Scallop(扇貝紋)是必然的副產品</h3>
+
+  <p>
+    每個循環在側壁留下一個半圓形凹痕,深度 50–500 nm。
+    它不是缺陷、也不是沒調好 —— 只要是輪流做,就一定會有。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 循環時間的 trade-off,以及它為什麼成立</div>
+    <p>
+      A19 實測(短循環 1 s + 4 s × 16 圈 vs 長循環 4 s + 16 s × 4 圈):
+    </p>
+    <ul>
+      <li>短循環:scallop <strong>1.42</strong>、每秒深度 <strong>0.433</strong></li>
+      <li>長循環:scallop <strong>2.61</strong>、每秒深度 <strong>0.472</strong></li>
+    </ul>
+    <p>
+      <strong>循環越短 → scallop 越小(側壁越光滑),但產率越差。</strong>
+    </p>
+    <p>
+      而產率變差的原因<strong>不在化學</strong>:每個循環都要換氣、抽掉上一步的殘氣、
+      等電漿重新穩定,這筆<strong>固定的切換開銷</strong>(模型取每次 0.6 s)
+      循環越短佔比越高 —— 實測短循環 <strong>19 %</strong> 的時間耗在切換,
+      長循環只有 <strong>6 %</strong>。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠ 這件事在建模時差點寫錯</div>
+    <p>
+      把切換開銷拿掉之後,模型會得出<strong>「循環越短越好」</strong> ——
+      scallop 更小、深度速率還更高。那樣 Bosch 就沒有任何理由用長循環了,
+      顯然與現場不符。
+    </p>
+    <p>
+      <strong>讓 trade-off 成立的是機台的切換時間,不是化學。</strong>
+      這是一個很容易被略過、但少了它整段結論就反過來的細節。
+    </p>
+  </div>
+
+  <p>
+    <strong>改良</strong>:混合模式(pseudo-Bosch,SF₆ + C₄F₈ 同時通,連續蝕刻)
+    可得光滑側壁但速率較低 —— 等於放棄「輪流」回到「同時」,
+    也就放棄了 Bosch 的速率優勢。
+  </p>
+</div>
+
+<h2 id="lab-a19">🔬 A19 Bosch 製程循環動畫</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A19">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A19</span>
+    <span class="pa-lab__title">循環、scallop 與兩種失敗模式</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。三個旋鈕(沉積步時間、蝕刻步時間、清底 bias)
+      驅動輪廓引擎,在兩組參數之間交替。scallop、側壁被咬爛、溝底被封死
+      三種結果都是引擎自己長出來的,沒有為任何一種寫規則。
+    </div>
+  </noscript>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 A19 沒有一行程式在「畫」scallop</div>
+  <p>
+    模型只做一件事:在兩組參數之間交替 ——
+    沉積步 F/C 低、離子能量低;蝕刻步 F/C 高、離子能量高。
+  </p>
+  <p>
+    scallop 是「蝕刻步把新露出的側壁咬一口、沉積步再把它封住」的<strong>必然結果</strong>。
+    兩種失敗模式也一樣:關掉沉積步就被咬爛,關掉 bias 就被封死 ——
+    它們是同一條軸的兩端,不是兩個獨立的 bug。
+  </p>
+</div>
+
+<h2 id="wrap">3.2.6 五個應用共用的一張表</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>應用</th><th>主氣體</th><th>選擇比靠什麼</th><th>最頭痛的</th></tr></thead>
+      <tbody>
+        <tr><td>Poly gate</td><td>Cl₂ / HBr / O₂</td><td><strong>閾值</strong>(OE 步壓低能量)</td><td>1–2 nm 的 gate oxide</td></tr>
+        <tr><td>介電質 HAR 孔</td><td>C₄F₈ / C₄F₆ / Ar / O₂</td><td><strong>鈍化</strong>(O₂ 微調)</td><td>ARDE、bowing、twisting</td></tr>
+        <tr><td>SiN spacer</td><td>CH₂F₂ / CH₃F / O₂</td><td><strong>鈍化</strong>(N 消耗聚合物)</td><td>不能咬進基板</td></tr>
+        <tr><td>Al 金屬</td><td>Cl₂ / BCl₃ / N₂</td><td>化學 + 物理</td><td><strong>出腔後腐蝕</strong></td></tr>
+        <tr><td>深矽 Bosch</td><td>C₄F₈ ↔ SF₆ 交替</td><td><strong>時間分離</strong></td><td>scallop 與產率的 trade-off</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>把這張表的第三欄讀一遍</strong>:五個應用用了三種不同的選擇比來源,
+    而 <a href="../3-1-etch-mechanisms/#selectivity">3.1.5</a> 說的就是這三種。
+    機制只有那幾條,變的是怎麼組合。
+  </p>
+  <p>
+    3.3 會把這些製程出錯時的樣子整理成缺陷圖鑑。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>Poly gate 的三步各自負責什麼?為什麼 OE 步要反過來調成高壓低 bias?</li>
+    <li>OE 步用的是三種選擇比來源中的哪一種?它的代價是什麼?</li>
+    <li>介電質 HAR 蝕刻裡,O₂ 加太少與加太多各會出現什麼缺陷?</li>
+    <li>BCl₃ 在 Al 蝕刻裡為什麼不可取代?換成純 Cl₂ 會卡在哪一步?</li>
+    <li>Al 蝕刻後不做後處理會發生什麼?時間尺度是幾天還是幾小時?</li>
+    <li>Cu 為什麼不能用電漿蝕刻?業界怎麼繞過去?</li>
+    <li>用一句話說明 Bosch 為什麼要把沉積與蝕刻分開。SiN spacer 的 Quasi-ALE 和它的共通點是什麼?</li>
+    <li>Bosch 縮短循環時間,scallop 與產率各會怎麼變?<strong>產率變差的原因是化學還是機台?</strong></li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Laermer &amp; Schilp, <em>Method of anisotropically etching silicon</em>, US Patent 5,501,893 (1996) —— Bosch 製程的原始專利</li>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 15</li>
+    <li>Wu, Kumar &amp; Pan, <em>High aspect ratio silicon etch: A review</em>, J. Appl. Phys. 108, 051101 (2010)</li>
+    <li>Donnelly &amp; Kornblit, <em>Plasma etching: Yesterday, today, and tomorrow</em>, J. Vac. Sci. Technol. A 31, 050825 (2013)</li>
+  </ul>
+</div>

@@ -18,9 +18,10 @@ const STEPS = [
   ["輪廓引擎的定性行為", "tools/check-profile.mjs"],
   ["缺陷資料與診斷區分", "tools/check-defects.mjs"],
   ["封裝電漿模型與課文數值一致", "tools/check-package.mjs"],
+  ["Bosch 循環的兩個觀察點", "tools/check-bosch.mjs"],
   // A18 的八種 profile 驗收(tools/check-shapes.mjs)刻意**不放進**品質門:
-  // 它目前只有四種通得過,是一份還沒達成的驗收條件,不是回歸測試。
-  // 用 `npm run check:shapes` 單獨跑,進度記在 docs/11 的 A18 實作紀錄。
+  // 它目前只有五種通得過,是一份還沒達成的驗收條件,不是回歸測試。
+  // 用 `npm run check:shapes` 單獨跑,狀態記在 docs/11 的 A18 狀態表。
   ["色彩對比(深淺兩套主題)", "tools/check-contrast.mjs"],
   ["建置", "build/build.mjs"],
   ["死鏈", "tools/check-links.mjs"],

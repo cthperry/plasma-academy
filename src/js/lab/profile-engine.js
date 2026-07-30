@@ -487,7 +487,19 @@
           // 兩者都是離子打出來的,沒有理由只有其中一項有角度依賴。
           var ionAct = fi * yi * angY;
           var gate = ionAct / (3 + ionAct); // 無離子 → 0,離子充足 → 1
-          var rem = ionAct * 0.03 + m.oxy * (ionAct * 0.075 + fRad * 0.38 * gate);
+          /**
+           * polySputterRel:聚合物**物理濺射**的相對效率(預設 1)。
+           *
+           * 0.03 這個係數是在介電質蝕刻的情境下校準的 —— 那裡 SiO₂ 自身的氧
+           * (`m.oxy`)才是清聚合物的主力,離子濺射只是配角。
+           * 但在**矽**上(oxy = 0)就只剩這一項,而 Bosch 的清底步正是靠
+           * 高 bias 把溝底的聚合物「打」掉 —— 用介電質的係數會讓沉積步
+           * 一輪就把整個溝封死,蝕刻完全停住(實測深度 1 列)。
+           *
+           * 所以把它做成可調的倍率,預設 1 維持既有元件的行為不變。
+           */
+          var polySput = p.polySputterRel == null ? 1 : p.polySputterRel;
+          var rem = ionAct * 0.03 * polySput + m.oxy * (ionAct * 0.075 + fRad * 0.38 * gate);
           /**
            * 聚合物的**自發損失**(一階):熱脫附 + F 自由基把 CFx 咬回氣相。
            *
@@ -508,7 +520,17 @@
           if (pNew < polyCrit) {
             // 聚合物越厚,擋得越多(線性衰減到門檻)
             var block = 1 - pNew / polyCrit;
-            var chem = m.chem * fRad * fn * 0.35; // 等向
+            /**
+             * 等向的自發化學蝕刻。chemRel 是「這支化學有多會自己咬」的倍率
+             * (預設 1)。
+             *
+             * 0.35 是照氟碳化學(CF₄/C₄F₈)校準的 —— 那些氣體對 Si 的自發
+             * 蝕刻並不快。但 **SF₆ 對 Si 是出了名的又快又等向**,那正是
+             * Bosch 必須把沉積步分開來做的理由。沿用氟碳的係數會讓模型
+             * 即使**完全關掉沉積步**側壁也只鼓 10 %,而課文說的是「立刻被咬爛」。
+             */
+            var chemRel = p.chemRel == null ? 1 : p.chemRel;
+            var chem = m.chem * fRad * fn * 0.35 * chemRel; // 等向
             /**
              * 離子輔助(方向性)。兩種寫法:
              *
