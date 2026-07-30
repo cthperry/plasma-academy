@@ -64,6 +64,10 @@
       ionDiv: ionDiv(s.spread),
       ionReflect: (s.reflect || 0) / 100,
       localCoverage: true,
+      angularYield: true,
+      // 再沉積是 taper / footing 的成因,也讓側壁不再完美垂直,
+      // 鏡面反射(bowing / microtrench)才有作用的餘地
+      redeposition: 0.5,
       dt: 0.045,
     };
   }

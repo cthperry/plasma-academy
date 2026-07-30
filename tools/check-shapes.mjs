@@ -63,7 +63,7 @@ function run(params, opts) {
   };
 }
 
-const VERTICAL = { ion: 350, spread: 3, passiv: 25, radical: 55, reflect: 20, multi: false };
+const VERTICAL = { ion: 350, spread: 4, passiv: 45, radical: 60, reflect: 20, multi: false };
 
 // 八種 profile 與各自「應該被判定成什麼」
 const CASES = [

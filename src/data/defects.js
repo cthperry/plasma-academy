@@ -153,7 +153,7 @@
       ],
       related: ["undercut", "faceting", "microtrench"],
       ch: "3.3.3",
-      profile: { ion: 550, spread: 6, passiv: 42, radical: 60, reflect: 95, multi: false },
+      profile: { ion: 550, spread: 8, passiv: 42, radical: 60, reflect: 95, multi: false },
       risk: null,
     },
     {
@@ -174,7 +174,7 @@
       ],
       related: ["etch-stop", "inverse-lag"],
       ch: "3.3.3",
-      profile: { ion: 250, spread: 3, passiv: 84, radical: 45, reflect: 10, multi: false },
+      profile: { ion: 300, spread: 10, passiv: 55, radical: 50, reflect: 15, multi: false },
       risk: null,
     },
     {
@@ -213,7 +213,7 @@
       ],
       related: ["bowing", "footing"],
       ch: "3.3.3",
-      profile: { ion: 650, spread: 2, passiv: 45, radical: 50, reflect: 100, multi: false },
+      profile: { ion: 650, spread: 6, passiv: 50, radical: 50, reflect: 100, multi: false },
       risk: null,
     },
     {
@@ -234,7 +234,7 @@
       ],
       related: ["notching", "etch-stop", "microtrench"],
       ch: "3.3.3",
-      profile: { ion: 300, spread: 4, passiv: 60, radical: 45, reflect: 15, multi: false },
+      profile: { ion: 250, spread: 3, passiv: 72, radical: 45, reflect: 10, multi: false },
       risk: null,
     },
     {
@@ -349,7 +349,7 @@
       ],
       related: ["taper", "footing", "arde", "inverse-lag"],
       ch: "3.3.5",
-      profile: { ion: 150, spread: 4, passiv: 96, radical: 35, reflect: 10, multi: false },
+      profile: { ion: 150, spread: 4, passiv: 92, radical: 35, reflect: 10, multi: false },
       risk: null,
     },
     {

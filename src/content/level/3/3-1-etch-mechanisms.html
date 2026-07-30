@@ -422,10 +422,23 @@
   </div>
 
   <p>
-    A18 把這個角度依賴直接放進模型,所以你在 faceting 預設下看到的斜面
-    <strong>不是畫上去的,是產額的角度依賴算出來的</strong>;
-    把「離子鏡面反射」拉到 0,microtrench 的兩道小溝就會消失。
+    A18 把這條角度依賴直接放進模型(Yamamura 型,峰值在 60°、約 1.8 倍),
+    所以你在 faceting 預設下看到的斜面<strong>不是畫上去的,是產額的角度依賴算出來的</strong>
+    —— 遮罩開口因此從 1.00 被撐到 1.77 倍。
   </p>
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 兩種移除機制的角度依賴不一樣</div>
+    <p>
+      <strong>物理濺射</strong>(削遮罩、打掉聚合物)是動量轉移,60° 附近有明顯峰值。
+      但<strong>離子輔助化學蝕刻</strong>(3.1.2 的協同)靠的是離子提供活化能,
+      速率主要由自由基覆蓋率決定 —— 它的角度依賴<strong>弱得多</strong>。
+    </p>
+    <p>
+      這個區別不是細節:把完整的角度峰值也套在化學項上,任何斜面都會被清得特別快,
+      模擬出來的溝會變成<strong>完美的矩形</strong> —— 比真實製程乾淨太多,
+      taper 與 footing 會直接被抹平。
+    </p>
+  </div>
 </div>
 
 <h2 id="lab-a18">🔬 A18 蝕刻輪廓模擬器</h2>
@@ -484,15 +497,26 @@
     <div class="pa-note__title">⚠ 這個元件目前的限制,請一併知道</div>
     <p>
       A18 的驗收條件是「八種 profile 全部可重現」。
-      <strong>目前確實做得到的是四種</strong>:垂直、Footing、Faceting、Etch stop
+      <strong>目前確實做得到的是五種</strong>:垂直、Taper、Footing、Faceting、Etch stop
       (外加多溝槽視圖的 ARDE)。
-      Undercut、Taper、Bowing、Microtrench 這四種的預設參數還沒收斂 ——
-      調得出方向,但還做不到「特徵明確可辨」。
+      Undercut、Bowing、Microtrench 這三種還沒收斂。
     </p>
     <p>
-      這件事寫在這裡而不是藏起來,因為<strong>模擬器做不出來的形狀,圖鑑就沒有依據</strong>。
-      進度與技術原因記在 <code>docs/11-build-roadmap.md</code> 的 A18 實作紀錄,
-      驗收測試是 <code>npm run check:shapes</code>(目前 22 / 32)。
+      <strong>其中 Undercut 做不出來,其實是模型是對的。</strong>
+      A18 的目標膜是 SiO₂,而 F 自由基要蝕 SiO₂ 得先靠離子破 Si–O ——
+      這正是本節 3.1.4 講的化學選擇性,所以純化學的側蝕本來就很小。
+      Undercut 是 poly-Si / 金屬蝕刻的缺陷,不是介電質蝕刻的缺陷;
+      要示範它,得讓目標膜可以換成 Si。
+    </p>
+    <p>
+      Bowing 與 Microtrench 則是模型結構的限制:側壁的鈍化層會累積到飽和,
+      擋住的比例直接變成 0 或 1,沒有中間的梯度 ——
+      所以側壁不可能出現「中段比上下段多被咬一點」。
+    </p>
+    <p>
+      這些寫在這裡而不是藏起來,因為<strong>模擬器做不出來的形狀,圖鑑就沒有依據</strong>。
+      具體診斷與修法記在 <code>docs/11-build-roadmap.md</code> 的 A18 狀態表,
+      驗收測試是 <code>npm run check:shapes</code>(目前 21 / 32)。
     </p>
   </div>
 </div>

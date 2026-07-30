@@ -56,6 +56,29 @@
   }
 
   /**
+   * 濺鍍產額的**角度依賴** —— 課文 3.1.6 的那條曲線。
+   *
+   *   Y(θ)/Y(0) = (1/cos θ)^f · exp( −Σ·(1/cos θ − 1) )        (Yamamura 型)
+   *
+   * cos θ 是入射方向與表面法線的夾角餘弦:1 = 垂直入射、0 = 掠射。
+   * 取 f = 3、Σ = 1.5,峰值落在 cos θ = Σ/f = 0.5,也就是 **60°**,
+   * 峰值約 1.8 倍 —— 與課文「45–70° 產額最大、垂直入射反而不是最高」一致。
+   *
+   * **為什麼這一條非加不可**:少了它,斜面與平面的濺鍍速率一樣,於是
+   *   · 遮罩肩部不會被削出斜面 —— faceting 只能靠「遮罩整體變薄」冒充
+   *   · 溝底兩側的斜面不會比中央快 —— microtrench 長不出來
+   * 這兩個缺陷在課文裡都是用角度依賴解釋的,模型卻沒有它,是實作與課文脫節。
+   */
+  var ANG_F = 3;
+  var ANG_SIGMA = 1.5;
+  function angularYield(cosTheta) {
+    if (!(cosTheta > 0)) return 0; // 背向或掠射到極限 → 打不到
+    var u = 1 / Math.min(1, cosTheta);
+    if (u > 12) return 0; // 極掠射:反射掉,不濺鍍
+    return Math.pow(u, ANG_F) * Math.exp(-ANG_SIGMA * (u - 1));
+  }
+
+  /**
    * 建立一個剖面
    * opts: { cols, rows, layers: [{ material, thickness }], openings: [[x0,x1], ...] }
    *   layers 由上往下堆;openings 是遮罩的開口(以 0…1 的相對位置給)
@@ -271,7 +294,7 @@
           if (mat[i] === 0) continue;
           if (!exposed(x, y)) continue;
           var inc = ionFluxVec(x, y, div);
-          if (inc.f <= 0.02) continue;
+          if (inc.f <= 0.002) continue; // 門檻放很低:側壁的直射通量本來就小,&#10;                                     // 但它掠射進來,反射比例最高 —— 這正是要抓的那一份
           var nrm = normalAt(x, y);
           if (!nrm) continue;
 
@@ -362,9 +385,10 @@
      *   polyCrit    聚合物擋住蝕刻的門檻厚度
      *   ionDiv      離子角度發散的 tan θ(預設 0 = 完美垂直)
      *   ionReflect  鏡面反射係數(預設 0 = 全吸收)
+     *   angularYield 是否套用濺鍍產額的角度依賴(預設 false)
      * }
-     * ionDiv / ionReflect 預設為 0,此時行為與加入它們之前完全相同 ——
-     * A10 等既有元件不受影響。
+     * ionDiv / ionReflect / angularYield 預設關閉,此時行為與加入它們之前
+     * 完全相同 —— A10 等既有元件不受影響。
      *
      * 回傳三個代表位置的淨速率,供 UI 標示:溝底 / 側壁 / 遮罩頂
      */
@@ -405,8 +429,42 @@
           var m = BY_ID[mat[i]];
           // 直射 + 反射。反射進來的那一份沒有「方向性」的意義,
           // 但它一樣打斷鍵、一樣清聚合物 —— 所以就是加在同一個 fi 上。
-          var fi = (ionFluxVec(x, y, div).f + refl[i]) * iRel;
+          var inc = ionFluxVec(x, y, div);
+          var fi = (inc.f + refl[i]) * iRel;
           var fn = neutralFlux(x, y);
+
+          /**
+           * 濺鍍產額的角度依賴(3.1.6)。斜面比平面快,峰值在約 60°。
+           * 只作用在**離子驅動**的兩項(離子輔助蝕刻、聚合物的離子濺射),
+           * 化學蝕刻是等向的,與表面朝向無關。
+           */
+          var angY = 1; // 物理濺射用:完整的角度峰值
+          var angYchem = 1; // 離子輔助化學蝕刻用:角度依賴弱得多
+          if (p.angularYield) {
+            var nrm = normalAt(x, y);
+            if (nrm) {
+              // 離子來的方向:射線朝天空是 (slope, −1),所以入射是它的反向
+              var dxi = -inc.slope;
+              var dl = Math.sqrt(dxi * dxi + 1);
+              var cosI = -((dxi / dl) * nrm.x + (1 / dl) * nrm.y);
+              angY = angularYield(cosI);
+              /**
+               * **兩種移除機制的角度依賴不一樣,不能共用同一條曲線。**
+               *
+               * 物理濺射(打掉聚合物、削掉遮罩)是動量轉移,60° 附近有明顯峰值
+               * —— 用完整的 Y(θ)。
+               *
+               * 離子輔助化學蝕刻(3.1.2 的協同)靠的是離子提供活化能,
+               * 而反應速率主要由**自由基覆蓋率**決定,不是由反衝原子噴不噴得出來
+               * 決定 —— 它的角度依賴弱得多,接近只跟通量投影有關。
+               *
+               * 第一版把完整的 Y(θ) 也套在化學項上,結果任何斜面都被清得特別快,
+               * 溝變成**完美的矩形** —— 比真實製程乾淨太多,taper 與 footing
+               * 直接被抹平。用 0.35 的權重把峰值收斂回來。
+               */
+              angYchem = 1 + 0.35 * (angY - 1);
+            }
+          }
 
           // --- 聚合物收支 ---
           var dep = depRate * fn;
@@ -425,7 +483,9 @@
            * 所以鈍化層留著、蝕刻停住)。加上 gate 之後,無離子處 rem → 0,
            * 側壁才真的受保護。
            */
-          var ionAct = fi * yi;
+          // 離子活化強度。角度依賴同時作用在聚合物濺射與離子輔助蝕刻上 ——
+          // 兩者都是離子打出來的,沒有理由只有其中一項有角度依賴。
+          var ionAct = fi * yi * angY;
           var gate = ionAct / (3 + ionAct); // 無離子 → 0,離子充足 → 1
           var rem = ionAct * 0.03 + m.oxy * (ionAct * 0.075 + fRad * 0.38 * gate);
           // 上限只是數值保險,避免長時間沉積讓數字跑掉
@@ -461,14 +521,14 @@
             if (p.localCoverage) {
               var supply = fRad * fn;
               var coverage = supply / (0.6 + supply);
-              ionAssist = m.ionY * fi * yi * coverage * 0.48;
+              ionAssist = m.ionY * fi * yi * angYchem * coverage * 0.48;
             } else {
-              ionAssist = m.ionY * fi * yi * fRad * 0.16;
+              ionAssist = m.ionY * fi * yi * angYchem * fRad * 0.16;
             }
             etch = (chem + ionAssist) * block;
           }
 
-          updates.push([i, pNew, etch * dt]);
+          updates.push([i, pNew, etch * dt, x, y, etch]);
 
           // 取樣三個代表位置
           if (fi > 0.5 && m.key !== "mask" && y > bestBottom) {
@@ -480,9 +540,56 @@
         }
       }
 
+      /**
+       * 再沉積(redeposition)。
+       *
+       * 從溝底被打下來的材料不會全部變成揮發性分子飛走 —— 一部分會落在
+       * 附近的表面上重新黏住,形成一層擋住蝕刻的膜(與聚合物同樣的作用)。
+       * 落點集中在**溝的下半段**,因為那裡離濺射源最近、立體角最大。
+       *
+       * 這一條解釋了三件課文裡的事,而且是同一個機制:
+       *   · taper   —— 下段的再沉積比上段厚 → 越往下越窄
+       *   · footing —— 底角是再沉積最厚的地方 → 清不乾淨
+       *   · 側壁因此不再完美垂直,鏡面反射才開始有作用(bowing / microtrench)
+       *
+       * 沒有它,模型會給出「完美矩形」的溝 —— 那比真實製程乾淨太多了。
+       */
+      var redep = p.redeposition || 0;
+      var redepAdd = null;
+      if (redep > 0) {
+        redepAdd = new Float32Array(n);
+        var RAD = 3;
+        for (var q = 0; q < updates.length; q++) {
+          var src = updates[q];
+          var srcEtch = src[5];
+          if (srcEtch <= 0) continue;
+          var sx = src[3];
+          var sy = src[4];
+          for (var oy = -RAD; oy <= RAD; oy++) {
+            for (var ox = -RAD; ox <= RAD; ox++) {
+              if (!ox && !oy) continue;
+              var tx = sx + ox;
+              var ty = sy + oy;
+              if (tx < 0 || tx >= cols || ty < 0 || ty >= rows) continue;
+              var ti2 = idx(tx, ty);
+              if (mat[ti2] === 0) continue;
+              if (!exposed(tx, ty)) continue;
+              var d2 = ox * ox + oy * oy;
+              // 落點權重隨距離衰減;往上飛的比往旁邊的少(重力無關,是立體角)
+              var w2 = 1 / (1 + d2);
+              if (oy < 0) w2 *= 0.45; // 往上落得少
+              redepAdd[ti2] += redep * srcEtch * w2 * dt;
+            }
+          }
+        }
+      }
+
       for (var u = 0; u < updates.length; u++) {
         var ui = updates[u][0];
+        // 先寫回這一步算出的聚合物收支,再疊上再沉積 ——
+        // 順序反過來的話 pNew 會把再沉積整個蓋掉(它算的時候還不知道有再沉積)。
         poly[ui] = updates[u][1];
+        if (redepAdd) poly[ui] = Math.min(4 * polyCrit, poly[ui] + redepAdd[ui]);
         frac[ui] += updates[u][2];
         if (frac[ui] >= 1) {
           mat[ui] = 0;
