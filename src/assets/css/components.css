@@ -409,6 +409,45 @@
 .eedf-rate-bars .dissociation { background: var(--pa-primary); }
 .eedf-rate-bars output { font: 12px var(--pa-font-mono); text-align: right; }
 
+.lab-stage--package-clean {
+  grid-template-columns: minmax(0, 1fr) 280px;
+}
+
+.package-clean-visual {
+  align-self: start;
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.package-clean-visual svg {
+  color: var(--pa-text-muted);
+  display: block;
+  width: 100%;
+}
+
+.package-clean-context {
+  border-top: 1px solid var(--pa-border);
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+}
+
+.package-clean-context span,
+.package-clean-context p {
+  color: var(--pa-text-muted);
+  font-size: var(--pa-text-sm);
+  margin: 0;
+}
+
+.package-angle-line { stroke: var(--pa-primary); stroke-width: 3; }
+.package-adhesion-line { stroke: var(--pa-success); stroke-dasharray: 6 4; stroke-width: 3; }
+.package-spec-line { stroke: var(--pa-danger); stroke-dasharray: 5 4; stroke-width: 1.5; }
+.package-angle-point { fill: var(--pa-surface); stroke: var(--pa-primary); stroke-width: 3; }
+.package-adhesion-point { fill: var(--pa-surface); stroke: var(--pa-success); stroke-width: 3; }
+
 .iedf-visual {
   background: var(--pa-surface-sunken);
   border: 1px solid var(--pa-border);
@@ -1370,7 +1409,8 @@
 @media (max-width: 980px) {
   .lab-grid,
   .lab-stage,
-  .lab-stage.lab-process-layout {
+  .lab-stage.lab-process-layout,
+  .lab-stage--package-clean {
     grid-template-columns: 1fr;
   }
 }

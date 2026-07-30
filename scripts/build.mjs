@@ -69,7 +69,7 @@ function homepage() {
       <section class="hero">
         <div class="hero-copy">
           <h1>把 recipe 上的數字，連回電漿狀態與晶圓結果。</h1>
-          <p>為半導體製程工程師設計的電漿教材。P0 先完成可維護的網站骨架、共用元件庫與進度追蹤，後續章節與 28 件互動元件都從同一套系統長出來。</p>
+          <p>為半導體製程工程師設計的電漿教材。網站共用同一套骨架、元件庫與進度追蹤，33 件互動元件都從一致的模型與介面契約長出來。</p>
           <div class="hero-actions">
             <a class="button primary" href="/level/1/1-1-fourth-state/">從 1.1 開始</a>
             <a class="button secondary" href="/lab/">查看互動實驗室</a>
@@ -98,7 +98,7 @@ function homepage() {
       </section>
 
       <section class="quick-grid" aria-label="快速入口">
-        <a href="/lab/"><strong>互動實驗室</strong><span>28 件元件的獨立入口</span></a>
+        <a href="/lab/"><strong>互動實驗室</strong><span>33 件元件的獨立入口</span></a>
         <a href="/gases/"><strong>氣體百科</strong><span>32 種製程氣體與安全欄位</span></a>
         <a href="/progress/"><strong>個人進度</strong><span>匯出與匯入瀏覽器進度</span></a>
         <a href="/glossary/"><strong>術語表</strong><span>中英並列與 tooltip 來源</span></a>
@@ -348,7 +348,7 @@ function l1ChapterPage(chapter, index) {
 
 function packagingCleaningPage() {
   const objectives = chapterThreeSeven.objectives.map((item) => `<li>${item}</li>`).join("");
-  const outline = chapterThreeSeven.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("");
+  const outline = `${chapterThreeSeven.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("")}<a href="#lab-a33">A33 封裝處理計算器</a>`;
   const bodySections = chapterThreeSeven.sections.map((section) => `
     <section id="${section.id}" class="prose-section">
       <h2>${section.title}</h2>
@@ -356,6 +356,7 @@ function packagingCleaningPage() {
     </section>
   `).join("");
   const callouts = chapterThreeSeven.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapterThreeSeven.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterThreeSeven.selfCheck.map((item) => `
     <details class="check-card">
       <summary>${item.prompt}</summary>
@@ -374,7 +375,7 @@ function packagingCleaningPage() {
       <article class="chapter-main">
         ${breadcrumb(["首頁", "L3 進階", "3.7 封裝清潔"])}
         <header class="chapter-header">
-          <p class="chapter-meta">時數 ${chapterThreeSeven.hours} h · 封裝應用主題</p>
+          <p class="chapter-meta">時數 ${chapterThreeSeven.hours} h · 封裝應用主題 · 互動元件 A33</p>
           <h1>${chapterThreeSeven.title}</h1>
           <p>把電漿清潔從「去殘留」提升到「界面可靠度控制」。</p>
         </header>
@@ -385,6 +386,7 @@ function packagingCleaningPage() {
         ${callout("summary", "5 分鐘摘要", chapterThreeSeven.summary)}
         ${bodySections}
         ${callouts}
+        ${labsHtml}
         <section class="self-check">
           <h2>自我檢測</h2>
           ${checks}
@@ -609,7 +611,7 @@ function labPage() {
       ${breadcrumb(["首頁", "互動實驗室"])}
       <section class="page-intro">
         <h1>互動實驗室</h1>
-        <p>28 件互動元件共用同一套 lifecycle、controls、plot、particle engine 與 canvas theme 模組。P0 先啟用 A01 示範，其餘保留規格入口。</p>
+        <p>33 件互動元件共用同一套 lifecycle、controls、plot、particle engine 與 canvas theme 模組；已完成的元件可從章節直接操作。</p>
       </section>
       <div class="filter-row" role="group" aria-label="實驗室篩選">
         <button type="button" class="segmented active" data-filter="all">全部</button>

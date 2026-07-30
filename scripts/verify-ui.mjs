@@ -511,6 +511,25 @@ await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
 const packagingH1 = await desktop.locator("h1").first().textContent();
+await desktop.locator("#lab-a33").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(500);
+const a33ControlCount = await desktop.locator('#lab-a33 input[type="range"]').count();
+const a33OutputCount = await desktop.locator("#lab-a33 .value-panel dd").count();
+const a33PathCount = await desktop.locator("#lab-a33 svg path.plot-line").count();
+const a33InitialAngle = parseFloat(await desktop.locator('#lab-a33 [data-value-key="接觸角"]').textContent());
+const a33InitialAdhesion = parseFloat(await desktop.locator('#lab-a33 [data-value-key="接著力指數"]').textContent());
+const a33Ranges = desktop.locator('#lab-a33 input[type="range"]');
+await a33Ranges.nth(2).evaluate((input) => { input.value = "180"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a33OvertreatedAngle = parseFloat(await desktop.locator('#lab-a33 [data-value-key="接觸角"]').textContent());
+const a33OvertreatedAdhesion = parseFloat(await desktop.locator('#lab-a33 [data-value-key="接著力指數"]').textContent());
+const a33OvertreatedStatus = await desktop.locator("#lab-a33 [data-lab-status]").textContent();
+await desktop.locator("#lab-a33").getByRole("radio", { name: "打線前 pad" }).click();
+const a33ReducedOxide = parseFloat(await desktop.locator('#lab-a33 [data-value-key="金屬氧化"]').textContent());
+const a33ReducedAdhesion = parseFloat(await desktop.locator('#lab-a33 [data-value-key="接著力指數"]').textContent());
+await desktop.locator("#lab-a33 select").first().selectOption("o2");
+const a33OxidizedOxide = parseFloat(await desktop.locator('#lab-a33 [data-value-key="金屬氧化"]').textContent());
+const a33OxidizedAdhesion = parseFloat(await desktop.locator('#lab-a33 [data-value-key="接著力指數"]').textContent());
+const a33OxidizedStatus = await desktop.locator("#lab-a33 [data-lab-status]").textContent();
 await desktop.screenshot({ path: path.join(qaDir, "desktop-packaging-cleaning.png"), fullPage: true });
 
 await desktop.goto(`${base}/level/1/1-1-fourth-state/`, { waitUntil: "networkidle" });
@@ -820,6 +839,15 @@ const mobileA16CanvasPixels = await mobile.evaluate(() => {
 });
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a16.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/3/3-7-packaging-cleaning/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a33").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(400);
+const mobileA33Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA33ControlCount = await mobile.locator('#lab-a33 input[type="range"]').count();
+const mobileA33OutputCount = await mobile.locator("#lab-a33 .value-panel dd").count();
+const mobileA33PathCount = await mobile.locator("#lab-a33 svg path.plot-line").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a33-package-clean.png"), fullPage: false });
+
 await mobile.evaluate(() => {
   const chapters = Object.fromEntries(["1-1", "1-2", "1-3", "1-4", "1-5"].map((id) => [id, { visited: true, objectives: [true, true, true, true] }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
@@ -860,6 +888,7 @@ Object.assign(result, { a14At550Up, a14At700Up, a14At550Down, a14At400Down, a14P
 Object.assign(result, { a15InitialReflection, a15MatchedReflection, a15FirstFingerprint, a15DriftReflection, a15RematchedReflection, a15SecondFingerprint, a15PathCount, a15PointCount, a15CanvasPixels, mobileA15Overflow, mobileA15PathCount, mobileA15CanvasPixels });
 Object.assign(result, { a16ControlCount, a16OutputCount, a16ChainCount, a16LowSourceTe, a16LowSourceDensity, a16HighSourceTe, a16HighSourceDensity, a16TeDelta, a16ZeroBiasRate, a16ZeroBiasSelectivity, a16ZeroBiasProfile, a16HighBiasRate, a16HighBiasSelectivity, a16ChallengeStatus, a16ChallengeClass, a16CanvasPixels, a16ThemeBefore, a16ThemeAfter, mobileA16Overflow, mobileA16ControlCount, mobileA16ChainCount, mobileA16CanvasPixels });
 Object.assign(result, { l2DiagramChecks, packagingCaseText, packagingShiftText, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobilePackagingCaseOverflow, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
+Object.assign(result, { a33ControlCount, a33OutputCount, a33PathCount, a33InitialAngle, a33InitialAdhesion, a33OvertreatedAngle, a33OvertreatedAdhesion, a33OvertreatedStatus, a33ReducedOxide, a33ReducedAdhesion, a33OxidizedOxide, a33OxidizedAdhesion, a33OxidizedStatus, mobileA33Overflow, mobileA33ControlCount, mobileA33OutputCount, mobileA33PathCount });
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -931,6 +960,10 @@ if (!l2ExamBadgeEarned || !l2ExamBadgeStatus.includes("最佳成績 100%")) thro
 if (mobileL2DiagramOverflow || mobileL2DiagramCount !== 10) throw new Error("L2 圖解手機版發生溢位或缺漏。");
 if (mobilePackagingCaseOverflow) throw new Error("封裝清潔工程案例在手機版發生水平溢位。");
 if (mobileL2ExamOverflow || mobileL2ExamQuestionCount !== 30) throw new Error("L2 測驗手機版發生溢位或題目導覽缺漏。");
+if (a33ControlCount !== 4 || a33OutputCount !== 7 || a33PathCount !== 2 || mobileA33ControlCount !== 4 || mobileA33OutputCount !== 7 || mobileA33PathCount !== 2) throw new Error("A33 控制項、讀值或雙曲線沒有完整渲染。");
+if (!(a33InitialAngle < 30) || !(a33OvertreatedAngle <= a33InitialAngle) || !(a33OvertreatedAdhesion < a33InitialAdhesion) || !a33OvertreatedStatus.includes("處理過頭")) throw new Error("A33 未呈現接觸角持續下降但接著力因過量處理反降的製程上限。");
+if (!(a33ReducedOxide < a33OxidizedOxide) || !(a33ReducedAdhesion > a33OxidizedAdhesion) || !a33OxidizedStatus.includes("NSOP")) throw new Error("A33 的 H2/Ar 去氧化或 O2 氧化 Cu 趨勢未通過。");
+if (mobileA33Overflow) throw new Error("A33 封裝清潔計算器在手機版發生水平溢位。");
 if (!a02Initial.includes("0.129 mm") || !a02Initial.includes("0.013 mm")) throw new Error("A02 未顯示 CCP/ICP λD 對照值。");
 if (!a02AfterDensity.includes("0.041 mm")) throw new Error("A02 電子密度滑桿未更新 λD 數值。");
 if (!a02Polarity.includes("負電荷")) throw new Error("A02 極性切換未更新選取狀態。");

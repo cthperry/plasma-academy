@@ -30,7 +30,8 @@ const names = [
   ["A29", 4, "4.3", "天線效應充電", "Canvas+SVG", "高", "模擬", "理解充電損傷路徑。"],
   ["A30", 4, "4.4", "ALE 循環動畫", "Canvas+SVG", "高", "模擬", "理解兩個自限制與 ALE window。"],
   ["A31", 4, "4.4", "脈衝電漿時序", "SVG+Canvas", "高", "模擬", "理解 off 期中和與低溫高密度。"],
-  ["A32", 4, "4.5", "0-D 全域模型計算器", "HTML+SVG", "中", "計算器", "驗證 T_e 與功率近乎無關。"]
+  ["A32", 4, "4.5", "0-D 全域模型計算器", "HTML+SVG", "中", "計算器", "驗證 T_e 與功率近乎無關。"],
+  ["A33", 3, "3.7", "封裝電漿處理計算器", "SVG+HTML", "中", "計算器", "比較接觸角、接著力、損傷與 clean-to-bond queue time。"]
 ];
 
 export const labs = names.map(([id, level, chapter, name, tech, complexity, kind, goal]) => ({
@@ -62,7 +63,8 @@ function labHref(id) {
     A13: "/level/2/2-4-advanced-sheath/#lab-a13",
     A14: "/level/2/2-5-plasma-sources/#lab-a14",
     A15: "/level/2/2-5-plasma-sources/#lab-a15",
-    A16: "/level/2/2-6-causal-chain/#lab-a16"
+    A16: "/level/2/2-6-causal-chain/#lab-a16",
+    A33: "/level/3/3-7-packaging-cleaning/#lab-a33"
   };
   return map[id] ?? "/lab/";
 }

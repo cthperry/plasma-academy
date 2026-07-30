@@ -2,7 +2,16 @@ export const chapterThreeSeven = {
   id: "3-7",
   title: "3.7 封裝清潔與表面活化",
   hours: 3,
-  labs: [],
+  labs: [{
+    id: "a33",
+    title: "A33 封裝電漿處理計算器",
+    module: "/assets/js/labs/a33-package-clean.js",
+    observation: [
+      "固定 EMC 與 O₂，依序把時間調到 60、120、180 秒；比較接觸角與接著力是否同方向變化。",
+      "切換 Cu pad，對比 O₂、Ar 與 H₂/Ar 的金屬氧化與接著力指數。",
+      "把 Clean-to-bond 等待時間拉到 24–48 小時，觀察疏水回復如何吃掉原本的製程餘裕。"
+    ]
+  }],
   objectives: [
     "分辨封裝清潔與腔體清潔的目的差異。",
     "說出 RDL、UBM、凸塊與 underfill 前常見污染來源。",
