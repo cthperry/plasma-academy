@@ -6,6 +6,7 @@ import { labs } from "../src/data/labs.js";
 import { glossary } from "../src/data/glossary.js";
 import { formulas } from "../src/data/formulas.js";
 import { gases, gasFamilies, hazardLabels } from "../src/data/gases.js";
+import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { chapterOneOne as chapterOneOneBase } from "../src/content/chapter-1-1.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
@@ -17,6 +18,7 @@ import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
 import { l1FoundationChapters as l1FoundationChaptersBase } from "../src/content/l1-foundation-chapters.mjs";
 import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
 import { level1ExamSpec } from "../src/data/quiz/level-1.js";
+import { level2ExamSpec } from "../src/data/quiz/level-2.js";
 import { shell, navItems, breadcrumb } from "../src/templates/page-shell.mjs";
 import { formulaCard, callout, labContainer, progressRing } from "../src/templates/components.mjs";
 
@@ -127,12 +129,13 @@ function levelPage(levelId) {
     </article>
   `).join("");
 
-  const assessment = level.id === 1 ? `
-      <section class="assessment-gate" data-exam-gate>
-        <h2>L1 結業測驗</h2>
-        <p>${level1ExamSpec.durationMinutes} 分鐘抽考 20 題，達 ${level1ExamSpec.passPercent}% 通過。完成 6 章中的 5 章學習目標後啟用。</p>
+  const examSpec = { 1: level1ExamSpec, 2: level2ExamSpec }[level.id];
+  const assessment = examSpec ? `
+      <section class="assessment-gate" data-exam-gate data-exam-level="${level.id}">
+        <h2>L${level.id} 結業測驗</h2>
+        <p>${examSpec.durationMinutes} 分鐘抽考 ${Object.values(examSpec.draw).reduce((sum, count) => sum + count, 0)} 題，達 ${examSpec.passPercent}% 通過。完成 6 章中的 5 章學習目標後啟用。</p>
         <p class="meta" data-exam-gate-status aria-live="polite">正在讀取本機進度…</p>
-        <a class="button primary" href="/level/1/exam/" data-exam-link hidden>進入 L1 測驗</a>
+        <a class="button primary" href="/level/${level.id}/exam/" data-exam-link hidden>進入 L${level.id} 測驗</a>
       </section>` : `
       <section class="assessment-gate">
         <h2>L${level.id} 結業測驗</h2>
@@ -405,7 +408,7 @@ function chapterTwoOnePage() {
   const prerequisites = chapterTwoOne.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapterTwoOne.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = chapterTwoOne.sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("");
-  const sections = chapterTwoOne.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const sections = l2SectionsHtml(chapterTwoOne);
   const callouts = chapterTwoOne.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterTwoOne.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterTwoOne.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
@@ -446,7 +449,7 @@ function chapterTwoTwoPage() {
   const prerequisites = chapterTwoTwo.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapterTwoTwo.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = [...chapterTwoTwo.sections, ...chapterTwoTwo.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
-  const sections = chapterTwoTwo.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const sections = l2SectionsHtml(chapterTwoTwo);
   const callouts = chapterTwoTwo.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterTwoTwo.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterTwoTwo.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
@@ -485,7 +488,7 @@ function l2ChapterPage(chapter, { previous, next, formulaKeys = [], extraStyles 
   const prerequisites = chapter.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapter.readings.map((item) => `<li>${item}</li>`).join("");
   const outline = [...chapter.sections, ...chapter.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
-  const sections = chapter.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const sections = l2SectionsHtml(chapter);
   const callouts = chapter.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapter.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapter.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
@@ -513,6 +516,17 @@ function l2ChapterPage(chapter, { previous, next, formulaKeys = [], extraStyles 
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
   `, { pageType: "chapter", extraStyles, extraBodyClass });
+}
+
+function l2SectionsHtml(chapter) {
+  const chapterDiagrams = l2Diagrams.filter((diagram) => diagram.chapter === chapter.id);
+  return chapter.sections.map((section) => {
+    const figures = chapterDiagrams.filter((diagram) => diagram.section === section.id).map((diagram) => {
+      const number = `${chapter.id.replace("-", ".")}-${chapterDiagrams.indexOf(diagram) + 1}`;
+      return `<figure class="instruction-diagram"><img src="/assets/svg/l2/${diagram.id}.svg" width="760" height="360" loading="lazy" alt="${diagram.caption}"><figcaption><strong>圖 ${number} ${diagram.title}</strong>${diagram.caption}</figcaption></figure>`;
+    }).join("");
+    return `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}${figures}</section>`;
+  }).join("");
 }
 
 function chapterTwoThreePage() {
@@ -604,6 +618,13 @@ function progressPage() {
           </div>
           <a class="button secondary" href="/level/1/exam/">查看測驗</a>
         </section>
+        <section class="progress-badge" data-progress-l2-badge>
+          <div>
+            <span class="badge-mark" aria-hidden="true">L2</span>
+            <div><strong>氣體與電漿源</strong><p data-progress-l2-status>尚未通過 L2 結業測驗</p></div>
+          </div>
+          <a class="button secondary" href="/level/2/exam/">查看測驗</a>
+        </section>
         <div class="progress-actions">
           <button class="button primary" type="button" data-export-progress>匯出 JSON</button>
           <label class="button secondary file-button">匯入 JSON<input type="file" accept="application/json" data-import-progress></label>
@@ -615,14 +636,18 @@ function progressPage() {
   `);
 }
 
-function examPage() {
-  return page("/level/1/exam/", level1ExamSpec.title, `
-    <main class="content-shell narrow" data-exam-page>
-      ${breadcrumb(["首頁", "L1 初階", "結業測驗"])}
+function examPage(level) {
+  const spec = level === 1 ? level1ExamSpec : level2ExamSpec;
+  const bankSize = level === 1 ? 55 : 80;
+  const drawCount = Object.values(spec.draw).reduce((sum, count) => sum + count, 0);
+  const levelName = level === 1 ? "初階" : "中階";
+  return page(`/level/${level}/exam/`, spec.title, `
+    <main class="content-shell narrow" data-exam-page data-exam-level="${level}" data-exam-minutes="${spec.durationMinutes}">
+      ${breadcrumb(["首頁", `L${level} ${levelName}`, "結業測驗"])}
       <section class="page-intro">
-        <p class="chapter-meta">L1 認證 · ${level1ExamSpec.durationMinutes} 分鐘 · ${level1ExamSpec.passPercent}% 通過</p>
-        <h1>${level1ExamSpec.title}</h1>
-        <p>每次從 55 題中重抽 20 題。交卷前不顯示答案，交卷後提供逐選項解析並把最佳成績保存在這台瀏覽器。</p>
+        <p class="chapter-meta">L${level} 認證 · ${spec.durationMinutes} 分鐘 · ${spec.passPercent}% 通過</p>
+        <h1>${spec.title}</h1>
+        <p>每次從 ${bankSize} 題中重抽 ${drawCount} 題。交卷前不顯示答案，交卷後提供逐選項解析並把最佳成績保存在這台瀏覽器。</p>
       </section>
       <section class="exam-entry" data-exam-entry>
         <div class="exam-entry__status">
@@ -633,9 +658,9 @@ function examPage() {
       </section>
       <section class="exam-shell" data-exam-shell hidden>
         <header class="exam-toolbar">
-          <div><strong data-exam-position>第 1 / 20 題</strong><span data-exam-type>單選題</span></div>
-          <div class="exam-timer" role="timer" aria-label="剩餘時間"><span aria-hidden="true">◷</span><strong data-exam-timer>30:00</strong></div>
-          <progress data-exam-progress max="20" value="1">1 / 20</progress>
+          <div><strong data-exam-position>第 1 / ${drawCount} 題</strong><span data-exam-type>單選題</span></div>
+          <div class="exam-timer" role="timer" aria-label="剩餘時間"><span aria-hidden="true">◷</span><strong data-exam-timer>${String(spec.durationMinutes).padStart(2, "0")}:00</strong></div>
+          <progress data-exam-progress max="${drawCount}" value="1">1 / ${drawCount}</progress>
         </header>
         <nav class="exam-question-nav" data-exam-question-nav aria-label="題目導覽"></nav>
         <form data-exam-form></form>
@@ -780,7 +805,8 @@ async function main() {
     packagingCleaningPage(),
     labPage(),
     progressPage(),
-    examPage(),
+    examPage(1),
+    examPage(2),
     gasesPage(),
     glossaryPage(),
     formulasPage()

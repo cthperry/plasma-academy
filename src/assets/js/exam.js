@@ -1,8 +1,25 @@
 import { getProgress, saveProgress } from "./progress-store.js";
 
-const chapterObjectiveCounts = { "1-1": 4, "1-2": 4, "1-3": 3, "1-4": 3, "1-5": 4, "1-6": 3 };
+const examConfigs = {
+  1: {
+    key: "L1",
+    badge: "電漿入門",
+    dataPath: "/assets/data/quiz/level-1.js",
+    questionExport: "level1Questions",
+    specExport: "level1ExamSpec",
+    objectiveCounts: { "1-1": 4, "1-2": 4, "1-3": 3, "1-4": 3, "1-5": 4, "1-6": 3 }
+  },
+  2: {
+    key: "L2",
+    badge: "氣體與電漿源",
+    dataPath: "/assets/data/quiz/level-2.js",
+    questionExport: "level2Questions",
+    specExport: "level2ExamSpec",
+    objectiveCounts: { "2-1": 3, "2-2": 4, "2-3": 4, "2-4": 4, "2-5": 4, "2-6": 5 }
+  }
+};
 const typeLabels = { single: "單選題", multi: "多選題", numeric: "計算題", scenario: "情境題" };
-let examDataPromise;
+const examDataPromises = new Map();
 
 export function initExam() {
   updateExamGates();
@@ -13,23 +30,24 @@ export function initExam() {
   initExamPage(page);
 }
 
-function completedL1Chapters(progress = getProgress()) {
-  return Object.entries(chapterObjectiveCounts).filter(([chapterId, expected]) => {
+function completedChapters(config, progress = getProgress()) {
+  return Object.entries(config.objectiveCounts).filter(([chapterId, expected]) => {
     const objectives = progress.chapters[chapterId]?.objectives ?? [];
     return objectives.length >= expected && objectives.slice(0, expected).every(Boolean);
   }).length;
 }
 
-function canTakeL1Exam(progress = getProgress()) {
-  return completedL1Chapters(progress) >= 5 || Boolean(progress.quizzes?.L1?.passed);
+function canTakeExam(config, progress = getProgress()) {
+  return completedChapters(config, progress) >= 5 || Boolean(progress.quizzes?.[config.key]?.passed);
 }
 
 function updateExamGates() {
   const progress = getProgress();
-  const completed = completedL1Chapters(progress);
-  const unlocked = canTakeL1Exam(progress);
-
   document.querySelectorAll("[data-exam-gate]").forEach((gate) => {
+    const config = examConfigs[Number(gate.dataset.examLevel)];
+    if (!config) return;
+    const completed = completedChapters(config, progress);
+    const unlocked = canTakeExam(config, progress);
     const status = gate.querySelector("[data-exam-gate-status]");
     const link = gate.querySelector("[data-exam-link]");
     status.textContent = unlocked ? `已完成 ${completed}/6 章，可開始或重測。` : `已完成 ${completed}/6 章；還需完成 ${5 - completed} 章。`;
@@ -38,6 +56,8 @@ function updateExamGates() {
 }
 
 function initExamPage(page) {
+  const config = examConfigs[Number(page.dataset.examLevel)];
+  if (!config) return;
   const entry = page.querySelector("[data-exam-entry]");
   const startButton = page.querySelector("[data-exam-start]");
   const unlockTitle = page.querySelector("[data-exam-unlock-title]");
@@ -57,12 +77,12 @@ function initExamPage(page) {
 
   const refreshUnlock = () => {
     const progress = getProgress();
-    const completed = completedL1Chapters(progress);
-    const unlocked = canTakeL1Exam(progress);
+    const completed = completedChapters(config, progress);
+    const unlocked = canTakeExam(config, progress);
     startButton.disabled = !unlocked;
     unlockTitle.textContent = unlocked ? "測驗已解鎖" : "完成學習目標以解鎖";
     unlockStatus.textContent = unlocked
-      ? `已完成 ${completed}/6 章。開始後有 30 分鐘作答，離開頁面會結束本次作答。`
+      ? `已完成 ${completed}/6 章。開始後有 ${page.dataset.examMinutes} 分鐘作答，離開頁面會結束本次作答。`
       : `已完成 ${completed}/6 章；完成 5 章的全部學習目標後可開始。`;
   };
 
@@ -155,23 +175,23 @@ function initExamPage(page) {
     const correctCount = graded.filter((item) => item.correct).length;
     const percent = Math.round((correctCount / graded.length) * 100);
     const passed = percent >= state.spec.passPercent;
-    saveExamProgress(percent, passed, timedOut, state.questions.map((question) => question.id));
+    saveExamProgress(config, percent, passed, timedOut, state.questions.map((question) => question.id));
     shell.hidden = true;
     entry.hidden = true;
     results.hidden = false;
-    results.innerHTML = renderResults(graded, correctCount, percent, passed, timedOut);
+    results.innerHTML = renderResults(config, state.spec, graded, correctCount, percent, passed, timedOut);
     results.querySelector("[data-exam-retry]").addEventListener("click", startExam);
     results.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const startExam = async () => {
-    const data = await loadExamData();
-    state.spec = data.level1ExamSpec;
-    state.questions = drawQuestions(data.level1Questions, data.level1ExamSpec.draw, new URLSearchParams(location.search).get("seed"));
+    const data = await loadExamData(config);
+    state.spec = data[config.specExport];
+    state.questions = drawQuestions(data[config.questionExport], state.spec.draw, new URLSearchParams(location.search).get("seed"));
     state.answers = {};
     state.index = 0;
     state.submitted = false;
-    state.deadline = Date.now() + data.level1ExamSpec.durationMinutes * 60 * 1000;
+    state.deadline = Date.now() + state.spec.durationMinutes * 60 * 1000;
     entry.hidden = true;
     results.hidden = true;
     shell.hidden = false;
@@ -198,9 +218,9 @@ function initExamPage(page) {
   refreshUnlock();
 }
 
-async function loadExamData() {
-  examDataPromise ??= import("/assets/data/quiz/level-1.js");
-  return examDataPromise;
+async function loadExamData(config) {
+  if (!examDataPromises.has(config.key)) examDataPromises.set(config.key, import(config.dataPath));
+  return examDataPromises.get(config.key);
 }
 
 function drawQuestions(bank, draw, seed) {
@@ -261,12 +281,12 @@ function updateTimer(element, deadline) {
   return remaining;
 }
 
-function saveExamProgress(score, passed, timedOut, questionIds) {
+function saveExamProgress(config, score, passed, timedOut, questionIds) {
   const progress = getProgress();
   progress.quizzes ??= {};
-  const previous = progress.quizzes.L1 ?? { attempts: [], bestScore: 0, passed: false, completedAt: null };
+  const previous = progress.quizzes[config.key] ?? { attempts: [], bestScore: 0, passed: false, completedAt: null };
   const submittedAt = new Date().toISOString();
-  progress.quizzes.L1 = {
+  progress.quizzes[config.key] = {
     attempts: [...(previous.attempts ?? []), { score, passed, timedOut, questionIds, submittedAt }].slice(-10),
     bestScore: Math.max(previous.bestScore ?? 0, score),
     passed: Boolean(previous.passed || passed),
@@ -275,7 +295,7 @@ function saveExamProgress(score, passed, timedOut, questionIds) {
   saveProgress(progress);
 }
 
-function renderResults(graded, correctCount, percent, passed, timedOut) {
+function renderResults(config, spec, graded, correctCount, percent, passed, timedOut) {
   const reviews = graded.map(({ question, correct, answer }, index) => {
     const selected = Array.isArray(answer) ? answer : answer ? [String(answer)] : [];
     const answerDetail = question.type === "numeric"
@@ -295,8 +315,8 @@ function renderResults(graded, correctCount, percent, passed, timedOut) {
   return `<header class="exam-score ${passed ? "passed" : "not-passed"}">
       <p>${timedOut ? "作答時間到，系統已自動交卷" : "本次成績"}</p>
       <div><strong>${percent}</strong><span>分</span></div>
-      <h2>${passed ? "通過 L1 電漿入門" : "尚未達到 75% 通過門檻"}</h2>
-      <p>答對 ${correctCount} / ${graded.length} 題。${passed ? "電漿入門徽章已寫入本機進度。" : "檢視解析後可重新抽題。"}</p>
+      <h2>${passed ? `通過 ${config.key} ${config.badge}` : `尚未達到 ${spec.passPercent}% 通過門檻`}</h2>
+      <p>答對 ${correctCount} / ${graded.length} 題。${passed ? `${config.badge}徽章已寫入本機進度。` : "檢視解析後可重新抽題。"}</p>
       <div class="exam-result-actions"><button class="button primary" type="button" data-exam-retry>重新抽題</button><a class="button secondary" href="/progress/">查看進度</a></div>
     </header>
     <section class="exam-review-list"><h2>逐題解析</h2>${reviews}</section>`;
@@ -309,7 +329,13 @@ function chapterRoute(chapter) {
     "1.3": "/level/1/1-3-collisions-mfp/",
     "1.4": "/level/1/1-4-glow-breakdown/",
     "1.5": "/level/1/1-5-sheath/",
-    "1.6": "/level/1/1-6-process-map/"
+    "1.6": "/level/1/1-6-process-map/",
+    "2.1": "/level/2/2-1-gas-vacuum/",
+    "2.2": "/level/2/2-2-process-gases/",
+    "2.3": "/level/2/2-3-plasma-chemistry/",
+    "2.4": "/level/2/2-4-advanced-sheath/",
+    "2.5": "/level/2/2-5-plasma-sources/",
+    "2.6": "/level/2/2-6-causal-chain/"
   };
   return routes[chapter] ?? "/level/1/";
 }

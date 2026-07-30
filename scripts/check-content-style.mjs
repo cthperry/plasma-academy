@@ -8,6 +8,7 @@ import { chapterTwoFour } from "../src/content/chapter-2-4.mjs";
 import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
 import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
+import { l2Diagrams } from "../src/data/l2-diagrams.js";
 
 const l1Chapters = expandL1Content([chapterOneOne, ...l1FoundationChapters]);
 const chapters = [...l1Chapters, chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
@@ -59,10 +60,18 @@ for (const chapter of chapters) {
   });
 }
 
+for (const chapter of [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix]) {
+  const figures = l2Diagrams.filter((entry) => entry.chapter === chapter.id);
+  for (const entry of figures) {
+    if (!chapter.sections.some((section) => section.id === entry.section)) failures.push(`${entry.id} 指向不存在的小節 ${chapter.id}/${entry.section}。`);
+    if (entry.caption.length < 20 || entry.caption.length > 80) failures.push(`${entry.id} 圖說應為 20–80 字，目前 ${entry.caption.length} 字。`);
+  }
+}
+
 if (failures.length) {
   console.error(`內容規範檢查失敗（${failures.length} 項）：`);
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：${chapters.length} 章、${l1Diagrams.length} 張圖、A01–A16 觀察引導。`);
+console.log(`內容規範檢查通過：${chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、A01–A16 觀察引導。`);

@@ -7,7 +7,9 @@ import { formulas } from "../src/data/formulas.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
 import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
+import { level2ExamSpec, level2Questions } from "../src/data/quiz/level-2.js";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
+import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { gases, gasFamilies, hazardLevels } from "../src/data/gases.js";
 import { childLangmuirSheathMm, eedfReactionModel, effectivePumpingSpeedLps, findAutoMatch, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, simulateIedf, sourceCouplingModel, townsendDischarge, virtualToolModel } from "../src/assets/js/plasma-model.js";
 
@@ -157,6 +159,31 @@ for (const [type, expected] of Object.entries(expectedBankDistribution)) {
   if (actual !== expected) failures.push(`L1 ${type} 題庫分佈應為 ${expected} 題，目前 ${actual} 題。`);
 }
 
+if (level2Questions.length !== 80) failures.push(`L2 結業題庫應為 80 題，目前 ${level2Questions.length} 題。`);
+const l2QuizIds = new Set();
+for (const question of level2Questions) {
+  if (l2QuizIds.has(question.id)) failures.push(`L2 題庫 ID 重複：${question.id}。`);
+  l2QuizIds.add(question.id);
+  for (const field of ["id", "chapter", "type", "difficulty", "tags", "question", "explanation", "reference"]) {
+    if (question[field] === undefined || question[field] === null || question[field] === "") failures.push(`L2 題目 ${question.id} 缺少 ${field}。`);
+  }
+  if (!Object.hasOwn(level2ExamSpec.draw, question.type)) failures.push(`題目 ${question.id} 使用不支援的 L2 題型 ${question.type}。`);
+  if (["single", "multi", "scenario"].includes(question.type)) {
+    if (!Array.isArray(question.options) || question.options.length < 2) failures.push(`L2 題目 ${question.id} 缺少有效選項。`);
+    for (const option of question.options ?? []) {
+      if (!option.id || !option.text || typeof option.correct !== "boolean" || !option.why) failures.push(`L2 題目 ${question.id} 的選項 ${option.id ?? "?"} 未包含完整 why 解析。`);
+    }
+  }
+  if (question.type === "numeric" && (typeof question.answer !== "number" || typeof question.tolerance !== "number" || typeof question.unit !== "string")) failures.push(`L2 計算題 ${question.id} 缺少答案、單位欄位或容差。`);
+}
+for (const [type, drawCount] of Object.entries(level2ExamSpec.draw)) {
+  const available = level2Questions.filter((question) => question.type === type).length;
+  if (available !== 20 || available < drawCount) failures.push(`L2 ${type} 題應有 20 題且足供抽題，目前 ${available} 題。`);
+}
+for (const chapter of ["2.1", "2.2", "2.3", "2.4", "2.5", "2.6"]) {
+  if (!level2Questions.some((question) => question.chapter === chapter)) failures.push(`L2 題庫未涵蓋章節 ${chapter}。`);
+}
+
 if (l1Diagrams.length !== 35) failures.push(`L1 教學 SVG 目錄應為 35 張，目前 ${l1Diagrams.length} 張。`);
 const diagramIds = new Set();
 for (const diagram of l1Diagrams) {
@@ -164,6 +191,16 @@ for (const diagram of l1Diagrams) {
   diagramIds.add(diagram.id);
   for (const field of ["id", "chapter", "section", "title", "caption", "type", "items", "note"]) {
     if (!diagram[field] || (field === "items" && !Array.isArray(diagram.items))) failures.push(`L1 圖解 ${diagram.id} 缺少 ${field}。`);
+  }
+}
+
+if (l2Diagrams.length !== 40) failures.push(`P2 教學 SVG 目錄應為 40 張，目前 ${l2Diagrams.length} 張。`);
+const l2DiagramIds = new Set();
+for (const diagram of l2Diagrams) {
+  if (l2DiagramIds.has(diagram.id)) failures.push(`L2 圖解 ID 重複：${diagram.id}。`);
+  l2DiagramIds.add(diagram.id);
+  for (const field of ["id", "chapter", "section", "title", "caption", "type", "items", "note"]) {
+    if (!diagram[field] || (field === "items" && !Array.isArray(diagram.items))) failures.push(`L2 圖解 ${diagram.id} 缺少 ${field}。`);
   }
 }
 

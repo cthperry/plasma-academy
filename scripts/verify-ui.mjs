@@ -575,6 +575,69 @@ await desktop.goto(`${base}/progress/`, { waitUntil: "networkidle" });
 const examBadgeStatus = await desktop.locator("[data-progress-l1-status]").textContent();
 const examBadgeEarned = await desktop.locator("[data-progress-l1-badge]").evaluate((element) => element.classList.contains("earned"));
 
+const l2DiagramRoutes = [
+  ["/level/2/2-1-gas-vacuum/", 6],
+  ["/level/2/2-2-process-gases/", 10],
+  ["/level/2/2-3-plasma-chemistry/", 6],
+  ["/level/2/2-4-advanced-sheath/", 6],
+  ["/level/2/2-5-plasma-sources/", 6],
+  ["/level/2/2-6-causal-chain/", 6]
+];
+const l2DiagramChecks = [];
+for (const [route, expected] of l2DiagramRoutes) {
+  await desktop.goto(`${base}${route}`, { waitUntil: "networkidle" });
+  const figures = desktop.locator(".instruction-diagram");
+  const count = await figures.count();
+  for (let index = 0; index < count; index += 1) await figures.nth(index).scrollIntoViewIfNeeded();
+  const diagramsLoaded = await figures.locator("img").evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth === 760));
+  const figureNumbersValid = await figures.locator("figcaption strong").evaluateAll((captions) => captions.every((caption) => /^圖 2\.\d-\d+ /.test(caption.textContent ?? "")));
+  l2DiagramChecks.push({ route, expected, count, diagramsLoaded, figureNumbersValid });
+}
+await desktop.goto(`${base}/level/2/2-2-process-gases/`, { waitUntil: "networkidle" });
+await desktop.screenshot({ path: path.join(qaDir, "desktop-l2-diagrams.png"), fullPage: true });
+
+await desktop.goto(`${base}/level/2/`, { waitUntil: "networkidle" });
+await desktop.waitForFunction(() => !document.querySelector("[data-exam-gate-status]")?.textContent.includes("正在讀取"));
+const l2ExamLockedStatus = await desktop.locator("[data-exam-gate-status]").textContent();
+const l2ExamLockedLinkHidden = await desktop.locator("[data-exam-link]").isHidden();
+await desktop.evaluate(() => {
+  const progress = JSON.parse(localStorage.getItem("plasma-academy.progress"));
+  for (const id of ["2-1", "2-2", "2-3", "2-4", "2-5"]) {
+    progress.chapters[id] = { visited: true, objectives: [true, true, true, true, true], quizScore: 1, lastVisit: new Date().toISOString() };
+  }
+  localStorage.setItem("plasma-academy.progress", JSON.stringify(progress));
+});
+await desktop.goto(`${base}/level/2/exam/?seed=qa`, { waitUntil: "networkidle" });
+const l2ExamUnlockedStatus = await desktop.locator("[data-exam-unlock-status]").textContent();
+await desktop.click("[data-exam-start]");
+await desktop.waitForSelector(".exam-question");
+const l2ExamQuestionCount = await desktop.locator("[data-exam-question-nav] button").count();
+const l2ExamDraw = { single: 0, multi: 0, numeric: 0, scenario: 0 };
+const l2ExamBank = await desktop.evaluate(async () => (await import("/assets/data/quiz/level-2.js")).level2Questions);
+for (let index = 0; index < l2ExamQuestionCount; index += 1) {
+  await desktop.locator("[data-exam-question-nav] button").nth(index).click();
+  const typeText = await desktop.locator("[data-exam-type]").textContent();
+  const typeKey = { "單選題": "single", "多選題": "multi", "計算題": "numeric", "情境題": "scenario" }[typeText];
+  l2ExamDraw[typeKey] += 1;
+  const questionId = await desktop.locator(".exam-question").getAttribute("data-question-id");
+  const question = l2ExamBank.find((item) => item.id === questionId);
+  if (question.type === "numeric") {
+    await desktop.fill(".exam-question input[type=number]", String(question.answer));
+  } else {
+    for (const option of question.options.filter((item) => item.correct)) {
+      await desktop.locator(`.exam-question input[value="${option.id}"]`).click();
+    }
+  }
+}
+await desktop.click("[data-exam-submit]");
+const l2ExamScore = Number(await desktop.locator(".exam-score > div > strong").first().textContent());
+const l2ExamReviewCount = await desktop.locator(".exam-review").count();
+const l2ExamStoredProgress = await desktop.evaluate(() => JSON.parse(localStorage.getItem("plasma-academy.progress")).quizzes.L2);
+await desktop.screenshot({ path: path.join(qaDir, "desktop-l2-exam-results.png"), fullPage: false });
+await desktop.goto(`${base}/progress/`, { waitUntil: "networkidle" });
+const l2ExamBadgeStatus = await desktop.locator("[data-progress-l2-status]").textContent();
+const l2ExamBadgeEarned = await desktop.locator("[data-progress-l2-badge]").evaluate((element) => element.classList.contains("earned"));
+
 const mobile = await browser.newPage({ viewport: { width: 375, height: 900 }, deviceScaleFactor: 1, isMobile: true });
 mobile.on("pageerror", (error) => errors.push(error.message));
 mobile.on("console", (message) => {
@@ -758,6 +821,20 @@ const mobileExamOverflow = await mobile.evaluate(() => document.documentElement.
 const mobileExamQuestionCount = await mobile.locator("[data-exam-question-nav] button").count();
 await mobile.screenshot({ path: path.join(qaDir, "mobile-exam.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/2/2-2-process-gases/`, { waitUntil: "networkidle" });
+const mobileL2DiagramOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileL2DiagramCount = await mobile.locator(".instruction-diagram").count();
+await mobile.evaluate(() => {
+  const chapters = Object.fromEntries(["2-1", "2-2", "2-3", "2-4", "2-5"].map((id) => [id, { visited: true, objectives: [true, true, true, true, true] }]));
+  localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
+});
+await mobile.goto(`${base}/level/2/exam/?seed=qa`, { waitUntil: "networkidle" });
+await mobile.click("[data-exam-start]");
+await mobile.waitForSelector(".exam-question");
+const mobileL2ExamOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileL2ExamQuestionCount = await mobile.locator("[data-exam-question-nav] button").count();
+await mobile.screenshot({ path: path.join(qaDir, "mobile-l2-exam.png"), fullPage: false });
+
 await browser.close();
 
 const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, gasCardCount, fluorocarbonCardCount, extremeGasCount, gasSearchTitle, fcLabelsDoNotOverlap, gasSdsStatusCount, mobileGasOverflow, mobileGasCardCount, formulaCardCount, formulaPageText, a08InitialPanel, a08InitialDensity, a08HighFlowResidence, a08HighFlowDensity, a08HighPressureResidence, a08HighPressureDensity, a08CanvasPixels, a08ThemePixelBefore, a08ThemePixelAfter, mobileA08Overflow, mobileA08CanvasPixels, chapterOneOneSelfChecks, chapterOneOneDiagramCount, chapterOneOneSupportCount, chapterOneOneObservationCount, chapterOneOneFigureNumbersValid, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
@@ -767,6 +844,7 @@ Object.assign(result, { a13BarCount, a13LowFrequencyDelta, a13LowFrequencyStatus
 Object.assign(result, { a14At550Up, a14At700Up, a14At550Down, a14At400Down, a14PathCount, a14CanvasPixels, a14ThemeBefore, a14ThemeAfter, mobileA14Overflow, mobileA14PathCount, mobileA14CanvasPixels });
 Object.assign(result, { a15InitialReflection, a15MatchedReflection, a15FirstFingerprint, a15DriftReflection, a15RematchedReflection, a15SecondFingerprint, a15PathCount, a15PointCount, a15CanvasPixels, mobileA15Overflow, mobileA15PathCount, mobileA15CanvasPixels });
 Object.assign(result, { a16ControlCount, a16OutputCount, a16ChainCount, a16LowSourceTe, a16LowSourceDensity, a16HighSourceTe, a16HighSourceDensity, a16TeDelta, a16ZeroBiasRate, a16ZeroBiasSelectivity, a16ZeroBiasProfile, a16HighBiasRate, a16HighBiasSelectivity, a16ChallengeStatus, a16ChallengeClass, a16CanvasPixels, a16ThemeBefore, a16ThemeAfter, mobileA16Overflow, mobileA16ControlCount, mobileA16ChainCount, mobileA16CanvasPixels });
+Object.assign(result, { l2DiagramChecks, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -826,6 +904,15 @@ if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ si
 if (examScore !== 100 || examReviewCount !== 20 || !examStoredProgress.passed || examStoredProgress.bestScore !== 100) throw new Error("L1 測驗計分、解析或進度寫入未通過。");
 if (!examBadgeEarned || !examBadgeStatus.includes("最佳成績 100%")) throw new Error("L1 通過徽章未正確顯示在進度頁。");
 if (mobileExamOverflow || mobileExamQuestionCount !== 20) throw new Error("L1 測驗手機版發生溢位或題目導覽缺漏。");
+for (const check of l2DiagramChecks) {
+  if (check.count !== check.expected || !check.diagramsLoaded || !check.figureNumbersValid) throw new Error(`L2 SVG 圖解驗證失敗：${JSON.stringify(check)}`);
+}
+if (!l2ExamLockedStatus.includes("還需") || !l2ExamLockedLinkHidden || !l2ExamUnlockedStatus.includes("45 分鐘")) throw new Error("L2 測驗的 80% 章節解鎖條件未正確運作。");
+if (l2ExamQuestionCount !== 30 || JSON.stringify(l2ExamDraw) !== JSON.stringify({ single: 18, multi: 4, numeric: 4, scenario: 4 })) throw new Error(`L2 測驗抽題分佈錯誤：${JSON.stringify(l2ExamDraw)}`);
+if (l2ExamScore !== 100 || l2ExamReviewCount !== 30 || !l2ExamStoredProgress.passed || l2ExamStoredProgress.bestScore !== 100) throw new Error("L2 測驗計分、解析或進度寫入未通過。");
+if (!l2ExamBadgeEarned || !l2ExamBadgeStatus.includes("最佳成績 100%")) throw new Error("L2 通過徽章未正確顯示在進度頁。");
+if (mobileL2DiagramOverflow || mobileL2DiagramCount !== 10) throw new Error("L2 圖解手機版發生溢位或缺漏。");
+if (mobileL2ExamOverflow || mobileL2ExamQuestionCount !== 30) throw new Error("L2 測驗手機版發生溢位或題目導覽缺漏。");
 if (!a02Initial.includes("0.129 mm") || !a02Initial.includes("0.013 mm")) throw new Error("A02 未顯示 CCP/ICP λD 對照值。");
 if (!a02AfterDensity.includes("0.041 mm")) throw new Error("A02 電子密度滑桿未更新 λD 數值。");
 if (!a02Polarity.includes("負電荷")) throw new Error("A02 極性切換未更新選取狀態。");

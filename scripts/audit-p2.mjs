@@ -10,6 +10,7 @@ import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
 import { formulas } from "../src/data/formulas.js";
 import { gases } from "../src/data/gases.js";
 import { labs } from "../src/data/labs.js";
+import { level2Questions } from "../src/data/quiz/level-2.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const chapters = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
@@ -33,7 +34,7 @@ const metrics = {
   sdsVerified: gases.filter((gas) => gas.sdsStatus === "verified").length,
   labsImplemented: labs.filter((lab) => lab.level === 2 && lab.href !== "/lab/").length,
   selfChecks: chapters.reduce((total, chapter) => total + (chapter.selfCheck?.length ?? 0), 0),
-  levelExamQuestions: await countQuizQuestions(path.join(root, "src", "data", "quiz", "level-2.js")),
+  levelExamQuestions: level2Questions.length,
   formulas: Object.keys(formulas).length,
   svgDiagrams: await countFiles(path.join(root, "src", "assets", "svg", "l2"), ".svg"),
   completedReviews: await countApprovedReviews(path.join(root, "docs", "reviews", "l2"))
@@ -65,16 +66,6 @@ async function countFiles(directory, extension) {
   try {
     const entries = await readdir(directory, { withFileTypes: true, recursive: true });
     return entries.filter((entry) => entry.isFile() && entry.name.endsWith(extension)).length;
-  } catch (error) {
-    if (error.code === "ENOENT") return 0;
-    throw error;
-  }
-}
-
-async function countQuizQuestions(file) {
-  try {
-    const source = await readFile(file, "utf8");
-    return (source.match(/\bid:\s*["']L2-/g) ?? []).length;
   } catch (error) {
     if (error.code === "ENOENT") return 0;
     throw error;

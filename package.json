@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-l1-diagrams.mjs && node scripts/build.mjs",
+    "build": "node scripts/build-l1-diagrams.mjs && node scripts/build-l2-diagrams.mjs && node scripts/build.mjs",
     "build:search": "node scripts/build-search-index.mjs",
     "sync:glossary": "node scripts/sync-glossary-from-doc.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
