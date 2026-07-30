@@ -57,7 +57,7 @@ export const l1FoundationChapters = [
     title: "1.3 碰撞與平均自由徑",
     hours: 1.5,
     labs: [
-      { id: "a03", title: "A03 平均自由徑粒子模擬", module: "/assets/js/labs/l1-foundation-demo.js", observation: "把壓力從 1 mTorr 拉到 100 mTorr，觀察平均自由徑和入射角分佈的方向性變化。" }
+      { id: "a03", title: "A03 平均自由徑粒子模擬", module: "/assets/js/labs/a03-mean-free-path.js", observation: "把壓力從 1 mTorr 拉到 100 mTorr，觀察碰撞閃光增加、離子路徑偏折，以及入射角分佈由窄變寬。" }
     ],
     objectives: [
       "由壓力估算平均自由徑。",

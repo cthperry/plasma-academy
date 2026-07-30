@@ -76,6 +76,34 @@ const a02CanvasPixels = await desktop.evaluate(() => {
   return nonBlank;
 });
 
+await desktop.goto(`${base}/level/1/1-3-collisions-mfp/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a03").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(800);
+const a03InitialPanel = await desktop.locator("#lab-a03 .value-panel").textContent();
+const a03LowPressureFwhm = parseFloat(await desktop.locator('#lab-a03 [data-value-key="入射角 FWHM"]').textContent());
+await desktop.locator('#lab-a03 input[type="range"]').first().evaluate((input) => {
+  input.value = "2";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+await desktop.waitForTimeout(250);
+const a03HighPressurePanel = await desktop.locator("#lab-a03 .value-panel").textContent();
+const a03HighPressureFwhm = parseFloat(await desktop.locator('#lab-a03 [data-value-key="入射角 FWHM"]').textContent());
+await desktop.locator("#lab-a03 select").selectOption("Xe");
+await desktop.waitForTimeout(200);
+const a03XePanel = await desktop.locator("#lab-a03 .value-panel").textContent();
+const a03ScaleToggle = await desktop.locator('#lab-a03 input[type="checkbox"]').isChecked();
+const a03CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a03 [data-lab-canvas]");
+  const ctx = canvas.getContext("2d");
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  }
+  return nonBlank;
+});
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a03.png"), fullPage: false });
+
 await desktop.goto(`${base}/level/1/1-4-glow-breakdown/`, { waitUntil: "networkidle" });
 await desktop.locator("#lab-a05").scrollIntoViewIfNeeded();
 await desktop.waitForTimeout(800);
@@ -207,9 +235,25 @@ const mobileA06CanvasPixels = await mobile.evaluate(() => {
 });
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a06.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/1/1-3-collisions-mfp/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a03").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(700);
+const mobileA03Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA03CanvasPixels = await mobile.evaluate(() => {
+  const canvas = document.querySelector("#lab-a03 [data-lab-canvas]");
+  const ctx = canvas.getContext("2d");
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i] || data[i + 1] || data[i + 2]) nonBlank++;
+  }
+  return nonBlank;
+});
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a03.png"), fullPage: false });
+
 await browser.close();
 
-const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, canvasInfo, mobileCanvasInfo, mobileA06CanvasPixels, quizText, mobileOverflow, mobileA06Overflow, errors };
+const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA06CanvasPixels, quizText, mobileOverflow, mobileA03Overflow, mobileA06Overflow, errors };
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -225,6 +269,10 @@ if (!a02AfterDensity.includes("0.041 mm")) throw new Error("A02 電子密度滑�
 if (!a02Polarity.includes("負電荷")) throw new Error("A02 極性切換未更新選取狀態。");
 if (a02SvgPathCount < 1) throw new Error("A02 沒有 SVG 電位曲線。");
 if (a02CanvasPixels < 100000) throw new Error("A02 Canvas 看起來是空白。");
+if (!a03InitialPanel.includes("5.00 cm") || a03LowPressureFwhm >= 12) throw new Error("A03 Ar/1 mTorr 的平均自由徑或窄角度分佈不符規格。");
+if (!a03HighPressurePanel.includes("0.500 mm") || !(a03HighPressureFwhm > a03LowPressureFwhm)) throw new Error("A03 壓力升高後的 λ 或 FWHM 變化不符規格。");
+if (!a03XePanel.includes("0.330 mm") || !a03ScaleToggle) throw new Error("A03 Xe 氣體切換或 λ 標尺控制未生效。");
+if (a03CanvasPixels < 100000 || mobileA03CanvasPixels < 100000) throw new Error("A03 桌機或手機 Canvas 看起來是空白。");
 if (!a05Initial.includes("0.90 Torr") || !a05Initial.includes("137 V")) throw new Error("A05 未顯示 Ar Paschen 谷底對照。");
 if (a05CurveCountInitial < 5) throw new Error("A05 未顯示五種氣體曲線。");
 if (!a05AfterO2.includes("0.70 Torr") || !a05AfterO2.includes("450 V") || !a05Status.includes("點火")) throw new Error("A05 O2 點火判定或谷底資訊未更新。");
@@ -239,5 +287,6 @@ if (canvasInfo.nonBlank < canvasInfo.width * canvasInfo.height * 0.5) throw new 
 if (mobileCanvasInfo.nonBlank < mobileCanvasInfo.width * mobileCanvasInfo.height * 0.5) throw new Error("手機 A01 Canvas 看起來是空白。");
 if (!quizText.includes("正確")) throw new Error("自我檢測沒有顯示成功狀態。");
 if (mobileOverflow) throw new Error("手機版有水平溢出。");
+if (mobileA03Overflow) throw new Error("A03 手機版有水平溢出。");
 if (mobileA06Overflow) throw new Error("A06 手機版有水平溢出。");
 if (errors.length) throw new Error(`瀏覽器 console/page errors: ${errors.join("; ")}`);

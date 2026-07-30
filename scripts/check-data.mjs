@@ -2,7 +2,7 @@ import { glossary } from "../src/data/glossary.js";
 import { curriculum } from "../src/data/curriculum.js";
 import { labs } from "../src/data/labs.js";
 import { dataSchemas } from "../src/data/schemas.js";
-import { childLangmuirSheathMm, floatingPotentialDropEv, paschenGases, paschenVoltage } from "../src/assets/js/plasma-model.js";
+import { childLangmuirSheathMm, floatingPotentialDropEv, ionAngularFwhmDeg, meanFreePathCm, paschenGases, paschenVoltage } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
 
@@ -48,6 +48,16 @@ const lowDensitySheath = childLangmuirSheathMm({ electronDensityCm3: 1e9, electr
 const highDensitySheath = childLangmuirSheathMm({ electronDensityCm3: 1e11, electronTemperatureEv: 3 });
 if (!(highDensitySheath < lowDensitySheath)) {
   failures.push(`Child-Langmuir 鞘層厚度未隨 n_e 上升而變薄：${lowDensitySheath.toFixed(3)} -> ${highDensitySheath.toFixed(3)} mm。`);
+}
+
+if (Math.abs(meanFreePathCm(1, "Ar") - 5) > 0.01) {
+  failures.push(`Ar 在 1 mTorr 的平均自由徑應約 5 cm，目前 ${meanFreePathCm(1, "Ar").toFixed(2)} cm。`);
+}
+
+const pressureSamples = [1, 10, 100, 200];
+const angularWidths = pressureSamples.map((pressureMtorr) => ionAngularFwhmDeg({ pressureMtorr, gas: "Ar" }));
+if (!angularWidths.every((value, index) => index === 0 || value > angularWidths[index - 1])) {
+  failures.push(`Ar 入射角 FWHM 未隨壓力單調增加：${angularWidths.map((value) => value.toFixed(1)).join(", ")}。`);
 }
 
 for (const [name, schema] of Object.entries(dataSchemas)) {

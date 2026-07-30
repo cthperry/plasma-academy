@@ -39,6 +39,11 @@ export function meanFreePathCm(pressureMtorr, gas = "Ar") {
   return scale / Math.max(pressureMtorr, 0.1);
 }
 
+export function ionAngularFwhmDeg({ pressureMtorr, gas = "Ar", pathLengthCm = 5 }) {
+  const expectedCollisions = pathLengthCm / meanFreePathCm(pressureMtorr, gas);
+  return Math.min(85, 2.5 + 5.2 * Math.sqrt(expectedCollisions));
+}
+
 export const paschenGases = {
   Ar: paschenGasFromMinimum({ label: "Ar", pdMinTorrCm: 0.9, vMin: 137, gamma: 0.01, glow: "#c26be8" }),
   He: paschenGasFromMinimum({ label: "He", pdMinTorrCm: 4.0, vMin: 156, gamma: 0.01, glow: "#f2b04b" }),
