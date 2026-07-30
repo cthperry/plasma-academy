@@ -31,7 +31,7 @@ export const curriculum = {
         { id: "2.3", title: "電漿化學基礎", hours: 2.5, labs: ["A12"], prerequisites: "1.3, 2.2", href: "/level/2/2-3-plasma-chemistry/", description: "EEDF 和反應速率係數。" },
         { id: "2.4", title: "鞘層物理進階", hours: 2.5, labs: ["A13"], prerequisites: "1.5, 2.3", href: "/level/2/2-4-advanced-sheath/", description: "IEDF、RF 鞘層與碰撞尾巴。" },
         { id: "2.5", title: "電漿源與功率耦合", hours: 3, labs: ["A14", "A15"], prerequisites: "2.4", href: "/level/2/2-5-plasma-sources/", description: "CCP、ICP、匹配與模式跳變。" },
-        { id: "2.6", title: "參數因果鏈", hours: 2, labs: ["A16"], prerequisites: "2.1-2.5", href: "/level/1/", description: "整合機台旋鈕到晶圓結果。" }
+        { id: "2.6", title: "參數因果鏈", hours: 2, labs: ["A16"], prerequisites: "2.1-2.5", href: "/level/2/2-6-causal-chain/", description: "整合機台旋鈕到晶圓結果。" }
       ]
     },
     {

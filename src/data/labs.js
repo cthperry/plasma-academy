@@ -61,7 +61,8 @@ function labHref(id) {
     A12: "/level/2/2-3-plasma-chemistry/#lab-a12",
     A13: "/level/2/2-4-advanced-sheath/#lab-a13",
     A14: "/level/2/2-5-plasma-sources/#lab-a14",
-    A15: "/level/2/2-5-plasma-sources/#lab-a15"
+    A15: "/level/2/2-5-plasma-sources/#lab-a15",
+    A16: "/level/2/2-6-causal-chain/#lab-a16"
   };
   return map[id] ?? "/lab/";
 }

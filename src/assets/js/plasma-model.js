@@ -261,6 +261,104 @@ export function findAutoMatch({ pressureMtorr = 20, powerW = 800, gas = "Ar" }) 
   return best;
 }
 
+export function virtualToolModel({
+  pressureMtorr = 30,
+  sourcePowerW = 900,
+  biasPowerW = 180,
+  gasMix = { CF4: 45, O2: 10, Ar: 45 },
+  chuckTemperatureC = 25,
+  gapCm = 3
+} = {}) {
+  const mix = normalizeGasMix(gasMix);
+  const pressure = Math.max(5, pressureMtorr);
+  const source = Math.max(50, sourcePowerW);
+  const bias = Math.max(0, biasPowerW);
+  const gap = Math.max(1, gapCm);
+  const electronegativity = 0.18 + mix.CF4 * 0.62 + mix.O2 * 0.38;
+  const electronTemperatureEv = clamp(
+    3.35 - 0.52 * Math.log10(pressure / 20) + mix.CF4 * 0.48 + mix.Ar * 0.12 + (gap - 3) * 0.04,
+    1.7,
+    5.8
+  );
+  const electronDensityCm3 = 1.75e11
+    * (source / 800)
+    * (20 / pressure) ** 0.12
+    * (1 - electronegativity * 0.38)
+    * (3 / gap) ** 0.08;
+  const bohmSpeedMps = Math.sqrt((constants.electronCharge * electronTemperatureEv) / constants.argonIonMass);
+  const ionFluxCm2s = 0.61 * electronDensityCm3 * bohmSpeedMps * 100;
+  const sheathVoltageV = bias === 0 ? 0 : 175 * Math.sqrt(bias / 200) * Math.sqrt(1.2e11 / Math.max(electronDensityCm3, 1));
+  const collisionRetention = Math.exp(-gap / Math.max(meanFreePathCm(pressure, "Ar"), 0.05) * 0.12);
+  const ionEnergyEv = sheathVoltageV * (0.52 + 0.48 * collisionRetention);
+  const angularFwhmDeg = ionAngularFwhmDeg({ pressureMtorr: pressure, gas: "Ar", pathLengthCm: gap });
+  const sheathThicknessMm = childLangmuirSheathMm({
+    electronDensityCm3,
+    electronTemperatureEv,
+    potentialDropV: Math.max(ionEnergyEv, floatingPotentialDropEv(electronTemperatureEv))
+  });
+
+  const fluorineSupply = mix.CF4 * (1 + mix.O2 * 1.5) * (1 - mix.O2 * 0.42);
+  const dissociation = (1 - Math.exp(-source / 620)) * Math.exp(-pressure / 260) * (electronTemperatureEv / 3.2) ** 1.35;
+  const residenceGain = 0.72 + 0.5 * Math.log10(pressure / 5 + 1);
+  const radicalDensityCm3 = 7.2e11 * fluorineSupply * dissociation * residenceGain;
+  const polymerBalance = clamp(mix.CF4 * 1.15 - mix.O2 * 1.9 - (chuckTemperatureC - 25) / 150, -0.5, 1.2);
+  const ionAssist = (1 - Math.exp(-bias / 55))
+    * (ionFluxCm2s / 1.4e16) ** 0.42
+    * Math.sqrt(Math.max(ionEnergyEv, 1) / 100);
+  const radicalAssist = (radicalDensityCm3 / 2.5e11) ** 0.72;
+  const passivationWindow = Math.exp(-(((polymerBalance - 0.24) / 0.38) ** 2));
+  const etchRateNmMin = 185 * radicalAssist * ionAssist * (0.68 + 0.32 * passivationWindow);
+  const selectivity = clamp(31 * (0.72 + mix.CF4 * 0.5) / (1 + ionEnergyEv / 230 + mix.O2 * 0.65), 3, 60);
+  const anisotropy = clamp(1 - angularFwhmDeg / 58 - Math.max(0, 0.13 - polymerBalance) * 1.5 - Math.max(0, polymerBalance - 0.64) * 0.6, 0.05, 0.98);
+  const profile = classifyVirtualProfile({ biasPowerW: bias, etchRateNmMin, anisotropy, polymerBalance });
+  const challenge = {
+    rateTarget: 100,
+    selectivityTarget: 20,
+    anisotropyTarget: 0.74,
+    passed: etchRateNmMin >= 100 && selectivity >= 20 && anisotropy >= 0.74 && profile === "vertical"
+  };
+
+  return {
+    inputs: { pressureMtorr: pressure, sourcePowerW: source, biasPowerW: bias, gasMix: mix, chuckTemperatureC, gapCm: gap },
+    electronTemperatureEv,
+    electronDensityCm3,
+    ionFluxCm2s,
+    sheathVoltageV,
+    sheathThicknessMm,
+    ionEnergyEv,
+    angularFwhmDeg,
+    meanFreePathCm: meanFreePathCm(pressure, "Ar"),
+    radicalDensityCm3,
+    polymerBalance,
+    etchRateNmMin,
+    selectivity,
+    anisotropy,
+    profile,
+    challenge
+  };
+}
+
+function normalizeGasMix(gasMix) {
+  const values = {
+    CF4: Math.max(0, Number(gasMix?.CF4) || 0),
+    O2: Math.max(0, Number(gasMix?.O2) || 0),
+    Ar: Math.max(0, Number(gasMix?.Ar) || 0)
+  };
+  const total = values.CF4 + values.O2 + values.Ar || 1;
+  return Object.fromEntries(Object.entries(values).map(([key, value]) => [key, value / total]));
+}
+
+function classifyVirtualProfile({ biasPowerW, etchRateNmMin, anisotropy, polymerBalance }) {
+  if (biasPowerW < 25 || etchRateNmMin < 18) return "etch-stop";
+  if (polymerBalance > 0.67) return "taper";
+  if (anisotropy < 0.66 || polymerBalance < 0.08) return "undercut";
+  return "vertical";
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
 function complexAdd(a, b) {
   return { re: a.re + b.re, im: a.im + b.im };
 }

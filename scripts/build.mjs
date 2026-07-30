@@ -13,6 +13,7 @@ import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
 import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
 import { chapterTwoFour } from "../src/content/chapter-2-4.mjs";
 import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
+import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
 import { l1FoundationChapters as l1FoundationChaptersBase } from "../src/content/l1-foundation-chapters.mjs";
 import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
 import { level1ExamSpec } from "../src/data/quiz/level-1.js";
@@ -477,7 +478,7 @@ function chapterTwoTwoPage() {
   `, { pageType: "chapter", description: "製程氣體選用、F/C 比、鈍化、材料相容與安全的工程教材。" });
 }
 
-function l2ChapterPage(chapter, { previous, next, formulaKeys = [] }) {
+function l2ChapterPage(chapter, { previous, next, formulaKeys = [], extraStyles = [], extraBodyClass = "" }) {
   const objectives = chapter.objectives.map((item, index) => `
     <label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapter.id}"><span>${item}</span></label>
   `).join("");
@@ -489,7 +490,7 @@ function l2ChapterPage(chapter, { previous, next, formulaKeys = [] }) {
   const labsHtml = chapter.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapter.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
   const chapterFormulas = formulaKeys.map((key) => formulas[key]).filter(Boolean).map(formulaCard).join("");
-  const chapterLinks = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive].map((item) => `<a class="${item.route === chapter.route ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  const chapterLinks = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix].map((item) => `<a class="${item.route === chapter.route ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
   const labNames = chapter.labs.map((lab) => lab.id.toUpperCase()).join("、");
 
   return page(chapter.route, chapter.title, `
@@ -511,7 +512,7 @@ function l2ChapterPage(chapter, { previous, next, formulaKeys = [] }) {
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
-  `, { pageType: "chapter" });
+  `, { pageType: "chapter", extraStyles, extraBodyClass });
 }
 
 function chapterTwoThreePage() {
@@ -533,7 +534,16 @@ function chapterTwoFourPage() {
 function chapterTwoFivePage() {
   return l2ChapterPage(chapterTwoFive, {
     previous: { href: chapterTwoFour.route, title: chapterTwoFour.title },
-    next: { href: "/level/2/", title: "2.6 參數因果鏈" }
+    next: { href: chapterTwoSix.route, title: chapterTwoSix.title }
+  });
+}
+
+function chapterTwoSixPage() {
+  return l2ChapterPage(chapterTwoSix, {
+    previous: { href: chapterTwoFive.route, title: chapterTwoFive.title },
+    next: { href: "/level/3/", title: "L3 製程應用與整合" },
+    extraStyles: ["/assets/css/a16.css"],
+    extraBodyClass: "a16-page"
   });
 }
 
@@ -766,6 +776,7 @@ async function main() {
     chapterTwoThreePage(),
     chapterTwoFourPage(),
     chapterTwoFivePage(),
+    chapterTwoSixPage(),
     packagingCleaningPage(),
     labPage(),
     progressPage(),

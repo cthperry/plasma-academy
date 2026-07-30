@@ -9,7 +9,7 @@ import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs"
 import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { gases, gasFamilies, hazardLevels } from "../src/data/gases.js";
-import { childLangmuirSheathMm, eedfReactionModel, effectivePumpingSpeedLps, findAutoMatch, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, simulateIedf, sourceCouplingModel, townsendDischarge } from "../src/assets/js/plasma-model.js";
+import { childLangmuirSheathMm, eedfReactionModel, effectivePumpingSpeedLps, findAutoMatch, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, simulateIedf, sourceCouplingModel, townsendDischarge, virtualToolModel } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
 
@@ -116,6 +116,15 @@ const matchNominal = findAutoMatch({ pressureMtorr: 20, powerW: 800, gas: "Ar" }
 const matchHighPressure = findAutoMatch({ pressureMtorr: 80, powerW: 800, gas: "Ar" });
 if (!(matchNominal.reflectedFraction < 0.01) || !(matchHighPressure.reflectedFraction < 0.01)) failures.push("A15 自動匹配後反射功率必須低於 1%。");
 if (matchNominal.tunePf === matchHighPressure.tunePf && matchNominal.loadPf === matchHighPressure.loadPf) failures.push("A15 壓力改變後必須需要不同匹配電容位置。");
+const virtualLowSource = virtualToolModel({ sourcePowerW: 200 });
+const virtualHighSource = virtualToolModel({ sourcePowerW: 2000 });
+const virtualNoBias = virtualToolModel({ biasPowerW: 0 });
+const virtualHighBias = virtualToolModel({ biasPowerW: 500 });
+const virtualChallenge = virtualToolModel({ pressureMtorr: 5, sourcePowerW: 600, biasPowerW: 60, gasMix: { CF4: 45, O2: 10, Ar: 45 } });
+const teSourceChange = Math.abs(virtualHighSource.electronTemperatureEv / virtualLowSource.electronTemperatureEv - 1);
+if (!(teSourceChange < 0.1) || !(virtualHighSource.electronDensityCm3 / virtualLowSource.electronDensityCm3 > 9)) failures.push("A16 Source 200→2000 W 時，T_e 變化應低於 10%，n_e 應接近十倍。");
+if (!(virtualNoBias.etchRateNmMin < 1) || !(virtualHighBias.etchRateNmMin > virtualNoBias.etchRateNmMin) || !(virtualHighBias.selectivity < virtualNoBias.selectivity)) failures.push("A16 Bias 必須呈現速率上升、選擇比下降與零 bias etch stop。");
+if (!virtualChallenge.challenge.passed) failures.push("A16 挑戰目標在規定製程窗內必須確實可達成。");
 const densityExample = neutralGasDensityCm3(10, 300);
 if (Math.abs(densityExample / 3.22e14 - 1) > 0.02) failures.push(`10 mTorr、300 K 中性密度應約 3.2×10^14 cm^-3，目前 ${densityExample.toExponential(2)}。`);
 const pumpingExample = effectivePumpingSpeedLps({ pressureMtorr: 20, flowSccm: 200 });

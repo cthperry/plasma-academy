@@ -289,6 +289,50 @@ const a15CanvasPixels = await desktop.evaluate(() => {
 });
 await desktop.screenshot({ path: path.join(qaDir, "desktop-a14-a15.png"), fullPage: false });
 
+await desktop.goto(`${base}/level/2/2-6-causal-chain/`, { waitUntil: "networkidle" });
+await desktop.locator("#lab-a16").scrollIntoViewIfNeeded();
+await desktop.waitForTimeout(450);
+const a16Ranges = desktop.locator('#lab-a16 input[type="range"]');
+const readA16Value = async (key) => parseFloat(await desktop.locator(`#lab-a16 [data-value-key="${key}"]`).textContent());
+const a16ControlCount = await a16Ranges.count();
+const a16OutputCount = await desktop.locator("#lab-a16 .value-panel dd").count();
+const a16ChainCount = await desktop.locator("#lab-a16 .a16-chain-node").count();
+await a16Ranges.nth(1).fill("200");
+const a16LowSourceTe = await readA16Value("電子溫度 Tₑ");
+const a16LowSourceDensity = await readA16Value("電子密度 nₑ");
+await a16Ranges.nth(1).fill("2000");
+const a16HighSourceTe = await readA16Value("電子溫度 Tₑ");
+const a16HighSourceDensity = await readA16Value("電子密度 nₑ");
+const a16TeDelta = await desktop.locator('#lab-a16 [data-cause-key="electronTemperatureEv"] strong').textContent();
+await a16Ranges.nth(2).fill("0");
+const a16ZeroBiasRate = await readA16Value("蝕刻率");
+const a16ZeroBiasSelectivity = await readA16Value("選擇比");
+const a16ZeroBiasProfile = await desktop.locator('#lab-a16 [data-value-key="Profile"]').textContent();
+await a16Ranges.nth(2).fill("500");
+const a16HighBiasRate = await readA16Value("蝕刻率");
+const a16HighBiasSelectivity = await readA16Value("選擇比");
+await desktop.locator("#lab-a16").getByRole("button", { name: "開始挑戰" }).click();
+for (const [index, value] of [[0, 5], [1, 600], [2, 60], [3, 45], [4, 10], [5, 45], [6, 25], [7, 3]]) await a16Ranges.nth(index).fill(String(value));
+const a16ChallengeStatus = await desktop.locator("#lab-a16 [data-a16-challenge-status]").textContent();
+const a16ChallengeClass = await desktop.locator("#lab-a16 .a16-challenge").getAttribute("class");
+const a16CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a16 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++;
+  return nonBlank;
+});
+const a16ThemeBefore = await desktop.evaluate(() => [...document.querySelector("#lab-a16 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+await desktop.click("[data-theme-toggle]");
+await desktop.waitForTimeout(150);
+let a16ThemeAfter = await desktop.evaluate(() => [...document.querySelector("#lab-a16 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+if (JSON.stringify(a16ThemeBefore) === JSON.stringify(a16ThemeAfter)) {
+  await desktop.click("[data-theme-toggle]");
+  await desktop.waitForTimeout(150);
+  a16ThemeAfter = await desktop.evaluate(() => [...document.querySelector("#lab-a16 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+}
+await desktop.screenshot({ path: path.join(qaDir, "desktop-a16.png"), fullPage: false });
+
 await desktop.goto(`${base}/level/1/1-2-parameters/`, { waitUntil: "networkidle" });
 await desktop.locator("#lab-a02").scrollIntoViewIfNeeded();
 await desktop.waitForTimeout(700);
@@ -688,6 +732,21 @@ const mobileA15CanvasPixels = await mobile.evaluate(() => {
 });
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a14-a15.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/2/2-6-causal-chain/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a16").scrollIntoViewIfNeeded();
+await mobile.waitForTimeout(400);
+const mobileA16Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA16ControlCount = await mobile.locator('#lab-a16 input[type="range"]').count();
+const mobileA16ChainCount = await mobile.locator("#lab-a16 .a16-chain-node").count();
+const mobileA16CanvasPixels = await mobile.evaluate(() => {
+  const canvas = document.querySelector("#lab-a16 canvas");
+  const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+  let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++;
+  return nonBlank;
+});
+await mobile.screenshot({ path: path.join(qaDir, "mobile-a16.png"), fullPage: false });
+
 await mobile.evaluate(() => {
   const chapters = Object.fromEntries(["1-1", "1-2", "1-3", "1-4", "1-5"].map((id) => [id, { visited: true, objectives: [true, true, true, true] }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
@@ -707,6 +766,7 @@ Object.assign(result, { a12PathCount, a12OverlapCount, a12RateBarCount, a12Ioniz
 Object.assign(result, { a13BarCount, a13LowFrequencyDelta, a13LowFrequencyStatus, a13HighFrequencyDelta, a13HighFrequencyStatus, a13HighPressureTail, a13HighPressureStatus, a13ArDelta, a13Cf3Delta, a13CanvasPixels, a13ThemeBefore, a13ThemeAfter, mobileA13Overflow, mobileA13BarCount, mobileA13CanvasPixels });
 Object.assign(result, { a14At550Up, a14At700Up, a14At550Down, a14At400Down, a14PathCount, a14CanvasPixels, a14ThemeBefore, a14ThemeAfter, mobileA14Overflow, mobileA14PathCount, mobileA14CanvasPixels });
 Object.assign(result, { a15InitialReflection, a15MatchedReflection, a15FirstFingerprint, a15DriftReflection, a15RematchedReflection, a15SecondFingerprint, a15PathCount, a15PointCount, a15CanvasPixels, mobileA15Overflow, mobileA15PathCount, mobileA15CanvasPixels });
+Object.assign(result, { a16ControlCount, a16OutputCount, a16ChainCount, a16LowSourceTe, a16LowSourceDensity, a16HighSourceTe, a16HighSourceDensity, a16TeDelta, a16ZeroBiasRate, a16ZeroBiasSelectivity, a16ZeroBiasProfile, a16HighBiasRate, a16HighBiasSelectivity, a16ChallengeStatus, a16ChallengeClass, a16CanvasPixels, a16ThemeBefore, a16ThemeAfter, mobileA16Overflow, mobileA16ControlCount, mobileA16ChainCount, mobileA16CanvasPixels });
 console.log(JSON.stringify(result, null, 2));
 
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
@@ -753,6 +813,13 @@ if (!(a15InitialReflection > 1) || !(a15MatchedReflection < 1) || !(a15DriftRefl
 if (a15FirstFingerprint === a15SecondFingerprint) throw new Error("A15 壓力改變後沒有產生新的匹配電容指紋。");
 if (a15PathCount < 8 || a15PointCount < 8 || mobileA15PathCount < 8 || a15CanvasPixels < 100000 || mobileA15CanvasPixels < 100000) throw new Error("A15 Smith-like 圖、L 網路或功率 Canvas 未完整渲染。");
 if (mobileA15Overflow) throw new Error("A15 手機版有水平溢出。");
+if (a16ControlCount !== 8 || a16OutputCount !== 8 || a16ChainCount !== 8 || mobileA16ControlCount !== 8 || mobileA16ChainCount !== 8) throw new Error("A16 HMI 控制、輸出儀表或因果鏈節點不完整。");
+if (!(Math.abs(a16HighSourceTe / a16LowSourceTe - 1) < 0.1) || !(a16HighSourceDensity / a16LowSourceDensity > 9) || !a16TeDelta.includes("幾乎不變")) throw new Error("A16 Source power 對 n_e 與 T_e 的教學趨勢未通過。");
+if (a16ZeroBiasRate >= 1 || !a16ZeroBiasProfile.includes("Etch stop") || !(a16HighBiasRate > a16ZeroBiasRate) || !(a16HighBiasSelectivity < a16ZeroBiasSelectivity)) throw new Error("A16 Bias 對速率、選擇比與 etch stop 的趨勢未通過。");
+if (!a16ChallengeStatus.includes("達成") || !a16ChallengeClass.includes("passed")) throw new Error("A16 挑戰目標在製程窗內未能達成。");
+if (a16CanvasPixels < 200000 || mobileA16CanvasPixels < 200000) throw new Error("A16 桌機或手機 Canvas 看起來是空白。");
+if (JSON.stringify(a16ThemeBefore) === JSON.stringify(a16ThemeAfter)) throw new Error("A16 Canvas 未隨主題切換重新取色。");
+if (mobileA16Overflow) throw new Error("A16 手機版有水平溢出。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);

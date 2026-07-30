@@ -6,12 +6,13 @@ import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
 import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
 import { chapterTwoFour } from "../src/content/chapter-2-4.mjs";
 import { chapterTwoFive } from "../src/content/chapter-2-5.mjs";
+import { chapterTwoSix } from "../src/content/chapter-2-6.mjs";
 import { formulas } from "../src/data/formulas.js";
 import { gases } from "../src/data/gases.js";
 import { labs } from "../src/data/labs.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const chapters = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive];
+const chapters = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
 const stripHtml = (value) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
 const content = chapters.flatMap((chapter) => [
   chapter.title,
