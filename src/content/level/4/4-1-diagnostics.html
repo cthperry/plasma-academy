@@ -1,0 +1,493 @@
+<!--meta
+{
+  "title": "4.1 電漿診斷 — Plasma Academy",
+  "description": "Langmuir 探針的四參數求法與四個實務陷阱、OES 關鍵譜線表、actinometry 為什麼能把相對強度變成相對濃度、VI probe 與 RGA,以及一張診斷工具選擇決策表。",
+  "type": "chapter",
+  "module": "4.1"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>4.1 電漿診斷</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 3.5 小時</span>
+    <span>🔬 A26 · A27 互動元件</span>
+    <span>★ L4 旗艦模組</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="4.1">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>讀懂 Langmuir 探針 I-V 曲線,求出 n_e、T_e、V_p、V_f</span></label></li>
+    <li><label><input type="checkbox" /><span>說出探針的四個實務陷阱,以及為什麼量產線上不用它</span></label></li>
+    <li><label><input type="checkbox" /><span>讀懂 OES 光譜,認出各製程的主訊號</span></label></li>
+    <li><label><input type="checkbox" /><span>說明 actinometry 為什麼有效,以及它的三個前提</span></label></li>
+    <li><label><input type="checkbox" /><span>對指定問題選出適當的診斷手段</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../2/2-4-sheath-physics/">2.4 鞘層物理進階</a>
+  <a href="../../2/2-5-plasma-sources/">2.5 電漿源與功率耦合</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    前面三階都在講「電漿會做什麼」。L4 從這一章開始問:
+    <strong>你怎麼知道腔體裡真的是那樣?</strong>
+  </p>
+  <ul>
+    <li><strong>Langmuir 探針是黃金標準,但量產線上幾乎不用</strong> ——
+      因為它侵入、會被鍍膜、需要 RF 補償。它的位置是機台驗收與模型校驗。</li>
+    <li><strong>OES 是量產線上的眼睛</strong>:非侵入、每片都能收、
+      而且機台本來就裝了。</li>
+    <li><strong>但光譜強度會騙人。</strong>強度 ∝ 濃度 × n_e × exp(−E_th/T_e) ——
+      強度變了,可能是濃度變了,<strong>也可能只是電漿條件變了</strong>。</li>
+    <li><strong>Actinometry 是解法</strong>:加 1–5 % 的 Ar 當內標取比值,
+      把 n_e、T_e <strong>與視窗汙染</strong>一起消掉。</li>
+    <li><strong>OH(306 nm)是免費的洩漏偵測器</strong> ——
+      不用加任何硬體,把這條線納入常態監控就好。</li>
+  </ul>
+</div>
+
+<h2 id="overview">4.1.1 診斷方法總覽</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>方法</th><th>量什麼</th><th>侵入性</th><th>可否量產線上</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Langmuir 探針</strong></td><td>n_e, T_e, V_p, V_f, EEDF</td>
+          <td><strong>侵入</strong></td><td>否(研發 / 機台驗收)</td></tr>
+        <tr><td><strong>OES 光發射光譜</strong></td><td>相對物種濃度、終點</td>
+          <td>非侵入</td><td><strong>是,最普及</strong></td></tr>
+        <tr><td><strong>VI Probe / 阻抗分析</strong></td><td>RF 電壓/電流/相位/諧波</td>
+          <td>非侵入</td><td><strong>是</strong></td></tr>
+        <tr><td>RGA 質譜</td><td>氣體與產物組成</td><td>抽樣</td><td>部分</td></tr>
+        <tr><td>FTIR 排氣分析</td><td>排氣分子種類</td><td>非侵入</td><td>環保監測</td></tr>
+        <tr><td>微波干涉</td><td>線積分電子密度</td><td>非侵入</td><td>研發</td></tr>
+        <tr><td><strong>RFEA</strong></td><td><strong>IEDF</strong></td><td>侵入</td><td>否</td></tr>
+        <tr><td>SEERS</td><td>n_e、碰撞率</td><td>非侵入</td><td>部分</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <strong>「侵入性」這一欄決定了一切。</strong>
+    量產線上不能放任何會擾動電漿或掉微粒的東西 ——
+    所以最準的方法反而用不上,而<strong>透過玻璃窗看光</strong>的方法變成主力。
+  </p>
+</div>
+
+<h2 id="langmuir">4.1.2 Langmuir 探針:電漿診斷的黃金標準</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>原理</strong>:插一根小金屬探針,掃描偏壓,量流入的電流。
+    曲線分三個區:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>區域</th><th>條件</th><th>物理</th></tr></thead>
+      <tbody>
+        <tr><td><strong>離子飽和區</strong></td><td>V 很負</td>
+          <td>電子全被推開,只收離子 → 電流是定值</td></tr>
+        <tr><td><strong>過渡區(指數區)</strong></td><td>V_f &lt; V &lt; V_p</td>
+          <td>只有能量夠高的電子跨得過位障 → <strong>指數依賴 T_e</strong></td></tr>
+        <tr><td><strong>電子飽和區</strong></td><td>V &gt; V_p</td>
+          <td>沒有位障了,收集所有到達的電子</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>參數</th><th>怎麼求</th></tr></thead>
+      <tbody>
+        <tr><td><strong>V_f</strong></td><td>I = 0 的電壓</td></tr>
+        <tr><td><strong>T_e</strong></td><td>過渡區取 ln(I_e) vs V,<strong>斜率倒數即 T_e [eV]</strong></td></tr>
+        <tr><td><strong>V_p</strong></td><td>dI/dV 的極大值處</td></tr>
+        <tr><td><strong>n_e</strong></td><td>由離子飽和電流 I_sat = 0.61·n·e·u_B·A 反推</td></tr>
+        <tr><td><strong>EEDF</strong></td><td><strong>Druyvesteyn 公式</strong>:f(E) ∝ d²I_e/dV²</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 Druyvesteyn 公式為什麼重要</div>
+    <p>
+      前面每一次講 EEDF(<a href="../../2/2-3-plasma-chemistry/">2.3.2</a>)
+      都是假設一個形狀(Maxwellian 或 Druyvesteyn)再往下推。
+    </p>
+    <p>
+      <strong>二次微分法不假設任何形狀</strong> —— 它直接從量到的曲線得出真實的
+      EEDF。這是唯一能<strong>實驗確認</strong>那些分佈假設的方法,
+      也是為什麼探針在研發階段不可取代。
+    </p>
+    <p>
+      代價:二次微分對雜訊極度敏感。A26 把雜訊拉起來就會看到 EEDF 整個爛掉 ——
+      實務上需要非常乾淨的訊號與大量平均。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A26 實測:分析正確時該有的樣子</div>
+    <p>
+      真值 T_e 3 eV、n_e 1×10¹⁶ m⁻³、V_p 20 V,補償正常:
+    </p>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>參數</th><th>量到</th><th>誤差</th></tr></thead>
+        <tbody>
+          <tr><td>T_e</td><td>3.00 eV</td><td>&lt; 0.1 %</td></tr>
+          <tr><td>n_e</td><td>1.00×10¹⁶ m⁻³</td><td>&lt; 0.1 %</td></tr>
+          <tr><td>V_p</td><td>19.5 V</td><td>2.5 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      A26 的四個參數<strong>全部由曲線算出來</strong>(不是把設定值抄回來顯示),
+      所以「量錯」是可能的 —— 下面兩個陷阱就是讓你親眼看到量錯的樣子。
+    </p>
+  </div>
+
+  <h3 id="pitfalls">四個實務陷阱</h3>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>陷阱</th><th>後果</th><th>對策</th></tr></thead>
+      <tbody>
+        <tr><td><strong>① 沒有 RF 補償</strong></td>
+          <td>電漿電位以 13.56 MHz 振盪,量到的是被塗抹過的曲線</td>
+          <td>RF 扼流圈 + 補償電極</td></tr>
+        <tr><td><strong>② 探針被鍍膜</strong></td>
+          <td>沉積或聚合製程中<strong>幾秒內</strong>就被絕緣層蓋住</td>
+          <td>離子轟擊清洗、加熱</td></tr>
+        <tr><td><strong>③ 探針擾動電漿</strong></td>
+          <td>探針面積相對接地面積太大 → 抽走的電子改變電漿</td>
+          <td>用細小的探針</td></tr>
+        <tr><td><strong>④ 磁化電漿</strong></td>
+          <td>ECR 或有磁場的系統,標準理論失效</td>
+          <td>換方法</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A26 實測:RF 補償失效會毀掉什麼</div>
+    <p>
+      把 RF 電位振幅拉到 30 V(真值 V_p = 20 V):
+    </p>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>RF 振幅</th><th>量到 V_p</th><th>量到 V_f</th><th>量到 T_e</th></tr></thead>
+        <tbody>
+          <tr><td>0(補償正常)</td><td>19.5 V</td><td>4.5 V</td><td>3.00 eV</td></tr>
+          <tr><td>10 V</td><td>9.9 V</td><td>−1.1 V</td><td>3.00 eV</td></tr>
+          <tr><td>20 V</td><td>−0.2 V</td><td>−10.0 V</td><td>3.00 eV</td></tr>
+          <tr><td><strong>30 V</strong></td><td><strong>−10.2 V</strong></td><td>−19.4 V</td><td>3.02 eV</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>V_p 從 20 V 變成 −10 V —— 錯了 30 V。</strong>
+      而<strong>離子能量 ≈ V_p − V_wafer</strong>,所以你對離子能量的估計整個垮掉。
+      V_f 也跟著平移同樣的量。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📐 這裡要說清楚一件事:本模型的 T_e <strong>沒有</strong>被高估</div>
+    <p>
+      教科書常說「未補償的探針會把 T_e 高估數倍」。
+      <strong>A26 做不到這一點,而且原因可以證明:</strong>
+    </p>
+    <div class="pa-formula">
+      <div class="pa-formula__eq pa-eq">
+        ⟨exp((V − V_p − V_rf·f(t))/T_e)⟩<sub>t</sub>
+        = exp((V − V_p)/T_e) · ⟨exp(−V_rf·f/T_e)⟩
+      </div>
+      <div class="pa-formula__name">
+        後面那一項<strong>與 V 無關</strong> —— 所以任何波形的 RF 調變
+        在指數區都只是把曲線整條平移,<strong>斜率完全不變</strong>
+      </div>
+    </div>
+    <p>
+      也就是說:只要探針特性在過渡區是純指數,而且擬合窗落在乾淨的指數區內,
+      <strong>T_e 就救得回來</strong>。真實探針的 T_e 高估來自這個模型
+      <strong>沒有</strong>的東西 —— 探針雜散電容分壓、非 Maxwellian 的 EEDF、
+      探針座面積效應。
+    </p>
+    <p>
+      <strong>所以請這樣理解 A26:它誠實示範的是「V_p 與 V_f 被推歪」,
+      不是「T_e 被高估」。</strong>兩者都足以讓量測失去意義,
+      但把做不到的事講成做得到,對學習沒有好處。這一項記在
+      <code>docs/11</code> 的待辦裡。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 鍍膜最危險的地方:曲線看起來還很正常</div>
+    <p>
+      A26 實測:鍍膜程度 0.9 時 <strong>n_e 被低估 94 %</strong>,
+      但曲線形狀、T_e 都還看得過去。
+    </p>
+    <p>
+      <strong>一個看起來合理、實際上錯 20 倍的數字,比一條明顯爛掉的曲線危險得多</strong> ——
+      後者你會重做,前者你會拿去寫報告。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a26">🔬 A26 Langmuir 探針 I-V</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A26">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A26</span>
+    <span class="pa-lab__title">親手求一次四個參數,再親手把它們弄錯</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。三個分頁(線性 I-V、半對數、二次微分 EEDF),
+      五個旋鈕(T_e、n_e、RF 振幅、雜訊、鍍膜)。四個參數全部由曲線算出來並與真值比對。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="oes">4.1.3 OES:量產線上的眼睛</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>原理</strong>:激發態粒子退激發時放光,波長是物種的指紋。
+    只要有一片玻璃窗和一台光譜儀就能收,<strong>完全不干擾製程</strong>。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>波長 (nm)</th><th>物種</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td><strong>703.7 / 685.6</strong></td><td><strong>F</strong></td><td>氟系蝕刻主監控</td></tr>
+        <tr><td><strong>750.4 / 811.5</strong></td><td><strong>Ar</strong></td><td><strong>Actinometry 內標</strong></td></tr>
+        <tr><td>777.4 / 844.6</td><td>O</td><td>氧自由基、灰化終點</td></tr>
+        <tr><td><strong>483.5 / 519</strong></td><td><strong>CO</strong></td><td><strong>SiO₂ 蝕刻終點主訊號</strong></td></tr>
+        <tr><td>251.6 / 288.2</td><td>Si</td><td>Si 蝕刻產物</td></tr>
+        <tr><td>387.1 / 388.3</td><td>CN</td><td>含氮有機物</td></tr>
+        <tr><td>516.5</td><td>C₂</td><td>聚合物</td></tr>
+        <tr><td>656.3</td><td>H(Hα)</td><td>含氫製程</td></tr>
+        <tr><td>837.6 / 725.7</td><td>Cl</td><td>氯系蝕刻</td></tr>
+        <tr><td>470 / 478</td><td>Br</td><td>溴系蝕刻</td></tr>
+        <tr><td>336 / 357</td><td>N₂</td><td>氮系</td></tr>
+        <tr><td><strong>306 / 309</strong></td><td><strong>OH</strong></td><td><strong>水氣污染 ← 洩漏偵測</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 OH 是免費的洩漏偵測器</div>
+    <p>
+      A27 實測,同一支 SiO₂ 配方,正常 vs 微漏:
+      <strong>OH(306 nm)強度 ×90,N₂(336 nm)×40</strong>,
+      而 F(703.7)幾乎沒動。
+    </p>
+    <p>
+      <strong>機台本來就在收光譜</strong> —— 把 306 nm 納入常態監控不用加任何硬體、
+      不用停機、不用抽真空測試。這是投資報酬率最高的監控項目之一。
+    </p>
+  </div>
+</div>
+
+<h2 id="actinometry">4.1.4 Actinometry:把相對強度變成相對濃度</h2>
+
+<div class="pa-prose">
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      I<sub>line</sub> ∝ n<sub>species</sub> × n<sub>e</sub> × exp(−E<sub>th</sub>/T<sub>e</sub>)
+    </div>
+    <div class="pa-formula__name">
+      <strong>問題就在這裡</strong>:強度同時被濃度、n_e、T_e 決定
+    </div>
+  </div>
+
+  <p>
+    所以<strong>強度上升不代表濃度上升</strong> ——
+    也可能只是功率調高讓 n_e 變多了。直接看強度會誤判。
+  </p>
+
+  <div class="pa-formula">
+    <div class="pa-formula__eq pa-eq">
+      [F] / [Ar] ∝ I<sub>F</sub>(703.7) / I<sub>Ar</sub>(750.4)
+    </div>
+    <div class="pa-formula__name">
+      加 1–5 % 的 Ar 當內標,取比值 —— n_e 與 T_e 一起被消掉
+    </div>
+  </div>
+
+  <p>
+    為什麼可以消掉:F(703.7)的激發閾值約 <strong>14.5 eV</strong>,
+    Ar(750.4)約 <strong>13.5 eV</strong>,<strong>只差 1 eV</strong>。
+    兩者的 exp(−E_th/T_e) 幾乎相同,相除之後
+    <strong>T_e 的影響被約掉,n_e 也被約掉</strong>,剩下純粹的濃度比。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 A27 實測:比值到底穩多少</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>改變什麼</th><th>絕對強度 I_F</th><th>比值 I_F / I_Ar</th></tr></thead>
+        <tbody>
+          <tr><td>功率 500 → 1200 W</td><td>變 <strong>55 %</strong></td><td>只變 <strong>2.4 %</strong></td></tr>
+          <tr><td>視窗透光率 1.0 → 0.3</td><td>變 <strong>70 %</strong></td><td><strong>完全不變(0 %)</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      第二列是 actinometry <strong>在現場更常救人的那一個</strong>:
+      觀測窗積膜是必然會發生的,而它<strong>同乘在每一條譜線上</strong>,
+      所以比值把它整個消掉。用絕對強度做終點偵測的配方,
+      會隨著視窗變髒而漂移;用比值的不會。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ Actinometry 的三個前提,少一個就得到假數據</div>
+    <ol>
+      <li><strong>追蹤氣體濃度要夠低</strong>,不能改變電漿本身(1–5 %)</li>
+      <li><strong>兩條譜線的激發閾值必須接近</strong></li>
+      <li>物種必須以<strong>直接電子激發</strong>為主(有解離激發貢獻時關係不成立)</li>
+    </ol>
+    <p>
+      第 2 條可以在 A27 親手驗證:改用 Si(251.6 nm,閾值 5.1 eV)當內標去比 F(14.5 eV),
+      <strong>比值又開始跟著功率跑</strong>(實測敏感度變成正確內標的三倍以上)。
+      閾值差太多,T_e 就消不掉。
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a27">🔬 A27 OES 光譜與 actinometry</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A27">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A27</span>
+    <span class="pa-lab__title">強度會騙人,比值不會</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。五種製程(SiO₂ 蝕刻、Poly 蝕刻、灰化、腔體清潔、洩漏),
+      四個旋鈕(功率、壓力、Ar 內標比例、觀測窗透光率),同時顯示絕對強度與 actinometry 比值。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="vi">4.1.5 VI Probe 與諧波分析</h2>
+
+<div class="pa-prose">
+  <p>
+    裝在 RF 饋入端,量 V、I、相位 → 得到電漿阻抗。
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>能看出什麼</th><th>怎麼用</th></tr></thead>
+      <tbody>
+        <tr><td>電漿阻抗變化</td><td>腔體狀態的變化 —— <strong>比匹配電容位置更靈敏</strong></td></tr>
+        <tr><td><strong>諧波成分</strong>(2ω、3ω…)</td>
+          <td>反映鞘層的非線性程度 → <strong>可推鞘層電壓與離子能量</strong></td></tr>
+        <tr><td>異常放電</td><td>arcing 的即時偵測</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼 VI probe 是現代 FDC 的核心感測器</div>
+    <p>
+      它同時滿足四件事:<strong>完全非侵入、可以 100 % 監控每一片、
+      取樣率高、而且資料是數值訊號</strong>(不是需要解讀的圖)。
+    </p>
+    <p>
+      最後一點在機器學習時代特別重要 —— 諧波指紋可以直接餵進模型,
+      而 OES 全譜還要先挑線。<strong>它是「便宜、每片都有、機器讀得懂」的組合。</strong>
+    </p>
+  </div>
+</div>
+
+<h2 id="rga">4.1.6 RGA 與排氣分析</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>RGA(殘餘氣體分析儀)</strong>:四極質譜,量 m/z 分佈。
+  </p>
+  <ul>
+    <li>量測<strong>真實的</strong>腔內組成(對照
+      <a href="../../2/2-1-vacuum/">2.1.2</a> 的分壓誤區 —— 你設定的流量比不等於腔內的分壓比)</li>
+    <li><strong>洩漏偵測</strong>:m/z = 28(N₂)、32(O₂)、18(H₂O)的比例 →
+      <strong>28:32 接近 4:1 是空氣漏;18 特別高是水氣</strong></li>
+    <li>終點偵測(產物訊號)</li>
+    <li>PM 後的腔體潔淨度確認</li>
+  </ul>
+</div>
+
+<h2 id="decision">4.1.7 診斷工具選擇決策表</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>問題</th><th>建議工具</th></tr></thead>
+      <tbody>
+        <tr><td>蝕刻率掉了,不知道是自由基少還是離子少</td>
+          <td><strong>OES(actinometry 看自由基)+ VI probe(看功率耦合)</strong></td></tr>
+        <tr><td>懷疑腔體洩漏</td><td>RGA、OES 的 OH / N₂ 線、升壓率測試</td></tr>
+        <tr><td>機台間結果不同</td><td>VI probe 指紋 + OES 全譜比對 + 匹配位置</td></tr>
+        <tr><td>想知道實際打到晶圓的離子能量</td><td>RFEA(研發);量產以 VI probe 諧波推估</td></tr>
+        <tr><td>想校驗模擬模型</td><td>Langmuir 探針 + RFEA</td></tr>
+        <tr><td>找終點</td><td>OES、干涉、RF 諧波(見 4.2)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 第一列是最常見的問題,而它需要<strong>兩個</strong>工具</div>
+    <p>
+      「蝕刻率掉了」是最典型的求助。它至少有兩條完全不同的路:
+      <strong>自由基供應變少</strong>(氣體、腔壁、洩漏),
+      或<strong>功率沒有真的進到電漿裡</strong>(匹配、饋入、腔體狀態)。
+    </p>
+    <p>
+      OES actinometry 回答第一條,VI probe 回答第二條。
+      <strong>只用一個會在一半的情況下走錯方向</strong> ——
+      這和 3.3 診斷器「一個症狀多個成因」是同一件事,只是換到了機台層級。
+    </p>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>Langmuir 探針 I-V 的三個區各對應什麼物理?T_e 從哪一區求?</li>
+    <li>為什麼 n_e 要從<strong>離子</strong>飽和電流求,而不是電子飽和電流?</li>
+    <li>Druyvesteyn 公式的價值是什麼?它的代價是什麼?</li>
+    <li>RF 補償失效會毀掉哪些參數?<strong>為什麼 V_p 錯了會讓離子能量的估計整個垮掉?</strong></li>
+    <li>探針鍍膜為什麼比曲線完全爛掉更危險?</li>
+    <li>OES 的強度為什麼不能直接當濃度看?寫出強度的三個依賴項。</li>
+    <li>Actinometry 為什麼能消掉 n_e 與 T_e?<strong>為什麼它也能消掉視窗汙染?</strong></li>
+    <li>如果用 Si(5.1 eV)當內標去比 F(14.5 eV),會發生什麼?違反了三個前提中的哪一個?</li>
+    <li>「蝕刻率掉了」為什麼需要兩個診斷工具?各回答哪一半?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Godyak, Piejak &amp; Alexandrovich, <em>Measurement of electron energy distribution in low-pressure RF discharges</em>, Plasma Sources Sci. Technol. 1, 36 (1992) —— RF 補償與 EEDF 量測的經典</li>
+    <li>Coburn &amp; Chen, <em>Optical emission spectroscopy of reactive plasmas: A method for correlating emission intensities to reactive particle density</em>, J. Appl. Phys. 51, 3134 (1980) —— actinometry 的原始論文</li>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 6(探針理論)</li>
+    <li>Donnelly, <em>Plasma electron temperatures and electron energy distributions measured by trace rare gases optical emission spectroscopy</em>, J. Phys. D 37, R217 (2004)</li>
+  </ul>
+</div>
