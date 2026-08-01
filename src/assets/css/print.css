@@ -41,4 +41,38 @@
     content: " (" attr(href) ")";
     font-size: 10px;
   }
+
+  body.pa-print-certificate > *:not(#main),
+  body.pa-print-certificate #main > *:not(.content-shell),
+  body.pa-print-certificate .content-shell > *:not([data-progress-page]),
+  body.pa-print-certificate [data-progress-page] > *:not([data-training-certificate]) {
+    display: none !important;
+  }
+
+  body.pa-print-certificate [data-training-certificate] {
+    border: 2px solid #000000;
+    box-shadow: none;
+    color: #000000;
+    display: block !important;
+    margin: 0;
+    padding: 14mm;
+  }
+
+  body.pa-print-certificate .certificate-facts {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  body.pa-print-certificate .certificate-modules {
+    columns: 2;
+    font-size: 10pt;
+  }
+
+  body.pa-print-certificate .certificate-disclaimer {
+    border-color: #000000;
+    font-size: 10pt;
+  }
+
+  body.pa-print-certificate a::after {
+    content: none;
+  }
 }

@@ -143,10 +143,22 @@ for (const line of spectra) {
     if (!/^https:\/\/physics\.nist\.gov\//.test(line.source)) failures.push(`原子譜線 ${line.id} 的 NIST ASD 來源無效。`);
   }
 }
+const formulaRequiredFields = [...dataSchemas.formula.required, "derivation", "typicalValues"];
+const unsafeFormulaMarkup = /<\s*\/?\s*(script|style)\b|\bon\w+\s*=|javascript\s*:/i;
 for (const [key, formula] of Object.entries(formulas)) {
-  for (const field of dataSchemas.formula.required) {
-    if (!formula[field] || (field === "symbols" && !Array.isArray(formula.symbols))) failures.push(`公式 ${key} 缺少 ${field}。`);
+  for (const field of formulaRequiredFields) {
+    const value = formula[field];
+    if (field === "symbols") {
+      if (!Array.isArray(value) || !value.length) failures.push(`公式 ${key} 缺少 ${field}。`);
+    } else if (typeof value !== "string" || !value.trim()) {
+      failures.push(`公式 ${key} 缺少 ${field}。`);
+    }
   }
+  for (const field of ["expression", "derivation", "typicalValues", "source"]) {
+    if (unsafeFormulaMarkup.test(formula[field] ?? "")) failures.push(`公式 ${key} 的 ${field} 不可包含 script/style、事件屬性或 JavaScript URL。`);
+  }
+  if (!/<p\b/i.test(formula.derivation)) failures.push(`公式 ${key} 的 derivation 必須使用語意化段落。`);
+  if (!/<p\b/i.test(formula.typicalValues) || !/\d/.test(formula.typicalValues)) failures.push(`公式 ${key} 的 typicalValues 必須提供含數值的具體尺度。`);
 }
 
 const residenceExample = residenceTimeSeconds({ pressureMtorr: 20, volumeL: 30, flowSccm: 200 });
@@ -224,6 +236,7 @@ for (const [type, expected] of Object.entries(expectedBankDistribution)) {
 }
 
 if (level2Questions.length !== 80) failures.push(`L2 結業題庫應為 80 題，目前 ${level2Questions.length} 題。`);
+if (level2ExamSpec.durationMinutes !== 50) failures.push(`L2 測驗時限應為 50 分鐘，目前 ${level2ExamSpec.durationMinutes} 分鐘。`);
 const l2QuizIds = new Set();
 for (const question of level2Questions) {
   if (l2QuizIds.has(question.id)) failures.push(`L2 題庫 ID 重複：${question.id}。`);

@@ -41,6 +41,7 @@ import { expandL1Content } from "../src/content/l1-prose-expansions.mjs";
 import { level1ExamSpec } from "../src/data/quiz/level-1.js";
 import { level2ExamSpec } from "../src/data/quiz/level-2.js";
 import { level3ExamSpec } from "../src/data/quiz/level-3.js";
+import { level4ExamSpec } from "../src/data/quiz/level-4.js";
 import { shell, navItems, breadcrumb } from "../src/templates/page-shell.mjs";
 import { formulaCard, callout, labContainer, progressRing } from "../src/templates/components.mjs";
 
@@ -151,7 +152,7 @@ function levelPage(levelId) {
     </article>
   `).join("");
 
-  const examSpec = { 1: level1ExamSpec, 2: level2ExamSpec, 3: level3ExamSpec }[level.id];
+  const examSpec = { 1: level1ExamSpec, 2: level2ExamSpec, 3: level3ExamSpec, 4: level4ExamSpec }[level.id];
   const examRequirement = level.id === 3 ? "完成 7 章中的 6 章學習目標後啟用" : "完成 6 章中的 5 章學習目標後啟用";
   const assessment = examSpec ? `
       <section class="assessment-gate" data-exam-gate data-exam-level="${level.id}">
@@ -1032,6 +1033,9 @@ function labPage() {
 }
 
 function progressPage() {
+  const certificateModules = curriculum.levels.flatMap((level) => level.modules.map((module) => `
+    <li data-certificate-module="${module.id}"><strong>${module.id}</strong><span>${module.title}</span></li>
+  `)).join("");
   return page("/progress/", "個人進度", `
     <main class="content-shell narrow">
       ${breadcrumb(["首頁", "個人進度"])}
@@ -1067,11 +1071,51 @@ function progressPage() {
           </div>
           <a class="button secondary" href="/level/3/exam/">查看測驗</a>
         </section>
+        <section class="progress-badge" data-progress-l4-badge>
+          <div>
+            <span class="badge-mark" aria-hidden="true">L4</span>
+            <div><strong>電漿專家</strong><p data-progress-l4-status>尚未通過 L4 結業測驗</p></div>
+          </div>
+          <a class="button secondary" href="/level/4/exam/">查看測驗</a>
+        </section>
+        <section class="progress-badge progress-badge--completion" data-progress-all-badge>
+          <div>
+            <span class="badge-mark" aria-hidden="true">ALL</span>
+            <div><strong>全程完訓</strong><p data-progress-all-status>需通過四階測驗並完成 25 章全部學習目標</p></div>
+          </div>
+        </section>
+        <section class="certificate-panel" data-certificate-panel>
+          <div>
+            <h2>本機完訓證書</h2>
+            <p>通過四階測驗並完成 25 章全部學習目標後，可輸入姓名產生列印版訓練紀錄。</p>
+          </div>
+          <label class="certificate-name"><span>學員姓名</span><input type="text" maxlength="80" autocomplete="name" data-certificate-name></label>
+          <p class="meta" data-certificate-status aria-live="polite">正在確認完訓資格…</p>
+          <button class="button primary" type="button" data-certificate-generate disabled>產生證書</button>
+        </section>
+        <article class="training-certificate" data-training-certificate hidden aria-label="Plasma Academy 全程完訓證書">
+          <header>
+            <p>Plasma Academy</p>
+            <h2>全程完訓證書</h2>
+            <p>茲證明 <strong data-certificate-learner></strong> 已完成 Plasma Academy 四階訓練。</p>
+          </header>
+          <dl class="certificate-facts">
+            <div><dt>完成階段</dt><dd data-certificate-levels>L1 電漿入門、L2 氣體與電漿源、L3 製程應用與診斷、L4 電漿專家</dd></div>
+            <div><dt>完成日期</dt><dd data-certificate-date></dd></div>
+          </dl>
+          <section>
+            <h3>完成模組（25）</h3>
+            <ol class="certificate-modules">${certificateModules}</ol>
+          </section>
+          <p class="certificate-disclaimer">本證書由學習者本機產生，供內部訓練紀錄參考，非第三方認證。</p>
+          <button class="button secondary certificate-print" type="button" data-certificate-print>列印證書</button>
+        </article>
         <div class="progress-actions">
           <button class="button primary" type="button" data-export-progress>匯出 JSON</button>
           <label class="button secondary file-button">匯入 JSON<input type="file" accept="application/json" data-import-progress></label>
           <button class="button danger" type="button" data-reset-progress>清除本機進度</button>
         </div>
+        <p class="meta" data-import-status aria-live="polite"></p>
         <textarea class="progress-json" data-progress-json readonly aria-label="目前進度 JSON"></textarea>
       </section>
     </main>
@@ -1079,10 +1123,10 @@ function progressPage() {
 }
 
 function examPage(level) {
-  const spec = { 1: level1ExamSpec, 2: level2ExamSpec, 3: level3ExamSpec }[level];
-  const bankSize = { 1: 55, 2: 80, 3: 95 }[level];
+  const spec = { 1: level1ExamSpec, 2: level2ExamSpec, 3: level3ExamSpec, 4: level4ExamSpec }[level];
+  const bankSize = { 1: 55, 2: 80, 3: 95, 4: 85 }[level];
   const drawCount = Object.values(spec.draw).reduce((sum, count) => sum + count, 0);
-  const levelName = { 1: "初階", 2: "中階", 3: "進階" }[level];
+  const levelName = { 1: "初階", 2: "中階", 3: "進階", 4: "專家" }[level];
   const chapterRequirement = level === 3 ? "完成 7 章中的 6 章學習目標後可開始" : "完成 6 章中的 5 章學習目標後可開始";
   return page(`/level/${level}/exam/`, spec.title, `
     <main class="content-shell narrow" data-exam-page data-exam-level="${level}" data-exam-minutes="${spec.durationMinutes}">
@@ -1125,7 +1169,7 @@ function glossaryPage() {
   return page("/glossary/", "術語表", `
     <main class="content-shell">
       ${breadcrumb(["首頁", "術語表"])}
-      <section class="page-intro"><h1>術語表</h1><p>P0 先放核心術語子集；完整術語轉換器會在後續補齊。</p></section>
+      <section class="page-intro"><h1>術語表</h1><p>收錄課綱來源術語與封裝清潔擴充詞彙；中英文名稱、定義與章節索引由資料模組統一產生。</p></section>
       <div class="table-wrap"><table><thead><tr><th>中文</th><th>英文</th><th>定義</th><th>章節</th></tr></thead><tbody>${rows}</tbody></table></div>
     </main>
   `);
@@ -1267,6 +1311,7 @@ async function main() {
     examPage(1),
     examPage(2),
     examPage(3),
+    examPage(4),
     gasesPage(),
     defectAtlasPage(),
     glossaryPage(),

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">低 AR 與高 AR 的深度 wafer map</title><desc id="desc">低 AR 地圖均勻；高 AR 地圖在固定腔體方位的右側邊緣出現低深度區，旋轉晶圓後位置不變。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><text x="84" y="42" font-family="system-ui" font-size="17">低 AR：接近 target</text><text x="440" y="42" font-family="system-ui" font-size="17">高 AR：edge slow</text>
+  <circle cx="205" cy="185" r="120" fill="#8fd0ba" stroke="#40505d" stroke-width="3"/><circle cx="205" cy="185" r="78" fill="#7ac8ae"/><circle cx="205" cy="185" r="35" fill="#83cdb4"/>
+  <circle cx="555" cy="185" r="120" fill="#8fd0ba" stroke="#40505d" stroke-width="3"/><path d="M635 95 A120 120 0 0 1 635 275 Q590 240 585 185 Q590 130 635 95" fill="#e77769"/><circle cx="555" cy="185" r="70" fill="#7ac8ae"/>
+  <path d="M680 185h55" stroke="#c53d48" stroke-width="3" marker-end="url(#a)"/><text x="620" y="320" font-family="system-ui" font-size="14" fill="#c53d48">固定 chamber 方位</text>
+  <path d="M195 65l10-14 10 14" fill="#26323d"/><path d="M545 65l10-14 10 14" fill="#26323d"/><text x="175" y="338" font-family="system-ui" font-size="13">notch</text>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#c53d48"/></marker></defs>
+</svg>

@@ -157,6 +157,21 @@
   text-align: center;
 }
 
+.formula-card details > section {
+  border-block-start: 1px solid var(--pa-border);
+  padding-block: 14px 4px;
+}
+
+.formula-card details h3 {
+  font-size: 1rem;
+  margin: 0 0 6px;
+}
+
+.formula-card details p {
+  line-height: 1.7;
+  margin: 0;
+}
+
 .instruction-diagram {
   margin: 24px 0;
 }
@@ -1100,6 +1115,122 @@
   color: var(--pa-success);
 }
 
+.progress-badge--completion .badge-mark {
+  width: 52px;
+}
+
+.certificate-panel,
+.training-certificate {
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius);
+  margin-top: 24px;
+  padding: 20px;
+}
+
+.certificate-panel {
+  background: var(--pa-surface-sunken);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.certificate-panel > div,
+.certificate-panel > p {
+  grid-column: 1 / -1;
+}
+
+.certificate-panel h2,
+.certificate-panel p {
+  margin: 0;
+}
+
+.certificate-name {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.certificate-name input {
+  background: var(--pa-surface);
+  border: 1px solid var(--pa-border-strong);
+  border-radius: 6px;
+  color: var(--pa-text);
+  font: inherit;
+  min-width: 0;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.training-certificate {
+  background: var(--pa-surface);
+  border-top: 6px solid var(--pa-primary);
+}
+
+.training-certificate > header {
+  border-bottom: 1px solid var(--pa-border);
+  padding-bottom: 18px;
+  text-align: center;
+}
+
+.training-certificate > header h2 {
+  font-size: 32px;
+  margin: 4px 0 12px;
+}
+
+.training-certificate > header p {
+  margin: 4px 0;
+}
+
+.certificate-facts {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 2fr 1fr;
+  margin: 20px 0;
+}
+
+.certificate-facts div {
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  padding: 12px;
+}
+
+.certificate-facts dt {
+  color: var(--pa-text-muted);
+  font-size: var(--pa-text-sm);
+}
+
+.certificate-facts dd {
+  margin: 4px 0 0;
+}
+
+.certificate-modules {
+  columns: 2;
+  gap: 28px;
+  list-style: none;
+  padding-left: 0;
+}
+
+.certificate-modules li {
+  break-inside: avoid;
+  margin: 7px 0;
+  padding-left: 4px;
+}
+
+.certificate-modules strong {
+  display: inline-block;
+  font-family: var(--pa-font-mono);
+  margin-right: 8px;
+  min-width: 32px;
+}
+
+.certificate-disclaimer {
+  border: 2px solid var(--pa-border-strong);
+  font-weight: 750;
+  margin: 22px 0;
+  padding: 12px;
+  text-align: center;
+}
+
 .exam-entry,
 .exam-shell,
 .exam-score {
@@ -1452,6 +1583,18 @@
   .exam-entry {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .certificate-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .certificate-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .certificate-modules {
+    columns: 1;
   }
 
   .exam-toolbar {

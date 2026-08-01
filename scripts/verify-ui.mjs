@@ -97,6 +97,9 @@ await desktop.screenshot({ path: path.join(qaDir, "desktop-gases.png"), fullPage
 await desktop.goto(`${base}/formulas/`, { waitUntil: "networkidle" });
 const formulaCardCount = await desktop.locator(".formula-card").count();
 const formulaPageText = await desktop.locator("main").textContent();
+await desktop.locator(".formula-card details summary").first().click();
+const formulaDetailHeadings = await desktop.locator(".formula-card details").first().locator("h3").allTextContents();
+const formulaDetailText = await desktop.locator(".formula-card details").first().textContent();
 await desktop.screenshot({ path: path.join(qaDir, "desktop-formulas.png"), fullPage: false });
 
 await desktop.goto(`${base}/level/2/2-1-gas-vacuum/`, { waitUntil: "networkidle" });
@@ -1038,7 +1041,7 @@ await desktop.waitForFunction(() => !document.querySelector("[data-exam-gate-sta
 const l3ExamLockedStatus = await desktop.locator("[data-exam-gate-status]").textContent();
 const l3ExamLockedLinkHidden = await desktop.locator("[data-exam-link]").isHidden();
 await desktop.evaluate(() => {
-  const counts = { "3-1": 5, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5 };
+  const counts = { "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5 };
   const chapters = Object.fromEntries(Object.entries(counts).map(([id, count]) => [id, { visited: true, objectives: Array(count).fill(true) }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
 });
@@ -1400,7 +1403,8 @@ const mobileL2ExamQuestionCount = await mobile.locator("[data-exam-question-nav]
 await mobile.screenshot({ path: path.join(qaDir, "mobile-l2-exam.png"), fullPage: false });
 
 await mobile.evaluate(() => {
-  const chapters = Object.fromEntries(["3-1", "3-2", "3-3", "3-4", "3-5", "3-6"].map((id) => [id, { visited: true, objectives: Array(5).fill(true) }]));
+  const counts = { "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5 };
+  const chapters = Object.fromEntries(Object.entries(counts).map(([id, count]) => [id, { visited: true, objectives: Array(count).fill(true) }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
 });
 await mobile.goto(`${base}/level/3/exam/?seed=qa`, { waitUntil: "networkidle" });
@@ -1424,6 +1428,7 @@ await mobile.screenshot({ path: path.join(qaDir, "mobile-l3-exam.png"), fullPage
 await browser.close();
 
 const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, gasCardCount, fluorocarbonCardCount, extremeGasCount, gasSearchTitle, fcLabelsDoNotOverlap, gasSdsStatusCount, mobileGasOverflow, mobileGasCardCount, formulaCardCount, formulaPageText, a08InitialPanel, a08InitialDensity, a08HighFlowResidence, a08HighFlowDensity, a08HighPressureResidence, a08HighPressureDensity, a08CanvasPixels, a08ThemePixelBefore, a08ThemePixelAfter, mobileA08Overflow, mobileA08CanvasPixels, chapterOneOneSelfChecks, chapterOneOneDiagramCount, chapterOneOneSupportCount, chapterOneOneObservationCount, chapterOneOneFigureNumbersValid, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
+Object.assign(result, { formulaDetailHeadings, formulaDetailText });
 Object.assign(result, { a09NodeCount, a09Cases, a09CuText, a10InitialStatus, a10InitialFc, a10HighStatus, a10LowStatus, a10OxideRate, a10SiRate, a10CanvasPixels, mobileA10Overflow, mobileA10CanvasPixels });
 Object.assign(result, { gasSupplierReviewedCount });
 Object.assign(result, { a12PathCount, a12OverlapCount, a12RateBarCount, a12Ionization2Ev, a12Ionization3Ev, a12DruyvesteynIonization, a12Cf4Status, a12Cf4Dissociation, mobileA12Overflow, mobileA12PathCount });
@@ -1453,6 +1458,7 @@ for (const check of l1Checks) {
   }
 }
 if (formulaCardCount !== 18 || !formulaPageText.includes("Townsend 自持條件") || !formulaPageText.includes("浮動電位差") || !formulaPageText.includes("滯留時間")) throw new Error("公式手冊未完整渲染 18 條公式。");
+if (!["推導", "典型數值與尺度", "適用條件與限制", "來源", "符號表"].every((heading) => formulaDetailHeadings.includes(heading)) || !formulaDetailText.includes("10 mTorr") || !formulaDetailText.includes("Lieberman")) throw new Error("公式卡未完整渲染推導、典型值、限制、來源與符號表。");
 if (!a08InitialPanel.includes("0.237 s") || !a08InitialDensity.includes("6.44e+14")) throw new Error("A08 預設滯留時間或中性密度不符規格。");
 if (Math.abs(a08HighFlowResidence - 0.119) > 0.002 || a08HighFlowDensity !== a08InitialDensity) throw new Error("A08 流量加倍後，滯留時間或密度變化不符規格。");
 if (Math.abs(a08HighPressureResidence - 1.185) > 0.003 || !a08HighPressureDensity.includes("6.44e+15")) throw new Error("A08 壓力提高十倍後，滯留時間或密度變化不符規格。");
@@ -1556,7 +1562,7 @@ for (const check of l2DiagramChecks) {
 }
 if (!["LMWOM", "金屬氧化", "接合窗口", "contact angle"].every((term) => packagingCaseText.includes(term))) throw new Error("封裝清潔工程案例缺少劑量或材料相容重點。");
 if (!["queue time", "重清潔", "累積 dose", "MES"].every((term) => packagingShiftText.includes(term))) throw new Error("封裝清潔交班演練缺少超時與再處理決策。");
-if (!l2ExamLockedStatus.includes("還需") || !l2ExamLockedLinkHidden || !l2ExamUnlockedStatus.includes("45 分鐘")) throw new Error("L2 測驗的 80% 章節解鎖條件未正確運作。");
+if (!l2ExamLockedStatus.includes("還需") || !l2ExamLockedLinkHidden || !l2ExamUnlockedStatus.includes("50 分鐘")) throw new Error("L2 測驗的 80% 章節解鎖條件未正確運作。");
 if (l2ExamQuestionCount !== 30 || JSON.stringify(l2ExamDraw) !== JSON.stringify({ single: 18, multi: 4, numeric: 4, scenario: 4 })) throw new Error(`L2 測驗抽題分佈錯誤：${JSON.stringify(l2ExamDraw)}`);
 if (l2ExamScore !== 100 || l2ExamReviewCount !== 30 || !l2ExamStoredProgress.passed || l2ExamStoredProgress.bestScore !== 100) throw new Error("L2 測驗計分、解析或進度寫入未通過。");
 if (!l2ExamBadgeEarned || !l2ExamBadgeStatus.includes("最佳成績 100%")) throw new Error("L2 通過徽章未正確顯示在進度頁。");

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">Source power 與 pressure 的 DOE 交互作用</title><desc id="desc">低壓時增加 source power 使 CD 偏差下降，高壓時增加 source power 使 CD 偏差上升，兩條線交叉。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><rect x="95" y="45" width="590" height="245" fill="#fff" stroke="#9aa6b2"/><path d="M130 95L650 250" stroke="#2f71ba" stroke-width="5"/><circle cx="130" cy="95" r="7" fill="#2f71ba"/><circle cx="650" cy="250" r="7" fill="#2f71ba"/><text x="520" y="242" font-family="system-ui" font-size="15" fill="#2f71ba">Low pressure</text>
+  <path d="M130 255L650 85" stroke="#c34a56" stroke-width="5"/><circle cx="130" cy="255" r="7" fill="#c34a56"/><circle cx="650" cy="85" r="7" fill="#c34a56"/><text x="520" y="112" font-family="system-ui" font-size="15" fill="#c34a56">High pressure</text>
+  <text x="295" y="330" font-family="system-ui" font-size="16">Source power →</text><text x="24" y="200" transform="rotate(-90 24 200)" font-family="system-ui" font-size="15">CD 偏差</text>
+</svg>

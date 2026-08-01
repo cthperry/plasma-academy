@@ -4,84 +4,132 @@ export const formulas = {
     name: "游離度",
     expression: "f<sub>i</sub> = n<sub>i</sub> / (n<sub>n</sub> + n<sub>i</sub>)",
     summary: "帶電粒子只佔極小比例，仍可透過電場與碰撞主導製程反應。",
-    symbols: [["fi", "游離度", "無因次"], ["ni", "離子密度", "cm^-3"], ["nn", "中性粒子密度", "cm^-3"]]
+    symbols: [["fi", "游離度", "無因次"], ["ni", "離子密度", "cm^-3"], ["nn", "中性粒子密度", "cm^-3"]],
+    derivation: "<p>先以全部粒子數 <strong>n<sub>n</sub> + n<sub>i</sub></strong> 作分母，再以正離子密度作分子。弱游離電漿可用準中性近似 n<sub>i</sub> ≈ n<sub>e</sub>，所以當 n<sub>i</sub> 遠小於 n<sub>n</sub> 時，f<sub>i</sub> ≈ n<sub>e</sub>/n<sub>n</sub>。</p>",
+    typicalValues: "<p>10 mTorr、300 K 時 n<sub>n</sub> 約 3.2 × 10<sup>14</sup> cm<sup>-3</sup>；若 n<sub>e</sub> = 10<sup>10</sup>–10<sup>12</sup> cm<sup>-3</sup>，游離度約為 10<sup>-5</sup>–10<sup>-3</sup>。</p>",
+    conditions: "以單一主離子近似；不把負離子或多重電離物種另行分開計數。電負性電漿須另外報告負離子密度。",
+    source: "Lieberman & Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>，弱游離電漿章節。"
   },
   debyeLength: {
     id: "debye-length",
     name: "Debye 長度",
     expression: "λ<sub>D</sub> = √(ε<sub>0</sub> k T<sub>e</sub> / n<sub>e</sub> e<sup>2</sup>)",
     summary: "密度越高，遮蔽距離越短；電子溫度越高，遮蔽距離越長。",
-    symbols: [["λD", "Debye 長度", "m"], ["Te", "電子溫度", "eV 或 K"], ["ne", "電子密度", "m^-3"], ["e", "基本電荷", "C"]]
+    symbols: [["λD", "Debye 長度", "m"], ["Te", "電子溫度", "eV 或 K"], ["ne", "電子密度", "m^-3"], ["e", "基本電荷", "C"]],
+    derivation: "<p>將電子密度對小電位擾動作 Boltzmann 線性化，代入 Poisson 方程後得到 ∇<sup>2</sup>φ = φ/λ<sub>D</sub><sup>2</sup>。其解隨距離指數衰減，因此 λ<sub>D</sub> 是電荷擾動被 bulk 遮蔽的尺度。</p>",
+    typicalValues: "<p>Ar 製程電漿在 T<sub>e</sub> = 3 eV、n<sub>e</sub> = 10<sup>11</sup> cm<sup>-3</sup> 時，λ<sub>D</sub> 約 40 μm；鞘層通常比此尺度大得多。</p>",
+    conditions: "假設近 Maxwellian 電子、小訊號擾動與準中性 bulk；不可直接把 λ<sub>D</sub> 當作碰撞性鞘層厚度。",
+    source: "Chen, <em>Introduction to Plasma Physics and Controlled Fusion</em>，Debye shielding。"
   },
   debyeNumber: {
     id: "debye-number",
     name: "Debye 球粒子數",
     expression: "N<sub>D</sub> = (4π / 3) n<sub>e</sub> λ<sub>D</sub><sup>3</sup>",
     summary: "N_D 遠大於 1 時，遮蔽才是許多粒子的集體行為。",
-    symbols: [["ND", "Debye 球內電子數", "無因次"], ["ne", "電子密度", "m^-3"], ["λD", "Debye 長度", "m"]]
+    symbols: [["ND", "Debye 球內電子數", "無因次"], ["ne", "電子密度", "m^-3"], ["λD", "Debye 長度", "m"]],
+    derivation: "<p>以 Debye 長度作半徑，Debye 球體積為 4πλ<sub>D</sub><sup>3</sup>/3；乘上電子數密度便得同時參與遮蔽的電子數。N<sub>D</sub> 大表示單一粒子的庫倫擾動被許多粒子平均化。</p>",
+    typicalValues: "<p>若 n<sub>e</sub> = 10<sup>11</sup> cm<sup>-3</sup>、λ<sub>D</sub> = 40 μm，N<sub>D</sub> 約 3 × 10<sup>4</sup>，遠大於 1。</p>",
+    conditions: "λ<sub>D</sub> 與 n<sub>e</sub> 必須取自同一 bulk 區域；這是電漿集體性判據，不是鞘層或表面反應的直接尺度。",
+    source: "Chen, <em>Introduction to Plasma Physics and Controlled Fusion</em>，plasma parameter。"
   },
   plasmaFrequency: {
     id: "electron-plasma-frequency",
     name: "電子電漿頻率",
     expression: "ω<sub>pe</sub> = √(n<sub>e</sub> e<sup>2</sup> / ε<sub>0</sub> m<sub>e</sub>)",
     summary: "電子回復電荷擾動的自然頻率，用來判斷電子能否跟上外加 RF 場。",
-    symbols: [["ωpe", "電子電漿角頻率", "rad/s"], ["ne", "電子密度", "m^-3"], ["me", "電子質量", "kg"]]
+    symbols: [["ωpe", "電子電漿角頻率", "rad/s"], ["ne", "電子密度", "m^-3"], ["me", "電子質量", "kg"]],
+    derivation: "<p>將電子雲相對固定離子背景位移 x，產生的空間電荷提供回復力 m<sub>e</sub>d<sup>2</sup>x/dt<sup>2</sup> = −n<sub>e</sub>e<sup>2</sup>x/ε<sub>0</sub>。這是簡諧振子，角頻率即為 ω<sub>pe</sub>。</p>",
+    typicalValues: "<p>n<sub>e</sub> = 10<sup>11</sup> cm<sup>-3</sup> 時，f<sub>pe</sub> = ω<sub>pe</sub>/2π 約 2.8 GHz，遠高於 13.56 MHz RF。</p>",
+    conditions: "冷電子、均勻無磁化、長波長的線性 bulk 擾動近似；碰撞與磁場會改變實際色散與阻尼。",
+    source: "Lieberman & Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>，plasma oscillation。"
   },
   evTemperature: {
     id: "ev-temperature",
     name: "eV 與 K 換算",
     expression: "T [K] = 11,604 × T [eV]",
     summary: "這是能量尺度換算；電子溫度高不代表氣體與晶圓也同溫。",
-    symbols: [["T[eV]", "電子能量分佈溫度參數", "eV"], ["T[K]", "等效絕對溫度", "K"]]
+    symbols: [["T[eV]", "電子能量分佈溫度參數", "eV"], ["T[K]", "等效絕對溫度", "K"]],
+    derivation: "<p>由熱能定義 k<sub>B</sub>T = E，令 E = 1 eV = 1.602 × 10<sup>-19</sup> J，除以 k<sub>B</sub> = 1.381 × 10<sup>-23</sup> J/K，得到 1 eV = 11,604 K。</p>",
+    typicalValues: "<p>製程電漿電子溫度常為 2–5 eV，即 23,000–58,000 K 的等效電子能量；氣體溫度仍可能只有數百 K。</p>",
+    conditions: "eV 表示每粒子的能量尺度。僅在分佈可用溫度參數描述時才稱 T<sub>e</sub>；不可把它直接當作晶圓或中性氣體溫度。",
+    source: "CODATA 基本常數；Lieberman & Lichtenberg，低溫電漿熱非平衡說明。"
   },
   meanFreePath: {
     id: "mean-free-path",
     name: "平均自由徑",
     expression: "λ = 1 / (nσ) = kT / (σP)",
     summary: "壓力越高，碰撞間距越短；室溫 Ar 可用 λ[cm] ≈ 5/P[mTorr] 快速估算。",
-    symbols: [["λ", "平均自由徑", "m"], ["n", "中性粒子密度", "m^-3"], ["σ", "碰撞截面", "m^2"], ["P", "壓力", "Pa"]]
+    symbols: [["λ", "平均自由徑", "m"], ["n", "中性粒子密度", "m^-3"], ["σ", "碰撞截面", "m^2"], ["P", "壓力", "Pa"]],
+    derivation: "<p>粒子每走過距離 dx 的碰撞機率約為 nσdx，令累積機率到 1 的距離為 λ = 1/(nσ)。再代入理想氣體 n = P/(kT)，得到以壓力表示的式子。</p>",
+    typicalValues: "<p>室溫 Ar 在 10 mTorr 約為 5 mm，在 100 mTorr 約為 0.5 mm；與鞘層或特徵孔徑比較才有工程意義。</p>",
+    conditions: "σ 必須選對粒子組合與能量；快速估算省略能量依賴與混氣，不能取代 ion-neutral 或 electron-neutral 截面資料。",
+    source: "Lieberman & Lichtenberg，碰撞與稀薄氣體輸運章節。"
   },
   townsendGrowth: {
     id: "townsend-growth",
     name: "Townsend 雪崩增益",
     expression: "n(d) = n<sub>0</sub> e<sup>αd</sup>",
     summary: "種子電子沿電場前進時透過游離碰撞指數倍增。",
-    symbols: [["n(d)", "距離 d 的電子數", "個"], ["n0", "種子電子數", "個"], ["α", "第一 Townsend 係數", "cm^-1"], ["d", "電極間距", "cm"]]
+    symbols: [["n(d)", "距離 d 的電子數", "個"], ["n0", "種子電子數", "個"], ["α", "第一 Townsend 係數", "cm^-1"], ["d", "電極間距", "cm"]],
+    derivation: "<p>若每個電子在單位距離平均新增 α 個電子，則 dn/dx = αn。由 n(0) = n<sub>0</sub> 積分到距離 d，得到 n(d) = n<sub>0</sub>e<sup>αd</sup>。</p>",
+    typicalValues: "<p>αd = 1 時增益為 2.7；αd = 5 時約 150。接近點火時，少量 α 或 gap 的改變即可造成很大電流差異。</p>",
+    conditions: "均勻電場、固定氣壓與單一有效 α 的一維近似；不含空間電荷、附著、二次電子與外部電路限流。",
+    source: "Raizer, <em>Gas Discharge Physics</em>，Townsend discharge。"
   },
   townsendAlpha: {
     id: "townsend-alpha",
     name: "Townsend 經驗式",
     expression: "α / p = A exp(−B / (E/p))",
     summary: "第一 Townsend 係數由氣體常數與約化電場 E/p 決定。",
-    symbols: [["α", "第一 Townsend 係數", "cm^-1"], ["p", "壓力", "Torr"], ["E/p", "約化電場", "V/(cm·Torr)"], ["A, B", "氣體經驗常數", "依資料表"]]
+    symbols: [["α", "第一 Townsend 係數", "cm^-1"], ["p", "壓力", "Torr"], ["E/p", "約化電場", "V/(cm·Torr)"], ["A, B", "氣體經驗常數", "依資料表"]],
+    derivation: "<p>電子在平均自由徑間取得的能量與 E/p 成正比；把「能量超過游離門檻」的機率以指數項擬合，再以壓力乘回碰撞頻率，得到 α = Ap exp[−B/(E/p)]。</p>",
+    typicalValues: "<p>Ar 的 A、B 會隨資料來源與單位而異；工程上常掃 E/p 約 10–10<sup>3</sup> V/(cm·Torr)，不可跨單位直接搬用常數。</p>",
+    conditions: "A、B、p、E 的單位必須成組使用，且對應特定氣體與溫度；混氣、RF 時變場與附著性氣體不可視為單一 Ar 常數。",
+    source: "Raizer, <em>Gas Discharge Physics</em>；Paschen/Townsend 氣體常數資料表。"
   },
   townsendCriterion: {
     id: "townsend-criterion",
     name: "Townsend 自持條件",
     expression: "γ (e<sup>αd</sup> − 1) = 1",
     summary: "離子撞陰極產生的二次電子剛好補回下一代種子時，放電進入臨界自持。",
-    symbols: [["γ", "第二 Townsend 係數", "無因次"], ["α", "第一 Townsend 係數", "cm^-1"], ["d", "電極間距", "cm"]]
+    symbols: [["γ", "第二 Townsend 係數", "無因次"], ["α", "第一 Townsend 係數", "cm^-1"], ["d", "電極間距", "cm"]],
+    derivation: "<p>一個初始電子在 gap 內產生 e<sup>αd</sup> − 1 個正離子；每個離子以 γ 機率在陰極產生二次電子。乘積等於 1 時，下一代平均恰好補回一個種子電子。</p>",
+    typicalValues: "<p>γ 常落在約 0.01–0.1 的表面相關尺度。γ = 0.01 時需 αd 約 4.6；表面污染或陰極材料改變會移動點火條件。</p>",
+    conditions: "二次電子只以單一常數 γ 表示；實際 γ 還受離子能量、入射角、表面氧化與光子輔助影響。",
+    source: "Raizer, <em>Gas Discharge Physics</em>，self-sustained discharge criterion。"
   },
   paschenLaw: {
     id: "paschen-law",
     name: "Paschen 定律",
     expression: "V<sub>b</sub> = Bpd / (ln(Apd) − ln(ln(1 + 1/γ)))",
     summary: "崩潰電壓由 pd 乘積與氣體/表面參數決定，曲線左右兩支都需要較高電壓。",
-    symbols: [["Vb", "崩潰電壓", "V"], ["p", "壓力", "Torr"], ["d", "電極間距", "cm"], ["A, B, γ", "氣體與表面常數", "依資料表"]]
+    symbols: [["Vb", "崩潰電壓", "V"], ["p", "壓力", "Torr"], ["d", "電極間距", "cm"], ["A, B, γ", "氣體與表面常數", "依資料表"]],
+    derivation: "<p>把 Townsend 經驗式 α/p = Aexp[−B/(E/p)] 代入自持條件 γ(e<sup>αd</sup>−1)=1，再以 E = V<sub>b</sub>/d 解出 V<sub>b</sub>，可知點火電壓由 pd 而非 p 或 d 單獨決定。</p>",
+    typicalValues: "<p>乾燥 Ar 的 Paschen 最小值約在 pd = 1 Torr·cm 的量級、數百 V；極低 pd 因碰撞不足而升高，極高 pd 因自由徑太短也升高。</p>",
+    conditions: "適用於近 DC、均勻電場與乾淨固定表面。微間隙、RF、表面場增強、殘留水氣與歷史電荷會造成顯著偏離。",
+    source: "Lieberman & Lichtenberg；Raizer，Paschen law 與 Townsend discharge。"
   },
   floatingPotential: {
     id: "floating-potential",
     name: "浮動電位差",
     expression: "V<sub>p</sub> − V<sub>f</sub> = (kT<sub>e</sub> / 2e) ln(M / 2πm<sub>e</sub>)",
     summary: "對 Ar，Vp−Vf 約為 4.7Te；表面變負以平衡電子與離子流量。",
-    symbols: [["Vp", "電漿電位", "V"], ["Vf", "浮動電位", "V"], ["Te", "電子溫度", "eV"], ["M", "離子質量", "kg"]]
+    symbols: [["Vp", "電漿電位", "V"], ["Vf", "浮動電位", "V"], ["Te", "電子溫度", "eV"], ["M", "離子質量", "kg"]],
+    derivation: "<p>令 Maxwellian 電子熱通量 Γ<sub>e</sub> 隨負偏壓呈 exp[−e(V<sub>p</sub>−V<sub>f</sub>)/kT<sub>e</sub>]，並令它等於以 Bohm 速度入射的離子通量 Γ<sub>i</sub>。解出兩者相等時的電位差。</p>",
+    typicalValues: "<p>Ar<sup>+</sup>、T<sub>e</sub> = 3 eV 時，V<sub>p</sub> − V<sub>f</sub> 約 14 V；較重離子只以對數項小幅增加此差值。</p>",
+    conditions: "無外加偏壓的絕緣或浮接小表面、Maxwellian 電子與單一正離子近似；RF 未補償探針與強碰撞鞘層不可直接套用。",
+    source: "Lieberman & Lichtenberg，sheath 與 floating surface current balance。"
   },
   electrodeAreaRatio: {
     id: "electrode-area-ratio",
     name: "不對稱電極面積比",
     expression: "V<sub>1</sub> / V<sub>2</sub> = (A<sub>2</sub> / A<sub>1</sub>)<sup>q</sup>, q ≈ 1–2.5",
     summary: "面積較小的 RF 電極承受較大鞘層電位降，因此能提高晶圓側離子能量。",
-    symbols: [["V1, V2", "兩側鞘層電位降", "V"], ["A1, A2", "兩電極有效面積", "m^2"], ["q", "鞘層模型指數", "無因次"]]
+    symbols: [["V1, V2", "兩側鞘層電位降", "V"], ["A1, A2", "兩電極有效面積", "m^2"], ["q", "鞘層模型指數", "無因次"]],
+    derivation: "<p>串聯鞘層在一個 RF 週期內必須傳遞相同淨電荷。以 Child–Langmuir 型鞘層電荷–電壓關係近似兩側面積，消去共同電荷後得到電壓比隨反面積比的冪次變化。</p>",
+    typicalValues: "<p>若晶圓電極有效面積是接地腔壁的 1/10，q = 1.5 時小面積側鞘層電壓可約為大面積側的 32 倍。</p>",
+    conditions: "有效面積必須含接地腔壁、focus ring 與暴露硬體；q 不是通用常數，碰撞性、波形與多頻 CCP 需以量測或模型校正。",
+    source: "Lieberman & Lichtenberg，asymmetric capacitive discharges。"
   },
   idealGasDensity: {
     id: "ideal-gas-density",
@@ -89,8 +137,10 @@ export const formulas = {
     expression: "n = P / kT ≈ 3.22 × 10<sup>13</sup> P[mTorr] × 300 / T[K]",
     summary: "由壓力直接估算中性粒子密度；10 mTorr、300 K 約為 3.2×10¹⁴ cm⁻³。",
     symbols: [["n", "中性粒子密度", "cm^-3"], ["P", "壓力", "mTorr"], ["T", "氣體溫度", "K"], ["k", "Boltzmann 常數", "J/K"]],
-    conditions: "理想氣體近似；壓力與氣體溫度必須代表同一空間區域。",
-    source: "理想氣體定律。"
+    derivation: "<p>由理想氣體狀態方程 PV = NkT，兩邊除以體積得到 n = N/V = P/(kT)。將 Pa 轉 mTorr、m<sup>-3</sup> 轉 cm<sup>-3</sup>，並以 300 K 正規化，即得快速估算式。</p>",
+    typicalValues: "<p>300 K 下 1、10、100 mTorr 分別約為 3.2 × 10<sup>13</sup>、3.2 × 10<sup>14</sup>、3.2 × 10<sup>15</sup> cm<sup>-3</sup>。</p>",
+    conditions: "理想氣體近似；壓力與氣體溫度必須代表同一空間區域。電漿 on 時自由基、離子與耗損物種密度不可由總壓直接代替。",
+    source: "理想氣體定律；真空工程的 pressure-density conversion。"
   },
   daltonPartialPressure: {
     id: "dalton-partial-pressure",
@@ -98,8 +148,10 @@ export const formulas = {
     expression: "P<sub>i</sub> = P<sub>total</sub> × Q<sub>i</sub> / Q<sub>total</sub>",
     summary: "在沒有選擇性消耗與生成時，進氣流量比例可估算各成分分壓。",
     symbols: [["Pi", "成分 i 分壓", "Torr"], ["Ptotal", "總壓", "Torr"], ["Qi", "成分 i 流量", "sccm"], ["Qtotal", "總流量", "sccm"]],
-    conditions: "穩態、混合均勻，且忽略氣相與表面反應消耗。",
-    source: "Dalton 分壓定律。"
+    derivation: "<p>Dalton 定律給 P<sub>i</sub>/P<sub>total</sub> = x<sub>i</sub>。在穩態、各氣體沒有選擇性耗損時，莫耳分率 x<sub>i</sub> 可由標準流量比 Q<sub>i</sub>/Q<sub>total</sub> 近似，因此得到此式。</p>",
+    typicalValues: "<p>總壓 40 mTorr、Ar/O<sub>2</sub> = 90/10 sccm 時，O<sub>2</sub> 分壓約為 4 mTorr；不是 O 原子或 O 自由基密度。</p>",
+    conditions: "穩態、混合均勻，且忽略氣相與表面反應消耗。電漿 on、強解離、抽速差異或局部注氣時，流量比不等於反應區物種比例。",
+    source: "Dalton 分壓定律；真空系統混氣質量平衡。"
   },
   residenceTime: {
     id: "residence-time",
@@ -107,8 +159,10 @@ export const formulas = {
     expression: "τ[s] = 79.0 × P[Torr] × V[L] / Q[sccm]",
     summary: "壓力或腔體體積增加會拉長滯留；在壓力固定時，流量加倍會把換氣時間減半。",
     symbols: [["τ", "平均滯留時間", "s"], ["P", "腔體壓力", "Torr"], ["V", "有效腔體體積", "L"], ["Q", "標準流量", "sccm"]],
-    conditions: "穩態、理想混合、標準流量定義；實際流場會有停滯區與分佈。",
-    source: "真空 throughput 平衡 Q=PS。"
+    derivation: "<p>腔內氣體莫耳數為 PV/RT；以標準狀態流量 Q 換成莫耳流率後，平均存量除以流出率得到 τ。將 Torr、L 與 sccm 的標準狀態換算合併，即為 79.0 的係數。</p>",
+    typicalValues: "<p>30 L、20 mTorr、200 sccm 時 τ 約 0.237 s；固定壓力與體積下，Q 從 200 增至 400 sccm 時 τ 變為約 0.119 s。</p>",
+    conditions: "穩態、理想混合、標準流量定義；實際流場會有停滯區、wall loss 與 residence-time distribution，不能把 τ 當成每個分子的固定停留時間。",
+    source: "真空 throughput 平衡與連續攪拌槽近似。"
   },
   knudsenNumber: {
     id: "knudsen-number",
@@ -116,8 +170,10 @@ export const formulas = {
     expression: "Kn = λ / d",
     summary: "Kn 小於 0.01 接近黏滯流，大於 1 接近分子流，中間是過渡流。",
     symbols: [["Kn", "Knudsen 數", "無因次"], ["λ", "平均自由徑", "m"], ["d", "特徵尺寸", "m"]],
-    conditions: "λ 的碰撞模型與 d 的幾何定義必須對應要分析的輸運問題。",
-    source: "稀薄氣體動力學。"
+    derivation: "<p>以碰撞前平均飛行距離 λ 除以幾何特徵尺寸 d。當 λ 遠小於 d，粒子多先與彼此碰撞；當 λ 遠大於 d，粒子主要與壁面碰撞，流動模型必須改變。</p>",
+    typicalValues: "<p>λ = 5 mm、管徑 d = 20 mm 時 Kn = 0.25，屬過渡流；同一管路把壓力降十倍，λ 約增十倍而 Kn 約為 2.5。</p>",
+    conditions: "d 必須選擇真正限制輸運的孔徑、線寬或管徑；混氣與溫度梯度下 λ 應以相關碰撞截面重新估算。",
+    source: "O'Hanlon, <em>A User's Guide to Vacuum Technology</em>，rarefied-gas flow regimes。"
   },
   rateCoefficient: {
     id: "rate-coefficient",
@@ -125,8 +181,10 @@ export const formulas = {
     expression: "k = ⟨σv⟩ = ∫ σ(E) v(E) f(E) dE",
     summary: "反應速率由碰撞截面與 EEDF 的重疊決定，高能尾端的小變化可大幅改變游離與解離。",
     symbols: [["k", "速率係數", "m^3/s"], ["σ(E)", "能量相依碰撞截面", "m^2"], ["v(E)", "電子速度", "m/s"], ["f(E)", "正規化 EEDF", "eV^-1"]],
-    conditions: "EEDF 與截面必須使用一致的能量定義與正規化。",
-    source: "電子碰撞動力學。"
+    derivation: "<p>某能量區間的碰撞頻率貢獻為 σ(E)v(E)f(E)dE；對全部電子能量積分即得每一對電子與中性粒子的反應速率係數 k。體積反應率再寫成 R = k n<sub>e</sub>n<sub>g</sub>。</p>",
+    typicalValues: "<p>游離門檻附近的 k 常約 10<sup>-17</sup>–10<sup>-14</sup> m<sup>3</sup>/s；T<sub>e</sub> 從 2 升到 3 eV 時，高閾值反應可增加數倍以上。</p>",
+    conditions: "EEDF 與截面必須使用一致的能量定義與正規化。Maxwellian 只是近似；電負性、脈衝或強 RF 電漿需使用量測或 Boltzmann/PIC 支持的 EEDF。",
+    source: "Lieberman & Lichtenberg；LXCat collision cross-section 資料與 Boltzmann solver 文件。"
   },
   bohmIonFlux: {
     id: "bohm-ion-flux",
@@ -134,12 +192,9 @@ export const formulas = {
     expression: "u<sub>B</sub> = √(kT<sub>e</sub>/M), Γ<sub>i</sub> ≈ 0.61 n<sub>e</sub>u<sub>B</sub>",
     summary: "離子在進入鞘層前至少要達到 Bohm 速度；密度優先決定通量，電子溫度以平方根影響。",
     symbols: [["uB", "Bohm 速度", "m/s"], ["Γi", "鞘層邊界離子通量", "m^-2 s^-1"], ["Te", "電子溫度", "eV 或 K"], ["M", "離子質量", "kg"], ["ne", "電子密度", "m^-3"]],
-    conditions: "單一正離子、近似無碰撞、Maxwellian 電子與平面鞘層入口。",
-    source: "Bohm sheath criterion。"
+    derivation: "<p>鞘層入口需避免微小負電位擾動把離子排回 bulk，線性穩定條件給出 u<sub>i</sub> ≥ √(kT<sub>e</sub>/M)。以平面 collisionless sheath 的 presheath 密度修正 n<sub>s</sub> ≈ 0.61n<sub>e</sub>，通量為 Γ<sub>i</sub> = n<sub>s</sub>u<sub>B</sub>。</p>",
+    typicalValues: "<p>Ar、T<sub>e</sub> = 3 eV 時 u<sub>B</sub> 約 2.7 km/s；n<sub>e</sub> = 10<sup>11</sup> cm<sup>-3</sup> 時 Γ<sub>i</sub> 約 1.6 × 10<sup>16</sup> cm<sup>-2</sup>s<sup>-1</sup>。</p>",
+    conditions: "單一正離子、近似無碰撞、Maxwellian 電子與平面鞘層入口。多離子、負離子、強碰撞或 RF 鞘層時需採用相應的 sheath model。",
+    source: "Bohm sheath criterion；Lieberman & Lichtenberg，ion flux to surfaces。"
   }
 };
-
-for (const formula of Object.values(formulas)) {
-  formula.conditions ??= "依公式符號、單位與章節中的適用尺度使用。";
-  formula.source ??= "Plasma Academy 核心教材；正式技術審閱時核對主要教科書。";
-}

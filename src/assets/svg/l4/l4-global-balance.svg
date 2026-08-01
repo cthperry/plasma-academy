@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">0-D 模型的 ne、Te 與模式轉換</title><desc id="desc">同一耦合模式內 ne 隨吸收功率近線性增加、Te 近平台；模式轉換處兩者跳變。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><rect x="78" y="45" width="620" height="250" fill="#fff" stroke="#9aa6b2"/><path d="M420 45V295" stroke="#d48836" stroke-width="3" stroke-dasharray="8 5"/><text x="430" y="70" font-family="system-ui" font-size="14" fill="#a45f19">mode transition</text>
+  <path d="M95 260L390 155L420 150L438 110L680 60" fill="none" stroke="#2b70b8" stroke-width="5"/><text x="600" y="82" font-family="system-ui" font-size="15" fill="#2b70b8">ne</text>
+  <path d="M95 210C220 195 330 190 405 188L438 142C520 130 600 128 680 126" fill="none" stroke="#b061ad" stroke-width="5"/><text x="625" y="150" font-family="system-ui" font-size="15" fill="#8c4789">Te</text>
+  <text x="280" y="330" font-family="system-ui" font-size="16">Absorbed power →</text><text x="20" y="195" transform="rotate(-90 20 195)" font-family="system-ui" font-size="15">相對 plasma state</text>
+</svg>

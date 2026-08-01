@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">Abatement 與排氣監測安全流程</title><desc id="desc">製程腔體經 foreline 和 abatement 到 stack monitor；監測異常導向 alarm、隔離及核准 EHS 處置。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><g font-family="system-ui" text-anchor="middle"><rect x="35" y="115" width="130" height="80" rx="6" fill="#d8e8fa" stroke="#3973ad"/><text x="100" y="150" font-size="17">Process</text><text x="100" y="174" font-size="13">chamber</text>
+  <rect x="210" y="115" width="130" height="80" rx="6" fill="#fff1d7" stroke="#c4892d"/><text x="275" y="150" font-size="17">Foreline</text><text x="275" y="174" font-size="13">byproducts</text>
+  <rect x="385" y="115" width="130" height="80" rx="6" fill="#dff4e8" stroke="#27845d"/><text x="450" y="150" font-size="17">Abatement</text><text x="450" y="174" font-size="13">state unknown</text>
+  <rect x="560" y="115" width="150" height="80" rx="6" fill="#fde0e3" stroke="#c34a56"/><text x="635" y="148" font-size="17">Stack monitor</text><text x="635" y="174" font-size="14" fill="#a42e3b">ABNORMAL</text></g>
+  <g stroke="#52616e" stroke-width="4" marker-end="url(#a)"><path d="M165 155h45"/><path d="M340 155h45"/><path d="M515 155h45"/></g><path d="M635 195v60H450" fill="none" stroke="#c34a56" stroke-width="4" marker-end="url(#r)"/>
+  <rect x="300" y="255" width="300" height="65" rx="6" fill="#fde0e3" stroke="#c34a56"/><text x="450" y="282" text-anchor="middle" font-family="system-ui" font-size="15">STOP / ISOLATE / APPROVED EHS PROCESS</text><text x="450" y="306" text-anchor="middle" font-family="system-ui" font-size="13">確認 bypass、maintenance、monitor</text>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#52616e"/></marker><marker id="r" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#c34a56"/></marker></defs>
+</svg>

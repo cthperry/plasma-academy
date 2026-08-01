@@ -10,14 +10,35 @@ export function progressRing(value, label) {
 }
 
 export function formulaCard(formula) {
-  const rows = formula.symbols.map(([symbol, meaning, unit]) => `<tr><td>${symbol}</td><td>${meaning}</td><td>${unit}</td></tr>`).join("");
-  return `<section class="formula-card" id="formula-${formula.id}">
+  const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[char]);
+  const detailId = `formula-${formula.id}-details`;
+  const rows = formula.symbols.map(([symbol, meaning, unit]) => `<tr><td>${escapeHtml(symbol)}</td><td>${escapeHtml(meaning)}</td><td>${escapeHtml(unit)}</td></tr>`).join("");
+  return `<section class="formula-card" id="formula-${escapeHtml(formula.id)}">
     <div class="formula-expression">${formula.expression}</div>
-    <h2>${formula.name}</h2>
-    <p>${formula.summary}</p>
-    <details>
-      <summary>展開推導與符號表</summary>
-      <div class="table-wrap"><table><thead><tr><th>符號</th><th>意義</th><th>單位</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <h2>${escapeHtml(formula.name)}</h2>
+    <p>${escapeHtml(formula.summary)}</p>
+    <details aria-labelledby="${detailId}">
+      <summary id="${detailId}">展開推導、尺度與符號表</summary>
+      <section class="formula-card__derivation">
+        <h3>推導</h3>
+        ${formula.derivation}
+      </section>
+      <section class="formula-card__typical-values">
+        <h3>典型數值與尺度</h3>
+        ${formula.typicalValues}
+      </section>
+      <section class="formula-card__conditions">
+        <h3>適用條件與限制</h3>
+        <p>${escapeHtml(formula.conditions)}</p>
+      </section>
+      <section class="formula-card__source">
+        <h3>來源</h3>
+        <p>${formula.source}</p>
+      </section>
+      <section class="formula-card__symbols">
+        <h3>符號表</h3>
+        <div class="table-wrap"><table><thead><tr><th>符號</th><th>意義</th><th>單位</th></tr></thead><tbody>${rows}</tbody></table></div>
+      </section>
     </details>
   </section>`;
 }

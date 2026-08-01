@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">Chamber matching 三層 gate</title><desc id="desc">Hardware gate 和 plasma fingerprint 顯示 A/B chamber 分離，wafer 平均速率相同但 edge map 不同。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><g font-family="system-ui"><text x="35" y="38" font-size="17" fill="#26323d">A/B chamber matching：先硬體，再 plasma，最後 wafer</text>
+  <rect x="45" y="65" width="670" height="70" rx="6" fill="#fde0e3" stroke="#c34a56"/><text x="70" y="94" font-size="16">1 Hardware</text><text x="220" y="94" font-size="14">focus ring revision A ≠ B</text><text x="590" y="112" font-size="14" fill="#a42e3b">FAIL</text>
+  <rect x="45" y="150" width="670" height="70" rx="6" fill="#fde0e3" stroke="#c34a56"/><text x="70" y="179" font-size="16">2 Plasma</text><text x="220" y="179" font-size="14">VI phase +7° / edge OES split</text><text x="590" y="197" font-size="14" fill="#a42e3b">FAIL</text>
+  <rect x="45" y="235" width="670" height="80" rx="6" fill="#fff1d7" stroke="#c4892d"/><text x="70" y="265" font-size="16">3 Wafer</text><text x="220" y="265" font-size="14">Average rate: same</text><text x="220" y="292" font-size="14">Edge CD / particle map: different</text><text x="590" y="285" font-size="14" fill="#9a6416">HOLD</text></g>
+</svg>

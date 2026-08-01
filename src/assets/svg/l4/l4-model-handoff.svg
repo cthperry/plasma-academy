@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">四層模型交接與獨立驗證</title><desc id="desc">0-D 物種輸出交給 fluid map、PIC IEDF 和 profile 模型，最後與獨立 SEM 比較；交接處標示通量、能量、角度與表面係數。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><g font-family="system-ui" text-anchor="middle"><rect x="28" y="105" width="125" height="90" rx="6" fill="#d8e8fa" stroke="#3973ad"/><text x="90" y="140" font-size="17">0-D</text><text x="90" y="165" font-size="13">物種 / ne / Te</text>
+  <rect x="180" y="105" width="125" height="90" rx="6" fill="#dff4e8" stroke="#27845d"/><text x="242" y="140" font-size="17">Fluid</text><text x="242" y="165" font-size="13">空間 map</text>
+  <rect x="332" y="105" width="125" height="90" rx="6" fill="#eee2f5" stroke="#8657a0"/><text x="394" y="140" font-size="17">PIC-MCC</text><text x="394" y="165" font-size="13">IEDF / angle</text>
+  <rect x="484" y="105" width="125" height="90" rx="6" fill="#fae7d6" stroke="#b46b2c"/><text x="546" y="140" font-size="17">Profile</text><text x="546" y="165" font-size="13">CD / bowing</text>
+  <rect x="636" y="105" width="96" height="90" rx="6" fill="#fde0e3" stroke="#bb4653"/><text x="684" y="140" font-size="17">SEM</text><text x="684" y="165" font-size="13">獨立驗證</text></g>
+  <g stroke="#52616e" stroke-width="3" marker-end="url(#a)"><path d="M153 150h27"/><path d="M305 150h27"/><path d="M457 150h27"/><path d="M609 150h27"/></g>
+  <text x="330" y="238" font-family="system-ui" font-size="14" fill="#26323d">交接 gate：相同條件的 flux / IEDF / angle / surface coefficient</text><path d="M300 215H600" stroke="#c7424f" stroke-width="3" stroke-dasharray="7 5"/>
+  <text x="170" y="300" font-family="system-ui" font-size="14" fill="#26323d">校正資料 ≠ 獨立驗證資料</text>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#52616e"/></marker></defs>
+</svg>

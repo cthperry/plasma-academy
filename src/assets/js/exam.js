@@ -23,8 +23,17 @@ const examConfigs = {
     dataPath: "/assets/data/quiz/level-3.js",
     questionExport: "level3Questions",
     specExport: "level3ExamSpec",
-    objectiveCounts: { "3-1": 5, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 6 },
+    objectiveCounts: { "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 5 },
     requiredChapters: 6
+  },
+  4: {
+    key: "L4",
+    badge: "電漿專家",
+    dataPath: "/assets/data/quiz/level-4.js",
+    questionExport: "level4Questions",
+    specExport: "level4ExamSpec",
+    objectiveCounts: { "4-1": 5, "4-2": 5, "4-3": 5, "4-4": 4, "4-5": 4, "4-6": 4 },
+    requiredChapters: 5
   }
 };
 const typeLabels = { single: "單選題", multi: "多選題", numeric: "計算題", graphic: "圖形判讀題", scenario: "情境題" };
@@ -205,7 +214,17 @@ function initExamPage(page) {
   };
 
   const startExam = async () => {
-    const data = await loadExamData(config);
+    startButton.disabled = true;
+    let data;
+    try {
+      data = await loadExamData(config);
+    } catch (_) {
+      examDataPromises.delete(config.key);
+      unlockTitle.textContent = "題庫尚未就緒";
+      unlockStatus.textContent = `${config.key} 題庫載入失敗，請重新整理後再試。`;
+      startButton.disabled = false;
+      return;
+    }
     state.spec = data[config.specExport];
     state.questions = drawQuestions(data[config.questionExport], state.spec.draw, new URLSearchParams(location.search).get("seed"));
     state.answers = {};
@@ -222,6 +241,7 @@ function initExamPage(page) {
       if (updateTimer(timer, state.deadline) <= 0) submitExam(true);
     }, 1000);
     shell.scrollIntoView({ behavior: "smooth", block: "start" });
+    startButton.disabled = false;
   };
 
   startButton.addEventListener("click", startExam);
@@ -362,7 +382,13 @@ function chapterRoute(chapter) {
     "3.4": "/level/3/3-4-plasma-deposition/",
     "3.5": "/level/3/3-5-pvd-cleaning/",
     "3.6": "/level/3/3-6-uniformity-chamber/",
-    "3.7": "/level/3/3-7-packaging-cleaning/"
+    "3.7": "/level/3/3-7-packaging-cleaning/",
+    "4.1": "/level/4/4-1-diagnostics/",
+    "4.2": "/level/4/4-2-endpoint-control/",
+    "4.3": "/level/4/4-3-plasma-damage/",
+    "4.4": "/level/4/4-4-advanced-techniques/",
+    "4.5": "/level/4/4-5-plasma-modeling-data/",
+    "4.6": "/level/4/4-6-production-yield-safety/"
   };
   return routes[chapter] ?? "/level/1/";
 }

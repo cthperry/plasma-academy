@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">模型複雜度與獨立驗證誤差</title><desc id="desc">校正誤差隨模型複雜度下降，驗證誤差先下降後上升；中間最低處為 release gate。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><rect x="85" y="45" width="610" height="245" fill="#fff" stroke="#9aa6b2"/><rect x="340" y="46" width="115" height="243" fill="#dff4e8" opacity=".8"/>
+  <path d="M105 95 C240 150 410 225 675 260" fill="none" stroke="#2d6fb7" stroke-width="5"/><text x="555" y="245" font-family="system-ui" font-size="14" fill="#2d6fb7">Calibration error</text>
+  <path d="M105 105 C235 175 300 238 390 246 C495 245 555 170 675 95" fill="none" stroke="#c34a56" stroke-width="5"/><circle cx="390" cy="246" r="7" fill="#17835b"/><text x="335" y="80" font-family="system-ui" font-size="14" fill="#17633a">Validation release gate</text>
+  <text x="290" y="330" font-family="system-ui" font-size="16">模型複雜度 →</text><text x="20" y="188" transform="rotate(-90 20 188)" font-family="system-ui" font-size="15">誤差</text>
+</svg>

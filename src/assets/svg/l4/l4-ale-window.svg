@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">ALE 飽和與 energy window</title><desc id="desc">左圖改質 dose 進入 EPC 飽和平台；右圖 18 到 28 eV 為改質層清除窗，30 eV 後 beta 基材損失上升。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><rect x="55" y="48" width="310" height="245" fill="#fff" stroke="#9aa6b2"/><rect x="410" y="48" width="310" height="245" fill="#fff" stroke="#9aa6b2"/>
+  <text x="80" y="78" font-family="system-ui" font-size="16" fill="#26323d">改質飽和</text><path d="M75 260 C120 165 175 110 330 102" fill="none" stroke="#2c72ba" stroke-width="5"/><path d="M190 100H345" stroke="#2c72ba" stroke-dasharray="7 5"/><text x="215" y="94" font-family="system-ui" font-size="13" fill="#2c72ba">EPC plateau</text>
+  <text x="130" y="320" font-family="system-ui" font-size="14">改質 dose →</text><text x="16" y="190" transform="rotate(-90 16 190)" font-family="system-ui" font-size="14">EPC</text>
+  <rect x="515" y="50" width="105" height="241" fill="#dff4e8"/><text x="530" y="75" font-family="system-ui" font-size="13" fill="#17633a">18–28 eV</text>
+  <path d="M430 260 L490 258 L515 155 L620 145 L700 138" fill="none" stroke="#18865c" stroke-width="5"/><text x="430" y="110" font-family="system-ui" font-size="13" fill="#18865c">改質層清除</text>
+  <path d="M430 274H610 C650 270 675 220 700 120" fill="none" stroke="#c7424f" stroke-width="5"/><text x="650" y="104" font-family="system-ui" font-size="13" fill="#c7424f">β</text>
+  <text x="505" y="320" font-family="system-ui" font-size="14">離子能量 (eV) →</text>
+</svg>

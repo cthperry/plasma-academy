@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">封裝清潔多目標 dose window</title><desc id="desc">殘膠隨 dose 下降，銅氧化與聚合物粗糙度在高 dose 上升，接合可靠度在中間形成平台。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><rect x="86" y="44" width="620" height="250" fill="#fff" stroke="#9aa6b2"/>
+  <rect x="300" y="45" width="190" height="248" fill="#dff4e8" opacity=".75"/><text x="330" y="70" font-family="system-ui" font-size="15" fill="#17633a">共同製程窗</text>
+  <path d="M95 85 C220 120 330 210 680 258" fill="none" stroke="#3267b1" stroke-width="4"/><text x="100" y="78" font-family="system-ui" font-size="14" fill="#3267b1">有機殘留</text>
+  <path d="M95 268 C310 267 430 230 680 88" fill="none" stroke="#c84d46" stroke-width="4"/><text x="590" y="80" font-family="system-ui" font-size="14" fill="#c84d46">Cu oxide</text>
+  <path d="M95 250 C340 250 500 205 680 132" fill="none" stroke="#9a5bb5" stroke-width="4"/><text x="570" y="128" font-family="system-ui" font-size="14" fill="#7d4797">Polymer roughness</text>
+  <path d="M95 238 C220 200 270 115 380 102 C500 94 560 164 680 235" fill="none" stroke="#17835b" stroke-width="5"/><text x="330" y="96" font-family="system-ui" font-size="14" fill="#116a49">Bond reliability</text>
+  <text x="330" y="330" font-family="system-ui" font-size="16" fill="#26323d">Plasma dose →</text><text x="20" y="185" transform="rotate(-90 20 185)" font-family="system-ui" font-size="15" fill="#26323d">相對反應</text>
+</svg>

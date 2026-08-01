@@ -1,7 +1,7 @@
 export const level2ExamSpec = {
   id: "L2",
   title: "L2 氣體、定律與電漿源結業測驗",
-  durationMinutes: 45,
+  durationMinutes: 50,
   passPercent: 75,
   draw: { single: 18, multi: 4, numeric: 4, scenario: 4 }
 };

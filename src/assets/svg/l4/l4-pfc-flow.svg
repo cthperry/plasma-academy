@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">兩支 PFC recipe 的物料流與實際逃逸</title><desc id="desc">Recipe X 進料較低但利用差且有 abatement bypass；Recipe Y 進料較高但利用與處理較佳，出口較低。</desc>
+  <rect width="760" height="360" fill="#f7f9fc"/><text x="25" y="34" font-family="system-ui" font-size="17">Inlet ≠ emission：沿利用、處理與逃逸量追蹤</text>
+  <g font-family="system-ui"><text x="25" y="100" font-size="18" fill="#2f71ba">Recipe X</text><text x="25" y="246" font-size="18" fill="#27845d">Recipe Y</text>
+  <rect x="130" y="65" width="120" height="65" fill="#d8e8fa" stroke="#3973ad"/><text x="155" y="93" font-size="14">Inlet 80</text><text x="155" y="116" font-size="13">利用 35%</text>
+  <rect x="350" y="65" width="120" height="65" fill="#fff1d7" stroke="#c4892d"/><text x="368" y="93" font-size="14">Abatement</text><text x="368" y="116" font-size="13">bypass 20</text>
+  <rect x="580" y="65" width="135" height="65" fill="#fde0e3" stroke="#c34a56"/><text x="600" y="93" font-size="14">Escape 34</text><text x="600" y="116" font-size="13">× sourced GWP</text>
+  <rect x="130" y="210" width="120" height="65" fill="#dff4e8" stroke="#27845d"/><text x="155" y="238" font-size="14">Inlet 100</text><text x="155" y="261" font-size="13">利用 70%</text>
+  <rect x="350" y="210" width="120" height="65" fill="#dff4e8" stroke="#27845d"/><text x="368" y="238" font-size="14">Abatement</text><text x="368" y="261" font-size="13">normal</text>
+  <rect x="580" y="210" width="135" height="65" fill="#dff4e8" stroke="#27845d"/><text x="600" y="238" font-size="14">Escape 6</text><text x="600" y="261" font-size="13">× sourced GWP</text></g>
+  <g stroke="#52616e" fill="none" marker-end="url(#a)"><path d="M250 98C290 98 310 98 350 98" stroke-width="14"/><path d="M470 98C520 98 530 98 580 98" stroke-width="10"/><path d="M250 243C290 243 310 243 350 243" stroke-width="20"/><path d="M470 243C520 243 530 243 580 243" stroke-width="5"/></g>
+  <text x="260" y="330" font-family="system-ui" font-size="15">比較：Σ（實際逃逸量 × 來源化 GWP）＋不確定度</text>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#52616e"/></marker></defs>
+</svg>
