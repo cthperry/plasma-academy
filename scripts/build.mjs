@@ -1279,7 +1279,7 @@ async function main() {
   await cp(path.join(root, "worker", "index.js"), path.join(root, "dist", "server", "index.js"));
   try {
     await access(path.join(root, ".openai", "hosting.json"));
-    await cp(path.join(root, ".openai"), path.join(out, ".openai"), { recursive: true });
+    await cp(path.join(root, ".openai"), path.join(root, "dist", ".openai"), { recursive: true });
   } catch (_) {
     // Site project may not exist during early local builds.
   }
