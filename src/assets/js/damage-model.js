@@ -6,6 +6,10 @@ export const damageControlRanges = {
   dutyCycle: { min: 0.1, max: 0.9 }
 };
 
+const VACUUM_PERMITTIVITY_FM = 8.8541878128e-12;
+const OXIDE_RELATIVE_PERMITTIVITY = 3.9;
+const TEACHING_BREAKDOWN_FIELD_MV_CM = 12;
+
 export function calculateAntennaRatio(input = {}) {
   return positive(input.antennaAreaUm2, 500) / positive(input.gateAreaUm2, 5);
 }
@@ -60,12 +64,17 @@ export function simulateCharging(input = {}) {
   }
 
   const oxideFieldMvCm = peakGatePotentialV / state.oxideThicknessNm * 10;
+  const gateCapacitanceF = OXIDE_RELATIVE_PERMITTIVITY * VACUUM_PERMITTIVITY_FM * state.gateAreaUm2 * 1e-12 / (state.oxideThicknessNm * 1e-9);
+  trace.forEach((point) => { point.accumulatedChargePc = gateCapacitanceF * point.gatePotentialV * 1e12; });
+  const terminalChargePc = gateCapacitanceF * gatePotentialV * 1e12;
+  const peakChargePc = gateCapacitanceF * peakGatePotentialV * 1e12;
+  const breakdownExceeded = oxideFieldMvCm >= TEACHING_BREAKDOWN_FIELD_MV_CM;
   const charging = clamp01(oxideFieldMvCm / 12);
   const uvVuvDose = state.plasmaPowerW * state.durationUs / 1e5;
   const ionBombardment = state.ionEnergyEv / 500 * (state.pulsed ? state.dutyCycle : 1);
   const contamination = state.contaminationLevel;
   const arcing = clamp01((peakGatePotentialV - 18) / 45 + state.antennaRatio / 10000 * 0.25);
-  const riskScore = Math.min(100, 100 * (
+  const riskScore = breakdownExceeded ? 100 : Math.min(100, 100 * (
     0.46 * charging +
     0.16 * clamp01(uvVuvDose / 20) +
     0.14 * clamp01(ionBombardment) +
@@ -79,9 +88,13 @@ export function simulateCharging(input = {}) {
     electronShading,
     terminalGatePotentialV: gatePotentialV,
     peakGatePotentialV,
+    terminalChargePc,
+    peakChargePc,
+    gateCapacitanceF,
     oxideFieldMvCm,
+    breakdownExceeded,
     riskScore,
-    estimatedLifetimeIndex: Math.max(0, 100 - riskScore),
+    estimatedLifetimeIndex: breakdownExceeded ? null : Math.max(0, 100 - riskScore),
     damageModes: { charging, uvVuvDose, ionBombardment, contamination, arcing },
     limitations: [
       "天線二極體只鉗制電氣充電，不能阻擋 UV/VUV 光子造成的氧化層與介面損傷。",

@@ -52,6 +52,8 @@ assert("A28 OES 訊雜比應隨開口率大幅下降", clearResult.oes.signalToN
 const moderateBaseline = moderateSeries.points.filter((point) => point.timeSeconds < moderateSeries.trueEndpointSeconds * 0.65);
 assert("A28 移動平均應降低中等訊雜比的基線雜訊", standardDeviation(moderateBaseline.map((point) => point.movingAverage)) < standardDeviation(moderateBaseline.map((point) => point.raw)) * 0.6);
 assert("A28 移動平均的因果延遲後終點誤差仍應小於 5 秒", moderateAverage.oes.errorSeconds < 5 && moderateRaw.oes.errorSeconds < 5);
+const misleadingRaw = analyzeEndpointSeries(generateEndpointSeries({ ...endpointState, openAreaPercent: 1, noisePercent: 20 }), { algorithm: "raw" });
+assert("A28 訊號門檻通過但演算法誤觸發時仍應判不可靠", misleadingRaw.oes.signalReliable === true && misleadingRaw.oes.errorSeconds > misleadingRaw.oes.toleranceSeconds && misleadingRaw.oes.reliable === false);
 
 const fringe = calculateInterferenceFringe({ wavelengthNm: 633, refractiveIndex: 1.46, etchRateNmMin: 300 });
 assert("A28 干涉條紋厚度應為 lambda/(2n)", relativeError(fringe.thicknessPerFringeNm, 633 / (2 * 1.46)) < 1e-12);
@@ -116,6 +118,9 @@ const thickOxide = simulateCharging(createDamageState({ oxideThicknessNm: 10 }))
 const thinOxide = simulateCharging(createDamageState({ oxideThicknessNm: 2 }));
 assert("A29 較薄閘極氧化層應具有較高電場與風險", thinOxide.oxideFieldMvCm > thickOxide.oxideFieldMvCm && thinOxide.riskScore > thickOxide.riskScore);
 assert("A29 應輸出五類電漿損傷模式", ["charging", "uvVuvDose", "ionBombardment", "contamination", "arcing"].every((key) => Number.isFinite(noDiode.damageModes[key])));
+assert("A29 應由閘極電容與電位輸出累積電荷", noDiode.terminalChargePc > 0 && Math.abs(noDiode.terminalChargePc / (noDiode.gateCapacitanceF * noDiode.terminalGatePotentialV * 1e12) - 1) < 1e-12);
+const breakdown = simulateCharging(createDamageState({ antennaAreaUm2: 20000, gateAreaUm2: 1, oxideThicknessNm: 1, durationUs: 200 }));
+assert("A29 超過教學崩潰場時不得輸出壽命預測", breakdown.breakdownExceeded === true && breakdown.riskScore === 100 && breakdown.estimatedLifetimeIndex === null);
 
 if (failures.length) {
   console.error(`A28/A29 製程控制與損傷模型檢查失敗（${failures.length}/${checks}）：`);

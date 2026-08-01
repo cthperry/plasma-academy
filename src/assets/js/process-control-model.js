@@ -81,14 +81,20 @@ export function analyzeEndpointSeries(series, options = {}) {
   const detectedIndex = findSteepestDrop(points, algorithm);
   const detectedSeconds = points[detectedIndex].timeSeconds;
   const openAreaPercent = series.state.openAreaPercent;
-  const reliable = openAreaPercent >= 0.1 && series.signalToNoise >= 3;
-  const reason = openAreaPercent < 0.1
+  const errorSeconds = Math.abs(detectedSeconds - series.trueEndpointSeconds);
+  const toleranceSeconds = Math.max(5, series.state.sampleIntervalSeconds * 4);
+  const signalReliable = openAreaPercent >= 0.1 && series.signalToNoise >= 3;
+  const reliable = signalReliable && errorSeconds <= toleranceSeconds;
+  const signalReason = openAreaPercent < 0.1
     ? "開口率低於 0.1%，OES 產物訊號通常不足以支持可靠終點判讀。"
     : openAreaPercent < 1
       ? "開口率介於 0.1% 與 1%，需搭配濾波、正規化或其他量測。"
       : openAreaPercent < 10
         ? "開口率介於 1% 與 10%，演算法可用但必須監控訊雜比。"
         : "開口率大於 10%，OES 產物訊號通常清楚。";
+  const reason = signalReliable && !reliable
+    ? `${signalReason} 所選演算法的觸發誤差 ${errorSeconds.toFixed(1)} 秒超過 ${toleranceSeconds.toFixed(1)} 秒容許值，本次判定不可靠。`
+    : signalReason;
   const interference = detectInterferenceEndpoint(series);
 
   return {
@@ -96,8 +102,10 @@ export function analyzeEndpointSeries(series, options = {}) {
     trueEndpointSeconds: series.trueEndpointSeconds,
     oes: {
       detectedSeconds,
-      errorSeconds: Math.abs(detectedSeconds - series.trueEndpointSeconds),
+      errorSeconds,
       reliable,
+      signalReliable,
+      toleranceSeconds,
       signalToNoise: series.signalToNoise,
       reason
     },

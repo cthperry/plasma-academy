@@ -15,6 +15,8 @@ import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
 import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
+import { chapterFourTwo } from "../src/content/chapter-4-2.mjs";
+import { chapterFourThree } from "../src/content/chapter-4-3.mjs";
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
@@ -35,17 +37,22 @@ const stripHtml = (value) => String(value ?? "")
   .replace(/\s+/g, " ")
   .trim();
 
-const l4SummaryLength = stripHtml(chapterFourOne.summary).length;
-if (l4SummaryLength < 200 || l4SummaryLength > 500) failures.push(`4-1 的 5 分鐘摘要應為 200–500 字，目前 ${l4SummaryLength} 字。`);
-if (chapterFourOne.objectives.length !== 5 || chapterFourOne.objectives.some((item) => /了解|認識|熟悉/.test(item))) failures.push("4-1 必須有 5 個可驗證學習目標。");
-if (chapterFourOne.sections.length !== 7) failures.push(`4-1 必須有 7 節正文，目前 ${chapterFourOne.sections.length} 節。`);
-for (const section of chapterFourOne.sections) {
-  const length = stripHtml(section.body).length;
-  if (length < 750 || length > 1800) failures.push(`4-1/${section.id} 應為 750–1,800 字，目前 ${length} 字。`);
-}
-if (chapterFourOne.selfCheck.length !== 8 || chapterFourOne.selfCheck.some((item) => !item[1])) failures.push("4-1 必須有 8 題含答案的自我檢測。");
-for (const lab of chapterFourOne.labs) {
-  if (!Array.isArray(lab.observation) || lab.observation.length < 2 || lab.observation.length > 4) failures.push(`4-1/${lab.id} 應有 2–4 條可執行觀察點。`);
+const l4ChapterSpecs = [
+  { chapter: chapterFourOne, sections: 7, checks: 8, sectionMin: 750, sectionMax: 1800 },
+  { chapter: chapterFourTwo, sections: 7, checks: 7, sectionMin: 750, sectionMax: 2100 },
+  { chapter: chapterFourThree, sections: 4, checks: 7, sectionMin: 1200, sectionMax: 2800 }
+];
+for (const { chapter, sections, checks, sectionMin, sectionMax } of l4ChapterSpecs) {
+  const summaryLength = stripHtml(chapter.summary).length;
+  if (summaryLength < 200 || summaryLength > 500) failures.push(`${chapter.id} 的 5 分鐘摘要應為 200–500 字，目前 ${summaryLength} 字。`);
+  if (chapter.objectives.length < 3 || chapter.objectives.length > 5 || chapter.objectives.some((item) => /了解|認識|熟悉/.test(item))) failures.push(`${chapter.id} 必須有 3–5 個可驗證學習目標。`);
+  if (chapter.sections.length !== sections) failures.push(`${chapter.id} 必須有 ${sections} 節正文，目前 ${chapter.sections.length} 節。`);
+  for (const section of chapter.sections) {
+    const length = stripHtml(section.body).length;
+    if (length < sectionMin || length > sectionMax) failures.push(`${chapter.id}/${section.id} 應為 ${sectionMin}–${sectionMax} 字，目前 ${length} 字。`);
+  }
+  if (chapter.selfCheck.length !== checks || chapter.selfCheck.some((item) => !item[1])) failures.push(`${chapter.id} 必須有 ${checks} 題含答案的自我檢測。`);
+  for (const lab of chapter.labs) if (!Array.isArray(lab.observation) || lab.observation.length < 2 || lab.observation.length > 4) failures.push(`${chapter.id}/${lab.id} 應有 2–4 條可執行觀察點。`);
 }
 
 for (const chapter of chapters) {
@@ -201,4 +208,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：19 個 P1-P3 章 + 1 個 L4 章（共 20 章）、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3.1/3.2 工程手冊 16 單元、3.3–3.6 工程手冊 32 單元、3-7 封裝清潔工程手冊 8 單元、A01–A25/A33 觀察引導。`);
+console.log(`內容規範檢查通過：19 個 P1-P3 章 + 3 個 L4 章（共 22 章）、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3.1/3.2 工程手冊 16 單元、3.3–3.6 工程手冊 32 單元、3-7 封裝清潔工程手冊 8 單元、A01–A29/A33 觀察引導。`);

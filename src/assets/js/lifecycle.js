@@ -27,9 +27,13 @@ export function initLabContainers() {
 export function createLifecycle(instance) {
   let frame = null;
   const tick = (time) => {
-    instance.update?.(time);
-    instance.render?.();
-    frame = requestAnimationFrame(tick);
+    const shouldRender = instance.update ? instance.update(time) !== false : false;
+    if (shouldRender) {
+      instance.render?.();
+      frame = requestAnimationFrame(tick);
+    } else {
+      frame = null;
+    }
   };
   return {
     init: instance.init?.bind(instance),
@@ -37,7 +41,12 @@ export function createLifecycle(instance) {
     render: instance.render?.bind(instance),
     applyTheme: instance.applyTheme?.bind(instance),
     start() {
-      if (frame || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (frame) {
+        instance.render?.();
+        return;
+      }
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        instance.reduceMotion?.();
         instance.render?.();
         return;
       }
