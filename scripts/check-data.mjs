@@ -4,6 +4,7 @@ import { labs } from "../src/data/labs.js";
 import { dataSchemas } from "../src/data/schemas.js";
 import { processMapEntries } from "../src/assets/js/data/process-map.js";
 import { formulas } from "../src/data/formulas.js";
+import { spectra } from "../src/data/spectra.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
 import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
@@ -110,6 +111,31 @@ if (l1SelfCheckCount !== 35) {
 
 if (Object.keys(formulas).length < 18) {
   failures.push(`P2 公式手冊應至少 18 條，目前 ${Object.keys(formulas).length} 條。`);
+}
+
+if (spectra.length !== 22) failures.push(`P4 OES 譜線資料必須包含 22 線，目前 ${spectra.length} 線。`);
+const spectrumIds = new Set();
+const molecularSpecies = new Set(["CO", "CN", "C2", "N2", "OH"]);
+for (const line of spectra) {
+  if (spectrumIds.has(line.id)) failures.push(`OES 譜線 ID 重複：${line.id}。`);
+  spectrumIds.add(line.id);
+  for (const field of dataSchemas.spectrumLine.required) {
+    if (line[field] === undefined || line[field] === null || line[field] === "") failures.push(`OES 譜線 ${line.id} 缺少 ${field}。`);
+  }
+  if (!(Number.isFinite(line.wavelengthNm) && line.wavelengthNm > 0)) failures.push(`OES 譜線 ${line.id} 的波長必須為正數。`);
+  if (!(Number.isFinite(line.relativeIntensity) && line.relativeIntensity > 0)) failures.push(`OES 譜線 ${line.id} 的教學權重必須為正數。`);
+  if (line.intensityType !== "pedagogical-weight") failures.push(`OES 譜線 ${line.id} 未明示 relativeIntensity 為教學權重。`);
+  if (!line.sourceType || !line.verificationStatus) failures.push(`OES 譜線 ${line.id} 缺少 sourceType 或 verificationStatus。`);
+  if (molecularSpecies.has(line.species)) {
+    if (line.sourceType !== "pedagogical-molecular-band" || line.verificationStatus !== "pending-source-review") {
+      failures.push(`分子帶 ${line.id} 不可偽裝成 NIST ASD 已核實資料。`);
+    }
+  } else {
+    if (line.sourceType !== "official-database-reference" || line.verificationStatus !== "pending-line-review") {
+      failures.push(`原子譜線 ${line.id} 不可在未保存逐線查詢前標示為已核實。`);
+    }
+    if (!/^https:\/\/physics\.nist\.gov\//.test(line.source)) failures.push(`原子譜線 ${line.id} 的 NIST ASD 來源無效。`);
+  }
 }
 for (const [key, formula] of Object.entries(formulas)) {
   for (const field of dataSchemas.formula.required) {
