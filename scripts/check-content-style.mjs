@@ -17,6 +17,8 @@ import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
+import { l3ProcessProtocolsPart1 } from "../src/content/l3-process-handbooks-part1.mjs";
+import { l3ProcessProtocolsPart2 } from "../src/content/l3-process-handbooks-part2.mjs";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { l3Diagrams } from "../src/data/l3-diagrams.js";
@@ -159,10 +161,30 @@ for (const item of packagingCleaningProtocols) {
   if (length < 650) failures.push(`3-7/${item.id} 封裝清潔工程手冊至少需 650 個有效字元，目前 ${length}。`);
 }
 
+for (const { source, chapterIds, minimumLength } of [
+  { source: l3ProcessProtocolsPart1, chapterIds: ["3-1", "3-2"], minimumLength: 500 },
+  { source: l3ProcessProtocolsPart2, chapterIds: ["3-3", "3-4", "3-5", "3-6"], minimumLength: 700 }
+]) {
+  for (const chapterId of chapterIds) {
+    const protocols = source[chapterId] ?? [];
+    if (protocols.length !== 8) failures.push(`${chapterId} 製程工程手冊應有 8 單元，目前 ${protocols.length} 單元。`);
+    const ids = new Set();
+    for (const item of protocols) {
+      if (ids.has(item.id)) failures.push(`${chapterId} 製程工程手冊 ID 重複：${item.id}。`);
+      ids.add(item.id);
+      for (const field of ["id", "title", "purpose", "evidence", "experiment", "release", "pitfalls", "handoff"]) {
+        if (!item[field]) failures.push(`${chapterId}/${item.id ?? "?"} 製程工程手冊缺少 ${field}。`);
+      }
+      const length = Object.values(item).join(" ").match(/[\p{L}\p{N}]/gu)?.length ?? 0;
+      if (length < minimumLength) failures.push(`${chapterId}/${item.id} 製程工程手冊至少需 ${minimumLength} 個有效字元，目前 ${length}。`);
+    }
+  }
+}
+
 if (failures.length) {
   console.error(`內容規範檢查失敗（${failures.length} 項）：`);
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3-7 封裝清潔工程手冊 8 單元、A01–A25/A33 觀察引導。`);
+console.log(`內容規範檢查通過：${chapters.length + p3Chapters.length} 章、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3.1/3.2 工程手冊 16 單元、3.3–3.6 工程手冊 32 單元、3-7 封裝清潔工程手冊 8 單元、A01–A25/A33 觀察引導。`);

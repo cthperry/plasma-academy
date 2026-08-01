@@ -884,6 +884,15 @@ const l3DiagramRoutes = [
 const l3DiagramChecks = [];
 let l3PackagingCaseText = "";
 let packagingHandbookText = "";
+const processHandbookTextByRoute = {};
+const processHandbookTermsByRoute = {
+  "/level/3/3-1-etch-mechanisms/": ["Coburn-Winters", "IEDF", "側壁鈍化", "Recipe Transfer"],
+  "/level/3/3-2-deep-silicon-etch/": ["Poly Gate", "高深寬比", "Bosch", "Loading"],
+  "/level/3/3-3-defect-atlas/": ["ARDE", "Notching", "Charging", "OCAP"],
+  "/level/3/3-4-plasma-deposition/": ["PECVD", "HDP", "PEALD", "Qualification"],
+  "/level/3/3-5-pvd-cleaning/": ["Sputter", "Reactive", "Target", "EH&S"],
+  "/level/3/3-6-uniformity-chamber/": ["Uniformity", "Chamber Matching", "PM", "Run-to-run"]
+};
 for (const [route, expected] of l3DiagramRoutes) {
   await desktop.goto(`${base}${route}`, { waitUntil: "networkidle" });
   const figures = desktop.locator(".instruction-diagram");
@@ -894,7 +903,13 @@ for (const [route, expected] of l3DiagramRoutes) {
   const fieldGuideCount = await desktop.locator(".l3-field-guide").count();
   const caseCount = await desktop.locator(".case-study").count();
   const shiftExerciseCount = await desktop.locator(".shift-exercise").count();
+  const processProtocolCount = await desktop.locator(".process-protocol").count();
   const packagingProtocolCount = await desktop.locator(".packaging-protocol").count();
+  if (processHandbookTermsByRoute[route]) {
+    await desktop.locator(".process-protocol").nth(1).locator("summary").click();
+    await desktop.locator(".process-protocol").nth(4).locator("summary").click();
+    processHandbookTextByRoute[route] = await desktop.locator(".process-handbook").textContent();
+  }
   if (route.includes("3-7-packaging-cleaning")) {
     await desktop.locator('[id="3-7-c2"] summary').click();
     await desktop.locator('[id="3-7-c3"] summary').click();
@@ -905,7 +920,7 @@ for (const [route, expected] of l3DiagramRoutes) {
     await desktop.locator('[id="3-7-c2"]').scrollIntoViewIfNeeded();
     await desktop.screenshot({ path: path.join(qaDir, "desktop-l3-packaging-cases.png"), fullPage: false });
   }
-  l3DiagramChecks.push({ route, expected, count, diagramsLoaded, figureNumbersValid, fieldGuideCount, caseCount, shiftExerciseCount, packagingProtocolCount });
+  l3DiagramChecks.push({ route, expected, count, diagramsLoaded, figureNumbersValid, fieldGuideCount, caseCount, shiftExerciseCount, processProtocolCount, packagingProtocolCount });
 }
 
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
@@ -952,6 +967,14 @@ mobile.on("pageerror", (error) => errors.push(error.message));
 mobile.on("console", (message) => {
   if (message.type() === "error") errors.push(message.text());
 });
+const mobileProcessHandbookChecks = [];
+for (const [route] of l3DiagramRoutes) {
+  await mobile.goto(`${base}${route}`, { waitUntil: "networkidle" });
+  const processProtocolCount = await mobile.locator(".process-protocol").count();
+  await mobile.locator(".process-protocol").first().locator("summary").click();
+  const overflowAfterOpen = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  mobileProcessHandbookChecks.push({ route, processProtocolCount, overflowAfterOpen });
+}
 await mobile.goto(`${base}/gases/`, { waitUntil: "networkidle" });
 const mobileGasOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
 const mobileGasCardCount = await mobile.locator("[data-gas-card]").count();
@@ -1262,7 +1285,7 @@ Object.assign(result, { chapterThreeThreeTitle, a20ControlCount, a20ToggleCount,
 Object.assign(result, { chapterThreeFourTitle, a22ControlCount, a22OutputCount, a22InitialCoverage, a22InitialGpc, a22SaturatedThickness, a22OversuppliedThickness, a22PoorPurgeStatus, a22PoorPurgeGpc, a22PecvdCoverage, a22CanvasPixels, a23ControlCount, a23OutputCount, a23InitialPecvd, a23InitialHdp, a23HighDs, a23HighAr, a23CanvasPixels, mobileA22Overflow, mobileA22ControlCount, mobileA22OutputCount, mobileA23Overflow, mobileA23ControlCount, mobileA23OutputCount });
 Object.assign(result, { chapterThreeFiveTitle, a24ControlCount, a24OutputCount, a24InitialEfficiency, a24InitialUtilization, a24NoFieldEfficiency, a24FreshDepth, a24FreshDrift, a24AgedDepth, a24AgedDrift, a24CanvasPixels, chapterThreeSixTitle, a25ControlCount, a25OutputCount, a25PresetCount, a25Classifications, a25InitialHalfRange, a25WornClassification, a25WornHalfRange, a25ChallengeStatus, a25ChallengeClassification, a25ChallengeSelectedCount, a25RevealedClassification, a25CanvasPixels, mobileA24Overflow, mobileA24ControlCount, mobileA24OutputCount, mobileA25Overflow, mobileA25ControlCount, mobileA25OutputCount, mobileA25PresetCount });
 Object.assign(result, { l2DiagramChecks, packagingCaseText, packagingShiftText, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobilePackagingCaseOverflow, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
-Object.assign(result, { l3DiagramChecks, l3PackagingCaseText, packagingHandbookText, l3ExamLockedStatus, l3ExamLockedLinkHidden, l3ExamUnlockedStatus, l3ExamQuestionCount, l3ExamDraw, l3GraphicLoaded, l3ExamScore, l3ExamReviewCount, l3ExamStoredProgress, l3ExamBadgeStatus, l3ExamBadgeEarned, mobileL3CasebookOverflow, mobileL3ExamOverflow, mobileL3ExamQuestionCount, mobileL3GraphicLoaded, mobileL3GraphicOverflow });
+Object.assign(result, { l3DiagramChecks, l3PackagingCaseText, packagingHandbookText, processHandbookTextByRoute, mobileProcessHandbookChecks, l3ExamLockedStatus, l3ExamLockedLinkHidden, l3ExamUnlockedStatus, l3ExamQuestionCount, l3ExamDraw, l3GraphicLoaded, l3ExamScore, l3ExamReviewCount, l3ExamStoredProgress, l3ExamBadgeStatus, l3ExamBadgeEarned, mobileL3CasebookOverflow, mobileL3ExamOverflow, mobileL3ExamQuestionCount, mobileL3GraphicLoaded, mobileL3GraphicOverflow });
 Object.assign(result, { a33ControlCount, a33OutputCount, a33PathCount, a33InitialAngle, a33InitialAdhesion, a33OvertreatedAngle, a33OvertreatedAdhesion, a33OvertreatedStatus, a33ReducedOxide, a33ReducedAdhesion, a33OxidizedOxide, a33OxidizedAdhesion, a33OxidizedStatus, mobileA33Overflow, mobileA33ControlCount, mobileA33OutputCount, mobileA33PathCount });
 console.log(JSON.stringify(result, null, 2));
 
@@ -1363,8 +1386,15 @@ if (mobileL2DiagramOverflow || mobileL2DiagramCount !== 10) throw new Error("L2 
 if (mobilePackagingCaseOverflow) throw new Error("封裝清潔工程案例在手機版發生水平溢位。");
 if (mobileL2ExamOverflow || mobileL2ExamQuestionCount !== 30) throw new Error("L2 測驗手機版發生溢位或題目導覽缺漏。");
 for (const check of l3DiagramChecks) {
+  const expectedProcessProtocols = 8;
   const expectedProtocols = check.route.includes("3-7-packaging-cleaning") ? 8 : 0;
-  if (check.count !== check.expected || !check.diagramsLoaded || !check.figureNumbersValid || check.fieldGuideCount !== 1 || check.caseCount !== 4 || check.shiftExerciseCount !== 1 || check.packagingProtocolCount !== expectedProtocols) throw new Error(`L3 圖解或工程案例驗證失敗：${JSON.stringify(check)}`);
+  if (check.count !== check.expected || !check.diagramsLoaded || !check.figureNumbersValid || check.fieldGuideCount !== 1 || check.caseCount !== 4 || check.shiftExerciseCount !== 1 || check.processProtocolCount !== expectedProcessProtocols || check.packagingProtocolCount !== expectedProtocols) throw new Error(`L3 圖解或工程案例驗證失敗：${JSON.stringify(check)}`);
+}
+for (const [route, terms] of Object.entries(processHandbookTermsByRoute)) {
+  if (!terms.every((term) => processHandbookTextByRoute[route]?.includes(term))) throw new Error(`${route} 製程工程手冊缺少章節指定重點。`);
+}
+for (const check of mobileProcessHandbookChecks) {
+  if (check.processProtocolCount !== 8 || check.overflowAfterOpen) throw new Error(`L3 製程工程手冊手機版驗證失敗：${JSON.stringify(check)}`);
 }
 if (!["Cu oxide", "LMWOM", "queue time", "累積 dose", "re-clean", "supplier-specific"].every((term) => l3PackagingCaseText.includes(term))) throw new Error("L3 封裝清潔案例缺少金屬氧化、弱邊界層、超時重清潔或材料差異重點。");
 if (!["package stack", "Direct plasma", "Dose Window", "MSA", "MES", "累積損傷", "Qualification", "EH&S"].every((term) => packagingHandbookText.includes(term))) throw new Error("封裝清潔工程手冊缺少材料、設備、量測、物流、重清潔或核准重點。");

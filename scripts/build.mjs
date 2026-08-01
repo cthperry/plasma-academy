@@ -21,6 +21,8 @@ import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
+import { l3ProcessProtocolsPart1 } from "../src/content/l3-process-handbooks-part1.mjs";
+import { l3ProcessProtocolsPart2 } from "../src/content/l3-process-handbooks-part2.mjs";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
 import { chapterTwoTwo } from "../src/content/chapter-2-2.mjs";
 import { chapterTwoThree } from "../src/content/chapter-2-3.mjs";
@@ -445,6 +447,7 @@ function chapterThreeOnePage() {
         ${callout("summary", "5 分鐘摘要", chapterThreeOne.summary)}
         ${sections}
         ${l3CasebookHtml(chapterThreeOne)}
+        ${l3ProcessHandbookHtml(chapterThreeOne.id)}
         ${callouts}
         ${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
@@ -475,7 +478,7 @@ function chapterThreeTwoPage() {
         <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterThreeTwo.summary)}
-        ${sections}${l3CasebookHtml(chapterThreeTwo)}${callouts}${labsHtml}
+        ${sections}${l3CasebookHtml(chapterThreeTwo)}${l3ProcessHandbookHtml(chapterThreeTwo.id)}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeOne.route}">上一章：${chapterThreeOne.title}</a><a class="button primary" href="${chapterThreeThree.route}">下一章：${chapterThreeThree.title}</a></nav>
@@ -504,7 +507,7 @@ function chapterThreeThreePage() {
         <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterThreeThree.summary)}
-        ${sections}${l3CasebookHtml(chapterThreeThree)}${callouts}${labsHtml}
+        ${sections}${l3CasebookHtml(chapterThreeThree)}${l3ProcessHandbookHtml(chapterThreeThree.id)}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeTwo.route}">上一章：${chapterThreeTwo.title}</a><a class="button primary" href="${chapterThreeFour.route}">下一章：${chapterThreeFour.title}</a></nav>
@@ -533,7 +536,7 @@ function chapterThreeFourPage() {
         <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapterThreeFour.summary)}
-        ${sections}${l3CasebookHtml(chapterThreeFour)}${callouts}${labsHtml}
+        ${sections}${l3CasebookHtml(chapterThreeFour)}${l3ProcessHandbookHtml(chapterThreeFour.id)}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${chapterThreeThree.route}">上一章：${chapterThreeThree.title}</a><a class="button primary" href="${chapterThreeFive.route}">下一章：${chapterThreeFive.title}</a></nav>
@@ -582,7 +585,7 @@ function p3ChapterPage(chapter, { labLabel, previous, next, description, extraSt
         <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapter.summary)}
-        ${sections}${l3CasebookHtml(chapter)}${callouts}${labsHtml}
+        ${sections}${l3CasebookHtml(chapter)}${l3ProcessHandbookHtml(chapter.id)}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${previous.route}">上一章：${previous.title}</a><a class="button primary" href="${next.route}">下一章：${next.title}</a></nav>
@@ -812,8 +815,8 @@ function l3CasebookHtml(chapter) {
   </section>`;
 }
 
-function packagingCleaningHandbookHtml() {
-  const protocols = packagingCleaningProtocols.map((item) => `<details class="check-card packaging-protocol" id="${item.id}">
+function processHandbookHtml({ id, eyebrow, title, intro, protocols, handbookClass = "", protocolClass = "" }) {
+  const protocolsHtml = protocols.map((item) => `<details class="check-card process-protocol ${protocolClass}" id="${item.id}">
     <summary><span>${item.title}</span><strong>展開手冊</strong></summary>
     <h3>工程目的</h3><p>${item.purpose}</p>
     <h3>最低證據</h3><p>${item.evidence}</p>
@@ -822,12 +825,63 @@ function packagingCleaningHandbookHtml() {
     <h3>常見失誤</h3><p>${item.pitfalls}</p>
     <p class="case-checkpoint"><strong>交班紀錄：</strong>${item.handoff}</p>
   </details>`).join("");
-  return `<section class="packaging-handbook" aria-labelledby="packaging-handbook-title">
-    <p class="eyebrow">封裝清潔工程手冊</p>
-    <h2 id="packaging-handbook-title">從表面活化到可靠度放行</h2>
-    <p>八份可展開工作手冊把清潔開發拆成材料、設備、量測、物流、再處理與變更管制，供 DOE 規畫與交班使用。</p>
-    <div class="protocol-list">${protocols}</div>
+  return `<section class="process-handbook ${handbookClass}" aria-labelledby="${id}-title">
+    <p class="eyebrow">${eyebrow}</p>
+    <h2 id="${id}-title">${title}</h2>
+    <p>${intro}</p>
+    <div class="protocol-list">${protocolsHtml}</div>
   </section>`;
+}
+
+function l3ProcessHandbookHtml(chapterId) {
+  const metadata = {
+    "3-1": {
+      eyebrow: "蝕刻機制工程手冊",
+      title: "從機制假說到量產放行",
+      intro: "八份工作協定把離子、自由基、鈍化、遮罩與終點訊號轉成可區分、可量測、可交班的工程證據。"
+    },
+    "3-2": {
+      eyebrow: "高深寬比製程手冊",
+      title: "從深蝕刻窗口到整合驗收",
+      intro: "八份工作協定涵蓋 gate、HAR dielectric、spacer、金屬、Bosch、低溫與 loading，協助把截面結果連回實際製程狀態。"
+    },
+    "3-3": {
+      eyebrow: "蝕刻缺陷工程手冊",
+      title: "從空間指紋到受控復歸",
+      intro: "八份工作協定把 ARDE、輪廓、殘留、充電與量測可信度連回可反證的診斷、隔離與復歸證據。"
+    },
+    "3-4": {
+      eyebrow: "電漿沉積工程手冊",
+      title: "從薄膜窗口到可靠度閉環",
+      intro: "八份工作協定涵蓋 PECVD、HDP、PEALD、傳輸、前驅物與 chamber memory，將薄膜結果連回量產驗收。"
+    },
+    "3-5": {
+      eyebrow: "PVD 與清腔工程手冊",
+      title: "從靶材狀態到受控清潔",
+      intro: "八份工作協定把濺鍍能量、反應式遲滯、preclean、零件壽命與 EH&S 限制轉成可追溯的工程判斷。"
+    },
+    "3-6": {
+      eyebrow: "均勻度與腔體工程手冊",
+      title: "從空間 Map 到跨腔放行",
+      intro: "八份工作協定把 map 定義、座標對位、zone 控制、matching、PM 與 run-to-run qualification 串成完整證據鏈。"
+    }
+  };
+  const entry = metadata[chapterId];
+  const protocols = l3ProcessProtocolsPart1[chapterId] ?? l3ProcessProtocolsPart2[chapterId] ?? [];
+  if (!entry || !protocols.length) return "";
+  return processHandbookHtml({ id: `${chapterId}-process-handbook`, ...entry, protocols });
+}
+
+function packagingCleaningHandbookHtml() {
+  return processHandbookHtml({
+    id: "packaging-handbook",
+    eyebrow: "封裝清潔工程手冊",
+    title: "從表面活化到可靠度放行",
+    intro: "八份可展開工作手冊把清潔開發拆成材料、設備、量測、物流、再處理與變更管制，供 DOE 規畫與交班使用。",
+    protocols: packagingCleaningProtocols,
+    handbookClass: "packaging-handbook",
+    protocolClass: "packaging-protocol"
+  });
 }
 
 function chapterTwoThreePage() {

@@ -1,5 +1,6 @@
 .l3-field-guide,
 .engineering-casebook,
+.process-handbook,
 .packaging-handbook {
   border-block-start: 1px solid var(--pa-border);
   margin-block: 36px;
@@ -40,12 +41,14 @@
 
 .case-study,
 .shift-exercise,
+.process-protocol,
 .packaging-protocol {
   scroll-margin-top: 96px;
 }
 
 .case-study summary,
 .shift-exercise summary,
+.process-protocol summary,
 .packaging-protocol summary {
   align-items: center;
   display: flex;
@@ -55,6 +58,7 @@
 
 .case-study summary strong,
 .shift-exercise summary strong,
+.process-protocol summary strong,
 .packaging-protocol summary strong {
   color: var(--pa-primary);
   flex: 0 0 auto;
@@ -63,6 +67,7 @@
 
 .case-study h3,
 .shift-exercise h3,
+.process-protocol h3,
 .packaging-protocol h3 {
   font-size: 1rem;
   margin: 18px 0 4px;
@@ -70,6 +75,7 @@
 
 .case-study p,
 .shift-exercise p,
+.process-protocol p,
 .packaging-protocol p {
   line-height: 1.75;
 }
@@ -92,12 +98,14 @@
 
   .case-study summary,
   .shift-exercise summary,
+  .process-protocol summary,
   .packaging-protocol summary {
     align-items: flex-start;
   }
 
   .case-study,
   .shift-exercise,
+  .process-protocol,
   .packaging-protocol {
     scroll-margin-top: 152px;
   }
