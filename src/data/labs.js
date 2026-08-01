@@ -73,6 +73,8 @@ function labHref(id) {
     A23: "/level/3/3-4-plasma-deposition/#lab-a23",
     A24: "/level/3/3-5-pvd-cleaning/#lab-a24",
     A25: "/level/3/3-6-uniformity-chamber/#lab-a25",
+    A26: "/level/4/4-1-diagnostics/#lab-a26",
+    A27: "/level/4/4-1-diagnostics/#lab-a27",
     A33: "/level/3/3-7-packaging-cleaning/#lab-a33"
   };
   return map[id] ?? "/lab/";

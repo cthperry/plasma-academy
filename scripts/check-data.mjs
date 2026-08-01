@@ -6,6 +6,7 @@ import { processMapEntries } from "../src/assets/js/data/process-map.js";
 import { formulas } from "../src/data/formulas.js";
 import { spectra } from "../src/data/spectra.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
+import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
 import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
 import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
 import { level2ExamSpec, level2Questions } from "../src/data/quiz/level-2.js";
@@ -84,6 +85,11 @@ for (const id of ["A17", "A18"]) {
 if (labs.find((item) => item.id === "A19")?.href !== "/level/3/3-2-deep-silicon-etch/#lab-a19") failures.push("A19 尚未正確接到 3.2 章節。");
 for (const id of ["A20", "A21"]) {
   if (labs.find((item) => item.id === id)?.href !== `/level/3/3-3-defect-atlas/#lab-${id.toLowerCase()}`) failures.push(`${id} 尚未正確接到 3.3 章節。`);
+}
+const levelFourModule = curriculum.levels.find((level) => level.id === 4)?.modules.find((module) => module.id === "4.1");
+if (levelFourModule?.href !== chapterFourOne.route || levelFourModule?.labs.join(",") !== "A26,A27") failures.push("L4 curriculum 4.1 與章節資料未對齊。");
+for (const id of ["A26", "A27"]) {
+  if (labs.find((item) => item.id === id)?.href !== `${chapterFourOne.route}#lab-${id.toLowerCase()}`) failures.push(`${id} 尚未正確接到 4.1 章節。`);
 }
 for (const id of ["A22", "A23"]) {
   if (labs.find((item) => item.id === id)?.href !== `/level/3/3-4-plasma-deposition/#lab-${id.toLowerCase()}`) failures.push(`${id} 尚未正確接到 3.4 章節。`);

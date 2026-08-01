@@ -1,0 +1,82 @@
+#lab-a26 .lab-stage,
+#lab-a27 .lab-stage {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+#lab-a26 canvas,
+#lab-a27 canvas {
+  aspect-ratio: 720 / 430;
+  background: var(--pa-surface-sunken);
+  height: auto;
+}
+
+#lab-a26 .lab-panel,
+#lab-a27 .lab-panel {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#lab-a26 .lab-panel > .control:first-child,
+#lab-a27 .lab-panel > .control:first-child,
+#lab-a26 .lab-panel > .button,
+#lab-a27 .lab-panel > .button,
+#lab-a26 .lab-panel > .value-panel,
+#lab-a27 .lab-panel > .value-panel {
+  grid-column: 1 / -1;
+}
+
+#lab-a26 .segmented-group {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#lab-a27 .segmented-group {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#lab-a26 .value-panel,
+#lab-a27 .value-panel {
+  grid-template-columns: minmax(8rem, 1fr) minmax(10rem, auto);
+}
+
+#lab-a27 [data-value-key="來源狀態"] {
+  grid-column: 1 / -1;
+  font-size: var(--pa-text-sm);
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+#lab-a27 .value-panel dt:has(+ [data-value-key="來源狀態"]) {
+  grid-column: 1 / -1;
+  margin-top: var(--space-2);
+}
+
+#lab-a26 .lab-status[data-rf-risk="high"] {
+  border-inline-start: 3px solid var(--pa-warning);
+  padding-inline-start: var(--space-3);
+}
+
+@media (max-width: 640px) {
+  #lab-a26 .segmented-group,
+  #lab-a27 .segmented-group {
+    grid-template-columns: 1fr;
+  }
+
+  #lab-a26 .lab-panel,
+  #lab-a27 .lab-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #lab-a26 .lab-panel > *,
+  #lab-a27 .lab-panel > * {
+    grid-column: 1;
+  }
+
+  #lab-a26 .value-panel,
+  #lab-a27 .value-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  #lab-a26 .value-panel,
+  #lab-a27 .value-panel {
+    font-size: var(--pa-text-sm);
+  }
+}

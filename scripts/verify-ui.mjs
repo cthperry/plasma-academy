@@ -715,6 +715,116 @@ const a25CanvasPixels = await desktop.evaluate(() => {
 });
 await desktop.screenshot({ path: path.join(qaDir, "desktop-a24-a25.png"), fullPage: false });
 
+await desktop.goto(`${base}/level/4/4-1-diagnostics/`, { waitUntil: "networkidle" });
+const chapterFourOneTitle = await desktop.locator("h1").first().textContent();
+const chapterFourOneSectionCount = await desktop.locator(".prose-section").count();
+const chapterFourOneLabCount = await desktop.locator("[data-lab-container]").count();
+const chapterFourOneCheckCount = await desktop.locator(".self-check .check-card").count();
+await desktop.locator("#lab-a26").scrollIntoViewIfNeeded();
+await desktop.waitForFunction(() => document.querySelector("#lab-a26 canvas")?.dataset.renderState === "complete");
+const a26ControlCount = await desktop.locator('#lab-a26 input[type="range"]').count();
+const a26OutputCount = await desktop.locator("#lab-a26 .value-panel dd").count();
+const a26DesktopRatio = await desktop.locator("#lab-a26 canvas").evaluate((canvas) => {
+  const rect = canvas.getBoundingClientRect(); return rect.width / rect.height;
+});
+const a26DesktopMinFont = Number(await desktop.locator("#lab-a26 canvas").getAttribute("data-min-font-css-px"));
+const a26InitialTe = await desktop.locator('#lab-a26 [data-value-key="分析 Te"]').textContent();
+const a26InitialVpError = await desktop.locator('#lab-a26 [data-value-key="Vp 誤差"]').textContent();
+const a26InitialVfError = await desktop.locator('#lab-a26 [data-value-key="Vf 誤差"]').textContent();
+const a26InitialTeError = await desktop.locator('#lab-a26 [data-value-key="Te 誤差"]').textContent();
+const a26InitialNeError = await desktop.locator('#lab-a26 [data-value-key="ne 誤差"]').textContent();
+const a26Ranges = desktop.locator('#lab-a26 input[type="range"]');
+await a26Ranges.nth(0).evaluate((input) => { input.value = "6"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a26ChangedTe = await desktop.locator('#lab-a26 [data-value-key="分析 Te"]').textContent();
+await a26Ranges.nth(3).evaluate((input) => { input.value = "40"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a26RfStatus = await desktop.locator("#lab-a26 [data-lab-status]").textContent();
+const a26RfVpError = await desktop.locator('#lab-a26 [data-value-key="Vp 誤差"]').textContent();
+const a26RfVfError = await desktop.locator('#lab-a26 [data-value-key="Vf 誤差"]').textContent();
+const a26RfTeError = await desktop.locator('#lab-a26 [data-value-key="Te 誤差"]').textContent();
+const a26RfNeError = await desktop.locator('#lab-a26 [data-value-key="ne 誤差"]').textContent();
+const a26Views = [];
+for (const label of ["線性 I-V", "半對數", "EEDF"]) {
+  await desktop.locator("#lab-a26").getByRole("radio", { name: label, exact: true }).click();
+  a26Views.push(await desktop.locator("#lab-a26 canvas").getAttribute("data-view"));
+}
+const a26ThemeBefore = await desktop.evaluate(() => [...document.querySelector("#lab-a26 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+const a26ResolvedThemeBefore = await desktop.locator("html").getAttribute("data-theme");
+await desktop.click("[data-theme-toggle]");
+await desktop.waitForTimeout(150);
+if (await desktop.locator("html").getAttribute("data-theme") === a26ResolvedThemeBefore) {
+  await desktop.click("[data-theme-toggle]");
+  await desktop.waitForTimeout(150);
+}
+const a26ThemeAfter = await desktop.evaluate(() => [...document.querySelector("#lab-a26 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+const a26CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a26 canvas"); const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data; let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++; return nonBlank;
+});
+await desktop.locator("#lab-a26").getByRole("button", { name: "重設 A26 Langmuir 探針參數" }).click();
+const a26ResetState = {
+  gas: await desktop.locator("#lab-a26 select").inputValue(),
+  ranges: await desktop.locator('#lab-a26 input[type="range"]').evaluateAll((inputs) => inputs.map((input) => Number(input.value))),
+  view: await desktop.locator('#lab-a26 [role="radio"][aria-checked="true"]').textContent(),
+  te: await desktop.locator('#lab-a26 [data-value-key="分析 Te"]').textContent(),
+  vfError: await desktop.locator('#lab-a26 [data-value-key="Vf 誤差"]').textContent()
+};
+await desktop.evaluate(() => {
+  document.querySelector(".site-header").style.visibility = "hidden";
+  document.querySelector(".skip-link").style.display = "none";
+});
+await desktop.locator("#lab-a26").screenshot({ path: path.join(qaDir, "desktop-a26-lab.png") });
+await desktop.evaluate(() => { document.querySelector(".site-header").style.visibility = "visible"; });
+
+await desktop.locator("#lab-a27").scrollIntoViewIfNeeded();
+await desktop.waitForFunction(() => document.querySelector("#lab-a27 canvas")?.dataset.renderState === "complete");
+const a27ControlCount = await desktop.locator('#lab-a27 input[type="range"]').count();
+const a27OutputCount = await desktop.locator("#lab-a27 .value-panel dd").count();
+const a27DesktopRatio = await desktop.locator("#lab-a27 canvas").evaluate((canvas) => {
+  const rect = canvas.getBoundingClientRect(); return rect.width / rect.height;
+});
+const a27DesktopMinFont = Number(await desktop.locator("#lab-a27 canvas").getAttribute("data-min-font-css-px"));
+const a27DesktopAnnotationCount = Number(await desktop.locator("#lab-a27 canvas").getAttribute("data-annotation-count"));
+const a27LineCount = Number(await desktop.locator("#lab-a27 canvas").getAttribute("data-line-count"));
+const a27InitialStatus = await desktop.locator("#lab-a27 [data-lab-status]").textContent();
+const a27InitialAbsolute = await desktop.locator('#lab-a27 [data-value-key="F 703.7 絕對強度"]').textContent();
+await desktop.locator("#lab-a27 select").selectOption("leak");
+const a27LeakStatus = await desktop.locator("#lab-a27 [data-lab-status]").textContent();
+const a27Ranges = desktop.locator('#lab-a27 input[type="range"]');
+await a27Ranges.nth(0).evaluate((input) => { input.value = "1200"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+const a27HighPowerAbsolute = await desktop.locator('#lab-a27 [data-value-key="F 703.7 絕對強度"]').textContent();
+await desktop.locator("#lab-a27").getByRole("radio", { name: "正確 F / Ar", exact: true }).click();
+const a27CorrectRatio = await desktop.locator('#lab-a27 [data-value-key="Actinometry 比值"]').textContent();
+const a27CorrectJudgement = await desktop.locator('#lab-a27 [data-value-key="比值判定"]').textContent();
+await desktop.locator("#lab-a27").getByRole("radio", { name: "錯誤 F / Si", exact: true }).click();
+const a27WrongRatio = await desktop.locator('#lab-a27 [data-value-key="Actinometry 比值"]').textContent();
+const a27WrongJudgement = await desktop.locator('#lab-a27 [data-value-key="比值判定"]').textContent();
+const a27ThemeBefore = await desktop.evaluate(() => [...document.querySelector("#lab-a27 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+const a27ResolvedThemeBefore = await desktop.locator("html").getAttribute("data-theme");
+await desktop.click("[data-theme-toggle]");
+await desktop.waitForTimeout(150);
+if (await desktop.locator("html").getAttribute("data-theme") === a27ResolvedThemeBefore) {
+  await desktop.click("[data-theme-toggle]");
+  await desktop.waitForTimeout(150);
+}
+const a27ThemeAfter = await desktop.evaluate(() => [...document.querySelector("#lab-a27 canvas").getContext("2d").getImageData(0, 0, 1, 1).data]);
+const a27CanvasPixels = await desktop.evaluate(() => {
+  const canvas = document.querySelector("#lab-a27 canvas"); const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data; let nonBlank = 0;
+  for (let index = 0; index < data.length; index += 4) if (data[index] || data[index + 1] || data[index + 2]) nonBlank++; return nonBlank;
+});
+await desktop.locator("#lab-a27").getByRole("button", { name: "重設 A27 OES 參數" }).click();
+const a27ResetState = {
+  process: await desktop.locator("#lab-a27 select").inputValue(),
+  ranges: await desktop.locator('#lab-a27 input[type="range"]').evaluateAll((inputs) => inputs.map((input) => Number(input.value))),
+  mode: await desktop.locator('#lab-a27 [role="radio"][aria-checked="true"]').textContent(),
+  absolute: await desktop.locator('#lab-a27 [data-value-key="F 703.7 絕對強度"]').textContent(),
+  source: await desktop.locator('#lab-a27 [data-value-key="來源狀態"]').textContent()
+};
+await desktop.evaluate(() => {
+  document.querySelector(".site-header").style.visibility = "hidden";
+  document.querySelector(".skip-link").style.display = "none";
+});
+await desktop.locator("#lab-a27").screenshot({ path: path.join(qaDir, "desktop-a27-lab.png") });
+
 await desktop.goto(`${base}/level/3/`, { waitUntil: "networkidle" });
 await desktop.click('a[href="/level/3/3-7-packaging-cleaning/"]');
 await desktop.waitForLoadState("networkidle");
@@ -1211,6 +1321,42 @@ const mobileA25OutputCount = await mobile.locator("#lab-a25 .value-panel dd").co
 const mobileA25PresetCount = await mobile.locator('#lab-a25 [role="radio"]').count();
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a24-a25.png"), fullPage: false });
 
+await mobile.goto(`${base}/level/4/4-1-diagnostics/`, { waitUntil: "networkidle" });
+await mobile.locator("#lab-a26").scrollIntoViewIfNeeded();
+await mobile.waitForFunction(() => document.querySelector("#lab-a26 canvas")?.dataset.renderState === "complete");
+const mobileA26Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA26ControlCount = await mobile.locator('#lab-a26 input[type="range"]').count();
+const mobileA26OutputCount = await mobile.locator("#lab-a26 .value-panel dd").count();
+const mobileA26Ratio = await mobile.locator("#lab-a26 canvas").evaluate((canvas) => {
+  const rect = canvas.getBoundingClientRect(); return rect.width / rect.height;
+});
+const mobileA26MinFont = Number(await mobile.locator("#lab-a26 canvas").getAttribute("data-min-font-css-px"));
+await mobile.evaluate(() => {
+  document.querySelector(".site-header").style.visibility = "hidden";
+  document.querySelector(".skip-link").style.display = "none";
+});
+await mobile.locator("#lab-a26").screenshot({ path: path.join(qaDir, "mobile-a26-lab.png") });
+await mobile.locator("#lab-a27").scrollIntoViewIfNeeded();
+await mobile.waitForFunction(() => document.querySelector("#lab-a27 canvas")?.dataset.renderState === "complete");
+const mobileA27Overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+const mobileA27ControlCount = await mobile.locator('#lab-a27 input[type="range"]').count();
+const mobileA27OutputCount = await mobile.locator("#lab-a27 .value-panel dd").count();
+const mobileA27Ratio = await mobile.locator("#lab-a27 canvas").evaluate((canvas) => {
+  const rect = canvas.getBoundingClientRect(); return rect.width / rect.height;
+});
+const mobileA27MinFont = Number(await mobile.locator("#lab-a27 canvas").getAttribute("data-min-font-css-px"));
+const mobileA27AnnotationCount = Number(await mobile.locator("#lab-a27 canvas").getAttribute("data-annotation-count"));
+const mobileA27SourceText = await mobile.locator('#lab-a27 [data-value-key="來源狀態"]').textContent();
+const mobileL4ControlsFit = await mobile.evaluate(() => [...document.querySelectorAll("#lab-a26, #lab-a27")].every((lab) => {
+  const panel = lab.querySelector("[data-lab-controls]");
+  const bounds = panel.getBoundingClientRect();
+  return [...panel.querySelectorAll("input, select, button, output, dd")].every((element) => {
+    const rect = element.getBoundingClientRect();
+    return rect.width > 0 && rect.left >= bounds.left - 1 && rect.right <= bounds.right + 1;
+  });
+}));
+await mobile.locator("#lab-a27").screenshot({ path: path.join(qaDir, "mobile-a27-lab.png") });
+
 await mobile.goto(`${base}/level/3/3-7-packaging-cleaning/`, { waitUntil: "networkidle" });
 await mobile.locator('[id="3-7-p7"] summary').click();
 await mobile.locator('[id="3-7-p7"]').scrollIntoViewIfNeeded();
@@ -1290,6 +1436,7 @@ Object.assign(result, { chapterThreeTwoTitle, a19ControlCount, a19OutputCount, a
 Object.assign(result, { chapterThreeThreeTitle, a20ControlCount, a20ToggleCount, a20OutputCount, a20InitialLag, a20NoTransportLag, a20InverseLag, a20CanvasPixels, a21SymptomCount, a21ResultCount, a21MethodCount, a21RankedFirst, defectCardCount, defectHasUndefined, defectArVisible, defectSearchVisible, mobileA20Overflow, mobileA20ControlCount, mobileA20OutputCount, mobileA21Overflow, mobileA21SymptomCount, mobileA21ResultCount, mobileDefectOverflow, mobileDefectCardCount });
 Object.assign(result, { chapterThreeFourTitle, a22ControlCount, a22OutputCount, a22InitialCoverage, a22InitialGpc, a22SaturatedThickness, a22OversuppliedThickness, a22PoorPurgeStatus, a22PoorPurgeGpc, a22PecvdCoverage, a22CanvasPixels, a23ControlCount, a23OutputCount, a23InitialPecvd, a23InitialHdp, a23HighDs, a23HighAr, a23CanvasPixels, mobileA22Overflow, mobileA22ControlCount, mobileA22OutputCount, mobileA23Overflow, mobileA23ControlCount, mobileA23OutputCount });
 Object.assign(result, { chapterThreeFiveTitle, a24ControlCount, a24OutputCount, a24InitialEfficiency, a24InitialUtilization, a24NoFieldEfficiency, a24FreshDepth, a24FreshDrift, a24AgedDepth, a24AgedDrift, a24CanvasPixels, chapterThreeSixTitle, a25ControlCount, a25OutputCount, a25PresetCount, a25Classifications, a25InitialHalfRange, a25WornClassification, a25WornHalfRange, a25ChallengeStatus, a25ChallengeClassification, a25ChallengeSelectedCount, a25RevealedClassification, a25CanvasPixels, mobileA24Overflow, mobileA24ControlCount, mobileA24OutputCount, mobileA25Overflow, mobileA25ControlCount, mobileA25OutputCount, mobileA25PresetCount });
+Object.assign(result, { chapterFourOneTitle, chapterFourOneSectionCount, chapterFourOneLabCount, chapterFourOneCheckCount, a26ControlCount, a26OutputCount, a26DesktopRatio, a26InitialTe, a26InitialVpError, a26InitialVfError, a26InitialTeError, a26ChangedTe, a26RfStatus, a26RfVpError, a26RfVfError, a26RfTeError, a26Views, a26ThemeBefore, a26ThemeAfter, a26CanvasPixels, a26ResetState, a27ControlCount, a27OutputCount, a27DesktopRatio, a27LineCount, a27InitialStatus, a27InitialAbsolute, a27LeakStatus, a27HighPowerAbsolute, a27CorrectRatio, a27CorrectJudgement, a27WrongRatio, a27WrongJudgement, a27ThemeBefore, a27ThemeAfter, a27CanvasPixels, a27ResetState, mobileA26Overflow, mobileA26ControlCount, mobileA26OutputCount, mobileA26Ratio, mobileA27Overflow, mobileA27ControlCount, mobileA27OutputCount, mobileA27Ratio, mobileA27SourceText, mobileL4ControlsFit });
 Object.assign(result, { l2DiagramChecks, packagingCaseText, packagingShiftText, l2ExamLockedStatus, l2ExamLockedLinkHidden, l2ExamUnlockedStatus, l2ExamQuestionCount, l2ExamDraw, l2ExamScore, l2ExamReviewCount, l2ExamStoredProgress, l2ExamBadgeStatus, l2ExamBadgeEarned, mobileL2DiagramOverflow, mobileL2DiagramCount, mobilePackagingCaseOverflow, mobileL2ExamOverflow, mobileL2ExamQuestionCount });
 Object.assign(result, { l3DiagramChecks, l3PackagingCaseText, packagingHandbookText, processHandbookTextByRoute, mobileProcessHandbookChecks, l3ExamLockedStatus, l3ExamLockedLinkHidden, l3ExamUnlockedStatus, l3ExamQuestionCount, l3ExamDraw, l3GraphicLoaded, l3ExamScore, l3ExamReviewCount, l3ExamStoredProgress, l3ExamBadgeStatus, l3ExamBadgeEarned, mobileL3CasebookOverflow, mobileL3ExamOverflow, mobileL3ExamQuestionCount, mobileL3GraphicLoaded, mobileL3GraphicOverflow });
 Object.assign(result, { a33ControlCount, a33OutputCount, a33PathCount, a33InitialAngle, a33InitialAdhesion, a33OvertreatedAngle, a33OvertreatedAdhesion, a33OvertreatedStatus, a33ReducedOxide, a33ReducedAdhesion, a33OxidizedOxide, a33OxidizedAdhesion, a33OxidizedStatus, mobileA33Overflow, mobileA33ControlCount, mobileA33OutputCount, mobileA33PathCount });
@@ -1373,6 +1520,31 @@ if (!chapterThreeSixTitle.includes("均勻度") || a25ControlCount !== 7 || a25O
 if (JSON.stringify(a25Classifications) !== JSON.stringify(["中心快", "邊緣快", "W 形", "單邊偏斜", "同心環", "Edge roll"]) || a25WornClassification !== "Edge roll" || !(a25WornHalfRange > a25InitialHalfRange)) throw new Error("A25 六種 map 辨識或聚焦環 edge roll 趨勢未通過。");
 if (!a25ChallengeStatus.includes("反向練習") || a25ChallengeClassification !== "待揭曉" || a25ChallengeSelectedCount !== 0 || !["中心快", "邊緣快", "W 形", "單邊偏斜", "同心環", "Edge roll"].includes(a25RevealedClassification)) throw new Error("A25 反向練習未正確隱藏或揭曉標準圖形答案。");
 if (a25CanvasPixels < 150000 || mobileA25Overflow) throw new Error("A25 Canvas 空白或手機版溢出。");
+if (!chapterFourOneTitle.includes("電漿診斷") || chapterFourOneSectionCount !== 7 || chapterFourOneLabCount !== 2 || chapterFourOneCheckCount !== 8) throw new Error("4.1 路由、章節、lab 或 self-check 結構不完整。");
+const expectedCanvasRatio = 720 / 430;
+const ratioWithinTolerance = (value) => Math.abs(value / expectedCanvasRatio - 1) <= 0.02;
+const canvasRatios = [a26DesktopRatio, mobileA26Ratio, a27DesktopRatio, mobileA27Ratio];
+if (!canvasRatios.every(Number.isFinite)) throw new Error(`A26/A27 Canvas DOM 比例包含非有限值：${JSON.stringify(canvasRatios)}`);
+if (!ratioWithinTolerance(a26DesktopRatio) || !ratioWithinTolerance(mobileA26Ratio) || !ratioWithinTolerance(a27DesktopRatio) || !ratioWithinTolerance(mobileA27Ratio)) throw new Error(`A26/A27 Canvas DOM 比例偏離 720/430：${JSON.stringify({ a26DesktopRatio, mobileA26Ratio, a27DesktopRatio, mobileA27Ratio })}`);
+const effectiveFontSizes = [a26DesktopMinFont, mobileA26MinFont, a27DesktopMinFont, mobileA27MinFont];
+if (!effectiveFontSizes.every(Number.isFinite) || effectiveFontSizes.some((value) => value < 10)) throw new Error(`A26/A27 Canvas 有效文字小於 10 CSS px 或不是有限值：${JSON.stringify(effectiveFontSizes)}`);
+if (![a27DesktopAnnotationCount, mobileA27AnnotationCount].every(Number.isFinite) || a27DesktopAnnotationCount !== 6 || mobileA27AnnotationCount !== 4) throw new Error(`A27 標註數量應為桌機 6、手機 4：${JSON.stringify({ a27DesktopAnnotationCount, mobileA27AnnotationCount })}`);
+if (a26ControlCount !== 5 || a26OutputCount !== 8 || mobileA26ControlCount !== 5 || mobileA26OutputCount !== 8) throw new Error("A26 控制項或八項分析/誤差讀值未完整渲染。");
+const a26ErrorTexts = [a26InitialVfError, a26InitialTeError, a26InitialVpError, a26InitialNeError, a26RfVfError, a26RfTeError, a26RfVpError, a26RfNeError];
+const a26ErrorValues = a26ErrorTexts.map((value) => Number.parseFloat(value));
+if (!a26ErrorValues.every(Number.isFinite)) throw new Error(`A26 Vf/Vp/Te/ne 誤差包含非有限值：${JSON.stringify(a26ErrorTexts)}`);
+if (a26ErrorTexts.some((value) => /-0(?:\.0+)?(?:\s*V|%)/.test(value))) throw new Error(`A26 誤差讀值不可顯示負零：${JSON.stringify(a26ErrorTexts)}`);
+if (a26InitialTe === a26ChangedTe || Math.abs(Number.parseFloat(a26RfVpError)) < 10 || Math.abs(Number.parseFloat(a26RfVfError)) < 10 || Math.abs(Number.parseFloat(a26RfTeError)) > 5 || !a26RfStatus.includes("RF 未補償") || !a26RfStatus.includes("不支持 Te 高估兩倍")) throw new Error("A26 RF 未呈現 Vf/Vp 大幅偏移且 Te 誤差維持小幅的模型結果。");
+if (JSON.stringify(a26Views) !== JSON.stringify(["linear", "semilog", "eedf"])) throw new Error(`A26 三視圖切換失敗：${JSON.stringify(a26Views)}`);
+if (JSON.stringify(a26ThemeBefore) === JSON.stringify(a26ThemeAfter) || a26CanvasPixels < 150000) throw new Error("A26 Canvas 空白或未隨主題切換重繪。");
+if (a26ResetState.gas !== "Ar" || JSON.stringify(a26ResetState.ranges) !== JSON.stringify([3, 10, 20, 0, 0]) || a26ResetState.view !== "線性 I-V" || !a26ResetState.te.startsWith("3.")) throw new Error(`A26 重設未恢復預設控制、模式或讀值：${JSON.stringify(a26ResetState)}`);
+if (a27ControlCount !== 4 || a27OutputCount !== 6 || a27LineCount !== 22 || mobileA27ControlCount !== 4 || mobileA27OutputCount !== 6) throw new Error("A27 控制項、讀值或 22 線輸出不完整。");
+if (a27InitialStatus === a27LeakStatus || a27InitialAbsolute === a27HighPowerAbsolute || a27CorrectRatio === a27WrongRatio || !a27CorrectJudgement.includes("適用") || !a27WrongJudgement.includes("錯誤")) throw new Error("A27 製程、功率或正確/錯誤內標模式未產生可觀察差異。");
+if (a27CanvasPixels < 150000) throw new Error("A27 Canvas 看起來是空白。");
+if (JSON.stringify(a27ThemeBefore) === JSON.stringify(a27ThemeAfter)) throw new Error("A27 Canvas 未隨主題切換重新取色。");
+if (a27ResetState.process !== "oxide" || JSON.stringify(a27ResetState.ranges) !== JSON.stringify([500, 20, 0.03, 1]) || a27ResetState.mode !== "正確 F / Ar" || a27ResetState.absolute !== a27InitialAbsolute) throw new Error(`A27 重設未恢復預設控制、模式或讀值：${JSON.stringify(a27ResetState)}`);
+if (!mobileA27SourceText.includes("原子線待逐線核對") || !mobileA27SourceText.includes("分子帶待來源核對") || /pending-(line|source)-review/.test(mobileA27SourceText)) throw new Error(`A27 手機來源狀態不可讀：${mobileA27SourceText}`);
+if (mobileA26Overflow || mobileA27Overflow || !mobileL4ControlsFit) throw new Error("A26/A27 手機版有水平溢出或控制項超出面板。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");
 if (examQuestionCount !== 20 || JSON.stringify(examDraw) !== JSON.stringify({ single: 12, multi: 3, numeric: 3, scenario: 2 })) throw new Error(`L1 測驗抽題分佈錯誤：${JSON.stringify(examDraw)}`);

@@ -60,7 +60,9 @@ export const curriculum = {
       progress: 0,
       summary: "進入診斷、終點偵測、PID、ALE、脈衝與量產控制。",
       labs: ["A26", "A27", "A28", "A29", "A30", "A31", "A32"],
-      modules: []
+      modules: [
+        { id: "4.1", title: "電漿診斷", hours: 3.5, labs: ["A26", "A27"], prerequisites: "2.3, 2.4, 2.5, 3.6", href: "/level/4/4-1-diagnostics/", description: "用 Langmuir、OES、actinometry 與互補工具建立可反證的量產診斷。" }
+      ]
     }
   ]
 };

@@ -19,6 +19,7 @@ import { chapterThreeFour } from "../src/content/chapter-3-4.mjs";
 import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
 import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
+import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
 import { l3ProcessProtocolsPart1 } from "../src/content/l3-process-handbooks-part1.mjs";
@@ -595,6 +596,34 @@ function p3ChapterPage(chapter, { labLabel, previous, next, description, extraSt
   `, { pageType: "chapter", description, extraStyles: [...extraStyles, "/assets/css/l3-casebook.css"] });
 }
 
+function chapterFourOnePage() {
+  const objectives = chapterFourOne.objectives.map((item, index) => `<label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterFourOne.id}"><span>${item}</span></label>`).join("");
+  const prerequisites = chapterFourOne.prerequisites.map((item) => `<li>${item}</li>`).join("");
+  const readings = chapterFourOne.readings.map((item) => `<li>${item}</li>`).join("");
+  const outline = [...chapterFourOne.sections, ...chapterFourOne.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
+  const sections = chapterFourOne.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
+  const callouts = chapterFourOne.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
+  const labsHtml = chapterFourOne.labs.map((lab) => labContainer(lab)).join("");
+  const checks = chapterFourOne.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
+  return page(chapterFourOne.route, chapterFourOne.title, `
+    <main class="chapter-layout" data-chapter-id="${chapterFourOne.id}">
+      <aside class="chapter-sidebar"><strong>課程目錄</strong><a class="current" href="${chapterFourOne.route}">${chapterFourOne.title}</a><a href="/level/4/">L4 模組列表</a><a href="/lab/">互動實驗室</a></aside>
+      <article class="chapter-main">
+        ${breadcrumb(["首頁", "L4 專家", chapterFourOne.title])}
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapterFourOne.hours} h · 互動元件 A26、A27</p><h1>${chapterFourOne.title}</h1><p>${chapterFourOne.summary}</p></header>
+        <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
+        <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
+        ${callout("summary", "5 分鐘摘要", chapterFourOne.summary)}
+        ${sections}${callouts}${labsHtml}
+        <section class="self-check"><h2>自我檢測</h2>${checks}</section>
+        <section class="chapter-support"><h2>延伸閱讀與來源狀態</h2><ul>${readings}</ul><p>原子線：<code>pending-line-review</code>；分子帶：<code>pending-source-review</code>。本站 <code>relativeIntensity</code> 僅為教學權重。</p></section>
+        <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="/level/3/3-7-packaging-cleaning/">上一章：3.7 封裝清潔與表面活化</a><a class="button primary" href="/level/4/">下一章：返回 L4 模組列表</a></nav>
+      </article>
+      <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
+    </main>
+  `, { pageType: "chapter", description: "Langmuir 探針、OES、actinometry 與量產診斷工具選擇。", extraStyles: ["/assets/css/a26-a27.css"] });
+}
+
 function defectAtlasPage() {
   const atlasDefects = defects.filter((item) => item.id !== "first-wafer");
   const filters = defectCategories.map((category) => `<button type="button" data-defect-filter="${category.key}">${category.name}</button>`).join("");
@@ -1149,6 +1178,8 @@ async function main() {
   await mkdir(out, { recursive: true });
   await cp(path.join(root, "src", "assets"), path.join(out, "assets"), { recursive: true });
   await cp(path.join(root, "src", "data"), path.join(out, "assets", "data"), { recursive: true });
+  await mkdir(path.join(out, "data"), { recursive: true });
+  await cp(path.join(root, "src", "data", "spectra.js"), path.join(out, "data", "spectra.js"));
   await mkdir(path.join(root, "dist", "server"), { recursive: true });
   await cp(path.join(root, "worker", "index.js"), path.join(root, "dist", "server", "index.js"));
   try {
@@ -1179,6 +1210,7 @@ async function main() {
     chapterThreeFivePage(),
     chapterThreeSixPage(),
     packagingCleaningPage(),
+    chapterFourOnePage(),
     labPage(),
     progressPage(),
     examPage(1),
