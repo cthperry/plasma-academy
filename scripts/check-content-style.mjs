@@ -19,6 +19,7 @@ import { chapterFourTwo } from "../src/content/chapter-4-2.mjs";
 import { chapterFourThree } from "../src/content/chapter-4-3.mjs";
 import { chapterFourFour } from "../src/content/chapter-4-4.mjs";
 import { chapterFourFive } from "../src/content/chapter-4-5.mjs";
+import { chapterFourSix } from "../src/content/chapter-4-6.mjs";
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
@@ -44,7 +45,8 @@ const l4ChapterSpecs = [
   { chapter: chapterFourTwo, sections: 7, checks: 7, sectionMin: 750, sectionMax: 2100 },
   { chapter: chapterFourThree, sections: 4, checks: 7, sectionMin: 1200, sectionMax: 2800 },
   { chapter: chapterFourFour, sections: 8, checks: 8, sectionMin: 500, sectionMax: 3000 },
-  { chapter: chapterFourFive, sections: 7, checks: 6, sectionMin: 500, sectionMax: 1800 }
+  { chapter: chapterFourFive, sections: 7, checks: 6, sectionMin: 500, sectionMax: 1800 },
+  { chapter: chapterFourSix, sections: 6, checks: 7, sectionMin: 500, sectionMax: 3000 }
 ];
 for (const { chapter, sections, checks, sectionMin, sectionMax } of l4ChapterSpecs) {
   const summaryLength = stripHtml(chapter.summary).length;
@@ -57,6 +59,27 @@ for (const { chapter, sections, checks, sectionMin, sectionMax } of l4ChapterSpe
   }
   if (chapter.selfCheck.length !== checks || chapter.selfCheck.some((item) => !item[1])) failures.push(`${chapter.id} 必須有 ${checks} 題含答案的自我檢測。`);
   for (const lab of chapter.labs) if (!Array.isArray(lab.observation) || lab.observation.length < 2 || lab.observation.length > 4) failures.push(`${chapter.id}/${lab.id} 應有 2–4 條可執行觀察點。`);
+}
+
+if (chapterFourSix.cases.length !== 5) failures.push(`4-6 應有 5 則量產案例，目前 ${chapterFourSix.cases.length} 則。`);
+const productionCaseIds = new Set();
+const productionParagraphs = new Map();
+for (const item of chapterFourSix.cases) {
+  if (productionCaseIds.has(item.id)) failures.push(`4-6 量產案例 ID 重複：${item.id}。`);
+  productionCaseIds.add(item.id);
+  for (const field of ["id", "title", "phenomenon", "data", "hypotheses", "verification", "rootCause", "action", "release", "prevention", "engineeringNote"]) {
+    if (!item[field]) failures.push(`4-6/${item.id ?? "?"} 缺少 ${field}。`);
+  }
+  if (!Array.isArray(item.hypotheses) || item.hypotheses.length < 2) failures.push(`4-6/${item.id ?? "?"} 至少需要 2 個競爭假說。`);
+  const caseLength = Object.values(item).join(" ").match(/[\p{L}\p{N}]/gu)?.length ?? 0;
+  if (caseLength < 650) failures.push(`4-6/${item.id} 量產案例至少需 650 個有效字元，目前 ${caseLength}。`);
+  for (const value of [item.phenomenon, item.data, ...item.hypotheses, item.verification, item.rootCause, item.action, item.release, item.prevention, item.engineeringNote]) {
+    const paragraph = stripHtml(value).replace(/[\s\u3000]+/g, " ").trim();
+    if (paragraph.length < 80) continue;
+    const previous = productionParagraphs.get(paragraph);
+    if (previous && previous !== item.id) failures.push(`4-6/${item.id} 與 ${previous} 有重複長案例段落。`);
+    productionParagraphs.set(paragraph, item.id);
+  }
 }
 
 for (const chapter of chapters) {
@@ -212,4 +235,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：19 個 P1-P3 章 + 5 個 L4 章（共 24 章）、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3.1/3.2 工程手冊 16 單元、3.3–3.6 工程手冊 32 單元、3-7 封裝清潔工程手冊 8 單元、A01–A32/A33 觀察引導。`);
+console.log(`內容規範檢查通過：19 個 P1-P3 章 + 6 個 L4 章（共 25 章）、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3.1/3.2 工程手冊 16 單元、3.3–3.6 工程手冊 32 單元、3-7 封裝清潔工程手冊 8 單元、A01–A32/A33 觀察引導。`);

@@ -24,6 +24,7 @@ import { chapterFourTwo } from "../src/content/chapter-4-2.mjs";
 import { chapterFourThree } from "../src/content/chapter-4-3.mjs";
 import { chapterFourFour } from "../src/content/chapter-4-4.mjs";
 import { chapterFourFive } from "../src/content/chapter-4-5.mjs";
+import { chapterFourSix } from "../src/content/chapter-4-6.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
 import { l3ProcessProtocolsPart1 } from "../src/content/l3-process-handbooks-part1.mjs";
@@ -600,13 +601,36 @@ function p3ChapterPage(chapter, { labLabel, previous, next, description, extraSt
   `, { pageType: "chapter", description, extraStyles: [...extraStyles, "/assets/css/l3-casebook.css"] });
 }
 
-const l4Chapters = [chapterFourOne, chapterFourTwo, chapterFourThree, chapterFourFour, chapterFourFive];
+const l4Chapters = [chapterFourOne, chapterFourTwo, chapterFourThree, chapterFourFour, chapterFourFive, chapterFourSix];
+
+function productionCasebookHtml(chapter) {
+  if (!chapter.cases?.length) return "";
+  const cases = chapter.cases.map((item) => `<article class="production-case case-study" id="${item.id}">
+    <h3>${item.title}</h3>
+    <h4>現象與資料</h4><p>${item.phenomenon}</p><p>${item.data}</p>
+    <h4>競爭假說</h4><ul>${item.hypotheses.map((hypothesis) => `<li>${hypothesis}</li>`).join("")}</ul>
+    <h4>驗證計畫</h4><p>${item.verification}</p>
+    <details class="production-case-answer"><summary>揭曉：根因、處置、放行與預防</summary>
+      <h4>根因</h4><p>${item.rootCause}</p>
+      <h4>處置</h4><p>${item.action}</p>
+      <h4>放行</h4><p>${item.release}</p>
+      <h4>預防</h4><p>${item.prevention}</p>
+      ${item.engineeringNote ? `<p class="case-checkpoint"><strong>工程提醒：</strong>${item.engineeringNote}</p>` : ""}
+    </details>
+  </article>`).join("");
+  return `<section class="engineering-casebook production-casebook" aria-labelledby="${chapter.id}-casebook-title" id="production-casebook">
+    <h2 id="${chapter.id}-casebook-title">量產案例判讀</h2>
+    <p>先根據現象、資料、競爭假說與驗證計畫建立證據鏈，再展開每案的根因、處置、放行與預防。</p>
+    <div class="casebook-list">${cases}</div>
+  </section>`;
+}
 
 function chapterFourPage(chapter) {
   const objectives = chapter.objectives.map((item, index) => `<label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapter.id}"><span>${item}</span></label>`).join("");
   const prerequisites = chapter.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapter.readings.map((item) => `<li>${item}</li>`).join("");
-  const outline = [...chapter.sections, ...chapter.labs].map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
+  const outlineItems = [...chapter.sections, ...(chapter.cases?.length ? [{ id: "production-casebook", title: "量產案例判讀" }] : []), ...chapter.labs];
+  const outline = outlineItems.map((item) => `<a href="#${item.id}">${item.title}</a>`).join("");
   const sections = chapter.sections.map((section) => `<section id="${section.id}" class="prose-section"><h2>${section.title}</h2>${section.body}</section>`).join("");
   const callouts = chapter.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapter.labs.map((lab) => labContainer(lab)).join("");
@@ -615,35 +639,40 @@ function chapterFourPage(chapter) {
   const previous = chapterIndex === 0 ? chapterThreeSeven : l4Chapters[chapterIndex - 1];
   const next = l4Chapters[chapterIndex + 1];
   const sidebar = l4Chapters.map((item) => `<a class="${item.id === chapter.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
-  const labLabel = chapter.labs.map((lab) => lab.id.toUpperCase()).join("、");
+  const activityLabel = chapter.labs.length
+    ? `互動元件 ${chapter.labs.map((lab) => lab.id.toUpperCase()).join("、")}`
+    : `案例演練 ${chapter.cases?.length ?? 0} 則`;
   const descriptions = {
     "4-1": "Langmuir 探針、OES、actinometry 與量產診斷工具選擇。",
     "4-2": "低開口率 OES、干涉式終點、演算法、R2R、FDC 與虛擬量測。",
     "4-3": "天線效應、電漿損傷、Low-k、量測與電弧風險控制。",
     "4-4": "脈衝電漿、原子層蝕刻、高深寬比製程與封裝低損傷窗口。",
-    "4-5": "模擬層級、0-D 平衡、資料可信度與封裝表面模型界線。"
+    "4-5": "模擬層級、0-D 平衡、資料可信度與封裝表面模型界線。",
+    "4-6": "Chamber matching、DOE、COO、PM、EHS 與 PFC 排放治理。"
   };
   const style = chapter.id === "4-1"
     ? "/assets/css/a26-a27.css"
-    : ["4-4", "4-5"].includes(chapter.id) ? "/assets/css/a30-a32.css" : "/assets/css/a28-a29.css";
+    : ["4-4", "4-5"].includes(chapter.id)
+      ? "/assets/css/a30-a32.css"
+      : ["4-2", "4-3"].includes(chapter.id) ? "/assets/css/a28-a29.css" : null;
   const sourceDisclosure = chapter.id === "4-1" ? `<p>原子線：<code>pending-line-review</code>；分子帶：<code>pending-source-review</code>。本站 <code>relativeIntensity</code> 僅為教學權重。</p>` : "";
   return page(chapter.route, chapter.title, `
     <main class="chapter-layout" data-chapter-id="${chapter.id}">
       <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/4/">L4 模組列表</a><a href="/lab/">互動實驗室</a></aside>
       <article class="chapter-main">
         ${breadcrumb(["首頁", "L4 專家", chapter.title])}
-        <header class="chapter-header"><p class="chapter-meta">時數 ${chapter.hours} h · 互動元件 ${labLabel}</p><h1>${chapter.title}</h1><p>${chapter.summary}</p></header>
+        <header class="chapter-header"><p class="chapter-meta">時數 ${chapter.hours} h · ${activityLabel}</p><h1>${chapter.title}</h1><p>${chapter.summary}</p></header>
         <section class="learning-card"><h2>學習目標</h2>${objectives}</section>
         <section class="chapter-support"><h2>前置知識</h2><ul>${prerequisites}</ul></section>
         ${callout("summary", "5 分鐘摘要", chapter.summary)}
-        ${sections}${callouts}${labsHtml}
+        ${sections}${productionCasebookHtml(chapter)}${callouts}${labsHtml}
         <section class="self-check"><h2>自我檢測</h2>${checks}</section>
         <section class="chapter-support"><h2>延伸閱讀與來源狀態</h2><ul>${readings}</ul>${sourceDisclosure}</section>
         <nav class="chapter-nav" aria-label="章節導覽"><a class="button secondary" href="${previous.route}">上一章：${previous.title}</a><a class="button primary" href="${next?.route ?? "/level/4/"}">下一章：${next?.title ?? "返回 L4 模組列表"}</a></nav>
       </article>
       <aside class="chapter-outline"><strong>本頁大綱</strong>${outline}<div data-unit-converter></div></aside>
     </main>
-  `, { pageType: "chapter", description: descriptions[chapter.id], extraStyles: [style] });
+  `, { pageType: "chapter", description: descriptions[chapter.id], extraStyles: [style, ...(chapter.cases?.length ? ["/assets/css/l3-casebook.css"] : [])].filter(Boolean) });
 }
 
 function defectAtlasPage() {

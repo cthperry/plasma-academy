@@ -26,13 +26,14 @@
     "check:process-control": "node scripts/check-process-control-model.mjs",
     "check:l4-control-damage": "node scripts/check-level4-control-damage.mjs",
     "check:l4-advanced": "node scripts/check-level4-advanced.mjs",
+    "check:l4-production": "node scripts/check-level4-production.mjs",
     "check:advanced-models": "node scripts/check-advanced-models.mjs",
     "check:l3-exam": "node scripts/check-level3-exam.mjs",
     "audit:p1": "node scripts/audit-p1.mjs",
     "audit:p2": "node scripts/audit-p2.mjs",
     "audit:p3": "node scripts/audit-p3.mjs",
-    "verify:ui": "node scripts/verify-ui.mjs && node scripts/verify-level4-control-ui.mjs && node scripts/verify-level4-advanced-ui.mjs",
-    "check": "npm run build && npm run check:data && npm run check:content && npm run check:reviews && npm run check:package && npm run check:profiles && npm run check:defects && npm run check:bosch && npm run check:arde && npm run check:deposition && npm run check:chamber && npm run check:diagnostics && npm run check:l4-diagnostics && npm run check:process-control && npm run check:l4-control-damage && npm run check:l4-advanced && npm run check:advanced-models && npm run check:l3-exam && npm run check:a11y && npm run check:contrast && npm run check:links && npm run check:size",
+    "verify:ui": "node scripts/verify-ui.mjs && node scripts/verify-level4-control-ui.mjs && node scripts/verify-level4-advanced-ui.mjs && node scripts/verify-level4-production-ui.mjs",
+    "check": "npm run build && npm run check:data && npm run check:content && npm run check:reviews && npm run check:package && npm run check:profiles && npm run check:defects && npm run check:bosch && npm run check:arde && npm run check:deposition && npm run check:chamber && npm run check:diagnostics && npm run check:l4-diagnostics && npm run check:process-control && npm run check:l4-control-damage && npm run check:l4-advanced && npm run check:l4-production && npm run check:advanced-models && npm run check:l3-exam && npm run check:a11y && npm run check:contrast && npm run check:links && npm run check:size",
     "serve": "npx --yes serve dist/client --listen 4173"
   },
   "devDependencies": {

@@ -93,7 +93,7 @@ for (const [label, source, requirements] of [
 if (!/aspect-ratio:\s*720\s*\/\s*430/.test(labCssSource)) failures.push("A26/A27 Canvas CSS 必須固定 720/430 顯示比例。");
 if (!/height:\s*auto/.test(labCssSource)) failures.push("A26/A27 Canvas CSS 必須以 height:auto 防止拉伸。");
 if (/#lab-a2[67][\s\S]*?canvas[\s\S]*?min-height:/.test(labCssSource)) failures.push("A26/A27 Canvas 不可使用 min-height 拉伸顯示比例。");
-if (!contentCheckSource.includes("19 個 P1-P3 章 + 5 個 L4 章")) failures.push("check:content 成功摘要必須明確說明 19 個 P1-P3 章 + 5 個 L4 章。");
+if (!contentCheckSource.includes("19 個 P1-P3 章 + 6 個 L4 章")) failures.push("check:content 成功摘要必須明確說明 19 個 P1-P3 章 + 6 個 L4 章。");
 
 if (builtPage) {
   const count = (pattern) => (builtPage.match(pattern) ?? []).length;

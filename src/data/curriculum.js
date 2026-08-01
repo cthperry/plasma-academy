@@ -65,7 +65,8 @@ export const curriculum = {
         { id: "4.2", title: "終點偵測與先進製程控制", hours: 2.5, labs: ["A28"], prerequisites: "4.1", href: "/level/4/4-2-endpoint-control/", description: "從低開口率訊號、干涉條紋與演算法建立可靠端點，再連到 R2R、FDC 與虛擬量測。" },
         { id: "4.3", title: "電漿誘發損傷", hours: 2.5, labs: ["A29"], prerequisites: "2.4, 3.3, 4.1", href: "/level/4/4-3-plasma-damage/", description: "追蹤天線充電、UV/VUV、離子、污染與 Low-k 損傷，建立製程風險與驗證策略。" },
         { id: "4.4", title: "先進技術", hours: 3.5, labs: ["A30", "A31"], prerequisites: "3.1, 4.1", href: "/level/4/4-4-advanced-techniques/", description: "用脈衝電漿、ALE 與 HAR 控制能量、時間與深孔反應窗口，延伸到封裝低損傷清潔。" },
-        { id: "4.5", title: "電漿模擬與資料", hours: 2, labs: ["A32"], prerequisites: "2.3, 4.1", href: "/level/4/4-5-plasma-modeling-data/", description: "用 0-D 全域平衡、掃描與可信度界線理解模擬如何支援製程決策與封裝表面工程。" }
+        { id: "4.5", title: "電漿模擬與資料", hours: 2, labs: ["A32"], prerequisites: "2.3, 4.1", href: "/level/4/4-5-plasma-modeling-data/", description: "用 0-D 全域平衡、掃描與可信度界線理解模擬如何支援製程決策與封裝表面工程。" },
+        { id: "4.6", title: "量產、良率與安全", hours: 2, labs: [], prerequisites: "4.1-4.5", href: "/level/4/4-6-production-yield-safety/", description: "以 chamber matching、DOE、COO、PM、FDC 與 EHS/PFC 治理量產放行。" }
       ]
     }
   ]
