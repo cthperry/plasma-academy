@@ -948,7 +948,10 @@ for (let index = 0; index < l3ExamQuestionCount; index += 1) {
   const questionId = await desktop.locator(".exam-question").getAttribute("data-question-id");
   const question = l3ExamBank.find((item) => item.id === questionId);
   if (question.type === "graphic") {
-    await desktop.waitForFunction(() => document.querySelector(".exam-graphic img")?.naturalWidth === 760);
+    await desktop.waitForFunction(() => {
+      const image = document.querySelector(".exam-graphic img");
+      return image?.complete && image.naturalWidth === 760;
+    });
     l3GraphicLoaded &&= await desktop.locator(".exam-graphic img").evaluate((image) => image.complete && image.naturalWidth === 760);
   }
   for (const option of question.options.filter((item) => item.correct)) await desktop.locator(`.exam-question input[value="${option.id}"]`).click();
@@ -1264,7 +1267,10 @@ for (let index = 0; index < mobileL3ExamQuestionCount; index += 1) {
   await mobileL3Nav.nth(index).click();
   if ((await mobile.locator("[data-exam-type]").textContent()) === "圖形判讀題") break;
 }
-await mobile.waitForFunction(() => document.querySelector(".exam-graphic img")?.naturalWidth === 760);
+await mobile.waitForFunction(() => {
+  const image = document.querySelector(".exam-graphic img");
+  return image?.complete && image.naturalWidth === 760;
+});
 const mobileL3GraphicLoaded = await mobile.locator(".exam-graphic img").evaluate((image) => image.complete && image.naturalWidth === 760);
 const mobileL3GraphicOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
 await mobile.screenshot({ path: path.join(qaDir, "mobile-l3-exam.png"), fullPage: false });
