@@ -63,7 +63,9 @@ export const curriculum = {
       modules: [
         { id: "4.1", title: "電漿診斷", hours: 3.5, labs: ["A26", "A27"], prerequisites: "2.3, 2.4, 2.5, 3.6", href: "/level/4/4-1-diagnostics/", description: "用 Langmuir、OES、actinometry 與互補工具建立可反證的量產診斷。" },
         { id: "4.2", title: "終點偵測與先進製程控制", hours: 2.5, labs: ["A28"], prerequisites: "4.1", href: "/level/4/4-2-endpoint-control/", description: "從低開口率訊號、干涉條紋與演算法建立可靠端點，再連到 R2R、FDC 與虛擬量測。" },
-        { id: "4.3", title: "電漿誘發損傷", hours: 2.5, labs: ["A29"], prerequisites: "2.4, 3.3, 4.1", href: "/level/4/4-3-plasma-damage/", description: "追蹤天線充電、UV/VUV、離子、污染與 Low-k 損傷，建立製程風險與驗證策略。" }
+        { id: "4.3", title: "電漿誘發損傷", hours: 2.5, labs: ["A29"], prerequisites: "2.4, 3.3, 4.1", href: "/level/4/4-3-plasma-damage/", description: "追蹤天線充電、UV/VUV、離子、污染與 Low-k 損傷，建立製程風險與驗證策略。" },
+        { id: "4.4", title: "先進技術", hours: 3.5, labs: ["A30", "A31"], prerequisites: "3.1, 4.1", href: "/level/4/4-4-advanced-techniques/", description: "用脈衝電漿、ALE 與 HAR 控制能量、時間與深孔反應窗口，延伸到封裝低損傷清潔。" },
+        { id: "4.5", title: "電漿模擬與資料", hours: 2, labs: ["A32"], prerequisites: "2.3, 4.1", href: "/level/4/4-5-plasma-modeling-data/", description: "用 0-D 全域平衡、掃描與可信度界線理解模擬如何支援製程決策與封裝表面工程。" }
       ]
     }
   ]

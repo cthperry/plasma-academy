@@ -1,0 +1,67 @@
+#lab-a30 .lab-stage,
+#lab-a31 .lab-stage,
+#lab-a32 .lab-stage {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+#lab-a30,
+#lab-a31,
+#lab-a32 {
+  scroll-margin-top: 5.5rem;
+}
+
+#lab-a30 canvas,
+#lab-a31 canvas,
+#lab-a32 canvas {
+  aspect-ratio: 720 / 430;
+  background: var(--pa-surface-sunken);
+  height: auto;
+}
+
+#lab-a30 .lab-panel,
+#lab-a31 .lab-panel,
+#lab-a32 .lab-panel {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#lab-a30 .lab-panel > .button,
+#lab-a30 .lab-panel > .value-panel,
+#lab-a31 .lab-panel > .button,
+#lab-a31 .lab-panel > .value-panel,
+#lab-a32 .lab-panel > .button,
+#lab-a32 .lab-panel > .value-panel {
+  grid-column: 1 / -1;
+}
+
+#lab-a30 .value-panel,
+#lab-a31 .value-panel,
+#lab-a32 .value-panel {
+  grid-template-columns: minmax(8rem, 1fr) minmax(10rem, auto);
+}
+
+@media (max-width: 640px) {
+  #lab-a30,
+  #lab-a31,
+  #lab-a32 {
+    scroll-margin-top: 10rem;
+  }
+
+  #lab-a30 .lab-panel,
+  #lab-a31 .lab-panel,
+  #lab-a32 .lab-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #lab-a30 .lab-panel > *,
+  #lab-a31 .lab-panel > *,
+  #lab-a32 .lab-panel > * {
+    grid-column: 1;
+  }
+
+  #lab-a30 .value-panel,
+  #lab-a31 .value-panel,
+  #lab-a32 .value-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    font-size: var(--pa-text-sm);
+  }
+}

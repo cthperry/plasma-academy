@@ -17,6 +17,8 @@ import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning
 import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
 import { chapterFourTwo } from "../src/content/chapter-4-2.mjs";
 import { chapterFourThree } from "../src/content/chapter-4-3.mjs";
+import { chapterFourFour } from "../src/content/chapter-4-4.mjs";
+import { chapterFourFive } from "../src/content/chapter-4-5.mjs";
 import { l2EngineeringCases, l2ShiftExercises } from "../src/content/l2-engineering-cases.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
@@ -40,7 +42,9 @@ const stripHtml = (value) => String(value ?? "")
 const l4ChapterSpecs = [
   { chapter: chapterFourOne, sections: 7, checks: 8, sectionMin: 750, sectionMax: 1800 },
   { chapter: chapterFourTwo, sections: 7, checks: 7, sectionMin: 750, sectionMax: 2100 },
-  { chapter: chapterFourThree, sections: 4, checks: 7, sectionMin: 1200, sectionMax: 2800 }
+  { chapter: chapterFourThree, sections: 4, checks: 7, sectionMin: 1200, sectionMax: 2800 },
+  { chapter: chapterFourFour, sections: 8, checks: 8, sectionMin: 500, sectionMax: 3000 },
+  { chapter: chapterFourFive, sections: 7, checks: 6, sectionMin: 500, sectionMax: 1800 }
 ];
 for (const { chapter, sections, checks, sectionMin, sectionMax } of l4ChapterSpecs) {
   const summaryLength = stripHtml(chapter.summary).length;
@@ -208,4 +212,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：19 個 P1-P3 章 + 3 個 L4 章（共 22 章）、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3.1/3.2 工程手冊 16 單元、3.3–3.6 工程手冊 32 單元、3-7 封裝清潔工程手冊 8 單元、A01–A29/A33 觀察引導。`);
+console.log(`內容規範檢查通過：19 個 P1-P3 章 + 5 個 L4 章（共 24 章）、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3.1/3.2 工程手冊 16 單元、3.3–3.6 工程手冊 32 單元、3-7 封裝清潔工程手冊 8 單元、A01–A32/A33 觀察引導。`);

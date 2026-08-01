@@ -22,6 +22,8 @@ import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning
 import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
 import { chapterFourTwo } from "../src/content/chapter-4-2.mjs";
 import { chapterFourThree } from "../src/content/chapter-4-3.mjs";
+import { chapterFourFour } from "../src/content/chapter-4-4.mjs";
+import { chapterFourFive } from "../src/content/chapter-4-5.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
 import { l3ProcessProtocolsPart1 } from "../src/content/l3-process-handbooks-part1.mjs";
@@ -598,7 +600,7 @@ function p3ChapterPage(chapter, { labLabel, previous, next, description, extraSt
   `, { pageType: "chapter", description, extraStyles: [...extraStyles, "/assets/css/l3-casebook.css"] });
 }
 
-const l4Chapters = [chapterFourOne, chapterFourTwo, chapterFourThree];
+const l4Chapters = [chapterFourOne, chapterFourTwo, chapterFourThree, chapterFourFour, chapterFourFive];
 
 function chapterFourPage(chapter) {
   const objectives = chapter.objectives.map((item, index) => `<label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapter.id}"><span>${item}</span></label>`).join("");
@@ -617,9 +619,13 @@ function chapterFourPage(chapter) {
   const descriptions = {
     "4-1": "Langmuir 探針、OES、actinometry 與量產診斷工具選擇。",
     "4-2": "低開口率 OES、干涉式終點、演算法、R2R、FDC 與虛擬量測。",
-    "4-3": "天線效應、電漿損傷、Low-k、量測與電弧風險控制。"
+    "4-3": "天線效應、電漿損傷、Low-k、量測與電弧風險控制。",
+    "4-4": "脈衝電漿、原子層蝕刻、高深寬比製程與封裝低損傷窗口。",
+    "4-5": "模擬層級、0-D 平衡、資料可信度與封裝表面模型界線。"
   };
-  const style = chapter.id === "4-1" ? "/assets/css/a26-a27.css" : "/assets/css/a28-a29.css";
+  const style = chapter.id === "4-1"
+    ? "/assets/css/a26-a27.css"
+    : ["4-4", "4-5"].includes(chapter.id) ? "/assets/css/a30-a32.css" : "/assets/css/a28-a29.css";
   const sourceDisclosure = chapter.id === "4-1" ? `<p>原子線：<code>pending-line-review</code>；分子帶：<code>pending-source-review</code>。本站 <code>relativeIntensity</code> 僅為教學權重。</p>` : "";
   return page(chapter.route, chapter.title, `
     <main class="chapter-layout" data-chapter-id="${chapter.id}">
