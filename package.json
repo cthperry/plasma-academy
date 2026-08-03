@@ -23,6 +23,7 @@
     "check:uniformity": "node tools/check-uniformity.mjs",
     "check:arde": "node tools/check-arde.mjs",
     "check:diagnostics": "node tools/check-diagnostics.mjs",
+    "check:endpoint": "node tools/check-endpoint.mjs",
     "shapes:sweep": "node tools/shapes-sweep.mjs",
     "shapes:search": "node tools/shapes-search.mjs"
   },

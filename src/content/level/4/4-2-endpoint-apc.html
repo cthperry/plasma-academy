@@ -1,0 +1,536 @@
+<!--meta
+{
+  "title": "4.2 終點偵測與 APC — Plasma Academy",
+  "description": "OES 終點的訊號選擇與低開口率 SNR 崩壞、干涉式終點為什麼不受開口率影響、終點演算法的因果性與延遲取捨,以及 R2R / FDC / 虛擬量測的運作邏輯。",
+  "type": "chapter",
+  "module": "4.2"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>4.2 終點偵測與 APC</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2.5 小時</span>
+    <span>🔬 A28 互動元件</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="4.2">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>為指定製程選出監控訊號,並說出它會往上還是往下</span></label></li>
+    <li><label><input type="checkbox" /><span>判斷何時 OES 終點會失效,並說明失效的量化條件</span></label></li>
+    <li><label><input type="checkbox" /><span>說明干涉式終點的原理、優勢與它自己的失效邊界</span></label></li>
+    <li><label><input type="checkbox" /><span>比較終點演算法的取捨,並判斷哪些能用來即時停機</span></label></li>
+    <li><label><input type="checkbox" /><span>說明 R2R 控制與 FDC 的運作邏輯與各自補得了什麼</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../4-1-diagnostics/">4.1 電漿診斷</a>
+  <a href="../../3/3-2-etch-applications/">3.2 主要蝕刻應用</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    上一章講「怎麼看電漿」。這一章只問一件事:
+    <strong>你怎麼知道現在該停了?</strong>
+  </p>
+  <ul>
+    <li><strong>固定時間蝕刻補不了漂移。</strong>蝕刻率會隨腔體狀態、開口率、
+      前一片留下的殘留而變。終點偵測讓製程跟著<strong>實際狀態</strong>走。</li>
+    <li><strong>OES 終點的訊號 ∝ 開口率,但偵測器的雜訊不是。</strong>
+      這一句話決定了整章後半的所有內容 —— SNR 正比於開口率,
+      開口率掉兩個數量級,SNR 就跟著掉兩個數量級。</li>
+    <li><strong>先進接觸孔的開口率只有 0.01–0.1 %。</strong>
+      這正是 OES 死掉的區間,所以那些層要另外拉<strong>干涉式終點(IEP)</strong>。</li>
+    <li><strong>干涉量的是膜厚,不是產物。</strong>它的訊號裡根本沒有開口率這一項 ——
+      A28 實測:開口率從 50 % 掃到 0.01 %,干涉終點時間<strong>逐位元完全相同</strong>。</li>
+    <li><strong>「終點抓得到」是統計陳述,不是一片好片子。</strong>
+      低 SNR 下單跑一次可能剛好猜對。要看的是失敗率。</li>
+  </ul>
+</div>
+
+<h2 id="why">4.2.1 為什麼需要終點</h2>
+
+<div class="pa-prose">
+  <p>
+    固定時間蝕刻(timed etch)的假設是「蝕刻率是常數」。它不是。
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>漂移來源</th><th>時間尺度</th><th>固定時間能不能補</th></tr></thead>
+      <tbody>
+        <tr><td>腔體結垢 / seasoning 狀態</td><td>數十片~數百片</td>
+          <td>只能靠 R2R 慢慢追</td></tr>
+        <tr><td>零件消耗(聚焦環、噴淋頭)</td><td>PM 週期</td><td>只能靠 R2R</td></tr>
+        <tr><td><strong>片與片之間的開口率差異</strong></td><td>逐片</td>
+          <td><strong>補不了</strong></td></tr>
+        <tr><td>前層厚度變異</td><td>逐片</td><td><strong>補不了</strong></td></tr>
+        <tr><td>first wafer effect</td><td>突發</td><td><strong>補不了</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    過蝕傷下層,欠蝕留殘留 —— 兩邊都是良率損失。
+    終點偵測把「跑多久」換成「跑到界面為止」,把上表最後三列直接消掉。
+  </p>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 終點不等於停機時間</div>
+    <p>
+      抓到界面之後幾乎一定還要<strong>過蝕(over-etch)</strong> ——
+      因為晶圓上各處不會同時到界面。實務配方寫的是
+      「偵測到終點後再跑 X %」,X 典型 20–50 %。
+    </p>
+    <p>
+      所以終點的價值不是「準時停」,而是<strong>把過蝕量從絕對時間變成相對比例</strong>。
+      蝕刻率漂移 10 %,固定時間的過蝕量就跟著錯 10 %;
+      有終點的話,過蝕比例仍然是你設定的那個值。
+    </p>
+  </div>
+</div>
+
+<h2 id="oes-endpoint">4.2.2 OES 終點:看哪一條線</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>原理</strong>:蝕到界面時,產物訊號消失、反應物訊號上升。
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>製程</th><th>監控訊號</th><th>變化方向</th><th>為什麼</th></tr></thead>
+      <tbody>
+        <tr><td>SiO₂ 接觸孔</td><td>CO 483 nm</td><td><strong>下降</strong></td>
+          <td>蝕穿之後不再有 SiO₂ 供氧,產物沒了</td></tr>
+        <tr><td>Poly-Si</td><td>SiCl / Si 288 nm</td><td>下降</td><td>Si 蝕刻產物消失</td></tr>
+        <tr><td>Poly-Si</td><td>Cl 837 nm</td><td><strong>上升</strong></td>
+          <td><strong>反應物</strong>不再被消耗</td></tr>
+        <tr><td>光阻灰化</td><td>CO 483 / OH 309</td><td>下降</td><td>光阻氧化產物同時消失</td></tr>
+        <tr><td>SiN</td><td>CN 387 nm</td><td>下降</td><td>含氮產物消失</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <strong>實務上通常同時監控「產物下降」與「反應物上升」兩條線並取比值</strong> ——
+    兩條線往相反方向走,比值的變化幅度是單條線的兩倍以上,SNR 因此好得多。
+    這和 <a href="../4-1-diagnostics/#actinometry">4.1.4 actinometry</a> 是同一招:
+    用比值把共同的漂移項消掉,順便放大你要的訊號。
+  </p>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 常見誤解:「終點就是訊號掉下去」</div>
+    <p>
+      不是。<strong>Cl 837 nm 在刻穿之後是往上走的。</strong>
+      選線之前要先想清楚你監控的是<strong>產物</strong>還是<strong>反應物</strong> ——
+      前者在界面消失,後者在界面停止被消耗因而累積。
+    </p>
+    <p>
+      把演算法的方向設反,結果不是抓不到終點,而是
+      <strong>抓到一個離譜但看起來很篤定的時間</strong>。這比抓不到危險得多。
+    </p>
+  </div>
+</div>
+
+<h2 id="snr">4.2.3 SNR 問題:低開口率的困境</h2>
+
+<div class="pa-prose">
+  <div class="pa-formula">
+    <div class="pa-formula__main">SNR ∝ 開口率</div>
+    <div class="pa-formula__note">
+      訊號:產物量 ∝ 正在被蝕刻的面積 = 開口率。<br />
+      雜訊:暗電流、背景連續光、讀出雜訊 —— <strong>全是絕對值,不隨開口率縮小</strong>。
+    </div>
+  </div>
+  <p>
+    整章最重要的一句話就在上面那個框裡。
+    <strong>開口率縮小時,分子縮小而分母不動。</strong>
+    這不是工程做得好不好的問題,是這個量測手段本身的結構。
+  </p>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A28 實測:開口率掃描(24 顆雜訊種子,誤差 &gt; 10 % 記為失敗)</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>開口率</th><th>SNR</th><th>OES 中位誤差</th><th>OES 失敗率</th><th>干涉失敗率</th></tr></thead>
+        <tbody>
+          <tr><td>50 %</td><td>625</td><td>1.5 %</td><td>0 %</td><td>0 %</td></tr>
+          <tr><td>5 %</td><td>62.5</td><td>1.6 %</td><td>0 %</td><td>0 %</td></tr>
+          <tr><td>1 %</td><td>12.5</td><td>2.8 %</td><td>18 %</td><td>0 %</td></tr>
+          <tr><td>0.3 %</td><td>3.8</td><td>56 %</td><td><strong>70 %</strong></td><td>0 %</td></tr>
+          <tr><td><strong>0.1 %</strong></td><td>1.3</td><td>89 %</td><td><strong>88 %</strong></td><td>0 %</td></tr>
+          <tr><td><strong>0.01 %</strong></td><td>0.1</td><td>89 %</td><td><strong>90 %</strong></td><td><strong>0 %</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      失敗率隨開口率<strong>單調上升</strong>,而干涉那一欄從頭到尾是 0 % ——
+      整張表就是 A28 的兩條驗收條件。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 一片好片子不能證明終點可靠</div>
+    <p>
+      上表為什麼要跑 24 次?因為<strong>「不可靠」是統計陳述</strong>。
+      在 A28 裡把開口率拉到 0.1 %,然後連按幾次「重新取樣」:
+      有時候誤差只有幾 %,有時候差一倍。單跑一次會讓你以為它還能用。
+    </p>
+    <p>
+      現場對應的情境是:<strong>工程師拿一片切片結果正常的晶圓,結論「終點沒問題」</strong>。
+      那可能只是那一片剛好猜對。要看的是連續數十片的終點時間<strong>散佈</strong>。
+    </p>
+  </div>
+
+  <p>先進的接觸孔 / 貫孔製程開口率常常只有 0.01–0.1 %。這時候的五個手段:</p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>手段</th><th>做什麼</th><th>代價</th></tr></thead>
+      <tbody>
+        <tr><td><strong>多變量統計(PCA / PLS)</strong></td>
+          <td>不看單條線,把數百個光譜通道一起做主成分</td>
+          <td>需要建模與維護,配方一改就要重建</td></tr>
+        <tr><td>提高解析度與積分時間</td><td>把分子拉大一點</td>
+          <td>積分時間拉長 → 時間解析度變差</td></tr>
+        <tr><td><strong>改用干涉式終點(IEP)</strong></td>
+          <td><strong>換一個不含開口率的量</strong></td>
+          <td>膜必須透明、要有夠大的量測區</td></tr>
+        <tr><td>RF 諧波 / 阻抗終點</td><td>看電漿負載變化</td>
+          <td>訊號更小,對匹配狀態敏感</td></tr>
+        <tr><td>回到時間模式 + R2R 補償</td><td>放棄即時終點</td>
+          <td>補得了漂移,補不了突變</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    注意前兩項與後兩項的差別:<strong>1、2、4 都還在跟同一個 SNR 搏鬥</strong>,
+    只是把分子拉大一點或換個更小的訊號。
+    <strong>只有第 3 項換掉了問題本身。</strong>
+  </p>
+</div>
+
+<h2 id="iep">4.2.4 干涉式終點(IEP)</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>原理</strong>:雷射或白光照射膜面,膜的上下界面各反射一道光,
+    兩道光的光程差隨膜厚變化 → 干涉強度隨膜厚振盪。
+  </p>
+  <div class="pa-formula">
+    <div class="pa-formula__main">一個條紋週期 = λ / (2n)</div>
+    <div class="pa-formula__note">
+      λ = 633 nm(He-Ne)、SiO₂ 的 n = 1.46 → 一個條紋 = <strong>216.8 nm</strong> 的膜厚。<br />
+      數條紋 → 直接得到已蝕刻的厚度,不只是終點。
+    </div>
+  </div>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>OES 終點</th><th>干涉終點</th></tr></thead>
+      <tbody>
+        <tr><td>量的是</td><td>電漿裡的<strong>產物濃度</strong></td><td>晶圓上的<strong>膜厚</strong></td></tr>
+        <tr><td>訊號正比於</td><td><strong>開口率</strong></td><td>量測區的反射率(與圖形無關)</td></tr>
+        <tr><td>給你什麼</td><td>一個時間點</td><td><strong>即時厚度與蝕刻率</strong></td></tr>
+        <tr><td>適用</td><td>幾乎所有材料</td><td><strong>透明膜</strong>(SiO₂、SiN、poly)</td></tr>
+        <tr><td>怕什麼</td><td>低開口率、視窗積膜</td><td>膜太薄、圖形密集區散射、膜不平坦</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A28 實測:干涉終點與開口率完全無關</div>
+    <p>
+      開口率 50 % / 5 % / 0.1 % / 0.01 % 四種條件下,
+      干涉偵測到的終點時間都是 <strong>101.1905 s</strong> ——
+      不是「接近」,是<strong>逐位元相同</strong>。
+    </p>
+    <p>
+      原因很單純:干涉訊號的計算式裡<strong>根本沒有開口率這一項</strong>。
+      這也是為什麼這一條驗收條件可以用等號斷言,而不是用容差。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 干涉法也有自己的失效邊界 —— 而且它與開口率無關</div>
+    <p>
+      <strong>條紋預算不足。</strong>整支製程要移除的厚度如果走不完一個條紋週期
+      (SiO₂ 在 633 nm 下就是 216.8 nm),就沒有振盪可以看它停止。
+      A28 把膜厚拉到 150 nm(0.69 個條紋)時,面板會直接顯示
+      <strong>「條紋不足一個週期 —— 干涉法不可用」</strong>,而不是硬給一個數字。
+    </p>
+    <p>
+      <strong>固有時間解析度 = 一個條紋週期 ÷ 蝕刻率。</strong>
+      SiO₂ 以 5 nm·s⁻¹ 蝕刻時,那是 <strong>43 秒</strong>;蝕刻率 15 nm·s⁻¹ 時是 14 秒。
+      「振幅塌陷」不是一瞬間的事件,它是一段長度等於一個條紋的斜坡。
+      真機是靠<strong>多波長</strong>與更快取樣把這個限制壓下去的。
+    </p>
+    <p class="pa-subtle">
+      A28 實測:膜厚 300 / 500 / 800 / 1200 nm 的終點誤差分別是
+      8.9 / 1.2 / 15.9 / 23.9 秒 —— 全部落在一個條紋週期(43.4 s)之內,
+      但誤差大小隨「膜厚 ÷ 週期 的小數部分」起伏。這就是解析度的樣子。
+    </p>
+  </div>
+</div>
+
+<h2 id="others">4.2.5 其他終點方法</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>方法</th><th>看什麼</th><th>什麼時候用</th></tr></thead>
+      <tbody>
+        <tr><td><strong>RF 諧波 / 阻抗終點</strong></td>
+          <td>界面變化改變電漿負載 → 阻抗與諧波成分變化</td>
+          <td><strong>金屬蝕刻</strong>等 OES 訊號弱的場合</td></tr>
+        <tr><td>偏壓電壓終點</td><td>V_dc 的微小變化</td><td>訊號很小,多半當輔助</td></tr>
+        <tr><td>質譜終點</td><td>直接看排氣裡的產物</td><td>抽樣位置離晶圓遠,有延遲</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    這三個都<strong>不依賴開口率</strong>,所以理論上都是低開口率的候選。
+    但它們的訊號變化量本身就小,實務上更常見的組合是
+    <strong>OES + IEP 雙軌</strong>:OES 抓大範圍,IEP 抓精確厚度。
+  </p>
+</div>
+
+<h2 id="algorithms">4.2.6 演算法:取捨是算出來的</h2>
+
+<div class="pa-prose">
+  <p>
+    實務訊號充滿雜訊與漂移。常見處理:
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>方法</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>移動平均 / Savitzky-Golay</td><td>平滑</td></tr>
+        <tr><td><strong>一階微分</strong></td><td>找最大變化率點 —— <strong>最常用的終點判準</strong></td></tr>
+        <tr><td>二階微分</td><td>找轉折</td></tr>
+        <tr><td>歸一化(除以總強度)</td><td>消除光源與視窗透光率的漂移</td></tr>
+        <tr><td><strong>PCA / PLS</strong></td><td>低 SNR 的多變量終點</td></tr>
+        <tr><td>樣板比對</td><td>與 golden run 比對整段曲線</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A28 實測:四種判準的中位誤差(24 顆種子)</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>判準</th><th>開口率 5 %</th><th>1 %</th><th>0.3 %</th><th>能即時停機?</th></tr></thead>
+        <tbody>
+          <tr><td>微分(不平滑)</td><td>1.9 %</td><td>8.2 %</td><td>34 %</td><td>可以</td></tr>
+          <tr><td><strong>拖尾平滑 9 點 + 微分</strong></td><td>1.6 %</td><td><strong>2.8 %</strong></td><td>56 %</td><td>可以</td></tr>
+          <tr><td>拖尾平滑 31 點 + 微分</td><td>4.6 %</td><td>6.5 %</td><td>99 %</td><td>可以</td></tr>
+          <tr><td>平台間 50 % 門檻</td><td>0.1 %</td><td>0.3 %</td><td><strong>0.7 %</strong></td><td><strong>不行</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      平滑在 1 % 開口率買到了實質改善(8.2 % → 2.8 %)。
+      但 31 點長窗在 5 % 開口率<strong>反而變差</strong> —— 那是延遲的代價,見下。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 平滑的代價是延遲,而且只有「拖尾」才付得出來</div>
+    <p>
+      即時終點控制器<strong>看不到未來的取樣點</strong> ——
+      它只能拿已經發生的 N 點做平均(拖尾平均)。
+      而拖尾平均一定把訊號往後推約半個窗。
+    </p>
+    <p>
+      A28 實測乾淨訊號下的<strong>有號</strong>偏差:
+      不平滑 +0.02 %、拖尾 9 點 <strong>+1.25 %</strong>、拖尾 31 點 <strong>+4.64 %</strong> ——
+      窗越長,終點報得越晚,而且是系統性的,不是雜訊。
+    </p>
+    <p class="pa-subtle">
+      對照組:同樣 31 點但用<strong>置中</strong>平均(用到未來的點),
+      偏差只有 −0.05 %。對稱平滑不移動對稱轉折的反曲點 ——
+      所以如果模型用置中平滑,這個取捨會憑空消失。實務上這也解釋了為什麼
+      <strong>事後重新分析的終點時間,會和機台當下報的不一樣</strong>。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 誤差最小的判準不能拿來停機</div>
+    <p>
+      上表的「平台間 50 % 門檻」在每個開口率下誤差都最小 ——
+      0.3 % 開口率時只有 0.7 %,而微分法已經 56 %。看起來應該全面改用它。
+    </p>
+    <p>
+      <strong>不行,因為它是非因果的。</strong>要算出 50 % 在哪裡,
+      必須先知道<strong>蝕刻結束後</strong>的訊號平台。等你知道的時候,
+      晶圓早就過蝕刻完了。
+    </p>
+    <p>
+      它的正確位置是<strong>事後分析與 R2R</strong>:用它算出「這一片真正的終點時間」,
+      再回頭修正下一片的配方時間。<strong>即時演算法與事後演算法是兩件事,
+      不能拿同一張誤差表互相比較。</strong>
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 常見誤解:「歸一化可以讓終點更準」</div>
+    <p>
+      不會。歸一化只是把整條曲線除以一個常數,而
+      <strong>「微分極值的位置」對縮放免疫</strong> ——
+      A28 實測,歸一化前後找到的終點索引<strong>完全相同</strong>。
+    </p>
+    <p>
+      歸一化真正救的是<strong>跨片、跨腔體的比較</strong>:
+      視窗逐日積膜讓絕對強度一路衰減,沒有歸一化的話,
+      「終點訊號強度」這個 FDC 指標會被漂移淹沒。
+      它治的是趨勢圖,不是單片的終點時間。
+    </p>
+  </div>
+
+  <p>
+    <strong>視窗汙染是 OES 的頭號敵人。</strong>觀測窗被沉積物覆蓋 →
+    訊號逐日衰減 → 終點時間漂移。對策:歸一化處理、定期清窗、窗前加 purge、
+    把窗況納入 PM 項目。A28 的「雜訊程度」旋鈕就是在模擬這件事 ——
+    把它拉到 ×3,1 % 開口率的失敗率從 18 % 跳到 68 %。
+    <strong>SNR 是比值,分子分母哪一邊壞掉都算數。</strong>
+  </p>
+</div>
+
+<h2 id="lab-a28">🔬 A28 OES 終點訊號與干涉條紋</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A28">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A28</span>
+    <span class="pa-lab__title">把開口率往左拉兩格,看哪一種終點還活著</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。上圖為 OES 產物訊號與偵測到的終點,
+      下圖為干涉條紋與其終點;五種監控訊號、四種偵測演算法、
+      四個旋鈕(開口率、雜訊、膜厚、蝕刻率),
+      並同時顯示「這一次的誤差」與「24 顆種子的失敗率」。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="apc">4.2.7 R2R 控制與 FDC</h2>
+
+<div class="pa-prose">
+  <p>
+    終點解決的是「這一片什麼時候停」。APC 解決的是
+    <strong>「下一片要怎麼跑」</strong>與<strong>「這台機現在正不正常」</strong>。
+  </p>
+
+  <h3>Run-to-Run(R2R)控制</h3>
+  <div class="pa-formula">
+    <div class="pa-formula__main">量測前一批 → 與目標比較 → 用模型調整下一批的 recipe</div>
+    <div class="pa-formula__note">
+      被調的參數通常是<strong>時間</strong>。控制器常用 EWMA(指數加權移動平均)。
+    </div>
+  </div>
+  <p>
+    EWMA 的權重決定它<strong>信新資料多少</strong>:權重大 → 反應快但被量測雜訊拖著跑;
+    權重小 → 穩定但追不上漂移。這和 4.2.6 的平滑窗長是同一個取捨,
+    只是尺度從秒變成片。
+  </p>
+  <p>
+    <strong>R2R 補得了緩慢漂移(腔體結垢、零件消耗),補不了突變。</strong>
+    first wafer effect、氣體瓶換瓶、匹配網路跳掉 —— 這些 R2R 只會在事後
+    往錯誤的方向修一次,反而把下一片也帶歪。
+  </p>
+
+  <h3>FDC(Fault Detection &amp; Classification)</h3>
+  <ul>
+    <li>收集每片的<strong>全部感測器時間序列</strong>(壓力、閥位、功率、反射功率、
+      匹配位置、He 洩漏、OES、VI)</li>
+    <li>建立統計模型,偵測偏離</li>
+    <li>目標是<strong>在良率受損前抓到異常</strong>,而不是事後解釋</li>
+  </ul>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 FDC 的價值不在演算法,在選對監控項目</div>
+    <p>
+      最有價值的幾個往往是最樸素的:
+      <strong>節流閥位置、匹配電容位置、He 洩漏率、反射功率、OES 基線</strong>。
+      這五個能抓到八成的腔體異常。
+    </p>
+    <p>
+      理由很直接:它們都是<strong>執行器為了維持設定值而被迫移動的量</strong>。
+      壓力讀值永遠是你設的那個數字,因為閥會去追它 ——
+      <strong>真正在告訴你腔體變了的,是閥開了多少</strong>。
+      這條原則在 <a href="../4-6-production/">4.6</a> 的故障情境裡會反覆出現。
+    </p>
+  </div>
+
+  <h3>虛擬量測(VM)</h3>
+  <p>
+    用感測器資料預測製程結果,不必真的量。降低量測負擔、提高抽樣密度 ——
+    從「每批抽兩片」變成「每片都有預測值」。
+    <strong>但 VM 模型是用歷史資料訓練的,它預測不了訓練資料裡沒出現過的故障模式</strong>,
+    所以 VM 永遠取代不了實際量測,只能加密抽樣。
+  </p>
+</div>
+
+<h2 id="strategy">4.2.8 選擇決策表</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>情境</th><th>主終點</th><th>備援</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td>Poly gate 蝕刻(開口率數 %)</td><td>OES(Si↓ 與 Cl↑ 取比值)</td>
+          <td>時間 + R2R</td><td>SNR 充足,雙線比值再放大</td></tr>
+        <tr><td><strong>接觸孔 / 貫孔(開口率 &lt; 0.1 %)</strong></td>
+          <td><strong>IEP</strong></td><td>OES 多變量 / 時間 + R2R</td>
+          <td><strong>OES 失敗率 &gt; 80 %,不是調得好不好的問題</strong></td></tr>
+        <tr><td>金屬蝕刻(Al、W)</td><td>OES(AlCl 261 nm)</td><td>RF 諧波</td>
+          <td>金屬產物譜線可用;阻抗變化也明顯</td></tr>
+        <tr><td>光阻灰化</td><td>OES(CO 483 / OH 309)</td><td>時間</td>
+          <td>開口率等於整片,SNR 極佳</td></tr>
+        <tr><td>薄膜(&lt; 200 nm)蝕刻</td><td>OES</td><td>時間 + R2R</td>
+          <td><strong>IEP 條紋預算不足一個週期,用不了</strong></td></tr>
+        <tr><td>腔體清潔終點</td><td>OES(SiF 440 / CF 255)</td><td>時間</td>
+          <td>訊號來自整個腔體,與晶圓開口率無關</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    這張表只有一條主軸:<strong>先問訊號裡有沒有開口率這一項</strong>。
+    有的話,開口率就是你的天花板;沒有的話,問它自己的失效邊界是什麼。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>固定時間蝕刻補不了哪三種變異?終點偵測消掉了其中幾個?</li>
+    <li>為什麼有了終點還要過蝕?終點真正改變了過蝕量的什麼性質?</li>
+    <li>Poly-Si 蝕刻時 Cl 837 nm 在終點是往上還是往下?為什麼?</li>
+    <li><strong>寫出 OES 終點 SNR 與開口率的關係,並說明分子與分母各是什麼。</strong></li>
+    <li>接觸孔層為什麼要拉干涉終點?用一句話說完,不要提到「訊號比較強」。</li>
+    <li>干涉終點的固有時間解析度是多少?SiO₂ 以 5 nm·s⁻¹ 蝕刻時是幾秒?</li>
+    <li>膜厚 150 nm 的 SiO₂ 為什麼不能用 633 nm 的干涉終點?</li>
+    <li><strong>「平台間 50 % 門檻」誤差最小,為什麼不能拿來停機?</strong></li>
+    <li>把平滑窗從 9 點拉到 31 點,終點時間會往哪邊移?為什麼「置中平滑」不會有這個效果?</li>
+    <li>歸一化能不能讓單片的終點更準?它真正救的是什麼?</li>
+    <li>R2R 補得了什麼、補不了什麼?舉一個它會反而把事情弄糟的例子。</li>
+    <li>FDC 為什麼要監控「節流閥位置」而不只是「壓力讀值」?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Hershkowitz &amp; Maynard, <em>Plasma Etching Endpoint Detection</em>, J. Vac. Sci. Technol. A 11, 1172 (1993)</li>
+    <li>Yue, Qin, Wiseman &amp; Toprac, <em>Plasma etching endpoint detection using multiple wavelengths for small open-area wafers</em>, J. Vac. Sci. Technol. A 19, 66 (2001) —— 低開口率多變量終點的代表作</li>
+    <li>Moyne, del Castillo &amp; Hurwitz (eds.), <em>Run-to-Run Control in Semiconductor Manufacturing</em>, CRC Press (2001)</li>
+    <li>Chen &amp; Blue, <em>Virtual metrology for semiconductor manufacturing applications</em>(VM 綜述)</li>
+    <li>May &amp; Spanos, <em>Fundamentals of Semiconductor Manufacturing and Process Control</em>, Ch. 8–10</li>
+  </ul>
+</div>
