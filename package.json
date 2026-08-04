@@ -27,6 +27,7 @@
     "check:charging": "node tools/check-charging.mjs",
     "check:advanced": "node tools/check-advanced.mjs",
     "check:global": "node tools/check-global.mjs",
+    "check:faults": "node tools/check-faults.mjs",
     "shapes:sweep": "node tools/shapes-sweep.mjs",
     "shapes:search": "node tools/shapes-search.mjs"
   },

@@ -1,0 +1,475 @@
+<!--meta
+{
+  "title": "4.6 量產、良率與安全 — Plasma Academy",
+  "description": "Chamber matching 的三層比對與「先修硬體不改 recipe」原則、兩階段 DOE 與電漿製程的四個特殊注意事項、COO 與預測性維護、氣體安全分級、scrubber 型式,以及五個真實故障情境研討。",
+  "type": "chapter",
+  "module": "4.6"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>4.6 量產、良率與安全</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2 小時</span>
+    <span>🧩 5 個故障情境研討</span>
+    <span>🏁 課程最後一章</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="4.6">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>設計 chamber matching 的三層指紋比對項目</span></label></li>
+    <li><label><input type="checkbox" /><span>用兩階段 DOE 定義製程窗,並避開電漿製程的四個陷阱</span></label></li>
+    <li><label><input type="checkbox" /><span>說出電漿製程的主要安全與環保議題</span></label></li>
+    <li><label><input type="checkbox" /><span>面對一個真實故障,提出假設與可執行的驗證計畫</span></label></li>
+    <li><label><input type="checkbox" /><span>說明為什麼 GWP 高的氣體不一定排放高</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../3/3-6-uniformity/">3.6 均勻度與腔體工程</a>
+  <a href="../4-2-endpoint-apc/">4.2 終點偵測與 APC</a>
+  <a href="../4-3-plasma-damage/">4.3 電漿誘發損傷</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    前面五章教「電漿會做什麼」與「怎麼看它」。這一章是把它們用在
+    <strong>一條要出貨的線上</strong>。
+  </p>
+  <ul>
+    <li><strong>Chamber matching 分三層:硬體、電漿指紋、製程結果。</strong>
+      ⚠️ <strong>先修硬體與電漿層,不要直接改 recipe 補製程層</strong> ——
+      用 recipe 補出來的匹配是脆弱的,下次 PM 又會跑掉。</li>
+    <li><strong>DOE 分兩階段:先篩選、再優化。</strong>電漿製程有四個特殊陷阱,
+      其中最致命的是「響應常有最佳點而非單調」——線性模型會完全誤導。</li>
+    <li><strong>PM 週期該由漂移速率決定,不是由日曆決定。</strong></li>
+    <li><strong>GWP × 逃逸量 才是真正的排放指標。</strong>NF₃ 的 GWP 比 C₂F₆ 高,
+      但分解率接近 100 %,實際排放遠低 —— 這是常見的誤判。</li>
+    <li><strong>五個故障情境</strong>把前面所有章節接起來:
+      每一個的關鍵線索都是前面某一章講過的機制。</li>
+  </ul>
+</div>
+
+<h2 id="matching">4.6.1 Chamber Matching</h2>
+
+<div class="pa-prose">
+  <p><strong>目標</strong>:讓 N 台同型機的製程結果落在同一個分佈內。</p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>層級</th><th>比對項目</th></tr></thead>
+      <tbody>
+        <tr><td><strong>硬體層</strong></td>
+          <td>零件料號與版本、<strong>零件壽命(kWh、RF hour)</strong>、ESC 型號、
+            聚焦環高度、噴淋頭孔況、管路長度</td></tr>
+        <tr><td><strong>電漿層(指紋)</strong></td>
+          <td><strong>匹配電容位置</strong>、反射功率、VI probe 阻抗與諧波、
+            <strong>OES 全譜</strong>、節流閥位置、He 洩漏率、壓力控制響應</td></tr>
+        <tr><td>製程層</td>
+          <td>蝕刻率與均勻度、選擇比、CD、profile、缺陷數</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ol>
+    <li>選一台表現最好的當 <strong>golden chamber</strong></li>
+    <li>用同一片 monitor wafer 跑同一支 recipe</li>
+    <li>收集三層資料,找出偏差最大的項目</li>
+    <li><strong>先修硬體與電漿層,不要直接改 recipe 補製程層</strong></li>
+  </ol>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 為什麼「用 recipe 補」是錯的</div>
+    <p>
+      製程層的偏差是<strong>症狀</strong>,不是原因。改 recipe 等於把偏差
+      鎖進配方裡 —— 那台機從此有一支「特調」配方,而
+      <strong>下次 PM 換掉那個消耗件之後,特調就變成新的偏差來源</strong>。
+    </p>
+    <p>
+      更糟的是,你失去了診斷能力:以後這台機再出事,你分不清是新問題
+      還是那支特調配方的副作用。<strong>匹配要修在因上,不能修在果上。</strong>
+    </p>
+  </div>
+
+  <p><strong>最常見的不匹配根源</strong>(依出現頻率):</p>
+  <ol>
+    <li>零件版本 / 壽命不一致(尤其<strong>聚焦環與噴淋頭</strong>)</li>
+    <li>腔體 seasoning 狀態不同</li>
+    <li>溫控校正偏差</li>
+    <li>RF 饋入路徑的接地阻抗差異</li>
+    <li>流量計校正偏差</li>
+  </ol>
+  <p class="pa-subtle">
+    前兩名都是「同樣的硬體、不同的狀態」——
+    這也是為什麼硬體層要管到<strong>壽命</strong>而不是只管料號。
+  </p>
+</div>
+
+<h2 id="doe">4.6.2 製程窗與 DOE</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>製程窗</strong>:所有規格(蝕刻率、CD、選擇比、均勻度、缺陷)
+    <strong>同時</strong>滿足的參數區域。注意是「同時」——
+    單看一個指標畫出來的不是製程窗。
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>階段</th><th>設計</th><th>目的</th></tr></thead>
+      <tbody>
+        <tr><td><strong>篩選</strong></td><td>Plackett-Burman、部分因子 2^(k−p)</td>
+          <td>從 8–10 個因子中找出真正重要的 3–4 個</td></tr>
+        <tr><td><strong>優化</strong></td><td>響應曲面(CCD、Box-Behnken)</td>
+          <td>建立二次模型,找最佳點與<strong>製程窗邊界</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 電漿製程做 DOE 的四個特殊注意事項</div>
+    <ol>
+      <li><strong>因子間交互作用強</strong> —— 壓力 × 功率、O₂ × bias 幾乎必然有交互作用,
+        不能只做主效應設計。</li>
+      <li><strong>腔體會漂移</strong> —— 實驗順序必須<strong>隨機化</strong>,
+        並穿插重複的中心點監控漂移。否則你量到的是時間,不是因子。</li>
+      <li><strong>有些因子不獨立</strong> —— 例如流量與壓力(節流閥會補償),
+        要確認實際變化的是什麼。</li>
+      <li><strong>響應常有最佳點而非單調</strong> —— O₂ 比例是典型例子
+        (見 <a href="../../2/2-2-gas-selection/">2.2</a>),
+        <strong>線性模型會完全誤導</strong>。</li>
+    </ol>
+    <p>
+      第 4 點最容易踩:篩選階段用線性模型判定「O₂ 不重要」(因為它的主效應接近 0),
+      實際上它有一個很尖的最佳點,只是恰好被兩端抵消掉了。
+      <strong>對已知有最佳點的因子,篩選階段就要放三個水準。</strong>
+    </p>
+  </div>
+</div>
+
+<h2 id="coo">4.6.3 COO 與 PM</h2>
+
+<div class="pa-prose">
+  <p><strong>擁有成本(Cost of Ownership)</strong> 的組成:</p>
+  <ul>
+    <li>機台折舊</li>
+    <li><strong>消耗件</strong>(聚焦環、噴淋頭、內襯、ESC)—— 先進蝕刻機台的大宗</li>
+    <li>氣體(尤其 C₄F₆、NF₃ 等特殊氣體)</li>
+    <li>電力(RF 電源效率、泵浦)</li>
+    <li><strong>停機損失</strong>(PM 時間 + seasoning 時間 + 重新驗證)</li>
+    <li>廢氣處理</li>
+  </ul>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 PM 週期該由漂移速率決定,不是由日曆決定</div>
+    <p>
+      固定排程的 PM 一定同時犯兩種錯:<strong>有時候太早</strong>
+      (浪費消耗件與停機時間)、<strong>有時候太晚</strong>(已經出了不良品)。
+    </p>
+    <p>
+      理想是用 FDC 指標做<strong>預測性維護</strong>。
+      <a href="../4-2-endpoint-apc/">4.2.7</a> 那五個訊號
+      (節流閥位置、匹配電容位置、He 洩漏率、反射功率、OES 基線)
+      在製程結果變壞之前就已經在動了 ——
+      本章 4.6.6 的第一個情境就是活生生的例子。
+    </p>
+  </div>
+</div>
+
+<h2 id="safety">4.6.4 安全</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>風險</th><th>代表氣體</th><th>管制措施</th></tr></thead>
+      <tbody>
+        <tr><td><strong>自燃</strong></td><td>SiH₄、B₂H₆、PH₃</td>
+          <td>雙套管、氣體偵測連鎖、限流孔、緊急關斷、專用氣瓶櫃</td></tr>
+        <tr><td><strong>劇毒</strong></td><td>Cl₂、HBr、WF₆、F₂、NF₃</td>
+          <td>偵測器、負壓排氣、SCBA、洩漏應變程序</td></tr>
+        <tr><td>腐蝕</td><td>BCl₃、HBr、HF 產物</td>
+          <td>材質相容、乾燥管路、定期檢漏</td></tr>
+        <tr><td><strong>窒息</strong></td><td>N₂、Ar、He</td>
+          <td>密閉空間管制、氧濃度監測</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 窒息風險最容易被輕忽,因為那些氣體「無害」</div>
+    <p>
+      N₂、Ar、He 本身沒有毒性,所以常被當成安全氣體。
+      但它們一樣會把氧氣擠掉 —— <strong>在密閉空間裡,無味無色、
+      而且人在失去意識之前不會感覺到窒息</strong>。
+      進入腔體或管道作業前的氧濃度監測不是形式。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ RF 安全:關掉功率不等於安全</div>
+    <p>
+      射頻輻射洩漏、高壓電,以及<strong>匹配盒內的高電壓 ——
+      即使功率關閉,電容仍可能帶電</strong>。
+      匹配盒作業前必須放電並確認,不能只看電源指示燈。
+    </p>
+  </div>
+
+  <p><strong>廢氣處理(Scrubber)型式</strong>:</p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>型式</th><th>適用</th></tr></thead>
+      <tbody>
+        <tr><td>濕式(Wet)</td><td>水溶性酸性氣體(HCl、HBr、HF)</td></tr>
+        <tr><td>乾式(Dry / 吸附)</td><td>毒性氣體(SiH₄ 副產物、AsH₃)</td></tr>
+        <tr><td><strong>燃燒式(Burn / Thermal)</strong></td>
+          <td><strong>PFC 分解</strong> —— CF₄、SF₆、NF₃</td></tr>
+        <tr><td>電漿式</td><td>PFC 分解,能耗較低</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 id="pfc">4.6.5 環保:PFC 減量</h2>
+
+<div class="pa-prose">
+  <p>
+    半導體業的溫室氣體排放主要來自 <strong>PFC(全氟化物)</strong>。
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th>GWP(100 年)</th><th>備註</th></tr></thead>
+      <tbody>
+        <tr><td>CO₂</td><td>1</td><td>基準</td></tr>
+        <tr><td>CF₄</td><td>6630</td><td>大氣壽命 50,000 年,分解率低</td></tr>
+        <tr><td>C₂F₆</td><td>11100</td><td>常被 NF₃ 取代</td></tr>
+        <tr><td><strong>NF₃</strong></td><td><strong>16100</strong></td>
+          <td>GWP 高,但<strong>分解率接近 100 %</strong>,實際排放遠低</td></tr>
+        <tr><td><strong>SF₆</strong></td><td><strong>23500</strong></td><td>GWP 最高</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 常見誤解:「NF₃ 的 GWP 比 C₂F₆ 高,所以換過去是退步」</div>
+    <p>
+      不是。<strong>真正的排放指標是 GWP × 逃逸量</strong>,而不是 GWP。
+    </p>
+    <p>
+      C₂F₆ 在腔體清潔中的分解率只有六到八成,剩下的直接排掉;
+      <strong>NF₃ 的分解率接近 100 %</strong>,幾乎沒有未反應的分子逃出去。
+      GWP 高了 45 %,逃逸量卻少了一個數量級 —— 淨排放大幅下降。
+    </p>
+    <p>
+      這是「看單一數字會做出反向決策」的典型例子,
+      和 <a href="../4-3-plasma-damage/">4.3</a> 那個
+      「電位只多 10 % 應該還好吧」是同一類錯誤。
+    </p>
+  </div>
+
+  <p><strong>四種減量策略</strong>(依效果排序):</p>
+  <ol>
+    <li><strong>製程優化</strong> —— 提高氣體利用率,減少未反應的逃逸(<strong>最有效</strong>)</li>
+    <li><strong>氣體替代</strong> —— C₂F₆ → NF₃(理由見上)</li>
+    <li><strong>尾氣處理</strong> —— 燃燒式或電漿式 scrubber 分解 PFC</li>
+    <li>回收再利用</li>
+  </ol>
+</div>
+
+<h2 id="cases">4.6.6 五個故障情境研討</h2>
+
+<div class="pa-prose">
+  <p>
+    每個情境的格式:<strong>給現象與資料 → 提出假設與驗證計畫 → 揭曉根因與處置</strong>。
+    先別往下看答案 —— 拿到線索之後,自己先寫三個假設。
+  </p>
+</div>
+
+<div class="pa-prose">
+  <h3>情境 1:蝕刻率逐日下降 3 %,recipe 未動</h3>
+  <p>
+    <strong>現象</strong>:同一支配方、同一片 monitor wafer,蝕刻率每天掉約 3 %,
+    兩週累積掉了三成。CD 跟著變小,但<strong>均勻度沒變差</strong>。
+  </p>
+  <p><strong>手上的線索</strong>:匹配電容位置持續往同一方向漂移;
+    OES 的 F 訊號同步下降;節流閥位置逐日開大;反射功率正常。</p>
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 根因:噴淋頭孔徑被沉積物逐漸縮小</div>
+    <p>
+      三條線索指向同一件事:<strong>進氣的有效導傳變小了</strong>。
+      孔徑縮小 → 腔內分壓下降 → F 自由基變少(OES 下降)、
+      電漿阻抗改變(匹配電容移動),而節流閥為了維持設定壓力必須開大。
+    </p>
+    <p>
+      <strong>「均勻度沒變差」是關鍵的排除線索</strong>:
+      如果是局部堵塞,均勻度會先壞;整體均勻地縮小才會只掉速率。
+    </p>
+    <p>
+      <strong>處置</strong>:拆下噴淋頭清洗或更換,重新 seasoning 並重驗蝕刻率。<br />
+      <strong>預防</strong>:把節流閥與匹配電容位置納入日常趨勢圖 ——
+      它們在蝕刻率掉 3 % 之前就已經在動了。
+    </p>
+  </div>
+
+  <h3>情境 2:四台同型機中,單一台的 CD 大 2 nm</h3>
+  <p>
+    <strong>現象</strong>:同一支配方跑在四台同型機上,其中一台的 CD 系統性大 2 nm,
+    而且<strong>晶圓邊緣比中心更明顯</strong>。中心區的 CD 幾乎一樣。
+  </p>
+  <p><strong>手上的線索</strong>:該機台的聚焦環累積 RF hour 最長;
+    匹配電容位置與其他三台略有差異;蝕刻率與均勻度都還在規格內;
+    OES 全譜比對不出明顯差異。</p>
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 根因:聚焦環消耗導致晶圓邊緣的鞘層傾斜</div>
+    <p>
+      <strong>「只有邊緣不同」這一點幾乎直接指認了聚焦環</strong>。
+      它的作用是把鞘層延伸到晶圓之外,讓邊緣的鞘層與中心一樣平;
+      被消耗變薄之後,邊緣的鞘層邊界往下彎 → 離子入射角偏斜 →
+      CD 與 profile 在邊緣先走樣。
+    </p>
+    <p>
+      <strong>OES 看不出來是合理的</strong>:OES 量的是整個腔體的平均,
+      而這是一個純粹的邊緣幾何問題。
+    </p>
+    <p>
+      <strong>處置</strong>:更換聚焦環,並把四台的壽命對齊到同一個管理基準。<br />
+      ⚠️ <strong>不要用 recipe 去補這 2 nm</strong> —— 見 4.6.1。
+    </p>
+  </div>
+
+  <h3>情境 3:首片良率異常,第二片之後正常</h3>
+  <p>
+    <strong>現象</strong>:每批的第一片 CD 偏小、蝕刻率偏高,第二片開始回到正常。
+    批與批之間重複出現。
+  </p>
+  <p><strong>手上的線索</strong>:OES 基線在第一片與後續片明顯不同(F 訊號偏高);
+    腔體清潔後直接跑產品,中間沒有 seasoning wafer;
+    節流閥位置在第一片時偏小;反射功率正常。</p>
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 根因:First wafer effect —— 清潔後的乾淨腔壁不再消耗自由基</div>
+    <p>
+      腔壁在製程中會被鍍上一層聚合物,而這層膜<strong>會消耗自由基</strong>。
+      清潔之後壁面乾淨,自由基的壁面損失變小 → 有效濃度變高 →
+      蝕刻率高、CD 偏小。跑過一片之後壁面重新鍍上,系統回到穩態。
+    </p>
+    <p>
+      <strong>OES 的 F 訊號在第一片偏高</strong>直接證實了這條路徑 ——
+      這是最乾淨的一個線索。
+    </p>
+    <p>
+      <strong>處置</strong>:清潔後插入 seasoning wafer(通常 1–3 片)再跑產品。<br />
+      <strong>預防</strong>:用 <strong>OES 基線</strong>判定 seasoning 完成,
+      而不是固定跑幾片 —— 不同的清潔程度需要的 seasoning 量不同。
+    </p>
+  </div>
+
+  <h3>情境 4:特定產品的閘極漏電偏高</h3>
+  <p>
+    <strong>現象</strong>:同一條線上,只有某一個產品別的閘極漏電與 TDDB 壽命異常,
+    其他產品正常。<strong>機台 FDC 完全看不出異常</strong>。
+  </p>
+  <p><strong>手上的線索</strong>:該產品的設計天線比是所有產品中最大的;
+    問題出現在某一層金屬蝕刻之後;FDC 五個訊號全部在管制內;
+    <strong>受影響的是 I/O 元件,核心元件正常</strong>。</p>
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 根因:電漿誘發充電損傷 —— 該層的天線比超過設計規則</div>
+    <p>
+      <strong>「FDC 看不出異常」本身就是線索</strong>:機台是正常的,
+      問題在<strong>設計與製程的交互作用</strong>。
+      天線比決定的是單位閘極面積要吞多少電流,也就是損傷劑量 ——
+      而劑量正比於天線比(<a href="../4-3-plasma-damage/">4.3</a> 實測 log-log 斜率 0.98)。
+    </p>
+    <p>
+      <strong>「受影響的是 I/O 元件而不是核心元件」更是決定性的</strong>:
+      核心元件的超薄氧化層靠自己的直接穿隧漏電把電位壓住,
+      而 4–5 nm 的 I/O 氧化層兩頭都沒有保護。
+    </p>
+    <p>
+      <strong>處置</strong>:設計端加天線二極體;製程端把該步驟改為脈衝電漿。<br />
+      ⚠️ 天線規則要<strong>依氧化層厚度分開訂</strong>;
+      而如果換脈衝之後仍沒改善,要回頭確認是<strong>硬崩潰</strong>還是磨耗失效 ——
+      脈衝降的是平均劑量,降不了尖峰場強。
+    </p>
+  </div>
+
+  <h3>情境 5:微粒數在 PM 後三天內攀升</h3>
+  <p>
+    <strong>現象</strong>:PM 之後微粒數正常,但三天內逐步攀升到管制上限。
+    微粒集中在<strong>晶圓中心區</strong>,而且<strong>在關電漿的瞬間增加最多</strong>。
+  </p>
+  <p><strong>手上的線索</strong>:微粒發生時間點與 RF 關斷高度相關;
+    OES 基線隨天數逐漸改變;反射功率在功率關斷瞬間有尖峰;He 洩漏率正常。</p>
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 根因:電漿中懸浮的微粒在功率關斷、鞘層塌陷的瞬間落到晶圓上</div>
+    <p>
+      電漿裡的微粒帶負電,被<strong>鞘層電場托住</strong>懸浮在電漿與鞘層的交界處。
+      功率一關,鞘層塌陷(<a href="../4-4-advanced-tech/">4.4</a>:
+      鞘層電位 ∝ T_e,而 T_e 在數微秒內就崩),托住微粒的力立刻消失 →
+      微粒直接落到晶圓中心。
+    </p>
+    <p>
+      <strong>「集中在中心」與「關電漿瞬間」兩條線索同時成立</strong>,
+      幾乎排除了其他所有可能:剝落造成的微粒不會挑時間點,
+      ESC 帶入的微粒在背面。
+    </p>
+    <p>
+      <strong>處置</strong>:製程結束改為<strong>功率緩降</strong>
+      (先降 bias、再降 source,並在低功率維持數秒讓微粒被抽走)。<br />
+      <strong>預防</strong>:把功率 ramp down 寫進所有配方的結尾 ——
+      這是最便宜、最常被忽略的一招,而且它同時降低電弧風險。
+    </p>
+  </div>
+</div>
+
+<div class="pa-note pa-note--intuition">
+  <div class="pa-note__title">💡 五個情境的共同結構</div>
+  <p>
+    每一個的關鍵都不是「看到異常訊號」,而是
+    <strong>某一條線索排除掉了其他可能</strong>:
+  </p>
+  <ul>
+    <li>情境 1:<strong>均勻度沒變差</strong> → 排除局部堵塞</li>
+    <li>情境 2:<strong>只有邊緣不同</strong> → 指認邊緣幾何,排除氣體與功率</li>
+    <li>情境 3:<strong>第二片就正常</strong> → 排除所有持續性的原因</li>
+    <li>情境 4:<strong>FDC 完全正常</strong> → 排除機台,指向設計交互作用</li>
+    <li>情境 5:<strong>集中在關電漿瞬間</strong> → 排除剝落與 ESC</li>
+  </ul>
+  <p>
+    <strong>會看訊號的人很多,會用一條線索排除掉三種可能的人不多。</strong>
+    這就是這五個情境真正要練的東西。
+  </p>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>Chamber matching 的三層各比對什麼?為什麼<strong>不能直接改 recipe 補製程層</strong>?</li>
+    <li>最常見的兩個不匹配根源是什麼?它們的共同點是什麼?</li>
+    <li>兩階段 DOE 各用什麼設計、各回答什麼問題?</li>
+    <li><strong>為什麼線性模型可能判定「O₂ 不重要」而實際上它很關鍵?</strong>怎麼避免?</li>
+    <li>為什麼 DOE 的實驗順序必須隨機化?</li>
+    <li>PM 週期該由什麼決定?哪五個 FDC 訊號能做預測性維護?</li>
+    <li>N₂ 與 Ar 沒有毒性,為什麼仍需要密閉空間管制?</li>
+    <li>「功率已經關了」為什麼不代表匹配盒可以直接打開?</li>
+    <li><strong>NF₃ 的 GWP 比 C₂F₆ 高,為什麼換過去反而是減量?</strong></li>
+    <li>四種 PFC 減量策略中,哪一個最有效?為什麼?</li>
+    <li>情境 1 中,「均勻度沒變差」排除了什麼可能?</li>
+    <li>情境 4 中,「FDC 完全正常」為什麼本身就是線索?</li>
+    <li>情境 5 中,為什麼微粒集中在晶圓中心?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>May &amp; Spanos, <em>Fundamentals of Semiconductor Manufacturing and Process Control</em> —— DOE 與 SPC 的標準教材</li>
+    <li>Montgomery, <em>Design and Analysis of Experiments</em>(響應曲面與篩選設計)</li>
+    <li>SEMI S2 / S8 —— 半導體製造設備的環境、健康與安全準則</li>
+    <li>Beu, <em>Reduction of perfluorocompound (PFC) emissions: 2005 state-of-the-technology report</em>, International SEMATECH</li>
+    <li>IPCC AR5, Ch. 8 Appendix 8.A —— 本章 GWP 數值的來源</li>
+  </ul>
+</div>
