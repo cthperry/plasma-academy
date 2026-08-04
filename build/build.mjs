@@ -422,6 +422,7 @@ function buildStubs() {
     ["defects/", "缺陷圖鑑", "18 種蝕刻缺陷的症狀圖、成因鏈、診斷區分與對策旋鈕。", "P3"],
     ["formulas/", "公式手冊", "約 45 條公式與符號表,可由章節公式卡直接跳轉。", "P1 起陸續補齊"],
     ["progress/", "我的進度", "學習進度、徽章與證書,支援 JSON 匯出匯入。", "P4"],
+    ["quiz/", "測驗中心", "章末自我檢測與四階結業測驗。", "P4"],
   ];
   for (const [url, title, desc, phase] of HUBS) {
     if (done.has(url)) continue;

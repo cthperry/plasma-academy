@@ -1,0 +1,110 @@
+<!--meta
+{
+  "title": "測驗中心 — Plasma Academy",
+  "description": "章末自我檢測(答完立即顯示解析、不計分、可無限重答)與四階結業測驗(交卷後顯示、計分、有通過門檻、重測重抽)。每個錯誤選項都附「為什麼錯」。",
+  "type": "page"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>測驗中心</h1>
+  <div class="pa-chapter-header__meta">
+    <span>25 章自我檢測</span>
+    <span>四階結業測驗</span>
+    <span>資料源:<code>data/quiz/</code></span>
+  </div>
+</div>
+
+<div class="pa-prose">
+  <p>
+    這裡的每一題都遵守同一條品質規則:
+    <strong>每一個錯誤選項都要說明「為什麼錯」</strong>。
+    選錯的時候,你要能立刻知道自己的誤解在哪 ——
+    而不是只被告知正確答案是哪一個。
+  </p>
+</div>
+
+<div class="pa-table-wrap">
+  <table class="pa-table">
+    <thead><tr><th></th><th>自我檢測</th><th>結業測驗</th></tr></thead>
+    <tbody>
+      <tr><td>題數</td><td>該章全部</td><td>L1 20 / L2 30 / L3 35 / L4 30</td></tr>
+      <tr><td>計分</td><td>不計分</td><td><strong>計分</strong></td></tr>
+      <tr><td>回饋</td><td><strong>答完立即顯示</strong></td><td>交卷後顯示</td></tr>
+      <tr><td>重測</td><td>無限次</td><td>無限次,<strong>每次重抽</strong></td></tr>
+      <tr><td>通過門檻</td><td>—</td><td>75 %(<strong>L4 為 80 %</strong>)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="pa-note pa-note--warn">
+  <div class="pa-note__title">⚠️ 題庫規模:目前是第一批</div>
+  <p>
+    <code>docs/08-assessment.md</code> 的完整目標是約 465 題
+    (各階段題庫為出題數的 2.5–3 倍,確保重測時題目大幅不同)。
+    <strong>目前的題庫是第一批,尚未達到那個規模</strong> ——
+    覆蓋了全部 25 章,但每階段的題數仍少於出題數。
+  </p>
+  <p>
+    實際的影響:<strong>結業測驗目前會把題庫全部出完,無法重抽不同題目</strong>。
+    測驗開始時頁面會直接標示這一點,不假裝可以重抽。
+    補齊進度記在 <code>docs/11-build-roadmap.md</code>。
+  </p>
+</div>
+
+<h2 id="self">📝 章末自我檢測</h2>
+
+<div class="pa-prose">
+  <p>
+    選一個章節開始。單選題選下去就會立刻展開解析;
+    複選、計算與排序題按「對答案」。<strong>不計分,想重答幾次都可以。</strong>
+  </p>
+</div>
+
+<div class="pa-quiz" data-quiz="self">
+  <noscript>
+    <div class="pa-lab__observe">
+      自我檢測需要 JavaScript。各章的題目也以文字形式寫在每一章的
+      「✅ 自我檢測」段落,沒有 JavaScript 一樣讀得到題目與思考方向。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="exam">🎓 階段結業測驗</h2>
+
+<div class="pa-prose">
+  <p>
+    選一個階段開始。<strong>交卷之前不會顯示任何解析</strong>,
+    交卷之後每一題都會展開:你選的那個選項為什麼錯、正解為什麼對、
+    以及連回章節的連結。
+  </p>
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼 L4 的門檻是 80 % 而不是 75 %</div>
+    <p>
+      專家級認證應該有意義。L4 的題目有一半以上是情境分析與判讀,
+      這類題目答對靠的是推理而不是記憶 —— 門檻拉高才分得出來。
+    </p>
+  </div>
+</div>
+
+<div class="pa-quiz" data-quiz="exam">
+  <noscript>
+    <div class="pa-lab__observe">
+      結業測驗需要 JavaScript(計時、抽題、計分與解析都在瀏覽器本機執行,
+      沒有任何資料送出)。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="privacy">關於成績與認證</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li><strong>所有作答與成績都存在你自己的瀏覽器裡</strong>(localStorage),
+      沒有後端、沒有帳號、不送出任何資料。</li>
+    <li>換一台電腦或清掉瀏覽器資料,紀錄就沒了 ——
+      需要保留的話請用 <a href="../progress/">我的進度</a> 匯出 JSON。</li>
+    <li><strong>本站的徽章與證書由學習者本機產生,供內部訓練紀錄參考,
+      並非第三方認證。</strong>我們不假裝這是有公信力的外部認證。</li>
+  </ul>
+</div>

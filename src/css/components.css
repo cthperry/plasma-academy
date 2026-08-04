@@ -1395,3 +1395,189 @@
   color: var(--pa-danger);
   font-weight: 600;
 }
+
+/* ==========================================================================
+   測驗中心(quiz/engine.js)
+   ========================================================================== */
+
+.pa-quiz {
+  margin: var(--pa-space-5) 0;
+}
+
+.pa-quiz__picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pa-space-3);
+  padding: var(--pa-space-4);
+  background: var(--pa-surface);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+}
+
+.pa-quiz__picker select {
+  padding: var(--pa-space-2) var(--pa-space-3);
+  font: inherit;
+  color: var(--pa-text);
+  background: var(--pa-bg);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-sm);
+}
+
+.pa-quiz__q {
+  margin: var(--pa-space-5) 0;
+  padding: var(--pa-space-4);
+  background: var(--pa-surface);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+}
+
+.pa-quiz__q-head {
+  display: flex;
+  align-items: center;
+  gap: var(--pa-space-2);
+  margin-bottom: var(--pa-space-3);
+  font-size: var(--pa-text-sm);
+}
+
+.pa-quiz__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.7em;
+  height: 1.7em;
+  font-weight: 700;
+  color: var(--pa-bg);
+  background: var(--pa-primary);
+  border-radius: 999px;
+}
+
+.pa-quiz__type,
+.pa-quiz__ch {
+  padding: 0.1em 0.6em;
+  color: var(--pa-text-subtle);
+  border: 1px solid var(--pa-border);
+  border-radius: 999px;
+}
+
+.pa-quiz__text {
+  margin: 0 0 var(--pa-space-3);
+  line-height: 1.85;
+}
+
+.pa-quiz__opt {
+  display: flex;
+  gap: var(--pa-space-3);
+  align-items: flex-start;
+  padding: var(--pa-space-3);
+  line-height: 1.7;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: var(--pa-radius-sm);
+}
+
+.pa-quiz__opt:hover {
+  background: var(--pa-bg);
+  border-color: var(--pa-border);
+}
+
+.pa-quiz__opt input {
+  margin-top: 0.35em;
+  flex: none;
+}
+
+.pa-quiz__numeric,
+.pa-quiz__order {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pa-space-3);
+}
+
+.pa-quiz__order {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.pa-quiz__order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pa-space-3);
+  padding: var(--pa-space-2) var(--pa-space-3);
+  background: var(--pa-bg);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-sm);
+}
+
+.pa-quiz__numeric input {
+  width: 9em;
+  padding: var(--pa-space-2) var(--pa-space-3);
+  font: inherit;
+  color: var(--pa-text);
+  background: var(--pa-bg);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-sm);
+}
+
+.pa-btn--tiny {
+  padding: 0.15em 0.6em;
+  font-size: var(--pa-text-sm);
+}
+
+.pa-quiz__feedback {
+  display: none;
+  margin-top: var(--pa-space-3);
+  padding: var(--pa-space-3) var(--pa-space-4);
+  border-left: 3px solid var(--pa-border);
+  border-radius: var(--pa-radius-sm);
+  background: var(--pa-bg);
+}
+
+.pa-quiz__feedback.is-shown { display: block; }
+.pa-quiz__feedback.is-correct { border-left-color: var(--pa-success); }
+.pa-quiz__feedback.is-wrong { border-left-color: var(--pa-danger); }
+
+.pa-quiz__verdict {
+  margin-bottom: var(--pa-space-2);
+  font-weight: 700;
+}
+
+.pa-quiz__feedback.is-correct .pa-quiz__verdict { color: var(--pa-success); }
+.pa-quiz__feedback.is-wrong .pa-quiz__verdict { color: var(--pa-danger); }
+
+.pa-quiz__why {
+  margin: var(--pa-space-2) 0;
+  font-size: var(--pa-text-sm);
+  line-height: 1.75;
+}
+
+.pa-quiz__why.is-right > strong { color: var(--pa-success); }
+.pa-quiz__why.is-wrong > strong { color: var(--pa-danger); }
+
+.pa-quiz__explain {
+  margin: var(--pa-space-3) 0 var(--pa-space-2);
+  line-height: 1.8;
+}
+
+.pa-quiz__ref {
+  font-size: var(--pa-text-sm);
+}
+
+.pa-quiz__result {
+  display: none;
+  margin-top: var(--pa-space-4);
+  padding: var(--pa-space-4);
+  font-size: var(--pa-text-lg);
+  text-align: center;
+  border: 2px solid var(--pa-danger);
+  border-radius: var(--pa-radius-md);
+  color: var(--pa-danger);
+}
+
+.pa-quiz__result.is-shown { display: block; }
+
+.pa-quiz__result.is-pass {
+  border-color: var(--pa-success);
+  color: var(--pa-success);
+}

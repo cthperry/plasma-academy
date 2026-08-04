@@ -71,6 +71,19 @@
     loadScripts(LAB_CORE, cb);
   }
 
+  /** 測驗引擎 + 四份題庫,只有測驗中心那一頁會載 */
+  function ensureQuiz(cb) {
+    if (PA.quiz && PA.quizBank) return cb();
+    loadScripts(
+      [
+        "data/quiz/level-1.js", "data/quiz/level-2.js",
+        "data/quiz/level-3.js", "data/quiz/level-4.js",
+        "js/quiz/engine.js",
+      ],
+      cb
+    );
+  }
+
   /** 瀏覽器閒置時預先載入,讓首次 hover 不用等 */
   function idle(fn) {
     if (window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 2500 });
@@ -106,6 +119,18 @@
       });
     }
 
+    // 測驗:題庫與引擎按需載入
+    if (document.querySelector("[data-quiz]")) {
+      ensureQuiz(function (err) {
+        if (err) return;
+        try {
+          PA.quiz.scan();
+        } catch (e) {
+          console.error("[app] 測驗掛載失敗", e);
+        }
+      });
+    }
+
     // 互動元件:整組 lab 核心按需載入
     if (document.querySelector("[data-lab]")) {
       ensureLab(function (err) {
@@ -122,6 +147,7 @@
   PA.loadScripts = loadScripts;
   PA.ensureGlossary = ensureGlossary;
   PA.ensureLab = ensureLab;
+  PA.ensureQuiz = ensureQuiz;
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);

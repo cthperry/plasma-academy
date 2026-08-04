@@ -28,6 +28,7 @@
     "check:advanced": "node tools/check-advanced.mjs",
     "check:global": "node tools/check-global.mjs",
     "check:faults": "node tools/check-faults.mjs",
+    "check:quiz": "node tools/check-quiz.mjs",
     "shapes:sweep": "node tools/shapes-sweep.mjs",
     "shapes:search": "node tools/shapes-search.mjs"
   },

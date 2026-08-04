@@ -29,6 +29,7 @@ const STEPS = [
   ["先進技術(ALE + 脈衝電漿)", "tools/check-advanced.mjs"],
   ["0-D 全域模型", "tools/check-global.mjs"],
   ["量產故障情境與 PFC", "tools/check-faults.mjs"],
+  ["題庫與測驗引擎", "tools/check-quiz.mjs"],
   // A18 的八種 profile 驗收(tools/check-shapes.mjs)刻意**不放進**品質門:
   // 它目前只有五種通得過,是一份還沒達成的驗收條件,不是回歸測試。
   // 用 `npm run check:shapes` 單獨跑,狀態記在 docs/11 的 A18 狀態表。
