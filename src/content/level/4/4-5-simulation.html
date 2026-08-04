@@ -1,0 +1,361 @@
+<!--meta
+{
+  "title": "4.5 電漿模擬與資料 — Plasma Academy",
+  "description": "四個模擬層級各能回答什麼、0-D 全域模型如何用兩條平衡方程推出「加功率不加溫度」、流體與 PIC-MCC 的取捨、LXCat 與反應機制集,以及讀模擬報告該問的五個問題。",
+  "type": "chapter",
+  "module": "4.5"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>4.5 電漿模擬與資料</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2 小時</span>
+    <span>🔬 A32 互動元件</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="4.5">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說出四種模擬層級各自能回答什麼問題</span></label></li>
+    <li><label><input type="checkbox" /><span>用 0-D 的兩條平衡方程推出 T_e 與 n_e 的行為</span></label></li>
+    <li><label><input type="checkbox" /><span>說明為什麼「加功率主要加密度」是推論而非經驗法則</span></label></li>
+    <li><label><input type="checkbox" /><span>讀懂模擬報告並判斷其可信度</span></label></li>
+    <li><label><input type="checkbox" /><span>知道製程工程師該向模擬團隊要什麼</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../2/2-3-plasma-chemistry/">2.3 電漿化學基礎</a>
+  <a href="../../2/2-6-causal-chain/">2.6 參數因果鏈</a>
+  <a href="../4-1-diagnostics/">4.1 電漿診斷</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    這一章只有一個實質內容:<strong>0-D 全域模型</strong>。
+    它簡單到可以在白板上推完,卻是本課程<strong>好幾條因果鏈的理論出處</strong>。
+  </p>
+  <ul>
+    <li><strong>粒子平衡的兩邊都有 n_e,直接消掉</strong> →
+      T_e 只由 n_g·d_eff(壓力 × 尺寸)決定,<strong>方程式裡根本沒有功率</strong>。</li>
+    <li><strong>能量平衡</strong> → T_e 定了之後,n_e 只剩下與功率成正比這一條路。</li>
+    <li><strong>所以「加功率主要加密度、不加溫度」(2.6.3)不是經驗法則,是推論。</strong>
+      A32 實測:功率掃 20 倍,T_e 的變化是 <strong>0.00 %</strong>。</li>
+    <li><strong>四個模擬層級回答的是不同問題。</strong>拿 0-D 去問均勻度、
+      拿流體模型去問 EEDF,都是問錯對象。</li>
+    <li><strong>模擬最有價值的用途不是預測絕對數字,是排除假設與指出方向。</strong></li>
+  </ul>
+</div>
+
+<h2 id="levels">4.5.1 四個模擬層級</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>層級</th><th>尺度</th><th>能回答</th><th>計算量</th><th>本書哪裡用到</th></tr></thead>
+      <tbody>
+        <tr><td><strong>0-D 全域模型</strong></td><td>整個腔體平均</td>
+          <td>n_e、T_e、自由基密度隨參數的變化<strong>趨勢</strong></td><td>秒</td>
+          <td>A32、A31 的脈衝時序</td></tr>
+        <tr><td>流體模型(Fluid)</td><td>腔體空間分佈</td>
+          <td>均勻度、電漿分佈、氣流</td><td>小時</td>
+          <td><a href="../../3/3-6-uniformity/">3.6</a></td></tr>
+        <tr><td><strong>PIC-MCC</strong></td><td>動力學(粒子級)</td>
+          <td><strong>EEDF、IEDF</strong>、鞘層細節</td><td>天</td>
+          <td><a href="../../2/2-4-sheath-physics/">2.4</a></td></tr>
+        <tr><td>輪廓演化(Profile)</td><td>特徵尺寸(nm)</td>
+          <td>Profile 形狀、ARDE、充電</td><td>分鐘~小時</td>
+          <td><a href="../../3/3-1-etch-mechanisms/">3.1</a>、
+            <a href="../../3/3-3-defect-atlas/">3.3</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 最常見的錯誤是問錯對象</div>
+    <p>
+      「我們的 0-D 模型算出中心比邊緣濃」——<strong>0-D 模型沒有空間座標</strong>,
+      它算不出這種東西。「流體模擬顯示高能電子尾巴變厚」——
+      <strong>流體模型假設了 EEDF 形狀</strong>,那是它的輸入不是輸出。
+    </p>
+    <p>
+      每個層級能回答的問題,由它<strong>解了哪些方程、假設了什麼</strong>決定。
+      拿到報告先問這個,比看結論漂不漂亮有用得多。
+    </p>
+  </div>
+</div>
+
+<h2 id="zerod">4.5.2 0-D 全域模型:工程師最該懂的一個</h2>
+
+<div class="pa-prose">
+  <div class="pa-formula">
+    <div class="pa-formula__main">
+      粒子平衡:k_iz(T_e) · <s>n_e</s> · n_g · V = <s>n_e</s> · u_B(T_e) · A_eff
+    </div>
+    <div class="pa-formula__note">
+      <strong>兩邊的 n_e 直接消掉。</strong>剩下的式子整理成<br />
+      k_iz(T_e) / u_B(T_e) = 1 / (n_g · d_eff),其中 d_eff = V / A_eff。<br />
+      <strong>方程式裡沒有功率</strong> —— 這就是全部的重點。
+    </div>
+  </div>
+
+  <div class="pa-formula">
+    <div class="pa-formula__main">
+      能量平衡:P_abs = e · n_e · u_B(T_e) · A_eff · (E_c + E_i + E_e)
+    </div>
+    <div class="pa-formula__note">
+      E_c:每產生一個電子離子對的<strong>碰撞能量成本</strong>(含激發、解離的損失)<br />
+      E_i、E_e:離子與電子帶走的動能。<br />
+      T_e 已由粒子平衡定死,所以這條式子裡 <strong>n_e ∝ P_abs</strong>,沒有別的可能。
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A32 實測:功率掃 20 倍,T_e 的變化是 0.00 %</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>吸收功率</th><th>T_e</th><th>n_e</th><th>n_e / P</th></tr></thead>
+        <tbody>
+          <tr><td>100 W</td><td>2.2148 eV</td><td>8.587 × 10¹⁶</td><td>8.587 × 10¹⁴</td></tr>
+          <tr><td>500 W</td><td>2.2148 eV</td><td>4.294 × 10¹⁷</td><td>8.587 × 10¹⁴</td></tr>
+          <tr><td>1000 W</td><td>2.2148 eV</td><td>8.587 × 10¹⁷</td><td>8.587 × 10¹⁴</td></tr>
+          <tr><td>2000 W</td><td><strong>2.2148 eV</strong></td><td>1.717 × 10¹⁸</td><td><strong>8.587 × 10¹⁴</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      不是「幾乎不變」,是<strong>逐位元相同</strong>。而 n_e/P 是常數。
+      <strong>這就是 <a href="../../2/2-6-causal-chain/">2.6.3</a>
+      「加功率主要加密度、不加溫度」的完整證明</strong> ——
+      整個 L2 有一半的因果鏈掛在這個結論上。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A32 實測:T_e 由 n_g · d_eff 決定</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>壓力</th><th>T_e</th><th>E_c</th><th>n_e</th></tr></thead>
+        <tbody>
+          <tr><td>2 mTorr</td><td>3.70 eV</td><td>34 eV</td><td>2.4 × 10¹⁷</td></tr>
+          <tr><td>20 mTorr</td><td>2.22 eV</td><td>95 eV</td><td>4.3 × 10¹⁷</td></tr>
+          <tr><td>80 mTorr</td><td>1.76 eV</td><td>259 eV</td><td>3.9 × 10¹⁷</td></tr>
+          <tr><td>200 mTorr</td><td><strong>1.55 eV</strong></td><td><strong>513 eV</strong></td><td>3.4 × 10¹⁷</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>E_c 從 34 eV 漲到 513 eV。</strong>低 T_e 時電漿要花五百多 eV
+      才換到一次游離,因為能量幾乎都花在激發與解離上。
+      這是高壓電漿難維持、也是分子氣體難維持的<strong>同一個原因</strong>。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼腔體越小 T_e 越高</div>
+    <p>
+      A32 實測(20 mTorr、500 W):R = 0.05 m → T_e 2.44 eV;
+      R = 0.30 m → T_e 2.16 eV。
+    </p>
+    <p>
+      d_eff = V / A_eff。腔體縮小時,<strong>損失面積相對體積變大</strong>,
+      電子要更熱才補得回流失。這也解釋了為什麼小腔體天生 T_e 偏高,
+      而 T_e 偏高就代表<a href="../4-3-plasma-damage/">充電損傷的天花板</a>也高。
+    </p>
+  </div>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>氣體</th><th>T_e</th><th>E_c</th><th>n_e(500 W)</th><th>解離度</th></tr></thead>
+      <tbody>
+        <tr><td>Ar</td><td>2.22 eV</td><td><strong>95 eV</strong></td><td>4.3 × 10¹⁷</td><td>無解離通道</td></tr>
+        <tr><td>O₂</td><td>1.98 eV</td><td>205 eV</td><td>2.1 × 10¹⁷</td><td>80 %</td></tr>
+        <tr><td>Cl₂</td><td>1.75 eV</td><td><strong>405 eV</strong></td><td>1.9 × 10¹⁷</td><td>86 %</td></tr>
+        <tr><td>CF₄</td><td>2.36 eV</td><td>211 eV</td><td>3.7 × 10¹⁷</td><td>90 %</td></tr>
+        <tr><td>SF₆</td><td>2.23 eV</td><td>243 eV</td><td>4.9 × 10¹⁷</td><td>97 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <strong>分子氣體的 E_c 全部高於 Ar</strong> —— 多了解離通道,
+    同樣功率下 n_e 低很多。這是純 Ar 電漿最好點、最好維持的定量原因,
+    也是很多配方要先用 Ar 點火再切製程氣的理由。
+  </p>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 0-D 模型第一件會失準的事:氣體加熱</div>
+    <p>
+      上面那個「T_e 完全與功率無關」的結論,前提是<strong>氣體溫度固定</strong>。
+      真實電漿的氣體會被加熱:高功率 → T_g 上升 → 定壓下 n_g 下降 →
+      n_g·d_eff 變小 → <strong>T_e 上升</strong>。
+    </p>
+    <p>
+      A32 打開「含氣體加熱」之後,同一組功率掃描的
+      <strong>T_e 變化從 0.00 % 變成 27 %</strong>、n_e 的線性也偏了 21 %。
+    </p>
+    <p>
+      這個開關在元件裡<strong>預設是關的</strong>,而且刻意做成可切換 ——
+      理想結論要先立得住,才談它什麼時候失準。
+      <strong>拿到任何 0-D 模型的結果,先問它有沒有算氣體加熱。</strong>
+    </p>
+  </div>
+</div>
+
+<h2 id="lab-a32">🔬 A32 0-D 全域模型計算器</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A32">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A32</span>
+    <span class="pa-lab__title">功率不在方程式裡 —— 兩條曲線的交點就是 T_e</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。上圖為粒子平衡的圖示求解(k_iz/u_B 曲線與
+      1/(n_g·d_eff) 水平線,交點即 T_e),下圖為選定參數的掃描結果;
+      五種氣體、三種掃描模式、氣體加熱開關,以及四個旋鈕
+      (壓力、功率、腔體半徑、腔體高度)。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="fluid">4.5.3 流體模型與 PIC-MCC</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>流體模型</th><th>PIC-MCC</th></tr></thead>
+      <tbody>
+        <tr><td>做法</td><td>把電子與離子當連續流體,解連續 + 動量 + 能量 + 泊松方程</td>
+          <td>追蹤大量代表粒子的實際軌跡,碰撞用蒙地卡羅抽樣</td></tr>
+        <tr><td><strong>EEDF</strong></td><td><strong>假設形狀</strong>(通常 Maxwellian)</td>
+          <td><strong>不假設</strong> —— 這是它最大的價值</td></tr>
+        <tr><td>擅長</td><td>空間分佈、均勻度、氣流</td><td>鞘層細節、IEDF、非平衡效應</td></tr>
+        <tr><td>不準的地方</td><td><strong>低壓</strong>(EEDF 遠離 Maxwellian)</td>
+          <td>計算量巨大,通常只做 1-D 或 2-D 的鞘層區域</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <strong>輪廓演化模擬</strong>:輸入通量與能量角度分佈(從上述模型或實驗來),
+    用 level-set 或 string 方法演化表面形狀。
+    <strong>這是唯一能直接預測 profile 缺陷的工具</strong> ——
+    <a href="../../3/3-3-defect-atlas/">3.3</a> 的每一種缺陷,
+    最終都要靠這一層才算得出來。
+  </p>
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 為什麼「流體模型在低壓不準」值得記住</div>
+    <p>
+      流體模型假設 EEDF 是 Maxwellian。但低壓下電子的平均自由徑接近腔體尺寸,
+      它們在撞到別的粒子之前就先撞到牆 —— <strong>根本沒有機會熱化</strong>。
+      而 <a href="../../2/2-3-plasma-chemistry/">2.3.2</a> 講過:
+      游離與解離速率由 EEDF 的<strong>高能尾巴</strong>決定。
+    </p>
+    <p>
+      所以在低壓下用流體模型算解離度,錯的不是幾 %,可能是好幾倍。
+      <strong>這正是 PIC-MCC 存在的理由,也是它值得那個計算量的原因。</strong>
+    </p>
+  </div>
+</div>
+
+<h2 id="data">4.5.4 資料來源與可信度</h2>
+
+<div class="pa-prose">
+  <p>模擬的品質取決於輸入資料,而輸入資料的不確定性差很多:</p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>輸入</th><th>來源</th><th>不確定性</th></tr></thead>
+      <tbody>
+        <tr><td>碰撞截面</td><td><strong>LXCat</strong>(公開標準資料庫)</td>
+          <td>常見氣體相對可靠</td></tr>
+        <tr><td>反應機制集</td><td>文獻彙整</td>
+          <td>氟碳電漿有數百條反應,<strong>不同文獻的係數可能差數倍</strong></td></tr>
+        <tr><td><strong>表面反應係數</strong></td><td>多半只能由實驗擬合</td>
+          <td><strong>最大的不確定來源</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 讀模擬報告該問的五個問題</div>
+    <ol>
+      <li>用的是哪個層級的模型?<strong>適合回答我的問題嗎?</strong></li>
+      <li>反應機制集從哪來?有多少條反應?</li>
+      <li><strong>表面反應係數是量測的還是擬合的?</strong></li>
+      <li>有沒有跟實驗校驗過?校驗了哪些量?</li>
+      <li>給的是<strong>趨勢</strong>還是<strong>絕對值</strong>?(多數情況只有趨勢可信)</li>
+    </ol>
+    <p>
+      第 3 題最常問不出答案,而它往往決定整份報告的可信度 ——
+      黏著係數差兩倍,自由基密度就差兩倍。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 工程師直覺:模擬最有價值的時候是它<strong>錯</strong>的時候</div>
+    <p>
+      模擬最有價值的用途不是預測絕對數字,而是<strong>排除假設</strong>與<strong>指出方向</strong>。
+    </p>
+    <p>
+      <strong>當實驗結果與模擬趨勢相反時,通常代表有一個你沒想到的機制在作用</strong> ——
+      那才是最有價值的資訊。本書一路走來的每一次「實測推翻了原本的想法」
+      (<a href="../4-3-plasma-damage/">4.3</a> 的天線比、
+      <a href="../4-4-advanced-tech/">4.4</a> 的 ALE 窗)都是這個模式。
+    </p>
+  </div>
+</div>
+
+<h2 id="ask">4.5.5 該向模擬團隊要什麼</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>你的問題</th><th>該要的層級</th><th>該一起要的東西</th></tr></thead>
+      <tbody>
+        <tr><td>「加功率會怎樣?」</td><td>0-D</td><td>掃描曲線,不是單點</td></tr>
+        <tr><td>「為什麼邊緣比中心快?」</td><td>流體</td><td>氣流與電漿分佈兩張圖</td></tr>
+        <tr><td>「離子打上來的能量分佈長怎樣?」</td><td><strong>PIC-MCC</strong></td>
+          <td>IEDF 圖 + 用的頻率與壓力</td></tr>
+        <tr><td>「這個 bowing 怎麼來的?」</td><td>輪廓演化</td>
+          <td>輸入的通量與角度分佈是誰算的</td></tr>
+        <tr><td>「換這支氣體會怎樣?」</td><td>0-D(趨勢)</td>
+          <td><strong>表面反應係數的來源</strong> —— 換氣體時它最可能錯</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>寫出 0-D 的粒子平衡方程。<strong>為什麼裡面沒有功率?</strong></li>
+    <li>T_e 由哪兩個量決定?為什麼壓力升高時 T_e 下降?</li>
+    <li>「加功率主要加密度、不加溫度」——用兩條平衡方程證明它。</li>
+    <li>為什麼腔體越小 T_e 越高?這對損傷風險有什麼含意?</li>
+    <li>E_c 是什麼?為什麼低 T_e 時它會暴漲到好幾百 eV?</li>
+    <li><strong>為什麼分子氣體同樣功率下的 n_e 比 Ar 低?</strong></li>
+    <li>0-D 模型第一件會失準的事是什麼?它會讓哪個結論不成立?</li>
+    <li>流體模型為什麼在低壓不準?哪一個量會錯得最離譜?</li>
+    <li>四個層級中,哪一個能直接預測 profile 缺陷?它的輸入從哪來?</li>
+    <li>讀模擬報告的五個問題中,哪一個最常問不出答案?為什麼它最重要?</li>
+    <li>實驗結果與模擬趨勢相反時,該怎麼看待?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Lieberman &amp; Lichtenberg, <em>Principles of Plasma Discharges and Materials Processing</em>, Ch. 10(全域模型)—— 本章兩條平衡方程與 E_c 曲線的來源</li>
+    <li>LXCat — <em>The Plasma Data Exchange Project</em>(公開碰撞截面資料庫)</li>
+    <li>Kushner, <em>Hybrid modelling of low temperature plasmas for fundamental investigations and equipment design</em>, J. Phys. D 42, 194013 (2009)</li>
+    <li>Birdsall, <em>Particle-in-cell charged-particle simulations plus Monte Carlo collisions with neutral atoms, PIC-MCC</em>, IEEE Trans. Plasma Sci. 19, 65 (1991)</li>
+    <li>Chanson 等, <em>Global model of Cl₂ / Ar inductively coupled plasmas</em>(分子氣體全域模型的實例)</li>
+  </ul>
+</div>

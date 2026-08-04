@@ -27,6 +27,7 @@ const STEPS = [
   ["終點偵測(OES + 干涉)", "tools/check-endpoint.mjs"],
   ["充電損傷(電子遮蔽 + 天線效應)", "tools/check-charging.mjs"],
   ["先進技術(ALE + 脈衝電漿)", "tools/check-advanced.mjs"],
+  ["0-D 全域模型", "tools/check-global.mjs"],
   // A18 的八種 profile 驗收(tools/check-shapes.mjs)刻意**不放進**品質門:
   // 它目前只有五種通得過,是一份還沒達成的驗收條件,不是回歸測試。
   // 用 `npm run check:shapes` 單獨跑,狀態記在 docs/11 的 A18 狀態表。
