@@ -25,6 +25,7 @@
     "check:diagnostics": "node tools/check-diagnostics.mjs",
     "check:endpoint": "node tools/check-endpoint.mjs",
     "check:charging": "node tools/check-charging.mjs",
+    "check:advanced": "node tools/check-advanced.mjs",
     "shapes:sweep": "node tools/shapes-sweep.mjs",
     "shapes:search": "node tools/shapes-search.mjs"
   },

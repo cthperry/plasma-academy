@@ -1,0 +1,452 @@
+<!--meta
+{
+  "title": "4.4 先進技術 — Plasma Academy",
+  "description": "脈衝電漿的三種模式與 T_e/n_e 時間常數差、ALE 的兩個自限制與能量窗為什麼比教科書窄、協同度的定量定義,以及 HAR 蝕刻與低溫蝕刻的技術路線。",
+  "type": "chapter",
+  "module": "4.4"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>4.4 先進技術</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 3.5 小時</span>
+    <span>🔬 A30 · A31 互動元件</span>
+    <span>★ L4 旗艦模組</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="4.4">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說明脈衝的三種模式各自解決什麼問題,以及哪一種治不了充電</span></label></li>
+    <li><label><input type="checkbox" /><span>解釋脈衝頻率的上下限各由什麼決定</span></label></li>
+    <li><label><input type="checkbox" /><span>說出 ALE 的兩個自限制,並判斷一組配方是不是真的 ALE</span></label></li>
+    <li><label><input type="checkbox" /><span>計算協同度,並說明它與 3.1.2 Coburn–Winters 實驗的關係</span></label></li>
+    <li><label><input type="checkbox" /><span>說出 HAR 蝕刻的技術路線與低溫蝕刻為什麼有效</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../3/3-1-etch-mechanisms/">3.1 蝕刻機制</a>
+  <a href="../4-1-diagnostics/">4.1 電漿診斷</a>
+  <a href="../4-3-plasma-damage/">4.3 電漿誘發損傷</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    這一章的兩項技術看起來無關,其實是同一個想法的兩種實作:
+    <strong>把「一直開著」換成「開開關關」,好在關的那段時間裡拿到別的東西</strong>。
+  </p>
+  <ul>
+    <li><strong>脈衝電漿:關掉之後,T_e 崩得比 n_e 快十倍。</strong>
+      A31 實測 τ(T_e) = 6.7 µs、τ(n_e) = 71 µs ——
+      後輝光是「高密度、低溫」的電漿,而脈衝的四個好處全是這一句話的推論。</li>
+    <li><strong>鞘層 ∝ T_e,所以 off 期鞘層塌陷,孔底被中和。</strong>
+      CW 的孔底充到 10.5 V 就再也沒下來;脈衝每個週期清掉 97 %。</li>
+    <li><strong>脈衝頻率的上下限是算得出來的:</strong>太低 → 電漿熄滅;
+      太高 → 孔底來不及放電。兩者夾出數 kHz 的可用區間。</li>
+    <li><strong>ALE:兩個自限制讓蝕刻量只由循環數決定。</strong>
+      吸附飽和(第一個)+ 能量窗(第二個)。少一個就退化成普通的循環蝕刻。</li>
+    <li><strong>⚠️ ALE 能量窗比教科書的窄,而且窗寬是你的配方決定的。</strong>
+      閾值只說移除「開始」,沒說移除「來得及完成」。</li>
+  </ul>
+</div>
+
+<h2 id="pulse">4.4.1 脈衝電漿</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>模式</th><th>脈衝什麼</th><th>主要效益</th><th>治得了孔底充電?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Source pulsing</strong></td><td>Source power</td>
+          <td>調控自由基組成、降低解離度、降 T_e</td><td><strong>可以</strong></td></tr>
+        <tr><td><strong>Bias pulsing</strong></td><td>Bias power</td>
+          <td>控制 IEDF、降低平均離子能量</td><td><strong>不行</strong> —— 見下</td></tr>
+        <tr><td><strong>Synchronized</strong></td><td>兩者同步(可設相位差)</td>
+          <td>最大彈性,先進製程主流</td><td>可以</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>一切的根源:兩個時間常數</h3>
+  <div class="pa-formula">
+    <div class="pa-formula__main">
+      1.5·n_e·dT_e/dt = p_in − n_e[ν_iz(T_e)·E_c + ν_loss·(2T_e + V_鞘)]<br />
+      dn_e/dt = n_e[ν_iz(T_e) − ν_loss(T_e) − ν_att]
+    </div>
+    <div class="pa-formula__note">
+      ν_iz ∝ exp(−E_iz/T_e),E_iz = 15.76 eV(Ar)。<br />
+      off 期 p_in = 0:T_e 一掉,非彈性損失立刻關掉 → T_e 自己先崩;<br />
+      n_e 只能靠擴散流失,<strong>而 u_B ∝ √T_e,T_e 掉了之後擴散還變慢</strong>。
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A31 實測:後輝光是「高密度、低溫」的電漿</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th></th><th>off 期衰減時間常數</th><th>一個週期內的變化</th></tr></thead>
+        <tbody>
+          <tr><td><strong>T_e</strong></td><td><strong>6.7 µs</strong></td><td>0.05 – 4.25 eV(×85)</td></tr>
+          <tr><td><strong>n_e</strong></td><td><strong>71 µs</strong></td><td>1.9 × 10¹⁵ – 2.5 × 10¹⁶(×14)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      比值 <strong>10.7 倍</strong>。而且這是<strong>量出來的</strong>,不是模型參數 ——
+      T_e 的衰減根本不是單一指數(ν_iz 一關掉,衰減就換了機制),
+      拿參數當答案會得到錯的數字。
+    </p>
+  </div>
+
+  <h3>四個好處,全是同一句話的推論</h3>
+  <ol>
+    <li><strong>中和充電</strong> —— 鞘層電位 ∝ T_e,off 期鞘層塌陷,
+      電子可自由到達深孔底部 → <strong>直接解決 3.3 的 notching 與 twisting</strong></li>
+    <li><strong>負離子出得來</strong> —— on 期負離子被電漿電位完全困住;
+      off 期鞘層消失,它們才抵達晶圓</li>
+    <li><strong>調控自由基比例</strong> —— 縮短 on 期抑制多階解離
+      → 氟碳電漿中提高 CF₂/F 比 → 提高選擇比</li>
+    <li><strong>降低平均 T_e</strong> —— 減少 UV 與高能損傷(見
+      <a href="../4-3-plasma-damage/">4.3</a>)</li>
+  </ol>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A31 實測:三種模式做的事完全不同</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>模式</th><th>平均 n_e</th><th>平均 T_e</th><th>平均離子能量</th><th>孔底最大電位</th></tr></thead>
+        <tbody>
+          <tr><td>CW</td><td>2.5 × 10¹⁶</td><td>2.52 eV</td><td>91.8 eV</td><td>10.51 V</td></tr>
+          <tr><td>Source 脈衝</td><td>1.6 × 10¹⁶</td><td>1.32 eV</td><td>86.2 eV</td><td>6.56 V</td></tr>
+          <tr><td><strong>Bias 脈衝</strong></td><td>2.5 × 10¹⁶</td><td><strong>2.49 eV</strong></td>
+            <td>51.6 eV</td><td><strong>10.51 V(完全沒降)</strong></td></tr>
+          <tr><td><strong>同步脈衝</strong></td><td>1.6 × 10¹⁶</td><td><strong>1.32 eV</strong></td>
+            <td><strong>46.2 eV</strong></td><td><strong>6.56 V</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>Bias 脈衝降得了離子能量,卻一點也降不了孔底充電</strong> ——
+      因為充電天花板由 T_e 決定,而 bias 脈衝不改 T_e。
+      同步脈衝兩邊都拿,這就是它成為先進製程主流的原因。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 脈衝頻率的上下限是算得出來的,不必背</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>頻率</th><th>off 期長度</th><th>孔底回落</th><th>n_e 最低</th><th>判定</th></tr></thead>
+        <tbody>
+          <tr><td>100 Hz</td><td>5000 µs</td><td>98 %</td><td>1.0 × 10¹³</td><td><strong>電漿熄滅</strong></td></tr>
+          <tr><td>1 kHz</td><td>500 µs</td><td>98 %</td><td>2.1 × 10¹⁴</td><td><strong>電漿熄滅</strong></td></tr>
+          <tr><td><strong>2 kHz</strong></td><td>250 µs</td><td><strong>97 %</strong></td><td>1.9 × 10¹⁵</td><td><strong>可用</strong></td></tr>
+          <tr><td><strong>5 kHz</strong></td><td>100 µs</td><td><strong>92 %</strong></td><td>6.8 × 10¹⁵</td><td><strong>可用</strong></td></tr>
+          <tr><td>50 kHz</td><td>10 µs</td><td>11 %</td><td>1.3 × 10¹⁶</td><td>來不及放電</td></tr>
+          <tr><td>100 kHz</td><td>5 µs</td><td>0 %</td><td>1.4 × 10¹⁶</td><td>來不及放電</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>下限</strong>:off 期太長,n_e 掉到 CW 的 1 % 以下 —— 等於熄了再點。<br />
+      <strong>上限</strong>:off 期太短,孔底來不及放電。<br />
+      兩者夾出來的可用區間落在<strong>數 kHz</strong>,與現場「0.1–10 kHz」的經驗值同一個量級。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 同步脈衝的相位差:同一份離子能量,送在不同時候</div>
+    <p>
+      A31 實測:相位差從 0 拉到 0.5,<strong>平均離子能量一位數都不變(46.2 eV)</strong>。
+      變的是它落在哪裡 —— 落在後輝光的劑量比例從 <strong>0.5 % 變成 87 %</strong>。
+    </p>
+    <p>
+      為什麼有價值:後輝光裡 T_e 已經崩掉、鞘層已經塌、負離子已經出來。
+      <strong>在那個時候送高能離子下去,你拿到方向性,卻不必付充電與 UV 的代價。</strong>
+      這就是 HAR 蝕刻用同步脈衝的理由。
+    </p>
+  </div>
+
+  <p>
+    <strong>代價</strong>:平均蝕刻率下降(功率只在 on 期給),需要更長的製程時間。
+  </p>
+</div>
+
+<h2 id="lab-a31">🔬 A31 脈衝電漿時序</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A31">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A31</span>
+    <span class="pa-lab__title">關掉電源之後,T_e 崩得比 n_e 快十倍</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。六條對齊同一時間軸的波形(source、bias、n_e、T_e、
+      鞘層電位、負離子)加上孔底累積電位;四種模式(CW / source / bias / 同步)
+      與七個旋鈕(頻率、佔空比、相位差、功率、壓力、氣體電負性、孔的深寬比)。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="ale">4.4.2 原子層蝕刻(ALE)</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>動機</strong>:當閘極只有幾 nm、鰭片只有十幾 nm 時,
+    連續蝕刻的控制精度不夠。需要「一次移除一個原子層」。
+  </p>
+
+  <div class="pa-prose">
+    <p style="font-family: var(--pa-font-mono, monospace); line-height: 1.9;">
+      ① [改質]  通入 Cl₂,<strong>自限制</strong>吸附形成一薄改質層<br />
+      ② [Purge] 抽走多餘氣體<br />
+      ③ [移除]  低能量 Ar⁺ 轟擊,能量刻意設在<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;「移除改質層」與「濺鍍原始材料」的閾值之間<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ <strong>自限制</strong>:改質層移除完就停<br />
+      ④ [Purge] 抽走產物<br />
+      &nbsp;&nbsp;&nbsp;↓ 重複,每循環移除約 0.136 nm
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 兩個自限制是 ALE 的靈魂,而且要<strong>同時</strong>成立</div>
+    <p>
+      第 1 步的吸附飽和、第 3 步的能量窗 —— 兩者都讓製程「做完就停」,
+      所以厚度只由<strong>循環數</strong>決定。
+    </p>
+    <p>
+      少一個就不是 ALE。A30 實測:改質時間從 2 s 減到 0.5 s,
+      覆蓋率只到 63 %,EPC 立刻跟著時間跑 —— 那只是「循環蝕刻」,
+      沒有 ALE 的任何好處(厚度控制、均勻度、低損傷),卻付了 ALE 的速度代價。
+    </p>
+  </div>
+
+  <div class="pa-formula">
+    <div class="pa-formula__main">E_th(移除改質層) &lt; E_ion &lt; E_th(濺鍍原始材料)</div>
+    <div class="pa-formula__note">
+      模型用 Sigmund–Steinbrüchel 的閾值形式 Y(E) = A(√E − √E_th),
+      與 <a href="../../3/3-5-pvd/">3.5</a> 的濺鍍章同一條式子。<br />
+      改質層(氯化 Si,鍵結弱)18 eV;原始 Si 55 eV。
+      <strong>ALE 不是新物理,是把兩個閾值分開用。</strong>
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 實際可用窗比教科書的窄,而且窗寬是<strong>你的配方</strong>決定的</div>
+    <p>
+      照兩個閾值取窗(18–55 eV)去掃 EPC,A30 實測變異高達 <strong>239 %</strong> ——
+      完全不像自限制。原因不是模型壞掉:
+      <strong>閾值只說移除「開始」,沒說移除「來得及完成」。</strong>
+      剛過閾值時產額極小(20 eV 時 Y_mod 只有 0.067),
+      移除步的離子劑量根本清不完改質層,EPC 就變回由劑量決定。
+    </p>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>移除步時間</th><th>實際可用窗</th><th>窗寬</th><th>窗內 EPC 變異</th></tr></thead>
+        <tbody>
+          <tr><td>0.3 s</td><td>46.5 – 55.0 eV</td><td>8.5 eV</td><td>1.65 %</td></tr>
+          <tr><td>0.5 s</td><td>33.5 – 55.0 eV</td><td>21.5 eV</td><td>1.69 %</td></tr>
+          <tr><td><strong>1.0 s</strong></td><td><strong>25.5 – 55.0 eV</strong></td><td><strong>29.5 eV</strong></td><td><strong>0.00 %</strong></td></tr>
+          <tr><td>3.0 s</td><td>20.5 – 55.0 eV</td><td>34.5 eV</td><td>0.00 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>窗的下緣會隨移除步時間移動,上緣不會。</strong>
+      上緣是材料常數(原始材料的濺鍍閾值),下緣是配方參數。
+      現場的意思很直接:<strong>窗太窄的時候,先加長移除步,而不是先改能量。</strong>
+    </p>
+  </div>
+
+  <h3>協同度(ALE Synergy)</h3>
+  <div class="pa-formula">
+    <div class="pa-formula__main">S = (EPC − α − β) / EPC × 100 %</div>
+    <div class="pa-formula__note">
+      α = 只做步驟 ①②(純化學貢獻)、β = 只做步驟 ③④(純物理貢獻)。<br />
+      這是 <a href="../../3/3-1-etch-mechanisms/">3.1.2</a> Coburn–Winters 協同效應的<strong>定量化版本</strong>。
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A30 實測:協同度如何隨能量崩壞</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>離子能量</th><th>EPC (ML)</th><th>α</th><th>β</th><th>協同度 S</th><th>還是 ALE 嗎?</th></tr></thead>
+        <tbody>
+          <tr><td><strong>40 eV(窗內)</strong></td><td>1.009</td><td>0.004</td>
+            <td><strong>0</strong></td><td><strong>99.6 %</strong></td><td><strong>是</strong></td></tr>
+          <tr><td>60 eV</td><td>1.097</td><td>0.004</td><td>0.113</td><td>89.4 %</td><td>邊緣</td></tr>
+          <tr><td>80 eV</td><td>1.444</td><td>0.004</td><td>0.522</td><td>63.6 %</td><td>否</td></tr>
+          <tr><td>120 eV</td><td>2.076</td><td>0.004</td><td>1.208</td><td>41.6 %</td><td><strong>只是慢速濺鍍</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      窗內 <strong>β = 0</strong> —— 離子單獨打不動原始材料,
+      所以蝕刻幾乎完全來自兩步的協同。這正是協同度高的原因,
+      也是「自限制」在數字上的樣子。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ Purge 不足:EPC 要好幾個循環才穩,而且偏高</div>
+    <p>
+      A30 實測,purge 從 3 s 減到 0.3 s:第 1 循環的 EPC 幾乎不變(0.986),
+      但到第 20 循環漲到 1.605 —— <strong>整整多了 63 %</strong>。
+    </p>
+    <p>
+      沒抽乾淨的前驅物疊到下一循環的覆蓋率上,而且要好幾個循環才達到新的平衡。
+      <strong>現場看到「同一批的前幾片偏淺、後面越來越深」,多半就是這個。</strong>
+      單看一片切片正常不能證明 purge 夠 —— 要看連續數十片的趨勢。
+    </p>
+  </div>
+
+  <h3>三大優勢與那個代價</h3>
+  <ol>
+    <li>原子級厚度控制</li>
+    <li><strong>極佳的均勻度</strong>(自限制 → 不依賴通量均勻性)</li>
+    <li>極低的表面損傷與粗糙度</li>
+  </ol>
+  <p>
+    <strong>代價:速率極慢。</strong>A30 實測窗內 EPC = <strong>0.136 nm/循環</strong>。
+    要蝕 10 nm 得跑 74 個循環,每循環數秒 —— 好幾分鐘。
+  </p>
+  <p>
+    所以量產上通常只用在最關鍵的最後幾 nm(<strong>主蝕刻用連續模式,收尾用 ALE</strong>),
+    或是用 <strong>Quasi-ALE</strong>(部分自限制,速度快很多)。
+  </p>
+  <p>
+    <strong>Directional vs Isotropic ALE</strong>:離子驅動的是方向性 ALE;
+    用熱能驅動移除步驟(如 HF + 金屬有機物)則是等向性 ALE,
+    用於環繞閘極(GAA)的通道釋放。
+  </p>
+</div>
+
+<h2 id="lab-a30">🔬 A30 ALE 循環</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A30">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A30</span>
+    <span class="pa-lab__title">把能量拉出窗外,看它從 ALE 退化成慢速濺鍍</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。上方為四步循環的表面示意,
+      中間為能量窗圖表(兩條閾值線、教科書窗與實際可用窗、兩條產額曲線),
+      下方為 EPC 對循環數的曲線;五個旋鈕(離子能量、改質步時間、Purge 時間、
+      移除步時間、循環數)與協同度分解讀數。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="har">4.4.3 高深寬比(HAR)蝕刻</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>挑戰</strong>:3D NAND 的通道孔已達 AR &gt; 60:1,深度超過 6 µm,
+    而 CD 只有幾十 nm。
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>手段</th><th>解決什麼</th><th>本書哪一章講過</th></tr></thead>
+      <tbody>
+        <tr><td><strong>極高離子能量</strong>(數 kV)</td><td>讓離子有能量抵達並反應到孔底</td>
+          <td><a href="../../2/2-4-sheath-physics/">2.4</a></td></tr>
+        <tr><td><strong>低溫 / Cryo 蝕刻</strong>(−20 ~ −60 °C)</td>
+          <td>提高側壁鈍化效率、提高選擇比、抑制 bowing</td>
+          <td><a href="../../3/3-3-defect-atlas/">3.3</a></td></tr>
+        <tr><td><strong>脈衝 + 負離子</strong></td><td>中和孔底充電,防止 twisting</td>
+          <td>本章 4.4.1 + <a href="../4-3-plasma-damage/">4.3</a></td></tr>
+        <tr><td>方波 / 客製化偏壓波形</td><td>把 IEDF 壓成單能量峰,精準控制</td>
+          <td><a href="../../2/2-4-sheath-physics/">2.4</a></td></tr>
+        <tr><td>高選擇比硬遮罩(非晶碳、金屬)</td><td>承受長時間蝕刻</td>
+          <td><a href="../../3/3-2-etch-applications/">3.2</a></td></tr>
+        <tr><td>高聚合氣體(C₄F₆、C₄F₈)</td><td>側壁保護</td>
+          <td><a href="../../2/2-2-gas-selection/">2.2</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 低溫蝕刻為什麼有效:把「差異」放大</div>
+    <p>
+      低溫下鈍化層(聚合物或凝結的反應物)在側壁更穩定,
+      而孔底因離子轟擊仍持續移除 →
+      <strong>底部與側壁的差異被放大</strong> → profile 更垂直、選擇比更高。
+    </p>
+    <p>
+      注意這與加聚合氣體是<strong>同一個目的、不同的旋鈕</strong>:
+      兩者都在拉大「有離子轟擊」與「沒有離子轟擊」兩處的移除速率差。
+      這是近年 HAR 蝕刻最重要的進展之一。
+    </p>
+  </div>
+
+  <p>
+    <strong>HAR 是本書所有主題的交會點</strong>:充電(4.3)、
+    ARDE(<a href="../../3/3-3-defect-atlas/">3.3</a>)、
+    鈍化(<a href="../../3/3-1-etch-mechanisms/">3.1</a>)、
+    選擇比(<a href="../../3/3-2-etch-applications/">3.2</a>)、
+    脈衝(本章)全部同時在一個孔裡發生。
+  </p>
+</div>
+
+<h2 id="frontier">4.4.4 其他前瞻方向</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>方向</th><th>在做什麼</th><th>為什麼重要</th></tr></thead>
+      <tbody>
+        <tr><td><strong>選擇性沉積 ASD</strong></td><td>只在特定材料上長膜</td>
+          <td>自對準製程,<strong>減少微影層數</strong></td></tr>
+        <tr><td>客製化偏壓波形</td><td>用非正弦波形直接控制 IEDF 形狀</td>
+          <td>把雙峰壓成單峰,能量選擇性大幅提高</td></tr>
+        <tr><td>原子層清潔與表面平坦化</td><td>把 ALE 的自限制用在清潔與平坦化</td>
+          <td>先進節點的表面品質要求</td></tr>
+        <tr><td>機器學習輔助 recipe 優化與虛擬量測</td><td>從 FDC 資料反推製程結果</td>
+          <td>見 <a href="../4-2-endpoint-apc/">4.2.7</a> —— 補不了訓練資料裡沒有的故障</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>為什麼 off 期 T_e 衰減得比 n_e 快?寫出關鍵的那一項依賴。</li>
+    <li>「後輝光是高密度、低溫的電漿」——這句話的兩個時間常數各是多少量級?</li>
+    <li><strong>Bias 脈衝為什麼治不了孔底充電?</strong>它治得了什麼?</li>
+    <li>脈衝頻率的下限由什麼決定?上限由什麼決定?</li>
+    <li>同步脈衝的相位差改變了什麼、沒改變什麼?</li>
+    <li>ALE 的兩個自限制各在哪一步?<strong>只有一個成立會怎樣?</strong></li>
+    <li>ALE 能量窗的上緣與下緣,哪一個是材料常數、哪一個是配方參數?為什麼?</li>
+    <li><strong>窗太窄的時候,該先改能量還是先改移除步時間?為什麼?</strong></li>
+    <li>寫出協同度的定義。窗內的 β 為什麼是 0?</li>
+    <li>Purge 不足會在 EPC-vs-循環數 的曲線上留下什麼特徵?現場會看到什麼現象?</li>
+    <li>ALE 每循環 0.136 nm,蝕 10 nm 要多久?量產上怎麼處理這個代價?</li>
+    <li>低溫蝕刻為什麼能抑制 bowing?它與加聚合氣體的共同點是什麼?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Kanarik 等, <em>Overview of atomic layer etching in the semiconductor industry</em>, J. Vac. Sci. Technol. A 33, 020802 (2015) —— ALE 綜述,協同度定義的來源</li>
+    <li>Kanarik 等, <em>Predicting synergy in atomic layer etching</em>, J. Vac. Sci. Technol. A 35, 05C302 (2017)</li>
+    <li>Banna 等, <em>Pulsed high-density plasmas for advanced dry etching processes</em>, J. Vac. Sci. Technol. A 30, 040801 (2012) —— 脈衝電漿綜述</li>
+    <li>Economou, <em>Pulsed plasma etching for semiconductor manufacturing</em>, J. Phys. D 47, 303001 (2014)</li>
+    <li>Steinbrüchel, <em>Universal energy dependence of physical and ion-enhanced chemical etch yields</em>, Appl. Phys. Lett. 55, 1960 (1989) —— 本章閾值產額式的來源</li>
+  </ul>
+</div>

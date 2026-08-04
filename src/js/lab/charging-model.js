@@ -129,6 +129,27 @@
     return { v: -te * Math.log(eff), unbounded: false, eff: eff, ratio: ratio };
   }
 
+  /**
+   * 表面**高於電漿電位**時,幾何遮蔽會被自己的電場打敗。
+   *
+   * 遮蔽因子 1/(1+AR²) 的前提是電子走直線。但表面若比電漿電位還正,
+   * 電子是被**吸引**的 —— 它們會被電場拉彎、漏斗進洞裡,有效收集面積放大。
+   * 只要 (V − V_p) ≫ T_e,直線幾何就完全不成立了。
+   *
+   * 這一項是被 A31 的後輝光逼出來的:少了它,脈衝 off 期的孔底
+   * 放電電流小到每個週期只掉 0.2 V,模型會宣稱「脈衝對孔底充電幾乎沒用」——
+   * 與現場完全相反。加上之後,後輝光留下的 +10 V 會把冷電子整個吸進洞裡,
+   * 數十 µs 就中和完畢。
+   *
+   * ⚠️ 它在 CW(4.3)的所有情形下都是**關閉的**:那裡表面永遠停在
+   * 電位天花板或被氧化層箝住,兩者都低於 V_p,所以 4.3 的數字不受影響。
+   */
+  function collectionBoost(V, vp, te, eff) {
+    var over = V - vp;
+    if (!(over > 0)) return eff;
+    return eff + (1 - eff) * (1 - Math.exp(-over / Math.max(te, 0.02)));
+  }
+
   /** 電漿淨電流密度(A/m²,正 = 把表面充正) */
   function plasmaCurrent(V, s, te) {
     var ne = s.ne == null ? 1e17 : s.ne;
@@ -136,7 +157,7 @@
     var ji = jIon(ne, te, mass);
     var jes = jElecSat(ne, te);
     var vp = te * Math.log(jes / ji);      // 讓未遮蔽浮動面 = 0 V
-    var eff = effectiveCollection(s);
+    var eff = collectionBoost(V, vp, te, effectiveCollection(s));
     // V > V_p 之後沒有位障了,電子收集飽和 —— 指數要封頂
     var je = jes * eff * Math.exp(Math.min(0, (V - vp) / te));
     return ji - je;
@@ -424,6 +445,7 @@
     ceiling: ceiling,
     jIon: jIon,
     jElecSat: jElecSat,
+    collectionBoost: collectionBoost,
     plasmaCurrent: plasmaCurrent,
     oxideCurrent: oxideCurrent,
     diodeCurrent: diodeCurrent,
