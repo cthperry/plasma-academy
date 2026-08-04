@@ -541,6 +541,80 @@ console.log("\n【已撰寫章節通用檢查】");
   }
 }
 
+/* ==========================================================================
+   測驗中心
+
+   這一段是被一個逃掉的 bug 逼出來的:`PA.curriculum.byId` 是 map 不是函式,
+   自我檢測整個掛不上去,而品質門完全沒攔住 —— 因為當時煙霧測試只涵蓋章節頁。
+   純資料的 check-quiz.mjs 驗得了題庫結構,驗不到「在瀏覽器裡真的能作答」。
+   所以這裡實際點下去:選項要能選、解析要展開、交卷要算得出分數。
+   ========================================================================== */
+console.log("\n【測驗中心】");
+{
+  const { page, ctx } = await newPage();
+  await page.goto(`${BASE}/quiz/`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(1200);
+
+  const mounted = await page.evaluate(() => {
+    const self = document.querySelector('[data-quiz="self"]');
+    const exam = document.querySelector('[data-quiz="exam"]');
+    return {
+      selfOk: self.hasAttribute("data-quiz-mounted") && !self.hasAttribute("data-quiz-error"),
+      examOk: exam.hasAttribute("data-quiz-mounted") && !exam.hasAttribute("data-quiz-error"),
+      chapters: self.querySelectorAll("select option").length,
+      questions: self.querySelectorAll(".pa-quiz__q").length,
+      options: self.querySelectorAll(".pa-quiz__opt").length,
+    };
+  });
+  ok("兩種模式都掛載成功", mounted.selfOk && mounted.examOk, "");
+  ok("章節選單涵蓋全部 25 章", mounted.chapters === 25, `${mounted.chapters} 章`);
+  ok("預設章節有題目與選項",
+    mounted.questions >= 1 && mounted.options >= 2,
+    `${mounted.questions} 題 / ${mounted.options} 個選項`);
+
+  // 自我檢測:選一個選項 → 解析要立刻展開,而且要有逐選項的 why
+  await page.locator('[data-quiz="self"] .pa-quiz__opt input').first().check();
+  await page.waitForTimeout(300);
+  const answered = await page.evaluate(() => {
+    const fb = document.querySelector('[data-quiz="self"] .pa-quiz__feedback.is-shown');
+    return {
+      revealed: !!fb,
+      whys: fb ? fb.querySelectorAll(".pa-quiz__why").length : 0,
+      hasExplain: fb ? !!fb.querySelector(".pa-quiz__explain") : false,
+    };
+  });
+  ok("自我檢測作答後立即展開解析", answered.revealed, "");
+  ok("**解析含逐選項的 why 與整體說明**",
+    answered.whys >= 1 && answered.hasExplain,
+    `${answered.whys} 條逐選項解析`);
+
+  // 結業測驗:開始 → 交卷 → 要算得出分數,而且每題都展開
+  await page.locator('[data-quiz="exam"] button').first().click();
+  await page.waitForTimeout(600);
+  const drawn = await page.evaluate(
+    () => document.querySelectorAll('[data-quiz="exam"] .pa-quiz__q').length
+  );
+  ok("結業測驗抽得出題目", drawn >= 5, `抽出 ${drawn} 題`);
+
+  await page.locator('[data-quiz="exam"] button', { hasText: "交卷" }).click();
+  await page.waitForTimeout(500);
+  const graded = await page.evaluate(() => {
+    const r = document.querySelector('[data-quiz="exam"] .pa-quiz__result.is-shown');
+    return {
+      scored: !!r && /\d+\s*\/\s*\d+/.test(r.textContent),
+      text: r ? r.textContent.trim() : "",
+      revealed: document.querySelectorAll('[data-quiz="exam"] .pa-quiz__feedback.is-shown').length,
+    };
+  });
+  ok("交卷後算得出分數", graded.scored, graded.text);
+  ok("交卷後每一題都展開解析",
+    graded.revealed === drawn,
+    `${graded.revealed} / ${drawn}`);
+
+  ok("無 console 錯誤", page.errors.length === 0, page.errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
 await browser.close();
 
 console.log(`\n${fail === 0 ? "✓" : "✗"} 煙霧測試 通過 ${pass} / ${pass + fail}\n`);
