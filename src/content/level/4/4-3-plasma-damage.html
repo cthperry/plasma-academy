@@ -1,0 +1,494 @@
+<!--meta
+{
+  "title": "4.3 電漿誘發損傷 — Plasma Academy",
+  "description": "電子遮蔽如何把高深寬比結構的底部充正、天線比為什麼寫成面積比而不是電位上限、五種主要損傷型式與量測方法、電弧成因,以及脈衝電漿與天線二極體各自救得了什麼。",
+  "type": "chapter",
+  "module": "4.3"
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>4.3 電漿誘發損傷</h1>
+  <div class="pa-chapter-header__meta">
+    <span>⏱ 2.5 小時</span>
+    <span>🔬 A29 互動元件</span>
+  </div>
+</div>
+
+<div class="pa-objectives" data-objectives="4.3">
+  <div class="pa-objectives__title">🎯 學習目標</div>
+  <ul>
+    <li><label><input type="checkbox" /><span>說明電子遮蔽的機制,以及它為什麼只發生在高深寬比結構</span></label></li>
+    <li><label><input type="checkbox" /><span>說出天線比的定義,以及設計規則為什麼寫成面積比而不是電位</span></label></li>
+    <li><label><input type="checkbox" /><span>列出五種主要損傷型式,並指出哪一種天線二極體救不了</span></label></li>
+    <li><label><input type="checkbox" /><span>區分「硬崩潰」與「磨耗失效」,並判斷各自該用哪個對策</span></label></li>
+    <li><label><input type="checkbox" /><span>評估一個製程步驟的損傷風險並提出可執行的調整</span></label></li>
+  </ul>
+</div>
+
+<div class="pa-prereq">
+  <span class="pa-prereq__label">📋 前置知識</span>
+  <a href="../../2/2-4-sheath-physics/">2.4 鞘層物理進階</a>
+  <a href="../../3/3-3-defect-atlas/">3.3 缺陷圖鑑</a>
+</div>
+
+<div class="pa-summary">
+  <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
+  <p>
+    <a href="../../3/3-3-defect-atlas/">3.3</a> 講過充電會把離子打歪,造成
+    notching 與 twisting —— 那是<strong>圖形</strong>被毀掉。
+    這一章講同一件事的另一半:那些電荷<strong>沿著導線跑到哪裡去了</strong>。
+  </p>
+  <ul>
+    <li><strong>離子直、電子散。</strong>離子被鞘層加速幾乎垂直落下,電子是熱運動、
+      近乎等向。深寬比 5 的孔底只收得到 <strong>3.8 %</strong> 的電子,
+      卻收得到幾乎全部的離子 —— 於是它只能往正的方向浮。</li>
+    <li><strong>浮多高是算得出來的:V = −T_e · ln(有效電子收集係數)。</strong>
+      深寬比 5、全遮蔽、T_e = 3 eV → <strong>9.8 V</strong>。這個數字與天線比無關。</li>
+    <li><strong>天線比改的不是電位,是劑量。</strong>A29 實測:天線比 ×10,
+      閘極電位只多 19 %,但<strong>注入電荷剛好 ×9.5</strong>。
+      設計規則寫成面積比上限,就是這個道理。</li>
+    <li><strong>兩種失效要分開治。</strong>硬崩潰是場強判準(瞬間),
+      磨耗失效是電荷劑量判準(累積)。<strong>脈衝電漿只救得了後者。</strong></li>
+    <li><strong>UV 光子損傷不需要導電路徑,天線二極體完全擋不住。</strong>
+      它只能從電漿端下手。</li>
+  </ul>
+</div>
+
+<h2 id="shading">4.3.1 電子遮蔽:一切的起點</h2>
+
+<div class="pa-prose">
+  <p>
+    電漿本身是準中性的,晶圓表面收到的離子與電子長期必須相等 ——
+    否則表面會一直充電下去。問題出在<strong>結構把這個平衡破壞掉</strong>。
+  </p>
+
+  <div class="pa-formula">
+    <div class="pa-formula__main">電子幾何穿透率 T = 1 / (1 + AR²)</div>
+    <div class="pa-formula__note">
+      等向入射的電子要進到深寬比 AR 的孔底,只有半角 θ = arctan(1/AR) 錐內的才進得去；
+      對餘弦分佈,通過率 = sin²θ。<br />
+      <strong>離子幾乎垂直,不受這一項影響</strong> —— 整個充電效應就是這個不對稱造成的。
+    </div>
+  </div>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>結構深寬比</th><th>電子穿透率</th><th>充電電位天花板(T_e = 3 eV,全遮蔽)</th></tr></thead>
+      <tbody>
+        <tr><td>1 : 1</td><td>50 %</td><td>2.08 V</td></tr>
+        <tr><td>2 : 1</td><td>20 %</td><td>4.83 V</td></tr>
+        <tr><td>3 : 1</td><td>10 %</td><td>6.91 V</td></tr>
+        <tr><td><strong>5 : 1</strong></td><td><strong>3.85 %</strong></td><td><strong>9.77 V</strong></td></tr>
+        <tr><td>8 : 1</td><td>1.54 %</td><td>12.52 V</td></tr>
+        <tr><td>10 : 1</td><td>0.99 %</td><td>13.85 V</td></tr>
+        <tr><td><strong>12 : 1 以上</strong></td><td>&lt; 0.7 %</td>
+          <td><strong>無上限</strong> —— 見下方警示</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-formula">
+    <div class="pa-formula__main">V_天花板 = −T_e · ln(有效電子收集係數)</div>
+    <div class="pa-formula__note">
+      由 J_離子 = J_電子飽和 · eff · exp((V − V_p)/T_e) 解出。<br />
+      有效收集係數 eff = 被遮蔽比例 × T + (1 − 被遮蔽比例)。
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 天花板正比於 T_e —— 一次方,沒有別的</div>
+    <p>
+      A29 實測:T_e 從 2 eV 加到 4 eV,天花板從 6.52 V 變成 13.03 V,<strong>剛好兩倍</strong>。
+    </p>
+    <p>
+      這是「低 T_e 電漿源」(微波、表面波 RLSA、遠端電漿)能減充電損傷的<strong>全部</strong>理由 ——
+      也同時說明它的天花板效果有限:T_e 從 3 eV 壓到 1.5 eV 已經很難,
+      而那只換到一半的電位。想再往下就得動別的旋鈕。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 深寬比超過約 11 時,電漿端<strong>沒有</strong>天花板</div>
+    <p>
+      電子飽和電流是離子的 108 倍(Ar)。所以只要有效收集係數還大於 1/108,
+      表面總能浮到某個電位把電子拉夠。<strong>但穿透率掉到 1/108 以下之後,
+      即使把表面充到電漿電位,進來的電子仍然補不回離子。</strong>
+    </p>
+    <p>
+      這時候電位不是停在某個平衡點,而是<strong>一路漲到氧化層開始導通為止</strong> ——
+      決定電位的不再是電漿,是氧化層。3D NAND 與 DRAM 電容那種
+      深寬比動輒 40:1 以上的結構,永遠在這個區間裡。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 版圖端最有效、也最常被忽略的一招:別讓天線全埋在溝底</div>
+    <p>
+      沒被遮蔽的金屬照樣收電子,而且收得很兇(電子飽和電流是離子的 108 倍)。
+      A29 實測:同樣是深寬比 5,<strong>被遮蔽比例從 100 % 降到 20 %,
+      天花板從 9.77 V 掉到 0.64 V,損傷劑量掉六個數量級。</strong>
+    </p>
+    <p>
+      <strong>一點點沒被遮蔽的面積就能把整個天線的電位拉回來。</strong>
+      這也解釋了一個現場常見的現象:同一片上,埋在密集圖形區的天線比
+      跨過開闊區的天線容易出事,即使兩者的面積比一模一樣。
+    </p>
+  </div>
+</div>
+
+<h2 id="antenna">4.3.2 天線效應:電荷跑去哪裡</h2>
+
+<div class="pa-prose">
+  <div class="pa-formula">
+    <div class="pa-formula__main">天線比 AR<sub>天線</sub> = 連接到閘極的導體面積 / 閘極面積</div>
+    <div class="pa-formula__note">
+      收集電荷的是導體面積,承受電荷的是閘極面積。<br />
+      比值越大,<strong>單位閘極面積要吞的電流密度</strong>越大。
+    </div>
+  </div>
+
+  <p>
+    完整的因果鏈:
+  </p>
+  <div class="pa-prose">
+    <p style="font-family: var(--pa-font-mono, monospace); line-height: 2;">
+      電子遮蔽 → 天線浮到 V_天花板 → 電位沿導線傳到閘極<br />
+      → 氧化層被迫導通,電流密度 = J_電漿 × <strong>天線比</strong><br />
+      → 注入電荷累積 → 到 Q_bd 就崩潰
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A29 實測:天線比的兩種依賴，而它們差 12 倍</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>天線比</th><th>閘極電位</th><th>氧化層電場</th><th>注入電荷(60 s)</th><th>到崩潰</th></tr></thead>
+        <tbody>
+          <tr><td>10</td><td>3.34 V</td><td>11.1 MV/cm</td><td>2.28 C/cm²</td><td>2.6 × 10⁴ s</td></tr>
+          <tr><td>30</td><td>3.69 V</td><td>12.3 MV/cm</td><td>6.74 C/cm²</td><td>8.9 × 10³ s</td></tr>
+          <tr><td>100</td><td>4.09 V</td><td>13.6 MV/cm</td><td>22.0 C/cm²</td><td>2.7 × 10³ s</td></tr>
+          <tr><td>300</td><td>4.45 V</td><td>14.8 MV/cm</td><td>64.4 C/cm²</td><td>9.3 × 10² s</td></tr>
+          <tr><td>1000</td><td>4.85 V</td><td>16.2 MV/cm</td><td>209 C/cm²</td><td>2.9 × 10² s</td></tr>
+          <tr><td>3000</td><td>5.22 V</td><td>17.4 MV/cm</td><td>606 C/cm²</td><td>9.9 × 10¹ s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      log-log 斜率:<strong>閘極電位 0.078、注入電荷 0.979、到崩潰時間 −0.979</strong>。
+      天線比跨 2.5 個數量級,電位只漲了 56 %,而劑量剛好跟著漲了 265 倍。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 常見誤解:「電位只多了 10 %,應該還好吧?」</div>
+    <p>
+      這是現場最常見、也最貴的一個推理錯誤。天線比從 100 加到 1000:
+    </p>
+    <ul>
+      <li>閘極電位 4.09 V → 4.85 V,<strong>只多 19 %</strong></li>
+      <li>損傷劑量 2.2 × 10⁻² → 2.1 × 10⁻¹,<strong>剛好 ×9.5</strong></li>
+    </ul>
+    <p>
+      為什麼:<strong>電位由天花板決定</strong>(T_e 與結構深寬比),
+      天線比改的是單位閘極面積要吞多少電流。而氧化層導通對電壓是<strong>指數</strong>的 ——
+      電流多十倍,電位只要往上挪一點點就吞得下。
+    </p>
+    <p>
+      <strong>所以設計規則寫成面積比的上限,不是寫成電位的上限。</strong>
+      拿電位量測去判斷天線風險,會系統性地低估。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 沒有氧化層漏電,天線比在物理上是無效的旋鈕</div>
+    <p>
+      這件事在建模時才浮出來,而它其實是整個機制的核心。
+      浮動天線的電位被電漿自己釘住:電漿導納 ∝ 天線面積,而驅動也 ∝ 天線面積 ——
+      <strong>兩邊完全對消</strong>。
+    </p>
+    <p>
+      讓天線比進到方程式的,是<strong>氧化層自己的漏電</strong>提供的第二條路徑:
+    </p>
+    <p style="font-family: var(--pa-font-mono, monospace);">
+      V_ox = V_天花板 × G_電漿 / (G_電漿 + G_氧化層)
+    </p>
+    <p>
+      G_電漿 ∝ 天線面積、G_氧化層 ∝ 閘極面積 —— 這是一個<strong>分壓器</strong>,
+      而分壓比就是天線比。小天線 → 漏電贏 → 電位被拉低;大天線 → 電漿贏 → 電位上到天花板。
+    </p>
+  </div>
+
+  <h3>設計規則與天線二極體</h3>
+  <p>
+    各代製程都有天線比上限,典型 <strong>100–1000</strong>(不同金屬層、
+    不同閘極氧化層厚度各有各的數字)。超過的線路必須加
+    <strong>天線二極體</strong> —— 一個接地的二極體,在電漿製程中提供洩放路徑,
+    正常操作時逆偏不導通,不影響電路功能。
+  </p>
+  <p>
+    A29 實測:打開二極體之後電位被箝在 <strong>0.61 V</strong>,
+    劑量掉將近六個數量級。<strong>這是最有效的單一手段</strong> ——
+    代價是版圖面積與接面漏電,而且它<strong>只救得了充電損傷</strong>。
+  </p>
+</div>
+
+<h2 id="lab-a29">🔬 A29 天線效應充電</h2>
+
+<div class="pa-lab pa-lab--complex" data-lab="A29">
+  <div class="pa-lab__head">
+    <span class="pa-lab__id">A29</span>
+    <span class="pa-lab__title">天線比 ×10:電位只多 19 %,劑量剛好 ×10</span>
+  </div>
+  <div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>
+  <div class="pa-lab__stage"></div>
+  <noscript>
+    <div class="pa-lab__observe">
+      此互動元件需要 JavaScript。上圖為晶圓剖面與離子/電子入射軌跡,
+      下圖為閘極電位隨時間的變化與硬崩潰門檻;
+      七個旋鈕(天線比、結構深寬比、被遮蔽面積比例、電子溫度、氧化層厚度、
+      脈衝工作週期、製程步驟時間)加上 CW / 脈衝切換與天線二極體開關,
+      同時顯示電位天花板、氧化層電場、注入電荷與損傷劑量。
+    </div>
+  </noscript>
+</div>
+
+<h2 id="types">4.3.3 五種主要損傷</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>型式</th><th>機制</th><th>影響</th><th>天線二極體救得了?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>充電損傷</strong></td><td>上述天線效應</td>
+          <td>閘極氧化層崩潰、Vt shift、可靠度下降</td><td><strong>可以</strong></td></tr>
+        <tr><td><strong>UV / 光子損傷</strong></td>
+          <td>電漿放出的 VUV 光子(&lt; 200 nm)穿透介電質產生電子-電洞對</td>
+          <td>介電質陷阱、Vt shift</td><td><strong>不行</strong></td></tr>
+        <tr><td>離子轟擊損傷</td>
+          <td>高能離子在表面下數 nm 造成晶格損傷、非晶化</td>
+          <td>接面漏電、遷移率下降</td><td>不行</td></tr>
+        <tr><td>污染 / 摻雜</td>
+          <td>腔體零件濺鍍出的金屬進入晶圓;鹵素殘留</td>
+          <td>深層能階、腐蝕</td><td>不行</td></tr>
+        <tr><td><strong>Low-k 損傷</strong></td>
+          <td>O 自由基抽走 SiCOH 中的甲基 → 碳耗盡 → 親水 → 吸濕</td>
+          <td><strong>k 值上升</strong>、漏電、可靠度</td><td>不行</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ UV 損傷常被忽略,而且它<strong>不需要導電路徑</strong></div>
+    <p>
+      充電損傷需要一條「天線 → 導線 → 閘極」的路。UV 光子不需要 ——
+      它直接穿透介電質,在裡面生出電子-電洞對。
+      <strong>所以天線二極體救不了它,設計規則也管不到它。</strong>
+    </p>
+    <p>
+      對策只能從電漿端下手:降低 T_e(減少高能激發 → 減少短波長光子)、
+      改用低 T_e 電漿源、加遮蔽層。這也是為什麼「低 T_e」這件事的價值
+      比它在充電損傷那條線上看起來的更高 —— 它同時壓兩種損傷。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ Low-k 損傷是先進 BEOL 的核心難題</div>
+    <p>
+      <strong>所有含 O 的電漿步驟</strong>(灰化、蝕刻、清潔)都會傷 low-k。
+      機制很直接:O 自由基把 SiCOH 裡的甲基抽走,留下的 Si–OH 親水,
+      吸了水氣之後 k 值上升 —— 而 low-k 存在的唯一理由就是 k 值要低。
+    </p>
+    <p>
+      這是業界改用 <strong>N₂/H₂ 灰化</strong>、<strong>CO₂ 基化學</strong>、
+      以及後續<strong>矽烷化修復(silylation repair)</strong> 的原因。
+      矽烷化用 HMDS 之類的分子把 Si–OH 重新封成 Si–CH₃,把碳補回去。
+    </p>
+  </div>
+</div>
+
+<h2 id="failure">4.3.4 兩種失效,兩種對策</h2>
+
+<div class="pa-prose">
+  <p>
+    充電損傷有兩條完全不同的失效路徑,而現場最容易犯的錯是<strong>拿治 A 的手段去治 B</strong>。
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>硬崩潰</th><th>磨耗失效</th></tr></thead>
+      <tbody>
+        <tr><td>判準</td><td><strong>場強</strong> E ≥ 15 MV/cm</td><td><strong>電荷劑量</strong> Q_inj ≥ Q_bd</td></tr>
+        <tr><td>時間依賴</td><td>瞬間,與製程時間無關</td><td>累積,時間 ∝ 1/天線比</td></tr>
+        <tr><td>脈衝電漿</td><td><strong>救不了</strong>(降的是平均,不是尖峰)</td><td><strong>有效</strong>,劑量 ≈ ×duty</td></tr>
+        <tr><td>天線比設計規則</td><td>幾乎沒用(電位斜率只有 0.08)</td><td><strong>正中要害</strong></td></tr>
+        <tr><td>降 T_e / 降深寬比 / 降遮蔽比例</td><td><strong>有效</strong>(直接降天花板)</td><td>有效</td></tr>
+        <tr><td>天線二極體</td><td><strong>有效</strong>(箝住電位)</td><td>有效</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--data">
+    <div class="pa-note__title">📊 A29 實測:五種對策的劑量比較(t_ox 3 nm、天線比 300、深寬比 5、全遮蔽)</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>對策</th><th>尖峰電位</th><th>氧化層電場</th><th>損傷劑量(相對無對策)</th></tr></thead>
+        <tbody>
+          <tr><td>無對策 CW</td><td>4.45 V</td><td>14.8 MV/cm</td><td>1.00</td></tr>
+          <tr><td>脈衝 duty 20 %</td><td><strong>4.45 V(不變)</strong></td><td>14.8 MV/cm</td><td>0.18</td></tr>
+          <tr><td>低 T_e 電漿(1.5 eV)</td><td>4.09 V</td><td>13.7 MV/cm</td><td>0.35</td></tr>
+          <tr><td><strong>天線二極體</strong></td><td><strong>0.61 V</strong></td><td>2.0 MV/cm</td><td><strong>1.2 × 10⁻⁶</strong></td></tr>
+          <tr><td><strong>遮蔽比例降到 20 %</strong></td><td><strong>0.64 V</strong></td><td>2.1 MV/cm</td><td><strong>1.5 × 10⁻⁶</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      注意脈衝那一列:<strong>尖峰電位一位數都沒動</strong>,只有劑量降下來。
+      而劑量降的比例幾乎剛好等於 duty(20 % → 0.18)——
+      <strong>off 期完全不貢獻損傷</strong>。
+    </p>
+  </div>
+
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 最脆弱的氧化層厚度<strong>不是</strong>最薄的那一個</div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>t_ox</th><th>閘極電位</th><th>電場</th><th>Q_bd</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td>1.5 nm</td><td>0.59 V</td><td>4.0 MV/cm</td><td>10⁶ C/cm²</td><td>存活</td></tr>
+          <tr><td>2 nm</td><td>1.62 V</td><td>8.1 MV/cm</td><td>10⁵</td><td>存活</td></tr>
+          <tr><td>3 nm</td><td>4.45 V</td><td>14.8 MV/cm</td><td>10³</td><td>存活(邊緣)</td></tr>
+          <tr><td><strong>4 nm</strong></td><td>7.53 V</td><td><strong>18.8 MV/cm</strong></td><td>10¹</td><td><strong>硬崩潰</strong></td></tr>
+          <tr><td><strong>5 nm</strong></td><td>9.16 V</td><td><strong>18.3 MV/cm</strong></td><td>10¹</td><td><strong>硬崩潰</strong></td></tr>
+          <tr><td>7 nm</td><td>9.77 V</td><td>14.0 MV/cm</td><td>10¹</td><td>存活</td></tr>
+          <tr><td>10 nm</td><td>9.77 V</td><td>9.8 MV/cm</td><td>10¹</td><td>存活</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>兩頭都有保護,中間沒有。</strong>
+      1.5 nm 的電位被自己的直接穿隧漏電壓在 0.6 V,而且它能撐的注入電荷高達 10⁶ C/cm²；
+      10 nm 吃下整個天花板 9.77 V,但除以厚度之後場強只有 9.8 MV/cm。
+      <strong>4–5 nm 這個中間帶電位夠高、厚度又不夠稀釋,兩頭不討好。</strong>
+    </p>
+    <p>
+      這解釋了一件現場常見但反直覺的事:<strong>先進製程真正被天線規則綁住的,
+      往往是 I/O 元件而不是核心元件。</strong>核心元件的超薄氧化層反而自我保護。
+    </p>
+  </div>
+</div>
+
+<h2 id="measure">4.3.5 損傷的量測</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>方法</th><th>量什麼</th><th>什麼時候用</th></tr></thead>
+      <tbody>
+        <tr><td><strong>天線測試結構(Antenna PCM)</strong></td>
+          <td>不同天線比的電容,量 Vt shift 與崩潰率</td>
+          <td>製程認證、機台驗收 —— <strong>直接量出設計規則的上限</strong></td></tr>
+        <tr><td><strong>CHARM-2 監測晶圓</strong></td>
+          <td>專用晶圓,直接記錄製程中的電位與 UV 劑量</td>
+          <td>比較機台、找出是哪一步在傷</td></tr>
+        <tr><td>C-V 量測</td><td>界面態密度 D_it</td><td>研發階段的機制釐清</td></tr>
+        <tr><td>TDDB / 電荷至崩潰 Q_bd</td><td>氧化層可靠度</td>
+          <td>可靠度驗證 —— 對應本章的「磨耗失效」</td></tr>
+        <tr><td>橢圓偏光 / FTIR</td><td>Low-k 的碳含量與 k 值變化</td><td>BEOL 製程開發</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <strong>天線測試結構要一整組不同天線比才有意義。</strong>
+    因為要找的是「哪個比值開始出事」,那是一條曲線的轉折點,
+    單一比值量不出來。這也呼應 4.3.2 的結論:
+    <strong>該掃的是面積比,不是電位。</strong>
+  </p>
+</div>
+
+<h2 id="arcing">4.3.6 電弧(Arcing)</h2>
+
+<div class="pa-prose">
+  <p>
+    <strong>成因</strong>:局部電場集中(尖角、剝落處、微粒)、
+    絕緣件表面帶電、Paschen 谷底的寄生放電
+    (見 <a href="../../1/1-4-glow-discharge/">1.4</a>)。
+  </p>
+  <p>
+    <strong>後果</strong>:晶圓局部熔毀、零件損傷、大量微粒、製程中斷 ——
+    通常是<strong>整片報廢加上非計畫停機</strong>。
+  </p>
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>對策</th><th>治哪一個成因</th></tr></thead>
+      <tbody>
+        <tr><td>RF 電源的 arc detection 與快速切斷</td><td>不治因,但把損失壓到最小</td></tr>
+        <tr><td>消除腔內尖角與鬆動的沉積物(納入 PM)</td><td>局部電場集中</td></tr>
+        <tr><td>He 稀釋(提高崩潰電壓)</td><td>寄生放電</td></tr>
+        <tr><td><strong>避免功率快速跳變(ramp 而非 step)</strong></td>
+          <td>暫態過壓 —— <strong>最便宜、最常被忽略的一招</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 id="strategy">4.3.7 風險評估決策表</h2>
+
+<div class="pa-prose">
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th>症狀 / 情境</th><th>先查什麼</th><th>可執行的調整</th></tr></thead>
+      <tbody>
+        <tr><td>特定金屬層之後 Vt shift 變大</td>
+          <td>該層的天線比分佈、該步驟的深寬比</td>
+          <td>加天線二極體;把該步驟改脈衝</td></tr>
+        <tr><td><strong>I/O 元件壞、核心元件沒事</strong></td>
+          <td>兩者的 t_ox</td>
+          <td><strong>正常</strong> —— 中間厚度最脆弱,規則要分開訂</td></tr>
+        <tr><td>換了低 T_e 電漿源仍然有損傷</td>
+          <td>是硬崩潰還是磨耗?UV 有沒有排除?</td>
+          <td>天花板只降到一半;若是 UV 就要加遮蔽層</td></tr>
+        <tr><td>脈衝之後崩潰率沒降</td>
+          <td>是不是<strong>硬崩潰</strong></td>
+          <td>脈衝救不了場強判準 —— 改動天花板(深寬比/遮蔽比例)</td></tr>
+        <tr><td>Low-k 的 k 值製程後上升</td>
+          <td>哪幾步含 O</td>
+          <td>灰化改 N₂/H₂;加矽烷化修復</td></tr>
+        <tr><td>晶圓局部熔點 + 微粒暴增</td>
+          <td>電弧:腔體剝落、功率跳變</td>
+          <td>PM 清尖角;功率改 ramp;開 arc detection</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 id="check">✅ 自我檢測</h2>
+
+<div class="pa-prose">
+  <ol>
+    <li>為什麼高深寬比結構的底部會充<strong>正</strong>電,而不是負電?寫出電子穿透率的式子。</li>
+    <li>深寬比 5 的孔底收得到多少比例的電子?T_e = 3 eV 時充電電位天花板是多少?</li>
+    <li>為什麼深寬比超過約 11 之後電漿端就沒有天花板了?那時候是什麼在決定電位?</li>
+    <li><strong>天線比 ×10 之後,閘極電位變多少?損傷劑量變多少?為什麼兩者差這麼多?</strong></li>
+    <li>設計規則為什麼寫成面積比的上限,而不是寫成閘極電位的上限?</li>
+    <li>如果氧化層完全不漏電,天線比還會影響損傷嗎?為什麼?</li>
+    <li>硬崩潰與磨耗失效的判準各是什麼?<strong>脈衝電漿救得了哪一個、救不了哪一個?</strong></li>
+    <li>為什麼脈衝電漿降得了時間平均電位,卻降不了尖峰電位?</li>
+    <li>五種損傷型式中,哪一種天線二極體救不了?為什麼?</li>
+    <li><strong>為什麼 1.5 nm 的氧化層比 4 nm 的更安全?</strong>兩個理由各是什麼?</li>
+    <li>Low-k 損傷的化學機制是什麼?為什麼「所有含 O 的步驟」都會傷它?</li>
+    <li>同樣的天線比,為什麼埋在密集圖形區的比跨過開闊區的容易出事?</li>
+  </ol>
+  <p class="pa-subtle">題庫與作答功能於測驗中心實作。</p>
+</div>
+
+<h2 id="reading">📚 延伸閱讀</h2>
+
+<div class="pa-prose">
+  <ul>
+    <li>Cheung, <em>Plasma Charging Damage</em>, Springer (2001) —— 這個主題的標準參考書</li>
+    <li>Hashimoto, <em>Charge damage caused by electron shading effect</em>, Jpn. J. Appl. Phys. 33, 6013 (1994) —— electron shading 的原始論文</li>
+    <li>Shin &amp; Hu, <em>Thin gate oxide damage due to plasma processing</em>, Semicond. Sci. Technol. 11, 463 (1996)</li>
+    <li>Schuegraf &amp; Hu, <em>Hole injection SiO₂ breakdown model for very low voltage lifetime extrapolation</em>, IEEE Trans. Electron Devices 41, 761 (1994) —— 本章氧化層導通式的來源</li>
+    <li>Grill 等, <em>Progress in the development and understanding of advanced low k and ultralow k dielectrics</em>, Appl. Phys. Rev. 1, 011306 (2014)</li>
+  </ul>
+</div>
