@@ -320,6 +320,9 @@ function run() {
   console.log("→ 產生術語資料");
   execFileSync(process.execPath, [join(ROOT, "tools/gen-glossary.mjs")], { stdio: "inherit" });
 
+  console.log("→ 產生公式資料");
+  execFileSync(process.execPath, [join(ROOT, "tools/gen-formulas.mjs")], { stdio: "inherit" });
+
   console.log("→ 複製靜態資源");
   for (const d of ["css", "js", "data"]) {
     cpSync(join(SRC, d), join(DIST, d), { recursive: true });
@@ -420,7 +423,6 @@ function buildStubs() {
     ["lab/", "互動實驗室", "32 個互動元件的獨立入口。每個元件可全螢幕開啟,方便當工具用。", "P1 起陸續上線"],
     ["gases/", "氣體百科", "32 種製程氣體的完整資料卡:分子式、自由基、用途、危害分級、相容材質、副產物。", "P2"],
     ["defects/", "缺陷圖鑑", "18 種蝕刻缺陷的症狀圖、成因鏈、診斷區分與對策旋鈕。", "P3"],
-    ["formulas/", "公式手冊", "約 45 條公式與符號表,可由章節公式卡直接跳轉。", "P1 起陸續補齊"],
     ["progress/", "我的進度", "學習進度、徽章與證書,支援 JSON 匯出匯入。", "P4"],
     ["quiz/", "測驗中心", "章末自我檢測與四階結業測驗。", "P4"],
   ];
@@ -442,6 +444,8 @@ function buildStubs() {
 
   // 術語表:資料已備妥,直接做成可用頁面
   if (!done.has("glossary/")) buildGlossaryPage();
+  // 公式手冊:資料由 gen-formulas.mjs 從章節內文抽出,直接做成可用頁面
+  if (!done.has("formulas/")) buildFormulasPage();
 }
 
 function writeStub(spec) {
@@ -520,6 +524,76 @@ function buildGlossaryPage() {
   });
 }
 
+function buildFormulasPage() {
+  const fcode = readFileSync(join(SRC, "data/formulas.js"), "utf8");
+  const fwin = {};
+  new Function("window", fcode)(fwin);
+  const all = fwin.PA.formulas.all;
+
+  let body =
+    '<div class="pa-chapter-header"><h1>公式手冊</h1>' +
+    `<div class="pa-chapter-header__meta"><span>${all.length} 條公式</span></div></div>` +
+    '<div class="pa-prose"><p>' +
+    "全站公式的統一入口。每一條都直接取自章節內文的公式卡(<code>.pa-formula</code>)," +
+    "由 <code>tools/gen-formulas.mjs</code> 抽出,不是另外重打一份 —— " +
+    "改公式要回到對應章節改,重新產生用 <code>node tools/gen-formulas.mjs</code>。" +
+    "點公式旁的章節號可以跳回原文的完整推導脈絡。</p></div>";
+
+  const byLevel = new Map();
+  for (const f of all) {
+    const lv = f.ch ? f.ch.split(".")[0] : "0";
+    if (!byLevel.has(lv)) byLevel.set(lv, []);
+    byLevel.get(lv).push(f);
+  }
+
+  for (const lv of curriculum.levels) {
+    const items = byLevel.get(String(lv.no)) || [];
+    if (!items.length) continue;
+    body += `<h2 id="l${lv.no}">L${lv.no} ${esc(lv.name)} · ${esc(lv.subtitle)}<span class="pa-subtle"> · ${items.length} 條</span></h2>`;
+    for (const f of items) {
+      const link = f.url ? `{{base}}${f.url}${f.anchor ? "#" + f.anchor : ""}` : null;
+      body +=
+        `<div class="pa-formula" id="${esc(f.id)}">` +
+        `<div class="pa-formula__eq pa-eq">${f.eq}</div>` +
+        (f.name ? `<div class="pa-formula__name">${esc(f.name)}</div>` : "") +
+        (f.body
+          ? `<details><summary>展開符號表與推導</summary><div class="pa-formula__body">${f.body}</div></details>`
+          : "") +
+        (link
+          ? `<p class="pa-subtle" style="margin-top:var(--pa-space-2)">` +
+            `${f.ch ? esc(f.ch) + " · " : ""}<a href="${link}">回原文脈絡 →</a></p>`
+          : "") +
+        "</div>";
+    }
+  }
+
+  // 沒有解析到章節號的少數公式(仍完整列出,只是不分節)
+  const orphans = byLevel.get("0") || [];
+  if (orphans.length) {
+    body += `<h2 id="other">其他<span class="pa-subtle"> · ${orphans.length} 條</span></h2>`;
+    for (const f of orphans) {
+      const link = f.url ? `{{base}}${f.url}${f.anchor ? "#" + f.anchor : ""}` : null;
+      body +=
+        `<div class="pa-formula" id="${esc(f.id)}">` +
+        `<div class="pa-formula__eq pa-eq">${f.eq}</div>` +
+        (f.name ? `<div class="pa-formula__name">${esc(f.name)}</div>` : "") +
+        (f.body
+          ? `<details><summary>展開符號表與推導</summary><div class="pa-formula__body">${f.body}</div></details>`
+          : "") +
+        (link ? `<p class="pa-subtle" style="margin-top:var(--pa-space-2)"><a href="${link}">回原文脈絡 →</a></p>` : "") +
+        "</div>";
+    }
+  }
+
+  writeStub({
+    url: "formulas/",
+    title: "公式手冊 — Plasma Academy",
+    description: `${all.length} 條電漿製程公式與符號表,直接取自各章節內文,可跳轉回原文脈絡。`,
+    sidebar: false,
+    body,
+  });
+}
+
 // ---- 搜尋索引 --------------------------------------------------------------
 
 function tokenize(text) {
@@ -564,6 +638,22 @@ function buildSearchIndex() {
       type: "term",
       context: t.def,
       text: `${t.zh} ${t.en} ${t.abbr || ""} ${t.def}`,
+      weight: 0.9,
+    });
+  }
+
+  // 公式
+  const fcode = readFileSync(join(SRC, "data/formulas.js"), "utf8");
+  const fwin = {};
+  new Function("window", fcode)(fwin);
+  for (const f of fwin.PA.formulas.all) {
+    const plainEq = f.eq.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    docs.push({
+      url: `formulas/#${f.id}`,
+      title: f.name || plainEq,
+      type: "formula",
+      context: f.ch ? `第 ${f.ch} 節` : "",
+      text: `${f.name || ""} ${plainEq} ${f.heading || ""}`,
       weight: 0.9,
     });
   }
