@@ -572,6 +572,25 @@ console.log("\n【測驗中心】");
     mounted.questions >= 1 && mounted.options >= 2,
     `${mounted.questions} 題 / ${mounted.options} 個選項`);
 
+  /*
+     圖形判讀題要真的看得到圖。
+     check-quiz.mjs 驗得了「每題的 svgId 查得到缺陷」,驗不到
+     「瀏覽器裡真的畫出一張 SVG」—— 這中間隔著 ensureQuiz 有沒有把
+     defects.js / defect-svg.js 一起載進來。那正是最容易漏掉的一環,
+     所以在這裡實際切到 3.3 缺陷圖鑑,看它有沒有渲染出來。
+  */
+  await page.selectOption('[data-quiz="self"] select', "3.3");
+  await page.waitForTimeout(500);
+  const fig = await page.evaluate(() => {
+    const figs = document.querySelectorAll('[data-quiz="self"] .pa-quiz__fig svg');
+    const titles = [...figs].map((s) => (s.querySelector("title") || {}).textContent || "");
+    return { count: figs.length, leaks: titles.filter((t) => !t.includes("待判讀")).length };
+  });
+  ok("**圖形判讀題在頁面上真的畫出剖面 SVG**", fig.count >= 1, `3.3 有 ${fig.count} 張`);
+  ok("剖面圖的替代文字不會把答案念出來", fig.count >= 1 && fig.leaks === 0, "title 一律是中性的「待判讀…」");
+  await page.selectOption('[data-quiz="self"] select', "1.1");
+  await page.waitForTimeout(500);
+
   // 自我檢測:選一個選項 → 解析要立刻展開,而且要有逐選項的 why
   await page.locator('[data-quiz="self"] .pa-quiz__opt input').first().check();
   await page.waitForTimeout(300);

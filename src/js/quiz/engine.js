@@ -109,6 +109,34 @@
     qt.innerHTML = mark(q.question);
     wrap.appendChild(qt);
 
+    /**
+     * 圖形判讀題要真的看得到圖。
+     *
+     * 原本 type: "image" 只是換一個標籤,題幹仍然用文字描述剖面長什麼樣
+     * (「最寬處出現在側壁中段」)—— 那其實還是閱讀測驗,不是判讀。
+     * 而 3.3 缺陷圖鑑早就有 19 張由 defects.js 的 symptom 反推座標畫出來的
+     * 剖面 SVG,直接拿來當題幹就好,不必另外畫圖。
+     *
+     * 用 svgId 掛,而不是把 SVG 字串塞進題庫:圖只有一份幾何,
+     * 圖鑑改了題目跟著改,不會出現圖文對不上的情況。
+     * check-quiz.mjs 會驗每個 svgId 都查得到對應的缺陷。
+     */
+    if (q.svgId && PA.defects && PA.defects.svg) {
+      // ⚠️ 一定要蓋掉預設 title —— 它是「中文名:症狀」,等於把答案念出來。
+      var svg = PA.defects.svg(q.svgId, {
+        title: "待判讀的蝕刻剖面示意圖:遮罩在上、基材在下,溝槽形狀即為題目所指。",
+        titleId: "qsvg-" + q.id,
+      });
+      if (svg) {
+        var fig = el("figure", "pa-quiz__fig");
+        fig.innerHTML = svg;
+        var cap = el("figcaption");
+        cap.textContent = "剖面示意(遮罩在上、基材在下)";
+        fig.appendChild(cap);
+        wrap.appendChild(fig);
+      }
+    }
+
     var body = el("div", "pa-quiz__body");
     wrap.appendChild(body);
     var fb = el("div", "pa-quiz__feedback");

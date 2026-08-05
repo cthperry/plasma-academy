@@ -276,15 +276,27 @@
     return base() + stdTrench(52, 108, 108) + maskPair(52, 108);
   }
 
-  function svg(id) {
+  /**
+   * @param {string} id            缺陷 id
+   * @param {{title?: string, titleId?: string}} [opts]
+   *
+   * title 預設是「中文名:症狀」—— 在圖鑑裡這正是我們要的無障礙標籤。
+   * 但在**圖形判讀題**裡它會直接把答案念給螢幕閱讀器聽,
+   * 所以測驗引擎會傳一個中性的 title 蓋掉它。
+   * 圖形一模一樣、只有替代文字不同,視覺使用者與螢幕閱讀器使用者
+   * 拿到的資訊量才一致 —— 這是無障礙,不是把資訊藏起來。
+   */
+  function svg(id, opts) {
     var D = PA.defects;
     var d = D && D.byId ? D.byId(id) : null;
     if (!d) return "";
-    var titleId = "dsvg-title-" + id;
+    var o = opts || {};
+    var titleId = o.titleId || "dsvg-title-" + id;
+    var title = o.title || d.zh + "：" + d.symptom;
     return (
       '<svg class="pa-defect-thumb" viewBox="' + VB + '" role="img" aria-labelledby="' + titleId + '" ' +
       'preserveAspectRatio="xMidYMid meet">' +
-      "<title id=\"" + titleId + '">' + esc(d.zh) + "：" + esc(d.symptom) + "</title>" +
+      "<title id=\"" + titleId + '">' + esc(title) + "</title>" +
       bodyFor(d) +
       "</svg>"
     );

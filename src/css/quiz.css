@@ -1,0 +1,25 @@
+/* ==========================================================================
+   quiz.css — 只有 /quiz/ 會載的樣式
+
+   為什麼不放進 components.css:那支是關鍵路徑的一部分,而關鍵路徑有
+   120 KB 的預算上限(tools/smoke.mjs 守著)。圖形判讀題的剖面圖只出現在
+   測驗頁,把它的版面規則搬進來之後關鍵路徑回到 119 KB 出頭。
+   這與 progress.css 的處理方式一致。
+   ========================================================================== */
+
+/* 圖形判讀題的剖面示意 —— 圖本身來自 defect-svg.js,這裡只管版面 */
+.pa-quiz__fig {
+  max-width: 15rem;
+  margin: 0 0 var(--pa-space-4);
+  padding: var(--pa-space-3);
+  background: var(--pa-surface-sunken);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+}
+
+.pa-quiz__fig figcaption {
+  margin-top: var(--pa-space-2);
+  font-size: var(--pa-text-xs);
+  color: var(--pa-text-muted);
+  text-align: center;
+}

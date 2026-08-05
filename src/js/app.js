@@ -74,10 +74,13 @@
   /** 測驗引擎 + 四份題庫,只有測驗中心那一頁會載 */
   function ensureQuiz(cb) {
     if (PA.quiz && PA.quizBank) return cb();
+    // defects.js / defect-svg.js 是圖形判讀題的題幹來源(engine.js 讀 q.svgId
+    // 去要那張剖面 SVG)。兩支都在 lazy 路徑上,不佔關鍵路徑預算。
     loadScripts(
       [
         "data/quiz/level-1.js", "data/quiz/level-2.js",
         "data/quiz/level-3.js", "data/quiz/level-4.js",
+        "data/defects.js", "data/defect-svg.js",
         "js/quiz/engine.js",
       ],
       cb

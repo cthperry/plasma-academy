@@ -31,6 +31,13 @@ for (const f of readdirSync(QUIZ_DIR).sort()) {
 vm.runInContext(readFileSync(join(ROOT, "src/js/quiz/engine.js"), "utf8"), sandbox, {
   filename: "engine.js",
 });
+// 圖形判讀題的題幹是 3.3 缺陷圖鑑那 19 張剖面 SVG,靠 svgId 掛過去。
+vm.runInContext(readFileSync(join(ROOT, "src/data/defects.js"), "utf8"), sandbox, {
+  filename: "defects.js",
+});
+vm.runInContext(readFileSync(join(ROOT, "src/data/defect-svg.js"), "utf8"), sandbox, {
+  filename: "defect-svg.js",
+});
 
 const BANK = sandbox.window.PA.quizBank;
 const CUR = sandbox.window.PA.curriculum;
@@ -317,6 +324,36 @@ ok(
   "情境與判讀題的占比逐階升高(L1 記憶為主 → L4 判斷為主)",
   scenarioRate("1") <= scenarioRate("2") && scenarioRate("2") <= scenarioRate("3") && scenarioRate("3") < scenarioRate("4"),
   `L1 → L4 單調遞增,L4 是 L1 的 ${(scenarioRate("4") / Math.max(scenarioRate("1"), 1e-9)).toFixed(0)} 倍`
+);
+/**
+ * 圖形判讀題必須真的有圖。
+ *
+ * 原本 type: "image" 只是換一個顯示標籤,題幹仍然用文字把剖面描述出來
+ * (「最寬處出現在側壁中段」)—— 那是閱讀測驗,不是判讀:
+ * 學員讀到的是**別人已經判讀完的結論**,只剩下把名詞對上去。
+ * 而 3.3 缺陷圖鑑早就備好 19 張由 defects.js 的 symptom 反推座標畫出來的
+ * 剖面 SVG,現在用 svgId 掛過去,圖與圖鑑共用同一份幾何。
+ *
+ * ⚠️ 引擎渲染時一定要蓋掉 SVG 預設的 <title>(「中文名:症狀」)——
+ * 那等於把答案念給螢幕閱讀器聽。下面第二條斷言守住這件事。
+ */
+const IMAGE_Q = ALL.filter((q) => q.type === "image");
+ok(
+  "**圖形判讀題都掛得到一張剖面圖**(type: \"image\" 不能只是換個標籤)",
+  IMAGE_Q.length > 0 && IMAGE_Q.every((q) => q.svgId && sandbox.window.PA.defects.svg(q.svgId)),
+  `${IMAGE_Q.length} 題圖形判讀,涵蓋 ${new Set(IMAGE_Q.map((q) => q.svgId)).size} 種缺陷剖面`
+);
+ok(
+  "**題目用的剖面圖不會把答案寫在 <title> 裡**(螢幕閱讀器與視覺使用者拿到的資訊量要一致)",
+  (() => {
+    const D = sandbox.window.PA.defects;
+    return IMAGE_Q.every((q) => {
+      const svg = D.svg(q.svgId, { title: "待判讀", titleId: "t" });
+      const d = D.byId(q.svgId);
+      return !svg.includes(d.zh) && svg.includes("待判讀");
+    });
+  })(),
+  "engine.js 傳入中性 title 蓋掉「中文名:症狀」"
 );
 ok(
   "每題都有 tags(供日後依主題抽題)",
