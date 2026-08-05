@@ -26,7 +26,7 @@
   { id: "ionization", zh: "游離", en: "Ionization", abbr: null, cat: "A", ch: "1.1", def: "電子被打離原子核束縛,產生自由電子與正離子" },
   { id: "ionization-energy", zh: "游離能", en: "Ionization Energy", abbr: null, cat: "A", ch: "1.1", def: "移除一個束縛電子所需的最小能量,Ar 為 15.76 eV" },
   { id: "degree-of-ionization", zh: "游離度", en: "Degree of Ionization", abbr: null, cat: "A", ch: "1.1", def: "帶電粒子佔全部粒子的比例,製程電漿約 10⁻⁶–10⁻²" },
-  { id: "weakly-ionized-plasma", zh: "弱游遊離電漿", en: "Weakly Ionized Plasma", abbr: null, cat: "A", ch: "1.1", def: "游離度遠小於 1 的電漿,製程電漿皆屬此類" },
+  { id: "weakly-ionized-plasma", zh: "弱游離電漿", en: "Weakly Ionized Plasma", abbr: null, cat: "A", ch: "1.1", def: "游離度遠小於 1 的電漿,製程電漿皆屬此類" },
   { id: "quasi-neutrality", zh: "準中性", en: "Quasi-neutrality", abbr: null, cat: "A", ch: "1.1", def: "電漿主體中 n_e ≈ n_i,由靜電力強制維持" },
   { id: "collective-behavior", zh: "集體行為", en: "Collective Behavior", abbr: null, cat: "A", ch: "1.1", def: "帶電粒子透過長程庫倫力共同響應,而非各自獨立運動" },
   { id: "glow-discharge", zh: "輝光放電", en: "Glow Discharge", abbr: null, cat: "A", ch: "1.4", def: "低壓下自持的放電形式,以發光的分區結構為特徵" },

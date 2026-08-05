@@ -15,7 +15,7 @@
 | 游離 | Ionization | 電子被打離原子核束縛,產生自由電子與正離子 | 1.1 |
 | 游離能 | Ionization Energy | 移除一個束縛電子所需的最小能量,Ar 為 15.76 eV | 1.1 |
 | 游離度 | Degree of Ionization | 帶電粒子佔全部粒子的比例,製程電漿約 10⁻⁶–10⁻² | 1.1 |
-| 弱游遊離電漿 | Weakly Ionized Plasma | 游離度遠小於 1 的電漿,製程電漿皆屬此類 | 1.1 |
+| 弱游離電漿 | Weakly Ionized Plasma | 游離度遠小於 1 的電漿,製程電漿皆屬此類 | 1.1 |
 | 準中性 | Quasi-neutrality | 電漿主體中 n_e ≈ n_i,由靜電力強制維持 | 1.1 |
 | 集體行為 | Collective Behavior | 帶電粒子透過長程庫倫力共同響應,而非各自獨立運動 | 1.1 |
 | 輝光放電 | Glow Discharge | 低壓下自持的放電形式,以發光的分區結構為特徵 | 1.4 |
