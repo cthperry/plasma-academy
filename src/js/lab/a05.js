@@ -12,10 +12,24 @@
 (function (PA) {
   "use strict";
 
+  /** "#rrggbb" → "r,g,b",供 rgba() 疊透明度用;讀不出來就退回中性灰 */
+  function hexToRgb(hex) {
+    var m = /^#([0-9a-f]{6})$/i.exec(hex || "");
+    if (!m) return "150,110,220";
+    var n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(",");
+  }
+
   PA.lab.define("A05", function () {
     var C = PA.controls;
     var M = PA.model;
 
+    /**
+     * 每種氣體的 token 同時決定兩處顏色:主圖上的 Paschen 曲線,
+     * 以及放電腔示意裡的輝光 —— 換氣體時兩邊一起變色,強化「這條線
+     * 對應這支氣體」的視覺連結。不是在模擬真實發射光譜顏色(那是
+     * 4.1 OES 的範圍),只是沿用站內既有的 viz token 配色系統。
+     */
     var GASES = [
       { key: "Ar", label: "Ar", token: "vizIonPos" },
       { key: "He", label: "He", token: "vizRadical" },
@@ -23,6 +37,8 @@
       { key: "Air", label: "Air", token: "vizPolymer" },
       { key: "O2", label: "O₂", token: "vizIonNeg" },
     ];
+    var GAS_TOKEN = {};
+    GASES.forEach(function (g) { GAS_TOKEN[g.key] = g.token; });
 
     return PA.lab.create({
       setup: function () {
@@ -235,6 +251,7 @@
             "按「製程壓力」(10 mTorr、3 cm)—— pd 只有 0.03,你在左支,崩潰電壓高得離譜。這就是為什麼點火要先衝壓力。",
             "左支的物理:λ 太長,電子還沒撞到分子就到陽極了,碰撞次數不夠。右支相反:λ 太短,兩次碰撞間累積不到游離能。",
             "打開「所有氣體」—— He 的谷底在 pd=4 附近而且很淺,這是它容易點火、常被拿來當起弧氣體的原因。",
+            "換氣體時留意放電腔的輝光顏色 —— 與上方曲線同色,幫你在切換時對上是哪支氣體。",
           ])
         );
 
@@ -274,13 +291,14 @@
         var bot = cy + gap / 2;
         var mx = w * 0.12;
 
-        // 輝光
+        // 輝光 —— 顏色跟著氣體變,與主圖曲線顏色一致
         if (lit) {
+          var rgb = hexToRgb(p[GAS_TOKEN[s.gas]]);
           var g = ctx.createLinearGradient(0, top, 0, bot);
           var a = Math.min(0.55, 0.15 + (s.V / vb - 1) * 0.4);
-          g.addColorStop(0, "rgba(150,110,220,0)");
-          g.addColorStop(0.5, "rgba(160,120,235," + a + ")");
-          g.addColorStop(1, "rgba(150,110,220,0)");
+          g.addColorStop(0, "rgba(" + rgb + ",0)");
+          g.addColorStop(0.5, "rgba(" + rgb + "," + a + ")");
+          g.addColorStop(1, "rgba(" + rgb + ",0)");
           ctx.fillStyle = g;
           ctx.fillRect(mx, top, w - 2 * mx, gap);
         }
