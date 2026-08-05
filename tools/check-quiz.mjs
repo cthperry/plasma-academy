@@ -7,9 +7,9 @@
    這支檔案把那條規則變成測試。
 
    ⚠️ 本檔驗的是**目前**的題庫契約,不是 docs/08 的最終目標(465 題)。
-   目前題庫是第一批,規模與各階段的出題數尚未對齊 —— 這件事在
-   docs/11 誠實記錄,測試也把它釘住:題庫少於出題數時,
-   測驗頁必須顯示警告,而不是假裝可以重抽不同題。
+   目前是第三批 125 題,各階段剛好等於或略多於出題數,離規格要求的
+   2.5–3 倍還有距離 —— 這件事在 docs/11 誠實記錄,測試也把它釘住:
+   題庫沒到 2.5 倍之前,測驗頁必須顯示警告,不假裝可以重抽不同題。
    ========================================================================== */
 
 import { readFileSync, readdirSync } from "node:fs";
@@ -209,6 +209,73 @@ ok(
   "**選項本文不得含粗體** —— 45 % 的正解帶粗體、干擾項只有 1 % 時,強調本身就是答案",
   ALL.filter((q) => q.options).every((q) => q.options.every((o) => !/\*\*/.test(o.text))),
   "強調留給 why 與 explanation,選項只放主張"
+);
+
+/**
+ * 同一章不得有近乎重複的題目。
+ *
+ * 第三批擴充時我一口氣每章加兩題,結果寫出十對幾乎一樣的題目 ——
+ * 「ICP 從 E-mode 跳到 H-mode 時發生了什麼 / 最直接會觀察到什麼」、
+ * 「HDP 為什麼能填滿深溝 / 關鍵在哪裡」…… 換句話問同一件事。
+ * 這會同時造成兩個問題:**結業測驗抽到整批題庫時,學員會連續看到兩題一樣的**;
+ * 以及**題庫的名目題數高於它實際涵蓋的知識點**,補齊進度是假的。
+ *
+ * 判準用題幹的字元 bigram Jaccard 相似度。重寫那十題之後,
+ * 同章的最高相似度是 0.290(3.6 的「背吹目的」vs「背吹洩漏警訊」——
+ * 這兩題確實是不同角度,該留),所以門檻訂 0.32:
+ * 容得下合理的同主題不同角度,擋得住換句話說。
+ *
+ * ⚠️ 擴充題庫時這條會擋人。正確的反應是**換一個角度出題**,不是調高門檻。
+ */
+const NORM = (t) => t.replace(/[\s【】(),。?、%·—–\-]/g, "");
+const bigrams = (t) => {
+  const n = NORM(t);
+  const s = new Set();
+  for (let i = 0; i < n.length - 1; i++) s.add(n.slice(i, i + 2));
+  return s;
+};
+const jaccard = (a, b) => {
+  let inter = 0;
+  for (const x of a) if (b.has(x)) inter++;
+  return inter / (a.size + b.size - inter);
+};
+const nearDuplicates = (threshold) => {
+  const out = [];
+  for (let i = 0; i < ALL.length; i++) {
+    for (let j = i + 1; j < ALL.length; j++) {
+      if (ALL[i].chapter !== ALL[j].chapter) continue;
+      const v = jaccard(bigrams(ALL[i].question), bigrams(ALL[j].question));
+      if (v >= threshold) out.push(`${ALL[i].id}≈${ALL[j].id} (${v.toFixed(2)})`);
+    }
+  }
+  return out;
+};
+ok(
+  "**同一章不得有近乎重複的題目** —— 換句話問同一件事,會讓題庫的名目題數灌水",
+  nearDuplicates(0.32).length === 0,
+  nearDuplicates(0.32).length
+    ? nearDuplicates(0.32).join("、")
+    : `同章最高相似度 ${Math.max(
+        0,
+        ...ALL.flatMap((a, i) =>
+          ALL.slice(i + 1)
+            .filter((b) => b.chapter === a.chapter)
+            .map((b) => jaccard(bigrams(a.question), bigrams(b.question)))
+        )
+      ).toFixed(2)}(門檻 0.32)`
+);
+ok(
+  "同一章不得有兩題的 tags 完全相同 —— 這是重複出題最明顯的徵兆",
+  (() => {
+    for (let i = 0; i < ALL.length; i++) {
+      for (let j = i + 1; j < ALL.length; j++) {
+        if (ALL[i].chapter !== ALL[j].chapter) continue;
+        if ([...ALL[i].tags].sort().join("|") === [...ALL[j].tags].sort().join("|")) return false;
+      }
+    }
+    return true;
+  })(),
+  "tags 相同代表兩題蓋的是同一個知識點"
 );
 ok(
   "難度分佈涵蓋三級,且不是全部集中在同一級",
