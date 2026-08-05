@@ -81,9 +81,15 @@
             return [-90 + i * 5, v / max];
           });
 
-          pl.area(pts, { fill: PA.canvasTheme.palette().vizIonPos, opacity: 0.22 });
-          pl.line(pts, { stroke: PA.canvasTheme.palette().vizIonPos, width: 2.2 });
-          pl.vline(0, { stroke: PA.canvasTheme.palette().textSubtle, dash: "3 3" });
+          /*
+             直方圖用所選氣體的顏色 —— 換 He/Ar/Xe 時曲線跟著變色,
+             與腔體裡的離子軌跡同色。配色來自 canvas-theme 的單一來源。
+          */
+          var pal0 = PA.canvasTheme.palette();
+          var gasCol = PA.canvasTheme.gasColor(api.state.gas, pal0);
+          pl.area(pts, { fill: gasCol, opacity: 0.22 });
+          pl.line(pts, { stroke: gasCol, width: 2.2 });
+          pl.vline(0, { stroke: pal0.textSubtle, dash: "3 3" });
 
           // FWHM:半高處的全寬
           var lo = null, hi = null;
@@ -304,9 +310,14 @@
           ctx.restore();
         }
 
-        // 離子與軌跡
+        /*
+           離子與軌跡。軌跡顏色跟著氣體走,讓「換氣體 → λ 變 → 軌跡變」
+           這條因果鏈在畫面上是同一個顏色的東西在變。
+           粒子本身仍用 ionPos 的形狀與符號(＋),語意不變。
+        */
+        var gasCol = PA.canvasTheme.gasColor(api.state.gas, p);
         api.sys.each(function (pt) {
-          api.sys.drawTrail(ctx, pt, p.vizIonPos, 14);
+          api.sys.drawTrail(ctx, pt, gasCol, 14);
         });
         api.sys.draw(ctx, p);
       },

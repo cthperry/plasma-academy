@@ -34,7 +34,7 @@
       return PA.lab.create({
         setup: function () {
           var api = this;
-          api.state = { ne: 1e16, te: 3, vrf: 0, noise: 0, coating: 0, gas: "ar", view: "iv" };
+          api.state = { ne: 1e16, te: 3, vrf: 0, stray: 0.35, noise: 0, coating: 0, gas: "ar", view: "iv" };
 
           var wrap = document.createElement("div");
           wrap.className = "pa-lab__split";
@@ -62,7 +62,7 @@
             var s = api.state;
             api.sim = M.create({
               ne: s.ne, te: s.te, vp: 20, gas: s.gas,
-              vrf: s.vrf, noise: s.noise, coating: s.coating,
+              vrf: s.vrf, stray: s.stray, noise: s.noise, coating: s.coating,
             });
             api.curve = M.sweep(api.sim, -70, 40, 260);
             api.res = M.analyse(api.sim, api.curve);
@@ -166,15 +166,16 @@
           });
 
           api.el.appendChild(
-            C.panel([viewCtl, gasCtl, knob("te"), knob("ne"), knob("vrf"), knob("noise"), knob("coating")])
+            C.panel([viewCtl, gasCtl, knob("te"), knob("ne"), knob("vrf"), knob("stray"), knob("noise"), knob("coating")])
           );
           api.el.appendChild(readout);
           api.el.appendChild(
             C.observations([
               "**先在補償正常的狀態下走一次四參數流程。** V_f 是 I = 0 的地方;切到半對數圖,過渡區是一條直線,**斜率的倒數就是 T_e**;V_p 在 dI/dV 最大處;n_e 由離子飽和電流反推。四個誤差都在 1 % 以內 —— 這是分析正確時該有的樣子。",
               "看電子飽和電流與離子飽和電流差多少(面板上的 n_e 是由後者算的):相差 50 倍以上。**原因只有一個 —— 質量比。** 電子輕得多,熱速度快得多,所以同樣的密度下收集到的電流差兩個數量級。",
-              "**把「RF 電位振幅」拉到 30 V(模擬補償失效)**:注意 V_p 從 20 V 掉到 −10 V,V_f 也跟著整條平移。**離子能量 ≈ V_p − V_wafer,所以你對離子能量的估計整個垮掉。** 這是未補償探針最嚴重的後果。",
-              "⚠️ 但注意 T_e 幾乎沒變 —— **本模型不會讓 T_e 被高估**。原因可以證明:指數區的 RF 平均是 exp((V−V_p)/T_e)·⟨exp(−V_rf·f/T_e)⟩,後面那項與 V 無關,所以**只是整條平移,斜率不變**。真實探針的 T_e 高估來自雜散電容分壓與非 Maxwellian EEDF,不在這個模型裡。課文有完整說明。",
+              "**把「RF 電位振幅」拉到 30 V(模擬補償失效)**:V_f 從 4.5 V 一路掉到 −9.9 V、V_p 也被推歪。**離子能量 ≈ V_p − V_wafer,所以你對離子能量的估計整個垮掉。**",
+              "⚠️ **同一個動作也讓 T_e 被高估** —— 而且是最嚴重的那個症狀:用現場標準的近轉折擬合窗量,V_rf 30 V 時 T_e 從 3 eV 變成 16.5 eV,**高估 5.5 倍**;45 V 更到 9.1 倍。補償正常(V_rf = 0)時同一個窗仍準到 0 %,所以這不是擬合窗造成的假象。",
+              "成因是探針對電漿隔著鞘層電容、對地隔著雜散電容,RF 由兩者**分壓**;而鞘層電容 ∝ 1/s、s 又由 Child–Langmuir 給 ∝ ((V_p−V)/T_e)^(3/4) —— 所以落在鞘層上的調變振幅**隨偏壓而變**,時間平均就不再只是整條平移,斜率跟著被抹開。把「雜散電容比」設成 0 可以退回「振幅固定」的舊行為,那時 T_e 確實不會被高估。",
               "**把「探針鍍膜」拉起來**:n_e 被低估到只剩幾分之一,但**曲線形狀看起來還很正常** —— 這是它危險的地方。在沉積或聚合性製程裡探針幾秒就會鍍上一層,所以要靠離子轟擊清洗或加熱。",
               "把「雜訊」拉起來看真實資料的樣子。二次微分對雜訊**極度敏感** —— 切到 EEDF 分頁就會看到。這是為什麼實務上 EEDF 量測需要非常乾淨的訊號與大量平均。",
               "換氣體看 n_e 還準不準:Ar / O₂ / CF₄ / Cl₂ 的離子質量差好幾倍,而**離子質量直接進 Bohm 速度**。模型用對了質量,所以四種氣體都算得準 —— 現場用錯氣體參數是 n_e 算錯的常見原因。",
@@ -183,7 +184,7 @@
         },
 
         reset: function () {
-          this.state = { ne: 1e16, te: 3, vrf: 0, noise: 0, coating: 0, gas: "ar", view: "iv" };
+          this.state = { ne: 1e16, te: 3, vrf: 0, stray: 0.35, noise: 0, coating: 0, gas: "ar", view: "iv" };
           this.rebuild();
         },
 
@@ -203,6 +204,13 @@
           var L = 46, R = w - 14, T = 24, B = h - 34;
           var c = api.curve;
           var r = api.res;
+          /*
+             I-V 與半對數曲線用所選氣體的顏色。換氣體時離子質量變、
+             離子飽和電流跟著變 —— 讓曲線同時換色,學員才看得出
+             「動的是這支氣體的那條線」。EEDF 分頁維持 vizElectron:
+             那條畫的是電子能量分佈,與氣體種類無關,語意不該被蓋掉。
+          */
+          var gasCol = PA.canvasTheme.gasColor(api.state.gas, p);
 
           function axes(xlab, ylab) {
             ctx.strokeStyle = p.vizAxis || p.border;
@@ -238,7 +246,7 @@
             ctx.lineTo(R, zeroY);
             ctx.stroke();
             ctx.restore();
-            ctx.strokeStyle = p.primary;
+            ctx.strokeStyle = gasCol;
             ctx.lineWidth = 2;
             ctx.beginPath();
             for (var i = 0; i < c.length; i++) {
@@ -250,7 +258,8 @@
             ctx.stroke();
             ctx.lineWidth = 1;
             // 標出 V_f 與 V_p
-            [[r.vf, "V_f", p.vizIonPos], [r.vp, "V_p", p.success || p.primary]].forEach(function (m) {
+            // 標註色刻意避開氣體配色(vizIonPos 現在是 Ar 的曲線色,會撞)
+            [[r.vf, "V_f", p.warning], [r.vp, "V_p", p.success]].forEach(function (m) {
               if (!isFinite(m[0])) return;
               var mx = L + ((m[0] - vMin) / (vMax - vMin)) * (R - L);
               ctx.save();
@@ -279,7 +288,7 @@
             var yMax = Math.max.apply(null, pts.map(function (x) { return x.y; }));
             var v0 = pts[0].v, v1 = pts[pts.length - 1].v;
             axes("探針偏壓 V", "ln(I_e)");
-            ctx.strokeStyle = p.primary;
+            ctx.strokeStyle = gasCol;
             ctx.lineWidth = 2;
             ctx.beginPath();
             for (var m2 = 0; m2 < pts.length; m2++) {

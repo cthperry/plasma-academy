@@ -164,20 +164,28 @@
           );
           pl.label(2.35, 1.08, "製程窗", { fill: pal.success, size: 11, anchor: "middle" });
 
-          // 各氣體的原始 F/C 位置
+          /*
+             各氣體的原始 F/C 位置。五支氟碳氣體各有自己的顏色
+             (來自 canvas-theme 的單一來源),選中的那支加粗、其餘淡化 ——
+             原本全部都是同一個灰色,只靠粗體區分選中的是哪支。
+          */
           FC_GASES.forEach(function (f) {
             var g = G.byFormula(f);
-            pl.dot(g.fc, 0.03, { fill: pal.textSubtle, r: 3 });
+            var sel = g.formula === s.gas;
+            var col = PA.canvasTheme.gasColor(f, pal);
+            pl.dot(g.fc, 0.03, { fill: col, r: sel ? 4 : 3, opacity: sel ? 1 : 0.5 });
             pl.label(g.fc, 0.03, g.formula, {
-              fill: g.formula === s.gas ? pal.primary : pal.textSubtle,
+              fill: col,
+              opacity: sel ? 1 : 0.6,
               dx: 0, dy: 16, size: 10, anchor: "middle",
-              weight: g.formula === s.gas ? 700 : 500,
+              weight: sel ? 700 : 500,
             });
           });
 
-          // 目前的有效 F/C
-          pl.vline(fc, { stroke: pal.primary, dash: "4 3", overlay: true });
-          pl.dot(fc, 1.02, { fill: pal.primary, r: 5, overlay: true });
+          // 目前的有效 F/C —— 用所選氣體的顏色,與下方的氣體標記對得起來
+          var selCol = PA.canvasTheme.gasColor(s.gas, pal);
+          pl.vline(fc, { stroke: selCol, dash: "4 3", overlay: true });
+          pl.dot(fc, 1.02, { fill: selCol, r: 5, overlay: true });
 
           var v = api.verdict();
           var base = G.byFormula(s.gas);

@@ -284,6 +284,7 @@
         fill: s.fill || PA.canvasTheme.palette().primary,
         stroke: s.stroke || PA.canvasTheme.palette().bg,
         "stroke-width": s.strokeWidth || 2,
+        opacity: s.opacity != null ? s.opacity : 1,
       });
       (s.overlay ? gOver : gData).appendChild(c);
       return c;
@@ -322,6 +323,7 @@
         fill: s.fill || PA.canvasTheme.palette().text,
         "font-size": s.size || 11,
         "font-weight": s.weight || 600,
+        opacity: s.opacity != null ? s.opacity : 1,
       });
       t.textContent = text;
       (s.overlay ? gOver : gData).appendChild(t);

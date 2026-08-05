@@ -258,8 +258,15 @@
           ctx.moveTo(L, T1); ctx.lineTo(L, B1); ctx.lineTo(R, B1);
           ctx.stroke();
 
-          // k_iz/u_B 曲線
-          ctx.strokeStyle = p.primary;
+          /*
+             k_iz/u_B 曲線用所選氣體的顏色 —— 這條**就是**氣體相依的那條
+             (游離速率係數由氣體決定),換氣體時它會整條移動。
+             下方的水平線是 1/(n_g·d_eff),只由壓力與尺寸決定、與氣體無關,
+             所以維持 danger 紅虛線不動 —— 兩者的角色不同,顏色語意也不該混。
+             下半部掃描圖的 T_e / n_e 同理維持原色:那是物理量的語意色。
+          */
+          var gasCol = PA.canvasTheme.gasColor(api.state.gas, p);
+          ctx.strokeStyle = gasCol;
           ctx.lineWidth = 2;
           ctx.beginPath();
           for (var i = 0; i < api.curve.length; i++) {
@@ -297,7 +304,7 @@
 
           ctx.save();
           ctx.font = "11px system-ui, sans-serif";
-          ctx.fillStyle = p.primary;
+          ctx.fillStyle = gasCol;
           ctx.textAlign = "left";
           ctx.fillText("k_iz(T_e) / u_B(T_e)", L + 6, T1 + 12);
           ctx.fillStyle = p.danger;

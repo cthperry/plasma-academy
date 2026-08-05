@@ -42,6 +42,7 @@ const STEPS = [
   ["死鏈", "tools/check-links.mjs"],
   ["sitemap.xml / robots.txt", "tools/check-sitemap.mjs"],
   ["術語 tooltip 覆蓋(docs/09 的「永遠可查」)", "tools/check-glossary-coverage.mjs"],
+  ["氣體配色(單一來源 + 同選單可區分)", "tools/check-gas-colors.mjs"],
 ];
 
 function run(label, script, env) {

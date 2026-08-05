@@ -12,33 +12,23 @@
 (function (PA) {
   "use strict";
 
-  /** "#rrggbb" → "r,g,b",供 rgba() 疊透明度用;讀不出來就退回中性灰 */
-  function hexToRgb(hex) {
-    var m = /^#([0-9a-f]{6})$/i.exec(hex || "");
-    if (!m) return "150,110,220";
-    var n = parseInt(m[1], 16);
-    return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(",");
-  }
-
   PA.lab.define("A05", function () {
     var C = PA.controls;
     var M = PA.model;
+    var T = PA.canvasTheme;
 
     /**
-     * 每種氣體的 token 同時決定兩處顏色:主圖上的 Paschen 曲線,
-     * 以及放電腔示意裡的輝光 —— 換氣體時兩邊一起變色,強化「這條線
-     * 對應這支氣體」的視覺連結。不是在模擬真實發射光譜顏色(那是
-     * 4.1 OES 的範圍),只是沿用站內既有的 viz token 配色系統。
+     * 顏色由 canvas-theme.js 的 GAS_TOKENS 統一決定(全站單一來源),
+     * 同時決定兩處:主圖上的 Paschen 曲線,以及放電腔示意裡的輝光 ——
+     * 換氣體時兩邊一起變色,強化「這條線對應這支氣體」的視覺連結。
      */
     var GASES = [
-      { key: "Ar", label: "Ar", token: "vizIonPos" },
-      { key: "He", label: "He", token: "vizRadical" },
-      { key: "N2", label: "N₂", token: "vizElectron" },
-      { key: "Air", label: "Air", token: "vizPolymer" },
-      { key: "O2", label: "O₂", token: "vizIonNeg" },
+      { key: "Ar", label: "Ar" },
+      { key: "He", label: "He" },
+      { key: "N2", label: "N₂" },
+      { key: "Air", label: "Air" },
+      { key: "O2", label: "O₂" },
     ];
-    var GAS_TOKEN = {};
-    GASES.forEach(function (g) { GAS_TOKEN[g.key] = g.token; });
 
     return PA.lab.create({
       setup: function () {
@@ -185,16 +175,16 @@
               return M.breakdownVoltage(pd, g.key);
             }, 240);
             pl.line(pts, {
-              stroke: pal[g.token],
+              stroke: T.gasColor(g.key, pal),
               width: g.key === s.gas ? 2.6 : 1.6,
               opacity: g.key === s.gas ? 1 : 0.55,
             });
             // 最小值標記 —— 與 docs/01 §1.4.2 表格同源
             var m = M.paschenMinimum(g.key);
-            pl.dot(m.pd, m.V, { fill: pal[g.token], r: 4 });
+            pl.dot(m.pd, m.V, { fill: T.gasColor(g.key, pal), r: 4 });
             if (g.key === s.gas) {
               pl.label(m.pd, m.V, g.label + " 最小值 " + m.V + " V", {
-                fill: pal[g.token],
+                fill: T.gasColor(g.key, pal),
                 dx: 8,
                 dy: 14,
                 size: 11,
@@ -204,7 +194,7 @@
 
           if (s.showAll) {
             pl.legend(
-              GASES.map(function (g) { return { label: g.label, color: pal[g.token] }; }),
+              GASES.map(function (g) { return { label: g.label, color: T.gasColor(g.key, pal) }; }),
               pl.m.l + 14,
               pl.m.t + 14
             );
@@ -293,7 +283,7 @@
 
         // 輝光 —— 顏色跟著氣體變,與主圖曲線顏色一致
         if (lit) {
-          var rgb = hexToRgb(p[GAS_TOKEN[s.gas]]);
+          var rgb = T.rgbTriplet(T.gasColor(s.gas, p));
           var g = ctx.createLinearGradient(0, top, 0, bot);
           var a = Math.min(0.55, 0.15 + (s.V / vb - 1) * 0.4);
           g.addColorStop(0, "rgba(" + rgb + ",0)");

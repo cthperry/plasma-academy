@@ -124,6 +124,19 @@
               pl.m.l + 16,
               pl.m.t + 14
             );
+            /*
+               這裡**不**把兩條曲線改成氣體色 —— 它們是兩個不同的物理量
+               (接觸角 vs 接著力),而本元件的主張正是「兩者會分道」,
+               顏色必須留給量的區分。換氣體時兩條**都**會動,沒有哪一條
+               是「氣體那條」。
+               改成在圖上標一個氣體色的標籤:圖隨時說得出自己畫的是哪支氣體,
+               而且顏色與其他元件的同一支氣體一致。
+            */
+            pl.label(maxT * 0.97, 87, r.gas.label, {
+              fill: PA.canvasTheme.gasColor(s.gas, pal),
+              anchor: "end",
+              size: 13,
+            });
 
             if (api.readoutNode) {
               api.readoutNode.update({

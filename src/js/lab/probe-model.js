@@ -300,6 +300,14 @@
     vrf: { label: "RF 電位振幅(補償失效時)", min: 0, max: 60, step: 2, unit: " V" },
     noise: { label: "雜訊", min: 0, max: 3, step: 0.1, unit: "" },
     coating: { label: "探針鍍膜", min: 0, max: 1, step: 0.05, unit: "" },
+    /*
+       雜散電容比 C_stray/C_sh0。這是 T_e 會不會被高估的那個開關:
+       設 0 → 落在鞘層上的 RF 振幅與偏壓無關 → 時間平均只是整條平移、
+       斜率不變 → T_e 不被高估(這正是本模型早期的行為);
+       設 > 0 → 振幅隨偏壓變 → 斜率被抹開 → T_e 高估。
+       做成滑桿是為了讓學員自己把這個因果關係開關一次,而不是只讀說明。
+    */
+    stray: { label: "雜散電容比(0 = 無分壓)", min: 0, max: 1, step: 0.05, unit: "" },
   };
 
   PA.probe = {
