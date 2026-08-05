@@ -40,6 +40,7 @@ const STEPS = [
   ["色彩對比(深淺兩套主題)", "tools/check-contrast.mjs"],
   ["建置", "build/build.mjs"],
   ["死鏈", "tools/check-links.mjs"],
+  ["sitemap.xml / robots.txt", "tools/check-sitemap.mjs"],
 ];
 
 function run(label, script, env) {

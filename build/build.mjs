@@ -242,6 +242,7 @@ function renderStats() {
 
 const pages = [];
 const stamp = new Date().toISOString().slice(0, 10);
+const SITE_URL = "https://plasma-academy.vercel.app";
 
 /** 建置時的 commit(Vercel 會提供環境變數;本機退回 git 或 "dev") */
 const COMMIT = (() => {
@@ -344,6 +345,9 @@ function run() {
 
   console.log("→ 產生 404 頁");
   build404Page();
+
+  console.log("→ 產生 sitemap.xml 與 robots.txt");
+  buildSitemap();
 
   console.log("→ 產生搜尋索引");
   buildSearchIndex();
@@ -537,6 +541,32 @@ function build404Page() {
     .replace(/\{\{commit\}\}/g, COMMIT);
 
   writeFileSync(join(DIST, "404.html"), html, "utf8");
+}
+
+/**
+ * sitemap.xml + robots.txt。從 `pages`(建置時每個真的產生內容的頁面
+ * 都會 push 進這裡,見 buildPage/writeStub)直接產生 —— 單一資料來源,
+ * 新增頁面不必記得手動更新網站地圖。
+ */
+function buildSitemap() {
+  const urls = pages
+    .map((p) => `${SITE_URL}/${p.url}`)
+    .sort();
+
+  const body = urls
+    .map((u) => `  <url><loc>${esc(u)}</loc></url>`)
+    .join("\n");
+  const xml =
+    '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    body +
+    "\n</urlset>\n";
+  writeFileSync(join(DIST, "sitemap.xml"), xml, "utf8");
+
+  const robots = `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`;
+  writeFileSync(join(DIST, "robots.txt"), robots, "utf8");
+
+  console.log(`   ${urls.length} 個網址`);
 }
 
 function buildGlossaryPage() {

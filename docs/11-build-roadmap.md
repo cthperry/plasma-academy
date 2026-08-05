@@ -1407,6 +1407,29 @@ Playwright 直接載入 `dist/404.html` 驗證:頁首、搜尋按鈕、主題、
 
 ---
 
+### 補上 sitemap.xml 與 robots.txt —— 同一個「SEO 友善」缺口的另一半
+
+補完 404 頁時發現 docs/06 對「SEO 友善」的宣稱還缺一半:有自訂 404 了,
+但完全沒有 sitemap.xml 或 robots.txt,搜尋引擎沒有明確的入口清單。
+
+新增 `buildSitemap()`,直接從建置時 `pages` 陣列(每個真的產生內容的
+頁面都會 push 進去,`buildPage()`/`writeStub()` 已經在做)生成
+`dist/sitemap.xml` 與 `dist/robots.txt` —— 單一資料來源,新增頁面不必
+記得手動更新網站地圖,也不會列出還沒真的建置出來的網址。
+
+`tools/check-sitemap.mjs`(7 項斷言)驗證兩份清單逐一對等(sitemap 的
+37 個網址與 `dist/` 實際的 37 個頁面完全一致,不多不少)、不含
+404.html(那個不該被索引)、robots.txt 指向的 sitemap 網址正確。
+
+品質門全數通過,煙霧測試 210 / 210。
+
+**這一輪的兩個修正(404 頁 + sitemap/robots)都是同一種模式**:先讀
+文件裡的既有宣稱(「SEO 友善」),對照實際網站找出宣稱與現實的落差,
+而不是憑空發明新功能 —— 跟 A21 的 SVG 縮圖、`/progress/` 的
+`recordQuiz` 是同一條方法論。
+
+---
+
 ## 未來可選延伸(不在本規劃範圍)
 
 - Service Worker 離線快取

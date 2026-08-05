@@ -193,6 +193,13 @@ plasma-academy.progress = {
 `tools/check-links.mjs` 也因此補上了解析「/」開頭連結的規則
 (相對於 `dist/` 根目錄,不是相對於檔案系統根目錄)。
 
+### sitemap.xml 與 robots.txt
+
+`dist/sitemap.xml` + `dist/robots.txt`(建置時由 `buildSitemap()` 產生)。
+直接從建置時實際產生內容的 `pages` 陣列生成 —— 單一資料來源,新增
+頁面不必記得手動更新網站地圖,也不會列出還沒真的建置出來的網址。
+`tools/check-sitemap.mjs` 驗證兩份清單逐一對等。
+
 ---
 
 ## 資源載入策略
