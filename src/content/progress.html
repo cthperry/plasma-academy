@@ -1,0 +1,49 @@
+<!--meta
+{
+  "title": "我的進度 — Plasma Academy",
+  "description": "章節與結業測驗總覽、四階徽章、可列印的結訓證書、進度 JSON 匯出匯入。全部存在瀏覽器本機,沒有帳號也沒有後端。",
+  "type": "page",
+  "styles": ["css/progress.css"]
+}
+-->
+
+<div class="pa-chapter-header">
+  <h1>我的進度</h1>
+  <div class="pa-chapter-header__meta">
+    <span>章節與測驗總覽</span>
+    <span>徽章</span>
+    <span>證書</span>
+  </div>
+</div>
+
+<div class="pa-prose">
+  <p>
+    這一頁彙整你在本機的學習紀錄:哪些章節完成了、四階結業測驗的成績,
+    以及依規則取得的徽章與可列印的結訓證書。
+    <strong>所有資料只存在這台瀏覽器的 <code>localStorage</code></strong>——
+    沒有帳號、沒有後端、不會送出任何資料。
+  </p>
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">✅ 徽章條件(docs/08-assessment.md)</div>
+    <p>
+      通過對應階段的結業測驗即取得該階徽章;
+      <strong>「全程完訓」</strong>則要求四階全部通過,而且全站每一章都完成
+      (造訪過、學習目標全勾、章末自我檢測 ≥ 60 %)。
+    </p>
+  </div>
+  <div class="pa-note pa-note--warn">
+    <div class="pa-note__title">⚠️ 關於證書</div>
+    <p>
+      本站的徽章與證書由學習者本機產生,<strong>供內部訓練紀錄參考,並非第三方認證</strong>。
+      我們不假裝這是有公信力的外部認證。
+    </p>
+  </div>
+</div>
+
+<div class="pa-progress" data-progress>
+  <noscript>
+    <div class="pa-lab__observe">
+      進度追蹤、徽章與證書都需要 JavaScript 才能在瀏覽器本機運算與顯示。
+    </div>
+  </noscript>
+</div>

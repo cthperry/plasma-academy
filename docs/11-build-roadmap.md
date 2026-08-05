@@ -1194,6 +1194,66 @@ A21 掛載檢查(控制項 6 / 數值 4)不受影響。
 
 ---
 
+### 我的進度 /progress/ 上線,順手抓到一個一直沒被呼叫到的 bug
+
+三個長期佔位頁(`glossary/`、`formulas/`、`lab/`)都補完之後,最後一個
+是 `/progress/`(章節與測驗總覽、徽章、可列印證書、JSON 匯出匯入)。
+跟前三個不同 —— 這個不是「內容早就存在,只差接出口」,是真的要寫新的
+互動畫面,因為 `docs/08-assessment.md` §認證 描述的徽章/證書邏輯以前
+完全沒有程式碼對應。
+
+**動手前先掃了一遍 `PA.progress`(既有的 `core/progress.js`,`chapter`/
+`levelStats`/`exportJSON` 等 API 早就存在,只是沒有頁面用它)**,結果
+發現一個一直沒被呼叫到的 bug:`quiz/engine.js` 交卷時呼叫的是
+`PA.progress.recordQuiz(...)`,但 `progress.js` 只匯出了 `setQuiz`——
+**名字對不上,而且參數簽名也不同**(`setQuiz(key, score, passThreshold)`
+vs 呼叫端傳的 `recordQuiz(key, {score, passed})`)。呼叫端有
+`if (PA.progress && PA.progress.recordQuiz)` 防呆,所以整段靜默跳過,
+不拋錯、不寫入 —— **結業測驗的通過紀錄從專案一開始就沒有真的被存進
+localStorage 過**,而品質門一路綠燈,因為沒有任何斷言檢查過
+「交卷後 `d.quizzes` 裡真的多了一筆」這件事。修法:把 `progress.js`
+的函式改名為 `recordQuiz`,簽名對齊呼叫端已經在傳的 `{score, passed}`
+物件,不是反過來改呼叫端 —— 呼叫端是實際在跑的程式碼,更值得信任。
+
+**新增 `badges()`**(docs/08 §認證·徽章的唯一來源):四階個別徽章
+(通過對應結業測驗)+「全程完訓」(四階全通過 **且** 全站每一章都完成)。
+「全程完訓」的 AND 條件是刻意重點測試的地方:`check-progress.mjs` 專門
+驗了「四階都通過測驗但章節都沒完成」這個中間狀態,確認「全程完訓」
+真的不會被四階測驗單獨觸發。
+
+**新增 `src/content/progress.html` + `src/js/core/progress-ui.js`**:
+章節與結業測驗總覽表、徽章 grid、證書產生器(姓名輸入 + 階段選擇 +
+涵蓋模組清單 + docs/08 規定的免責聲明逐字稿)、JSON 匯出/匯入/清除。
+`progress-ui.js` 走跟 `js/quiz/engine.js` 一樣的按需載入模式(只有
+`/progress/` 那一頁會載),徽章畫面靠既有的 `pa:progresschange` 事件
+自動重繪,不必重新整理頁面。
+
+**證書列印是純 CSS,沒有另外拉套件**:點「列印」時在 `<body>` 加一個
+`pa-print-cert-only` class,`print.css` 就只留 `.pa-cert`、隱藏進度頁
+其餘內容與按鈕本身;`afterprint` 事件觸發時自動移回。
+
+Playwright 手動全流程跑過一次(通過 L1 → 徽章即時反映 → 填名產生
+證書 → 列印 class 正確切換 → 補完四階與全部章節 → 全程完訓徽章出現 →
+匯出 JSON 檔名正確),零 console 錯誤。`tools/smoke.mjs` 新增「我的
+進度」段(5 項),特別驗證 `recordQuiz` 真的接得上瀏覽器裡跑的 quiz
+引擎、徽章畫面真的會重繪 —— 這正是前述 bug 曾經逃過的那種檢查空隙,
+純資料的 `check-progress.mjs`(vm sandbox)驗不到「兩邊叫同一個名字」
+這件事,只有瀏覽器裡跑一次交卷才驗得到。
+
+**第一版直接把徽章/證書 CSS 加進全站共用的 `components.css`,結果撞上
+效能預算**:「關鍵路徑 < 120 KB」從 119.0 KB 被推到 123.8 KB —— 徽章/
+證書只有 `/progress/` 用得到,卻讓其他 24 章的初始載入一起分攤。
+修法比照 JS 已有的按需載入慣例:新增 `css/progress.css`(只有
+`/progress/` 會連,靠新增的 `{{extraStyles}}` 模板欄位 + 內容頁 meta
+的 `styles` 欄位掛上),把 `badges()` 邏輯也一併從每頁都載的
+`core/progress.js` 移到按需載入的 `progress-ui.js`(用
+`PA.progress.load()`/`isChapterDone()` 這些既有的公開 API 算,不需要
+新的匯出)。改完關鍵路徑回到 119.7 KB,品質門全數通過。
+
+品質門全數通過,煙霧測試 210 / 210(新增 5 項)。
+
+---
+
 ## 🏁 25 章全部完成
 
 L1 6 章、L2 6 章、L3 7 章、L4 6 章 —— **全部撰寫完畢**,

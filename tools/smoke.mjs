@@ -615,6 +615,65 @@ console.log("\n【測驗中心】");
   await ctx.close();
 }
 
+/* ==========================================================================
+   我的進度(/progress/)
+
+   徽章邏輯本身由 check-progress.mjs 用 vm sandbox 驗過,但那驗不到
+   「PA.progress.recordQuiz 這個名字真的接得上瀏覽器裡跑的 quiz 引擎、
+   徽章畫面真的會因為 recordQuiz 而重繪、證書真的能從表單產生出來」——
+   這正是 recordQuiz/setQuiz 那個對不上名字的 bug 曾經逃過的那一種檢查空隙。
+   ========================================================================== */
+console.log("\n【我的進度】");
+{
+  const { page, ctx } = await newPage();
+  await page.goto(`${BASE}/progress/`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(800);
+
+  const initial = await page.evaluate(() => ({
+    badgeCount: document.querySelectorAll(".pa-badge").length,
+    earnedCount: document.querySelectorAll(".pa-badge--earned").length,
+  }));
+  ok("五個徽章都掛出來,初始狀態全部未取得",
+    initial.badgeCount === 5 && initial.earnedCount === 0,
+    `${initial.earnedCount} / ${initial.badgeCount}`);
+
+  // 模擬通過 L1 結業測驗(跟 quiz 引擎交卷時走同一個函式),徽章畫面要能即時反映
+  await page.evaluate(() => {
+    PA.progress.recordQuiz("level-1", { score: 0.9, passed: true });
+  });
+  await page.waitForTimeout(300);
+  const afterPass = await page.evaluate(() => ({
+    earnedCount: document.querySelectorAll(".pa-badge--earned").length,
+    earnedName: document.querySelector(".pa-badge--earned .pa-badge__name")?.textContent,
+  }));
+  ok("recordQuiz 之後徽章畫面自動重繪(靠 pa:progresschange 事件,不必重新整理)",
+    afterPass.earnedCount === 1 && afterPass.earnedName === "電漿入門",
+    `取得:${afterPass.earnedName}`);
+
+  // 證書產生
+  await page.fill("#cert-name", "測試學員");
+  await page.click(".pa-progress__cert-sec button.pa-btn--primary");
+  await page.waitForTimeout(200);
+  const cert = await page.evaluate(() => {
+    const c = document.querySelector(".pa-cert");
+    return c
+      ? {
+          hasBadgeName: c.querySelector(".pa-cert__badge")?.textContent === "電漿入門",
+          bodyHasName: c.querySelector(".pa-cert__body")?.textContent.includes("測試學員"),
+          modCount: c.querySelectorAll(".pa-cert__mods li").length,
+          hasDisclaimer: c.querySelector(".pa-cert__disclaimer")?.textContent.includes("非第三方認證"),
+        }
+      : null;
+  });
+  ok("證書產生成功,姓名、階段、免責聲明都在",
+    !!cert && cert.hasBadgeName && cert.bodyHasName && cert.hasDisclaimer,
+    JSON.stringify(cert));
+  ok("證書列出涵蓋模組(L1 共 6 個)", !!cert && cert.modCount === 6, `${cert && cert.modCount} 個模組`);
+
+  ok("無 console 錯誤", page.errors.length === 0, page.errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
 await browser.close();
 
 console.log(`\n${fail === 0 ? "✓" : "✗"} 煙霧測試 通過 ${pass} / ${pass + fail}\n`);

@@ -131,12 +131,16 @@
     };
   }
 
-  function setQuiz(levelKey, score, passThreshold) {
+  /**
+   * 記錄一次結業測驗結果。levelKey 格式為 "level-1".."level-4"
+   * (與 quiz/engine.js 交卷時呼叫的格式一致)。
+   */
+  function recordQuiz(levelKey, info) {
     var d = load();
     var prev = d.quizzes[levelKey] || { attempts: 0 };
     d.quizzes[levelKey] = {
-      score: score,
-      passed: score >= passThreshold,
+      score: info.score,
+      passed: !!info.passed,
       attempts: (prev.attempts || 0) + 1,
       date: Date.now(),
     };
@@ -193,7 +197,7 @@
     setQuizScore: setQuizScore,
     isChapterDone: isChapterDone,
     levelStats: levelStats,
-    setQuiz: setQuiz,
+    recordQuiz: recordQuiz,
     setRole: setRole,
     noteLabUse: noteLabUse,
     toggleBookmark: toggleBookmark,

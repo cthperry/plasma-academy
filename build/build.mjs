@@ -296,6 +296,7 @@ function buildPage(file) {
     .replace(/\{\{mainAttrs\}\}/g, meta.module ? ` data-chapter="${meta.module}"` : "")
     .replace(/\{\{content\}\}/g, content)
     .replace(/\{\{extraScripts\}\}/g, (meta.scripts || []).map((s) => `<script src="${base}${s}" defer></script>`).join("\n    "))
+    .replace(/\{\{extraStyles\}\}/g, (meta.styles || []).map((s) => `<link rel="stylesheet" href="${base}${s}" />`).join("\n    "))
     .replace(/\{\{buildStamp\}\}/g, `建置於 ${stamp}`)
     .replace(/\{\{commit\}\}/g, COMMIT);
 
@@ -425,7 +426,6 @@ function buildStubs() {
   const HUBS = [
     ["gases/", "氣體百科", "32 種製程氣體的完整資料卡:分子式、自由基、用途、危害分級、相容材質、副產物。", "P2"],
     ["defects/", "缺陷圖鑑", "18 種蝕刻缺陷的症狀圖、成因鏈、診斷區分與對策旋鈕。", "P3"],
-    ["progress/", "我的進度", "學習進度、徽章與證書,支援 JSON 匯出匯入。", "P4"],
     ["quiz/", "測驗中心", "章末自我檢測與四階結業測驗。", "P4"],
   ];
   for (const [url, title, desc, phase] of HUBS) {
@@ -472,6 +472,7 @@ function writeStub(spec) {
         renderChapterNav(base, { type: meta.module ? "chapter" : "page", module: meta.module })
     )
     .replace(/\{\{extraScripts\}\}/g, spec.extraScripts || "")
+    .replace(/\{\{extraStyles\}\}/g, spec.extraStyles || "")
     .replace(/\{\{buildStamp\}\}/g, `建置於 ${stamp}`)
     .replace(/\{\{commit\}\}/g, COMMIT);
 

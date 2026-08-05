@@ -1,0 +1,148 @@
+/* ==========================================================================
+   progress.css — /progress/ 專屬樣式(徽章、證書)
+
+   只有這一頁會載入(見 src/content/progress.html 的 meta.styles),
+   不放進全站都要載的 components.css —— 關鍵路徑有 120 KB 的預算,
+   徽章/證書這種單頁功能不該讓其他 24 章的初始載入一起付錢。
+   ========================================================================== */
+
+.pa-progress__sec {
+  margin-bottom: var(--pa-space-8);
+}
+
+.pa-badge-tag {
+  display: inline-block;
+  padding: 0.15em 0.6em;
+  border-radius: var(--pa-radius-sm);
+  font-weight: 650;
+  font-size: var(--pa-text-sm);
+}
+
+.pa-badge-tag--pass {
+  background: var(--pa-success-bg);
+  color: var(--pa-success);
+}
+
+.pa-badge-tag--fail {
+  background: var(--pa-danger-bg);
+  color: var(--pa-danger);
+}
+
+.pa-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--pa-space-3);
+}
+
+.pa-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--pa-space-2);
+  padding: var(--pa-space-4);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-lg);
+  background: var(--pa-surface-sunken);
+  text-align: center;
+  opacity: 0.5;
+}
+
+.pa-badge--earned {
+  opacity: 1;
+  border-color: var(--pa-primary);
+  background: var(--pa-surface);
+  box-shadow: var(--pa-shadow-sm);
+}
+
+.pa-badge__icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.pa-badge__name {
+  font-size: var(--pa-text-sm);
+  font-weight: 650;
+}
+
+/* 證書 */
+.pa-cert-wrap {
+  margin-top: var(--pa-space-4);
+}
+
+.pa-cert {
+  max-width: 40rem;
+  margin: 0 auto var(--pa-space-4);
+  padding: var(--pa-space-8);
+  border: 3px double var(--pa-border-strong);
+  border-radius: var(--pa-radius-lg);
+  background: var(--pa-surface);
+  text-align: center;
+}
+
+.pa-cert__title {
+  font-size: var(--pa-text-2xl, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.pa-cert__badge {
+  margin-top: var(--pa-space-2);
+  font-size: var(--pa-text-lg);
+  color: var(--pa-primary);
+  font-weight: 650;
+}
+
+.pa-cert__body {
+  margin: var(--pa-space-6) 0;
+  line-height: 1.9;
+}
+
+.pa-cert__meta {
+  font-size: var(--pa-text-sm);
+  color: var(--pa-text-subtle);
+}
+
+.pa-cert__mods-title {
+  margin-top: var(--pa-space-6);
+  font-weight: 650;
+  font-size: var(--pa-text-sm);
+}
+
+.pa-cert__mods {
+  margin: var(--pa-space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  columns: 2;
+  font-size: var(--pa-text-sm);
+  text-align: left;
+  color: var(--pa-text-muted);
+}
+
+.pa-cert__disclaimer {
+  margin-top: var(--pa-space-6);
+  padding-top: var(--pa-space-3);
+  border-top: 1px solid var(--pa-border);
+  font-size: var(--pa-text-xs);
+  color: var(--pa-text-subtle);
+}
+
+/* 列印證書:只印證書本身,進度頁其餘內容(章節總覽、徽章、表單)都隱藏 */
+@media print {
+  body.pa-print-cert-only .pa-main > .pa-chapter-header,
+  body.pa-print-cert-only .pa-main > .pa-prose,
+  body.pa-print-cert-only .pa-progress__sec:not(.pa-progress__cert-sec) {
+    display: none !important;
+  }
+
+  body.pa-print-cert-only .pa-progress__cert-sec > *:not(.pa-cert-wrap) {
+    display: none !important;
+  }
+
+  body.pa-print-cert-only .pa-cert-wrap button {
+    display: none !important;
+  }
+
+  body.pa-print-cert-only .pa-cert {
+    border-color: #000;
+  }
+}

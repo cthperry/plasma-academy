@@ -84,6 +84,12 @@
     );
   }
 
+  /** /progress/ 頁面的畫面邏輯,只有那一頁會載 */
+  function ensureProgressUI(cb) {
+    if (PA.progressUI) return cb();
+    loadScripts(["js/core/progress-ui.js"], cb);
+  }
+
   /** 瀏覽器閒置時預先載入,讓首次 hover 不用等 */
   function idle(fn) {
     if (window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 2500 });
@@ -142,11 +148,24 @@
         }
       });
     }
+
+    // 進度頁:徽章/證書/匯出入,只有 /progress/ 會載
+    if (document.querySelector("[data-progress]")) {
+      ensureProgressUI(function (err) {
+        if (err) return;
+        try {
+          PA.progressUI.scan();
+        } catch (e) {
+          console.error("[app] 進度頁掛載失敗", e);
+        }
+      });
+    }
   }
 
   PA.loadScripts = loadScripts;
   PA.ensureGlossary = ensureGlossary;
   PA.ensureLab = ensureLab;
+  PA.ensureProgressUI = ensureProgressUI;
   PA.ensureQuiz = ensureQuiz;
 
   if (document.readyState === "loading") {
