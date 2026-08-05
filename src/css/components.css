@@ -701,6 +701,52 @@
   cursor: pointer;
 }
 
+/* SVG 剖面縮圖症狀選擇器(A21)—— 用剖面圖代替純文字清單 */
+.pa-defect-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: var(--pa-space-2);
+}
+
+.pa-defect-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--pa-space-1);
+  padding: var(--pa-space-2);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-md);
+  background: var(--pa-surface-sunken);
+  transition: border-color var(--pa-dur-fast) var(--pa-ease-out);
+}
+
+.pa-defect-pick:hover {
+  border-color: var(--pa-primary);
+}
+
+.pa-defect-pick[aria-checked="true"] {
+  border-color: var(--pa-primary);
+  background: var(--pa-surface);
+  box-shadow: var(--pa-shadow-sm);
+}
+
+.pa-defect-thumb {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.pa-defect-pick__label {
+  font-size: var(--pa-text-xs);
+  color: var(--pa-text-muted);
+  text-align: center;
+}
+
+.pa-defect-pick[aria-checked="true"] .pa-defect-pick__label {
+  color: var(--pa-primary);
+  font-weight: 650;
+}
+
 /* 按鈕 */
 .pa-btn {
   display: inline-flex;

@@ -17,6 +17,7 @@ const STEPS = [
   ["氣體資料與課文表格一致", "tools/check-gases.mjs"],
   ["輪廓引擎的定性行為", "tools/check-profile.mjs"],
   ["缺陷資料與診斷區分", "tools/check-defects.mjs"],
+  ["缺陷剖面 SVG(A21 症狀縮圖)", "tools/check-defect-svg.mjs"],
   ["封裝電漿模型與課文數值一致", "tools/check-package.mjs"],
   ["Bosch 循環的兩個觀察點", "tools/check-bosch.mjs"],
   ["沉積與填溝的四個宣稱", "tools/check-deposit.mjs"],

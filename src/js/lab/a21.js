@@ -180,13 +180,59 @@
             },
           });
 
+          /**
+           * 症狀選擇用 SVG 剖面縮圖,不用文字清單(docs/05 A21 規格明列)。
+           * D.svg 來自 data/defect-svg.js;每張縮圖的幾何都反推自
+           * defects.js 已有的 symptom/causes/distinguish 文字,不是另一份真相。
+           */
+          function svgSymptomPicker(opts) {
+            var wrap = el("div", "pa-ctrl");
+            var lab = el("div", "pa-ctrl__label");
+            var n = el("span");
+            n.textContent = opts.label;
+            lab.appendChild(n);
+            wrap.appendChild(lab);
+
+            var grid = el("div", "pa-defect-grid", { role: "radiogroup", "aria-label": opts.label });
+            var current = opts.value;
+            var cards = [];
+
+            opts.options.forEach(function (o) {
+              var card = el("button", "pa-defect-pick", {
+                type: "button",
+                role: "radio",
+                "aria-checked": String(o.value === current),
+              });
+              card.innerHTML = D.svg(o.value);
+              var cap = el("span", "pa-defect-pick__label");
+              cap.textContent = o.label;
+              card.appendChild(cap);
+              card.addEventListener("click", function () {
+                current = o.value;
+                sync();
+                if (opts.onChange) opts.onChange(current);
+              });
+              cards.push({ btn: card, value: o.value });
+              grid.appendChild(card);
+            });
+
+            function sync() {
+              cards.forEach(function (x) {
+                x.btn.setAttribute("aria-checked", String(x.value === current));
+              });
+            }
+
+            wrap.appendChild(grid);
+            return wrap;
+          }
+
           var pickerHost = el("div");
           var currentPicker = null;
           function rebuildDefectPicker(cat) {
             var list = D.all.filter(function (x) { return x.cat === cat; });
             pickerHost.textContent = "";
-            currentPicker = C.segmented({
-              label: "症狀",
+            currentPicker = svgSymptomPicker({
+              label: "症狀(依剖面外觀選)",
               options: list.map(function (x) { return { value: x.id, label: x.zh }; }),
               value: api.state.id,
               onChange: function (v) {
@@ -238,6 +284,6 @@
         },
       });
     },
-    ["data/defects.js"]
+    ["data/defects.js", "data/defect-svg.js"]
   );
 })((window.PA = window.PA || {}));
