@@ -35,8 +35,14 @@ const ev = (gas, material, time, extra) =>
   M.evaluate({ gas, material, time, ...LP, ...(extra || {}) });
 
 console.log("\n【氣體清單:封裝端不用氟系】");
+/*
+   ⚠️ 範圍很重要:這條講的是**封裝表面活化**用的氣體清單(GASES)。
+   同一章後半的 PCB desmear 反而非加 CF₄ 不可(見本檔最後一段)——
+   兩者不衝突,因為 desmear 面對的是玻纖(SiO₂),而封裝活化面對的是
+   有機物與金屬 pad。斷言只守住「活化用的清單裡不該有氟」。
+*/
 ok(
-  "氣體清單沒有任何含氟的氣體(3.7.2 的三個理由)",
+  "**表面活化**的氣體清單沒有任何含氟的氣體(3.7.2 的三個理由)",
   M.gases.every((g) => !/F/.test(g.label)),
   M.gases.map((g) => g.label).join("、")
 );
@@ -214,6 +220,92 @@ console.log("\n【疏水回復與 queue time —— 課文寫「數小時」】"
     "回復最快的綠漆 queue time 最短、PI 最長",
     qsm < qpi,
     `綠漆 ${qsm.toFixed(0)} h < PI ${qpi === Infinity ? "∞" : qpi.toFixed(0)} h`
+  );
+}
+
+/* ==========================================================================
+   PCB 除膠渣(desmear)/ 回蝕(etchback)
+
+   本章最反直覺的一段:3.7.2 說「封裝端幾乎不用氟系」,
+   PCB 的 desmear 卻**非加 CF₄ 不可** —— 因為 FR-4 裡有玻纖(SiO₂),
+   而 O₂ 對 SiO₂ 完全無效。這幾條斷言守住那個結論。
+   ========================================================================== */
+console.log("\n【PCB desmear:為什麼這裡反而非用氟不可】");
+{
+  const at = (cf4, extra) => M.desmear({ cf4, time_min: 15, ...(extra || {}) });
+  const scan = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 0.8];
+  console.log(
+    "    " +
+      scan
+        .map((c) => `${(c * 100).toFixed(0)}%:突出${at(c).protrusion.toFixed(1)}µm`)
+        .join("  ")
+  );
+
+  ok(
+    "**純 O₂ 完全去不掉玻纖** —— 這就是封裝端的結論在 PCB 不成立的原因",
+    at(0).glass === 0 && at(0).protrusion > 3,
+    `玻纖移除 ${at(0).glass.toFixed(2)} µm、玻纖突出 ${at(0).protrusion.toFixed(1)} µm`
+  );
+  ok(
+    "純 O₂ 的判定會明講玻纖沒退(不是只給一個數字)",
+    /玻纖/.test(at(0).verdict),
+    at(0).verdict
+  );
+  ok(
+    "加了 CF₄ 玻纖才開始退,且移除量隨 CF₄ 比例單調上升",
+    scan.every((c, i) => i === 0 || at(c).glass > at(scan[i - 1]).glass),
+    scan.map((c) => at(c).glass.toFixed(1)).join(" < ")
+  );
+
+  /* 樹脂速率先升後降 —— 與 A33 的接著力曲線是同一個形狀、同一個教訓 */
+  const rates = scan.map((c) => M.resinRate(c, 1));
+  const peakIdx = rates.indexOf(Math.max(...rates));
+  ok(
+    "**樹脂移除速率先升後降**(少量 F 幫忙打開高分子鏈,加太多把 O 稀釋掉)",
+    peakIdx > 0 && peakIdx < rates.length - 1,
+    `峰值在 CF₄ ${(scan[peakIdx] * 100).toFixed(0)} %`
+  );
+  ok(
+    "樹脂速率的峰值落在現場常用的 10–25 % 區間",
+    scan[peakIdx] >= 0.1 && scan[peakIdx] <= 0.25,
+    `${(scan[peakIdx] * 100).toFixed(0)} %`
+  );
+
+  const best = M.bestCF4({ time_min: 15 });
+  ok(
+    "**齊平度存在一個最佳 CF₄ 比例**,而且落在 10–25 %",
+    best.cf4 >= 0.1 && best.cf4 <= 0.25,
+    `最佳 ${(best.cf4 * 100).toFixed(0)} %,玻纖突出 ${best.r.protrusion.toFixed(2)} µm`
+  );
+  ok(
+    "CF₄ 過量時玻纖反過來被過度咬蝕(突出變負)",
+    at(0.5).protrusion < -1.5,
+    `50 % 時 ${at(0.5).protrusion.toFixed(1)} µm`
+  );
+  ok(
+    "CF₄ 過量時樹脂速率也確實掉下來(兩件事同時變糟)",
+    M.resinRate(0.8, 1) < M.resinRate(0.2, 1),
+    `80 % ${M.resinRate(0.8, 1).toFixed(3)} < 20 % ${M.resinRate(0.2, 1).toFixed(3)} µm/min`
+  );
+
+  /* desmear 與 etchback 是不同的目標深度,不是同一件事 */
+  const d = M.desmear({ cf4: 0.2, time_min: 15, target: "desmear" });
+  const e = M.desmear({ cf4: 0.2, time_min: 15, target: "etchback" });
+  ok(
+    "desmear 與 etchback 的目標深度窗不同(後者要刻意讓樹脂退更多)",
+    e.window[0] > d.window[1],
+    `desmear ${d.window.join("–")} µm、etchback ${e.window.join("–")} µm`
+  );
+  ok(
+    "同樣 15 min 達得到 desmear 的窗,但還不到 etchback 的窗",
+    d.okDepth && !e.okDepth,
+    `樹脂退 ${d.resin.toFixed(1)} µm`
+  );
+  const eLong = M.desmear({ cf4: 0.2, time_min: 50, target: "etchback" });
+  ok(
+    "拉長到 50 min 才進得了 etchback 的窗",
+    eLong.okDepth,
+    `樹脂退 ${eLong.resin.toFixed(1)} µm — ${eLong.verdict}`
   );
 }
 

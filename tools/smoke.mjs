@@ -27,7 +27,23 @@ const EXPECT = (() => {
   const sandbox = { window: {} };
   new Function("window", code)(sandbox.window);
   const c = sandbox.window.PA.curriculum;
-  return { modules: c.modules.length, hours: c.totalHours, labs: c.totalLabs };
+  /*
+     術語數同理從 glossary.js 讀。原本這裡寫死 242,新增五條 PCB 術語
+     之後就變紅 —— 那不是回歸,是測試自己過期了。
+     (與 quiz.html 的「301 題」是同一類問題,見 docs/11。)
+  */
+  const gcode = readFileSync(
+    new URL("../src/data/glossary.js", import.meta.url),
+    "utf8"
+  );
+  const gs = { window: {} };
+  new Function("window", gcode)(gs.window);
+  return {
+    modules: c.modules.length,
+    hours: c.totalHours,
+    labs: c.totalLabs,
+    terms: gs.window.PA.glossary.count,
+  };
 })();
 let pass = 0;
 let fail = 0;
@@ -184,7 +200,11 @@ let chapterErrors = [];
   ok("術語 tooltip 顯示定義", tipVisible);
 
   const terms = await page.evaluate(() => (PA.glossary ? PA.glossary.count : 0));
-  ok("術語表按需載入後有 242 條", terms === 242, `${terms}`);
+  ok(
+    `術語表按需載入後有 ${EXPECT.terms} 條(數字來自 glossary.js,不寫死)`,
+    terms === EXPECT.terms,
+    `${terms}`
+  );
 
   // 互動元件 A01
   await page.locator("[data-lab=A01]").scrollIntoViewIfNeeded();

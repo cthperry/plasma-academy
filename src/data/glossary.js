@@ -2,7 +2,7 @@
    glossary.js — 術語表資料
    ⚠️ 自動產生,請勿手改。來源:docs/10-glossary.md
       重新產生:node tools/gen-glossary.mjs
-   共 242 條
+   共 247 條
    ========================================================================== */
 
 (function (PA) {
@@ -177,6 +177,11 @@
   { id: "over-etch", zh: "過蝕刻", en: "Over Etch", abbr: "OE", cat: "E", ch: "3.2", def: "清除殘留、保護下層的收尾步驟" },
   { id: "bosch-process", zh: "Bosch 製程", en: "Bosch Process", abbr: null, cat: "E", ch: "3.2", def: "沉積與蝕刻交替循環的深矽蝕刻法" },
   { id: "scallop", zh: "扇貝紋", en: "Scallop", abbr: null, cat: "E", ch: "3.2", def: "Bosch 製程在側壁留下的週期性半圓凹痕" },
+  { id: "desmear", zh: "除膠渣", en: "Desmear", abbr: null, cat: "E", ch: "3.7", def: "清除鑽孔時抹在孔壁上的樹脂,讓內層銅露出以利鍍銅" },
+  { id: "etchback", zh: "回蝕", en: "Etchback", abbr: null, cat: "E", ch: "3.7", def: "刻意讓孔壁樹脂再退一段,使內層銅露出三個面" },
+  { id: "smear", zh: "抹膠", en: "Smear", abbr: null, cat: "E", ch: "3.7", def: "鑽孔摩擦生熱使樹脂熔化並塗抹於孔壁的殘留層" },
+  { id: "glass-fiber-protrusion", zh: "玻纖突出", en: "Glass Fiber Protrusion", abbr: null, cat: "E", ch: "3.7", def: "樹脂退得比玻纖快,使玻纖戳出孔壁的缺陷" },
+  { id: "glass-transition-temperature", zh: "玻璃轉移溫度", en: "Glass Transition Temperature (Tg)", abbr: null, cat: "E", ch: "3.7", def: "高分子由玻璃態轉為橡膠態的溫度,決定鑽孔抹膠的難易" },
   { id: "plasma-enhanced-cvd", zh: "電漿輔助化學氣相沉積", en: "Plasma-Enhanced CVD", abbr: "PECVD", cat: "F", ch: "3.4", def: "以電漿取代熱能解離前驅物,可在 300–400 °C 沉積" },
   { id: "high-density-plasma-cvd", zh: "高密度電漿 CVD", en: "High-Density Plasma CVD", abbr: "HDP-CVD", cat: "F", ch: "3.4", def: "同時沉積與濺鍍,可填高深寬比溝槽" },
   { id: "atomic-layer-deposition", zh: "原子層沉積", en: "Atomic Layer Deposition", abbr: "ALD", cat: "F", ch: "3.4", def: "自限制的循環式沉積,階梯覆蓋率接近 100%" },

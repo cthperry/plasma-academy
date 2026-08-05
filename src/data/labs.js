@@ -41,7 +41,7 @@
   { id: 'A30', title: 'ALE 循環動畫', stars: 1, level: 4, moduleId: '4.4', moduleTitle: '先進技術', url: 'level/4/4-4-advanced-tech/' },
   { id: 'A31', title: '脈衝電漿時序互動', stars: 0, level: 4, moduleId: '4.4', moduleTitle: '先進技術', url: 'level/4/4-4-advanced-tech/' },
   { id: 'A32', title: '0-D 全域模型計算器', stars: 0, level: 4, moduleId: '4.5', moduleTitle: '電漿模擬與資料', url: 'level/4/4-5-simulation/' },
-  { id: 'A33', title: '封裝電漿處理計算器', stars: 0, level: 3, moduleId: '3.7', moduleTitle: '封裝電漿清潔與表面處理', url: 'level/3/3-7-package-clean/' }
+  { id: 'A33', title: '封裝電漿處理計算器', stars: 0, level: 3, moduleId: '3.7', moduleTitle: '封裝與 PCB 的電漿清潔與咬蝕', url: 'level/3/3-7-package-clean/' }
   ];
 
   function byId(id) {

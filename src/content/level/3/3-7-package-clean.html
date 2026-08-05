@@ -1,16 +1,16 @@
 <!--meta
 {
-  "title": "3.7 封裝電漿清潔與表面處理 — Plasma Academy",
-  "description": "封裝端的電漿在做什麼:打線前 pad 清潔、封膠前接著力活化、助焊劑殘留去除、underfill 潤濕、電漿切割。含氣體選用(為何不用氟系)、低壓 vs 大氣電漿、接觸角判準與疏水回復。",
+  "title": "3.7 封裝與 PCB 的電漿清潔與咬蝕 — Plasma Academy",
+  "description": "後段的電漿在做什麼:打線前 pad 清潔、封膠前接著力活化、助焊劑殘留去除、underfill 潤濕,以及 PCB 的除膠渣與回蝕。含氣體選用(封裝為何不用氟系、PCB 為何非用不可)、低壓 vs 大氣電漿、接觸角判準與疏水回復。",
   "type": "chapter",
   "module": "3.7"
 }
 -->
 
 <div class="pa-chapter-header">
-  <h1>3.7 封裝電漿清潔與表面處理</h1>
+  <h1>3.7 封裝與 PCB 的電漿清潔與咬蝕</h1>
   <div class="pa-chapter-header__meta">
-    <span>⏱ 2.5 小時</span>
+    <span>⏱ 3.5 小時</span>
     <span>🔬 A33 互動元件</span>
     <span>L3 進階 · 後段製程</span>
   </div>
@@ -25,6 +25,8 @@
     <li><label><input type="checkbox" /><span>判斷該用低壓電漿還是大氣電漿</span></label></li>
     <li><label><input type="checkbox" /><span>說明疏水回復為什麼決定了製程之間的佇留時間上限</span></label></li>
     <li><label><input type="checkbox" /><span>列出後段與前段在目的、材料、溫度、氣體、指標上的差別</span></label></li>
+    <li><label><input type="checkbox" /><span>說明 PCB 的除膠渣為什麼<strong>反而非加 CF₄ 不可</strong>,以及它與封裝端結論相反的原因</span></label></li>
+    <li><label><input type="checkbox" /><span>區分 desmear 與 etchback,並解釋玻纖突出是怎麼來的</span></label></li>
   </ul>
 </div>
 
@@ -398,6 +400,158 @@
   </div>
 </div>
 
+<h2 id="pcb">3.7.7 PCB 的電漿咬蝕與清潔:除膠渣與回蝕</h2>
+
+<div class="pa-prose">
+  <p>
+    前面六節講的是<strong>封裝廠</strong>。這一節換到<strong>PCB 廠</strong> ——
+    材料一樣是有機物、一樣不需要方向性,但有一個關鍵差別會把 3.7.2 的結論
+    整個翻過來。
+  </p>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠ 本章最大的例外:PCB 的 desmear <strong>非加氟不可</strong></div>
+    <p>
+      3.7.2 花了三個理由說明「封裝端幾乎不用氟系」。但 PCB 的除膠渣配方是
+      <strong>CF₄ + O₂</strong>,氟是必要成分,不是可選項。
+    </p>
+    <p>
+      理由只有一個,而且很硬:<strong>FR-4 裡有玻璃纖維。</strong>
+      FR-4 = 環氧樹脂 + 玻纖布,而<strong>O₂ 電漿對 SiO₂ 完全無效</strong>。
+      沒有 F,玻纖就一動也不動。
+    </p>
+    <p>
+      這不是「封裝那三個理由錯了」,而是<strong>面對的材料不同</strong> ——
+      封裝活化面對的是有機物與金屬 pad,那裡氟只會留下腐蝕與疏水;
+      PCB 的 desmear 面對的是玻纖,那裡沒有氟根本做不動。
+      <strong>同一種化學,在不同材料前面的結論可以完全相反。</strong>
+    </p>
+  </div>
+
+  <h3 id="pcb-why">先搞清楚要解決什麼:smear 是怎麼來的</h3>
+
+  <p>
+    多層板鑽通孔時,鑽頭高速摩擦生熱,溫度輕易衝過環氧樹脂的
+    <span class="pa-term" data-term="玻璃轉移溫度">T<sub>g</sub></span>。
+    熔掉的樹脂被鑽頭抹在孔壁上,蓋住原本該露出來的<strong>內層銅</strong> ——
+    這層抹膠就是 <strong>smear</strong>。
+  </p>
+  <p>
+    後續要做化學銅與電鍍銅把各層連起來。孔壁上蓋著一層樹脂,
+    鍍銅就接不到內層銅,結果是<strong>斷路,或更糟 —— 通過電測但在
+    熱循環後才開路</strong>。這是多層板最典型的可靠度殺手之一。
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>Desmear(除膠渣)</th><th>Etchback(回蝕)</th></tr></thead>
+      <tbody>
+        <tr><td>目的</td><td>清掉孔壁上的抹膠,讓內層銅露出來</td>
+          <td><strong>刻意</strong>讓樹脂再退一段,使內層銅露出<strong>上下與端面三個面</strong></td></tr>
+        <tr><td>樹脂移除量</td><td class="is-num">約 <strong>3–8 µm</strong></td>
+          <td class="is-num">約 <strong>12–25 µm</strong></td></tr>
+        <tr><td>連接方式</td><td>單面接觸</td><td><strong>三面包覆</strong>,機械與熱可靠度更好</td></tr>
+        <tr><td>代價</td><td>—</td><td>時間長很多、玻纖突出的風險也放大</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="pcb-glass">玻纖突出:為什麼純 O₂ 反而製造問題</h3>
+
+  <p>
+    模型跑一次就看得很清楚。同樣 300 W、0.4 Torr、15 分鐘,只改 CF₄ 比例:
+  </p>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th class="is-num">CF₄ 比例</th><th class="is-num">樹脂退</th><th class="is-num">玻纖退</th><th class="is-num">玻纖突出</th><th>判定</th></tr></thead>
+      <tbody>
+        <tr><td class="is-num"><strong>0 %</strong></td><td class="is-num">4.5 µm</td><td class="is-num"><strong>0.0 µm</strong></td><td class="is-num"><strong>+4.5 µm</strong></td><td>玻纖完全沒退</td></tr>
+        <tr><td class="is-num">10 %</td><td class="is-num">4.7 µm</td><td class="is-num">2.4 µm</td><td class="is-num">+2.3 µm</td><td>仍有突出</td></tr>
+        <tr><td class="is-num"><strong>20 %</strong></td><td class="is-num">4.8 µm</td><td class="is-num">4.8 µm</td><td class="is-num"><strong>0.0 µm</strong></td><td><strong>✅ 齊平</strong></td></tr>
+        <tr><td class="is-num">30 %</td><td class="is-num">4.7 µm</td><td class="is-num">7.2 µm</td><td class="is-num">−2.5 µm</td><td>玻纖被咬凹</td></tr>
+        <tr><td class="is-num">50 %</td><td class="is-num">4.1 µm</td><td class="is-num">12.0 µm</td><td class="is-num">−7.9 µm</td><td>過度咬蝕</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pa-note pa-note--intuition">
+    <div class="pa-note__title">💡 兩條速率在互相競爭</div>
+    <p>
+      整段物理只有兩條式子:
+    </p>
+    <div class="pa-chain">
+      <div class="pa-chain__step"><strong>樹脂移除</strong> ∝ O 的比例 ×(1 + <sup>5</sup>⁄<sub>3</sub> · CF₄ 比例)
+        —— 少量 F 會先抽走 H、把高分子鏈打開,<strong>反而幫 O 加速</strong>。</div>
+      <div class="pa-chain__step"><strong>玻纖移除</strong> ∝ CF₄ 比例
+        —— SiO₂ + 4F → SiF₄↑。<strong>沒有 F 就是零</strong>,不是「慢」,是零。</div>
+      <div class="pa-chain__step pa-chain__step--end">兩條的交點就是<strong>齊平</strong>。
+        模型算出來落在 <strong>CF₄ 20 %</strong>,與現場常用的 10–25 % 一致。</div>
+    </div>
+  </div>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠ 又一條先升後降的曲線</div>
+    <p>
+      注意樹脂速率那一欄:0 % → 20 % 是<strong>上升</strong>的(0.300 → 0.320 µm/min),
+      30 % 之後才開始掉,80 % 時只剩 0.140 —— 因為 O 被稀釋掉了。
+    </p>
+    <p>
+      <strong>這和 A33 的接著力曲線是同一個形狀、同一個教訓</strong>:
+      「多加一點有幫助」不代表「加越多越好」。差別在於這裡加過頭會同時
+      弄壞<strong>兩件事</strong> —— 樹脂變慢、玻纖被咬凹。
+    </p>
+  </div>
+
+  <h3 id="pcb-vs-wet">為什麼不用濕式就好</h3>
+
+  <div class="pa-table-wrap">
+    <table class="pa-table">
+      <thead><tr><th></th><th>濕式(高錳酸鹽三步)</th><th>電漿</th></tr></thead>
+      <tbody>
+        <tr><td>原理</td><td>膨潤 → 高錳酸鉀氧化 → 中和</td><td>O₂/CF₄ 自由基氧化與氟化</td></tr>
+        <tr><td>玻纖</td><td>幾乎不動</td><td><strong>靠 CF₄ 一起退</strong></td></tr>
+        <tr><td>高深寬比小孔</td><td><strong>藥液進不去、排不出</strong></td><td>乾式,自由基擴散得進去</td></tr>
+        <tr><td>軟板 / PI</td><td>藥液易滲入、傷及基材</td><td><strong>PI 相對耐電漿</strong>(見 3.7.4 的材料表)</td></tr>
+        <tr><td>廢液</td><td>含錳廢液處理成本高</td><td>無廢液,但有 PFC 排放要處理(4.6)</td></tr>
+        <tr><td>產能</td><td>連續式,產能高</td><td>批次式,cycle time 較長</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    現場多半<strong>兩者併用</strong>:濕式做主力,電漿處理濕式做不動的部分 ——
+    <strong>高深寬比孔、軟板、以及需要 etchback 的高可靠度板</strong>。
+    這與 3.7.3 選低壓或大氣的邏輯一樣:不是誰比較好,是<strong>幾何與材料
+    決定哪一個做得到</strong>。
+  </p>
+
+  <div class="pa-note pa-note--values">
+    <div class="pa-note__title">📊 幾個現場會遇到的數字</div>
+    <ul>
+      <li><strong>Etchback 要多久</strong>:同樣 20 % CF₄,15 分鐘只退 4.8 µm(desmear 夠了),
+        要進 12–25 µm 的 etchback 窗得跑到 <strong>約 50 分鐘</strong>(模型算得 16.0 µm)。</li>
+      <li><strong>齊平度容忍</strong>:玻纖突出超過約 <strong>1.5 µm</strong>,切片上就看得出來,
+        鍍層的包覆與熱循環可靠度開始掉。</li>
+      <li><strong>大板均勻度</strong>:PCB 的板面比晶圓大得多,而電漿均勻度隨面積變難 ——
+        這與 3.6 的均勻度工程是同一組問題,只是尺度更大。</li>
+    </ul>
+  </div>
+
+  <div class="pa-note pa-note--safety">
+    <div class="pa-note__title">⚠ 安全與環保</div>
+    <p>
+      CF₄ 是<span class="pa-term" data-term="全氟化物">全氟化物</span>,
+      <strong>GWP 極高、大氣壽命上萬年</strong>。PCB 廠用量雖然不如晶圓廠,
+      但同樣受排放管制,需要 scrubber 或電漿分解處理 —— 見 <a href="../../4/4-6-production/#pfc">4.6</a>。
+    </p>
+    <p>
+      此外 desmear 的副產物含 <strong>HF 與 SiF₄</strong>,排氣管路的材質與
+      水氣控制都要照腐蝕性氣體處理。
+    </p>
+  </div>
+</div>
+
 <h2 id="check">✅ 自我檢測</h2>
 
 <div class="pa-prose">
@@ -411,6 +565,12 @@
     <li>在 A33 上找出「封膠前活化」接著力最高的時間,並說明為什麼再往後就變差。</li>
     <li>Ar+O₂ 混合與純 O₂ 相比,活化速度與製程窗各有什麼差別?這與 3.1 的
       Coburn–Winters 協同是同一個機制還是不同機制?</li>
+    <li>3.7.2 說封裝端幾乎不用氟系,3.7.7 卻說 PCB 的 desmear 非加 CF₄ 不可。
+      這兩句話互相矛盾嗎?請用「面對什麼材料」回答。</li>
+    <li>某 PCB 廠的 desmear 用純 O₂,切片發現孔壁有玻纖戳出來、鍍銅包不住。
+      要怎麼改?改過頭又會發生什麼事?</li>
+    <li>desmear 與 etchback 的差別是什麼?為什麼 etchback 能提高可靠度,
+      代價又是什麼?</li>
   </ol>
   <p class="pa-subtle">題庫與作答功能於 P4 測驗中心實作。</p>
 </div>
