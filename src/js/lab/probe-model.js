@@ -72,12 +72,58 @@
    */
   var RF_PHASES = 48;
 
+  /**
+   * **落在鞘層上的那一份 RF 振幅,與探針偏壓有關** —— 這是「未補償會高估
+   * T_e」真正的成因,也是本模型原本缺的那塊物理。
+   *
+   * 只寫 `⟨I(V − V_rf·sin ωt)⟩` 是不夠的。那個式子裡 V_rf 是常數,於是
+   *
+   *     ⟨exp((V − V_p − V_rf·f(t))/T_e)⟩ = exp((V − V_p)/T_e) · ⟨exp(−V_rf·f/T_e)⟩
+   *
+   * 後項與 V 無關 → 指數區只是整條平移、**斜率不變** → T_e 救得回來。
+   * (這個證明本身是對的,先前據此判定「本模型做不到」。)
+   *
+   * 真實探針差在哪:探針尖端對電漿是隔著**鞘層電容** C_sh,對接地端則是
+   * **雜散電容** C_stray(探針桿、纜線、支架)。13.56 MHz 下 RF 電位是
+   * 由這兩者分壓的:
+   *
+   *     V_sheath / V_rf = C_stray / (C_sh + C_stray)
+   *
+   * 而 C_sh = ε₀A/s,鞘層厚度 s 由 Child–Langmuir 給(2.4 講過):
+   *
+   *     s ∝ λ_D · ((V_p − V)/T_e)^(3/4)
+   *
+   * 所以:
+   *   · 深負偏壓 → 鞘層厚 → C_sh 小 → 幾乎整個 V_rf 都落在鞘層上(調變最大)
+   *   · 逼近 V_p → 鞘層薄 → C_sh 大 → RF 被雜散電容分掉(調變變小)
+   *
+   * 也就是說**調變振幅隨 V 遞減**,上面那個「與 V 無關」的前提就不成立了:
+   * 曲線下緣被抹得比上緣兇 → 指數區被拉平 → **T_e 被高估**。
+   * 這正是 RF 補償(扼流圈 + 參考電極)要對付的東西 —— 它把落在鞘層上的
+   * RF 壓下去,而不是把探針的直流偏壓修掉。
+   *
+   * `stray` = C_stray / C_sh0(C_sh0 是鞘層厚度等於 λ_D 時的鞘層電容),
+   * 無因次。0 代表沒有雜散耦合 → 退回常數振幅 → 只有平移,沒有高估。
+   */
+  function rfAmplitudeAt(V, s) {
+    if (!s.vrf) return 0;
+    var r = s.stray == null ? 0.35 : s.stray;
+    if (r <= 0) return s.vrf;
+    // 至少留一個 T_e,避免 V → V_p 時鞘層厚度趨近 0 而發散
+    var dv = Math.max(s.te, s.vp - V);
+    var sheath = Math.pow(dv / s.te, 0.75); // 以 λ_D 為單位
+    var g = (r * sheath) / (1 + r * sheath);
+    return s.vrf * g;
+  }
+
   function measuredAt(V, s) {
     if (!s.vrf) return currentAt(V, s);
+    var amp = rfAmplitudeAt(V, s);
+    if (!amp) return currentAt(V, s);
     var sum = 0;
     for (var k = 0; k < RF_PHASES; k++) {
       var ph = (2 * Math.PI * k) / RF_PHASES;
-      sum += currentAt(V - s.vrf * Math.sin(ph), s);
+      sum += currentAt(V - amp * Math.sin(ph), s);
     }
     return sum / RF_PHASES;
   }
@@ -106,6 +152,10 @@
       vrf: o.vrf == null ? 0 : o.vrf,        // 0 = RF 補償正常
       noise: o.noise == null ? 0 : o.noise,
       coating: o.coating == null ? 0 : o.coating,
+      // 雜散電容 / 鞘層電容(無因次)。見 rfAmplitudeAt 的說明:
+      // 它讓落在鞘層上的 RF 振幅隨偏壓變化,T_e 才會真的被高估。
+      // 設成 0 可退回「常數振幅」的舊行為(只平移、不改斜率)。
+      stray: o.stray == null ? 0.35 : o.stray,
     };
     s.isat = ionSat(s.ne, s.te, gas.amu, s.area);
     s.iesat = elecSat(s.ne, s.te, s.area);

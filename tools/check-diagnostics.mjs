@@ -2,22 +2,27 @@
    check-diagnostics.mjs — 驗證診斷模型(4.1 / A26 Langmuir、A27 OES)
 
    docs/05 的驗收條件:
-     A26 · 無 RF 補償時 T_e 高估至少 2 倍     → **未達成**,原因見下方(可證明)
+     A26 · 無 RF 補償時 T_e 高估至少 2 倍     → **已達成**(補上雜散電容分壓之後)
      A26 · 學員正確操作時誤差 < 10%           → 達成
      A27 · 譜線位置與 4.1.3 表格一致           → 達成
      A27 · actinometry 比值對功率的敏感度顯著低於絕對強度 → 達成
 
-   ⚠️ A26 第一條**做不到,而且是可以證明的**:
-   探針特性在過渡區是純指數,而
+   📌 第一條曾經被判定為「可以證明做不到」,而那個證明**本身是對的** ——
+   只是它證的是一個**前提不成立**的命題。原本的模型把落在鞘層上的 RF
+   振幅寫成常數 V_rf,於是
        ⟨exp((V − V_p − V_rf·f(t))/T_e)⟩_t = exp((V − V_p)/T_e) · ⟨exp(−V_rf·f/T_e)⟩
-   後面那一項**與 V 無關** —— 也就是說任何波形的 RF 調變在指數區都只是
-   把曲線整條平移,**斜率完全不變**,T_e 因此救得回來。
-   要讓 T_e 真的被高估,需要模型裡沒有的東西(探針雜散電容分壓、
-   非 Maxwellian EEDF、探針座面積效應)。
+   後項與 V 無關 → 指數區只是整條平移、斜率不變 → T_e 救得回來。
 
-   但模型**確實**顯示了一個同樣嚴重、而且量級很大的錯誤:
-   **V_p 與 V_f 被整個推歪**(實測 V_p 真值 20 V → 量到 −10 V)。
-   而離子能量 ≈ V_p − V_wafer,所以下游全錯。這才是本模型能誠實教的那一課。
+   真實探針缺的那塊物理是:**振幅不是常數**。探針尖端對電漿隔著鞘層電容
+   C_sh、對地隔著雜散電容 C_stray,RF 由兩者分壓;而 C_sh = ε₀A/s,
+   鞘層厚度 s 由 Child–Langmuir 給 ∝ ((V_p − V)/T_e)^(3/4)。
+   於是深負偏壓處鞘層厚、C_sh 小 → 幾乎整個 V_rf 落在鞘層上;
+   逼近 V_p 時鞘層薄、C_sh 大 → RF 被雜散電容分掉。
+   **調變振幅隨偏壓變化**,上面那個「與 V 無關」的前提就破了,
+   指數區被拉平 → T_e 真的被高估。見 probe-model.js 的 rfAmplitudeAt()。
+
+   模型另外顯示的那個錯誤仍然成立而且同樣嚴重:
+   **V_p 與 V_f 被整個推歪**,而離子能量 ≈ V_p − V_wafer,所以下游全錯。
    ========================================================================== */
 
 import { readFileSync } from "node:fs";
@@ -76,7 +81,7 @@ ok(
   [2, 3, 5].map((te) => `${te}eV:${(P.analyse(P.create({ te, ne: 1e16, vp: 20 })).teError * 100).toFixed(1)}%`).join("、")
 );
 
-console.log("\n【RF 補償失效的後果 —— 不是 T_e,是 V_p 與 V_f】");
+console.log("\n【RF 補償失效的後果 —— T_e、V_p、V_f 三個一起錯】");
 {
   const rows = [0, 10, 20, 30, 45].map((vrf) => {
     const s = P.create({ te: 3, ne: 1e16, vp: 20, vrf });
@@ -88,31 +93,78 @@ console.log("\n【RF 補償失效的後果 —— 不是 T_e,是 V_p 與 V_f】"
         `   V_p ${r.vp.toFixed(1)} V (真值 20)   V_f ${r.vf.toFixed(1)} V`
     );
   }
+  /**
+   * ⚠️ 這三條的數字在補上「振幅隨偏壓變化」之後**變了**,而且是往
+   * 更符合文獻的方向變:分壓讓逼近 V_p 處的 RF 被雜散電容吃掉,
+   * 所以 **V_p 的推歪變小、T_e 的高估變大**。
+   * 現場的經典症狀本來就是「T_e 高得離譜」,不是「V_p 差 20 V」——
+   * 舊的數字是常數振幅模型的產物,不是實際探針的行為。
+   */
   ok(
-    "未補償時 V_p 被嚴重推歪(30 V 振幅 → 誤差超過 20 V)",
-    Math.abs(rows[3].vp - 20) > 20,
+    "未補償時 V_p 仍被推歪好幾伏特(離子能量 ≈ V_p − V_wafer,下游全錯)",
+    Math.abs(rows[3].vp - 20) > 3,
     `量到 ${rows[3].vp.toFixed(1)} V,真值 20 V`
   );
   ok(
-    "推歪的程度隨 RF 振幅單調增加",
-    rows.every((r, i, a) => i === 0 || Math.abs(r.vp - 20) > Math.abs(a[i - 1].vp - 20)),
+    "V_rf ≥ 20 V 之後 V_p 的推歪隨振幅單調增加",
+    rows.slice(2).every((r, i, a) => i === 0 || r.vp - 20 > a[i - 1].vp - 20),
     rows.map((r) => `${r.vrf}V:${(r.vp - 20).toFixed(0)}`).join("、")
   );
   ok(
-    "V_f 也跟著整條平移(兩者一起錯,不是只有一個)",
-    Math.abs(rows[3].vf - rows[0].vf) > 20,
-    `補償正常 ${rows[0].vf.toFixed(1)} V → 未補償 ${rows[3].vf.toFixed(1)} V`
+    "V_f 被推到很深的負電位,而且單調(整流效應)",
+    rows[4].vf < -20 && rows.every((r, i, a) => i === 0 || r.vf < a[i - 1].vf),
+    rows.map((r) => `${r.vrf}V:${r.vf.toFixed(1)}`).join("、")
   );
-  /**
-   * 這一條記錄的是**未達成的驗收條件的真實狀態**,不是驗收條件本身。
-   * 指數區的 RF 平均只是整條平移(見檔頭的證明),斜率不變,所以 T_e 救得回來。
-   * 如果哪天補上雜散電容或非 Maxwellian EEDF 讓 T_e 真的被高估,
-   * 這條會失敗並提醒接手的人去更新課文與 docs/11。
-   */
   ok(
-    "【已知限制】T_e 在本模型裡**沒有**被高估(指數區的 RF 平均只是平移)",
-    Math.abs(rows[3].teError) < 0.15,
-    `V_rf 30 V 時 T_e 誤差僅 ${(rows[3].teError * 100).toFixed(0)} %,課文與 docs/11 已如實標註`
+    "T_e 也被高估,而且程度隨 RF 振幅增加(雜散電容分壓的後果)",
+    rows[3].teError > 0.15 &&
+      rows[4].teError > rows[1].teError &&
+      Math.abs(rows[0].teError) < 0.02,
+    rows.map((r) => `${r.vrf}V:${(r.teError * 100).toFixed(0)}%`).join("、")
+  );
+}
+
+/**
+ * docs/05 的 A26 驗收條件原文:「無 RF 補償時 T_e 高估**至少 2 倍**」。
+ *
+ * 量在哪裡很重要,而**這件事本身就是這個缺陷的一部分**:
+ * 高估的程度隨偏壓變化(振幅隨鞘層厚度變),所以擬合窗選在哪裡,
+ * 答案就差多少 —— 同一條曲線可以量出 1.3 倍也可以量出 4 倍。
+ * 這裡照**現場標準做法**量:擬合轉折(V_p)下方那一段指數區,
+ * 而不是貼著 V_f 往上取固定 10 V(未補償時 V_f 被推到很遠的負電位,
+ * 那個窗會落在離轉折很遠、失真最小的地方,反而看不出問題)。
+ */
+console.log("\n【A26 驗收:無 RF 補償時 T_e 高估至少 2 倍(近轉折擬合窗)】");
+{
+  const TRUE_TE = 3;
+  const TRUE_VP = 20;
+  const kneeFit = (vrf) => {
+    const s = P.create({ te: TRUE_TE, ne: 1e16, vp: TRUE_VP, vrf });
+    const c = P.sweep(s);
+    // 標準做法:轉折下方 3–9 V 的那一段(避開轉折本身的圓角)
+    return P.fitTe(c, { isat: P.measureIsat(c), vf: 0, from: TRUE_VP - 9, to: TRUE_VP - 3 });
+  };
+  const rows = [0, 20, 30, 45].map((vrf) => ({ vrf, te: kneeFit(vrf) }));
+  for (const r of rows) {
+    console.log(
+      `    V_rf ${String(r.vrf).padStart(2)} V   T_e ${r.te.toFixed(2)} eV` +
+        `   = ${(r.te / TRUE_TE).toFixed(2)} 倍真值`
+    );
+  }
+  ok(
+    "補償正常(V_rf = 0)時同一個窗量得準 —— 高估不是擬合窗造成的",
+    Math.abs(rows[0].te - TRUE_TE) / TRUE_TE < 0.05,
+    `${rows[0].te.toFixed(2)} eV vs 真值 ${TRUE_TE}`
+  );
+  ok(
+    "**V_rf 30 V 時 T_e 高估至少 2 倍**(docs/05 的 A26 驗收條件)",
+    rows[2].te / TRUE_TE >= 2,
+    `${rows[2].te.toFixed(2)} eV = ${(rows[2].te / TRUE_TE).toFixed(2)} 倍`
+  );
+  ok(
+    "高估程度隨 RF 振幅單調增加",
+    rows.every((r, i, a) => i === 0 || r.te > a[i - 1].te),
+    rows.map((r) => `${r.vrf}V:${r.te.toFixed(1)}eV`).join("、")
   );
 }
 

@@ -198,6 +198,7 @@
      */
     var topSolidRow = 0;
     function refreshTopSolid() {
+      nrmEpoch++; // 幾何可能已變 → 法線快取失效
       for (var y = 0; y < rows; y++) {
         for (var x = 0; x < cols; x++) {
           if (mat[idx(x, y)] !== 0) {
@@ -214,9 +215,56 @@
     }
 
     var DIV_RAYS = 8;
-    function ionFluxVec(x, y, div) {
+    var fluxNrm = { x: 0, y: 0 };
+
+    /**
+     * `wallFlux`(選用,預設關閉)—— 修掉「側壁的離子通量恆為 0」這個錯。
+     *
+     * **這個錯是真的,而且很隱蔽**:射線是從**固體格本身**往上追的,
+     * 而側壁格的正上方就是側壁的延續(還是固體),所以每一條射線在第一步
+     * 就被擋掉 → `f` 恆為 **0**。側壁因此完全收不到離子,不管角度發散開多大、
+     * 鏡面反射開到多強都一樣。連帶讓 `reflectMap()` 整段失效:它要求
+     * `inc.f > 0.002` 才算反射,而側壁的 inc.f 是 0 —— 之前為了抓
+     * 「掠射進來、反射比例最高的那一份」把門檻從 0.02 降到 0.002,
+     * 自然完全沒有效果。docs/11 原本寫的「反射的集中度贏不過溝底中央的
+     * 自由基優勢」不是真正的原因,真正的原因是這裡。
+     *
+     * 打開之後(射線改從法線外推一格的真空格出發)側壁確實拿到掠射通量,
+     * **microtrench 立刻長得出來**(µtr 由 −2 變成 +8),
+     * faceting 的遮罩開口也還在(widen 1.62)。
+     *
+     * ⚠️ 但**預設仍然關閉**,因為打開之後 A18 的八組預設全部要重新校準:
+     * 側壁一旦會被蝕刻,`reflect` 開到 95–100 的那幾組(bowing / microtrench)
+     * 會把 µtr 推過門檻,於是 taper / footing / bowing 全部被判成
+     * Microtrench,成立數反而從 5 掉到 4。
+     *
+     * 已經確認**行不通**的一條路:再乘一個幾何投影 cos θ 來壓掉側壁的量。
+     * 那會與 `angularYield()` 重複計算(Yamamura 的 Y(θ)/Y(0) 本來就是
+     * 對「單位入射通量」歸一的),實測結果是 widen 全部塌回 1.00、
+     * µtr 永遠上不了 3、mid 永遠超不過 top —— 八種形狀一個都做不出來。
+     *
+     * 接手的人要做的是:開啟 wallFlux,然後把 defects.js 的八組 profile
+     * 參數(尤其是 reflect)重新搜一遍,而不是在引擎裡再加係數。
+     * 這與 `polyLoss` 是同一種處理:引擎支援、預設不開、原因寫在這裡。
+     */
+    function ionFluxVec(x, y, div, wallFlux) {
       if (!div || div <= 0) return { f: ionFlux(x, y), slope: 0 };
       if (skyClear(y)) return { f: 1, slope: 0 };
+
+      var ox = x;
+      var oy = y;
+      if (wallFlux) {
+        var nrm = normalCached(x, y, fluxNrm);
+        if (nrm) {
+          var sx = Math.round(x + nrm.x);
+          var sy = Math.round(y + nrm.y);
+          if (sx >= 0 && sx < cols && sy >= 0 && sy < rows && mat[idx(sx, sy)] === 0) {
+            ox = sx;
+            oy = sy;
+          }
+        }
+      }
+
       var open = 0;
       var total = 0;
       var slopeSum = 0;
@@ -227,8 +275,8 @@
         var w = 1 - 0.7 * Math.abs(t);
         total += w;
         var blocked = false;
-        for (var yy = y - 1; yy >= 0; yy--) {
-          var xx = Math.round(x + dx * (y - yy));
+        for (var yy = oy - 1; yy >= 0; yy--) {
+          var xx = Math.round(ox + dx * (oy - yy));
           if (xx < 0 || xx >= cols) break;
           if (mat[idx(xx, yy)] !== 0) {
             blocked = true;
@@ -272,6 +320,35 @@
       if (L < 1e-6) return null;
       return { x: -gx / L, y: -gy / L };
     }
+
+    /**
+     * 法線快取。`ionFluxVec()` 現在每格都要用法線(射線起點與幾何投影),
+     * 而它本來就在最內層迴圈裡 —— 不快取的話 3×3 梯度會被重算好幾遍
+     * (step 一次、reflectMap 一次、角度產額一次),實測慢到跑不動。
+     * 幾何只在 step 套用移除時才會變,所以用 refreshTopSolid() 當作
+     * 「幾何已更新」的訊號一起失效即可。
+     */
+    var nrmX = new Float32Array(n);
+    var nrmY = new Float32Array(n);
+    var nrmTag = new Int32Array(n);
+    var nrmEpoch = 1;
+    /**
+     * 回填到呼叫端自己的暫存物件,而不是共用一個 —— 共用的話,
+     * 呼叫端把回傳值抓著、中途又問了另一格,手上的值就被改掉了。
+     */
+    function normalCached(x, y, out) {
+      var i = idx(x, y);
+      if (nrmTag[i] !== nrmEpoch) {
+        var v = normalAt(x, y);
+        nrmTag[i] = nrmEpoch;
+        nrmX[i] = v ? v.x : 0;
+        nrmY[i] = v ? v.y : 0;
+      }
+      if (nrmX[i] === 0 && nrmY[i] === 0) return null;
+      out.x = nrmX[i];
+      out.y = nrmY[i];
+      return out;
+    }
     api.normalAt = normalAt;
 
     /**
@@ -285,7 +362,8 @@
      *   · 溝底附近微微內傾的側壁把離子送向溝底兩側 → microtrench
      * 兩者都不是另外寫的規則,是同一段反射計算在不同幾何下的結果。
      */
-    function reflectMap(div, coef) {
+    var reflNrm = { x: 0, y: 0 };
+    function reflectMap(div, coef, wallFlux) {
       var out = new Float32Array(n);
       if (!coef || coef <= 0) return out;
       for (var y = 0; y < rows; y++) {
@@ -293,9 +371,9 @@
           var i = idx(x, y);
           if (mat[i] === 0) continue;
           if (!exposed(x, y)) continue;
-          var inc = ionFluxVec(x, y, div);
+          var inc = ionFluxVec(x, y, div, wallFlux);
           if (inc.f <= 0.002) continue; // 門檻放很低:側壁的直射通量本來就小,&#10;                                     // 但它掠射進來,反射比例最高 —— 這正是要抓的那一份
-          var nrm = normalAt(x, y);
+          var nrm = normalCached(x, y, reflNrm);
           if (!nrm) continue;
 
           // 入射方向:射線朝天空是 (slope, −1),所以離子來的方向是它的反向
@@ -392,6 +470,7 @@
      *
      * 回傳三個代表位置的淨速率,供 UI 標示:溝底 / 側壁 / 遮罩頂
      */
+    var stepNrm = { x: 0, y: 0 };
     api.step = function (p) {
       var dt = p.dt || 1;
       var effFC = p.effFC;
@@ -400,7 +479,7 @@
       var polyCrit = p.polyCrit == null ? 1 : p.polyCrit;
       var div = p.ionDiv || 0;
       refreshTopSolid(); // 通量的提前判斷要用,幾何一變就要更新
-      var refl = reflectMap(div, p.ionReflect || 0);
+      var refl = reflectMap(div, p.ionReflect || 0, p.wallFlux);
 
       // F 自由基的相對量 ∝ 有效 F/C;聚合物前驅物則相反。
       // 3.4 附近是分水嶺:高於它幾乎不聚合(CF₄ 那一端),
@@ -429,7 +508,7 @@
           var m = BY_ID[mat[i]];
           // 直射 + 反射。反射進來的那一份沒有「方向性」的意義,
           // 但它一樣打斷鍵、一樣清聚合物 —— 所以就是加在同一個 fi 上。
-          var inc = ionFluxVec(x, y, div);
+          var inc = ionFluxVec(x, y, div, p.wallFlux);
           var fi = (inc.f + refl[i]) * iRel;
           var fn = neutralFlux(x, y);
 
@@ -441,7 +520,7 @@
           var angY = 1; // 物理濺射用:完整的角度峰值
           var angYchem = 1; // 離子輔助化學蝕刻用:角度依賴弱得多
           if (p.angularYield) {
-            var nrm = normalAt(x, y);
+            var nrm = normalCached(x, y, stepNrm);
             if (nrm) {
               // 離子來的方向:射線朝天空是 (slope, −1),所以入射是它的反向
               var dxi = -inc.slope;
