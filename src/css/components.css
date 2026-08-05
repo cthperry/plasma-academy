@@ -505,6 +505,15 @@
   margin: 0 0 var(--pa-space-6);
 }
 
+/* 互動實驗室目錄(/lab/)裡每個元件的獨立卡片:元件本身 + 回原章節連結 */
+.pa-lab-entry {
+  margin: 0 0 var(--pa-space-8);
+}
+
+.pa-lab-entry .pa-lab {
+  margin-bottom: var(--pa-space-2);
+}
+
 .pa-lab__head {
   display: flex;
   align-items: center;

@@ -323,6 +323,9 @@ function run() {
   console.log("→ 產生公式資料");
   execFileSync(process.execPath, [join(ROOT, "tools/gen-formulas.mjs")], { stdio: "inherit" });
 
+  console.log("→ 產生互動實驗室目錄");
+  execFileSync(process.execPath, [join(ROOT, "tools/gen-labs.mjs")], { stdio: "inherit" });
+
   console.log("→ 複製靜態資源");
   for (const d of ["css", "js", "data"]) {
     cpSync(join(SRC, d), join(DIST, d), { recursive: true });
@@ -420,7 +423,6 @@ function buildStubs() {
 
   // 專區佔位頁
   const HUBS = [
-    ["lab/", "互動實驗室", "32 個互動元件的獨立入口。每個元件可全螢幕開啟,方便當工具用。", "P1 起陸續上線"],
     ["gases/", "氣體百科", "32 種製程氣體的完整資料卡:分子式、自由基、用途、危害分級、相容材質、副產物。", "P2"],
     ["defects/", "缺陷圖鑑", "18 種蝕刻缺陷的症狀圖、成因鏈、診斷區分與對策旋鈕。", "P3"],
     ["progress/", "我的進度", "學習進度、徽章與證書,支援 JSON 匯出匯入。", "P4"],
@@ -446,6 +448,8 @@ function buildStubs() {
   if (!done.has("glossary/")) buildGlossaryPage();
   // 公式手冊:資料由 gen-formulas.mjs 從章節內文抽出,直接做成可用頁面
   if (!done.has("formulas/")) buildFormulasPage();
+  // 互動實驗室:資料由 gen-labs.mjs 從 docs/05 標題 + 課綱模組對照,直接做成可用頁面
+  if (!done.has("lab/")) buildLabsPage();
 }
 
 function writeStub(spec) {
@@ -589,6 +593,55 @@ function buildFormulasPage() {
     url: "formulas/",
     title: "公式手冊 — Plasma Academy",
     description: `${all.length} 條電漿製程公式與符號表,直接取自各章節內文,可跳轉回原文脈絡。`,
+    sidebar: false,
+    body,
+  });
+}
+
+function buildLabsPage() {
+  const lcode = readFileSync(join(SRC, "data/labs.js"), "utf8");
+  const lwin = {};
+  new Function("window", lcode)(lwin);
+  const all = lwin.PA.labs.all;
+
+  let body =
+    '<div class="pa-chapter-header"><h1>互動實驗室</h1>' +
+    `<div class="pa-chapter-header__meta"><span>${all.length} 個互動元件</span></div></div>` +
+    '<div class="pa-prose"><p>' +
+    "全站互動元件的獨立入口 —— 同一個元件,拿掉章節敘事的上下文,單獨當工具用。" +
+    "捲到哪個元件,哪個才會真的載入(跟章節頁的行為一樣,不會一次把 33 個元件全部跑起來)。" +
+    "每個元件下方都有連結跳回它原本所在的章節,完整的教學說明與觀察點在那裡。</p></div>" +
+    '<nav class="pa-prose" aria-label="元件索引"><p>';
+  body += all.map((l) => `<a href="#${l.id}">${l.id}</a>`).join(" · ");
+  body += "</p></nav>";
+
+  for (const lv of curriculum.levels) {
+    const items = all.filter((l) => l.level === lv.no);
+    if (!items.length) continue;
+    body += `<h2 id="l${lv.no}">L${lv.no} ${esc(lv.name)} · ${esc(lv.subtitle)}<span class="pa-subtle"> · ${items.length} 個</span></h2>`;
+    for (const l of items) {
+      const complex = l.stars >= 1 ? " pa-lab--complex" : "";
+      body +=
+        `<div class="pa-lab-entry" id="${esc(l.id)}">` +
+        `<div class="pa-lab${complex}" data-lab="${esc(l.id)}">` +
+        '<div class="pa-lab__head">' +
+        `<span class="pa-lab__id">${esc(l.id)}</span>` +
+        `<span class="pa-lab__title">${esc(l.title)}${l.stars ? " " + "★".repeat(l.stars) : ""}</span>` +
+        "</div>" +
+        (l.stars >= 1
+          ? '<div class="pa-lab__small-screen-note">此元件建議在較大螢幕使用。</div>'
+          : "") +
+        '<div class="pa-lab__stage"></div>' +
+        "</div>" +
+        `<p class="pa-subtle">出現於 <a href="{{base}}${l.url}">${esc(l.moduleId)} ${esc(l.moduleTitle)}</a> —— 完整教學說明與觀察點在原章節</p>` +
+        "</div>";
+    }
+  }
+
+  writeStub({
+    url: "lab/",
+    title: "互動實驗室 — Plasma Academy",
+    description: `${all.length} 個互動元件的獨立入口,可當工具單獨使用,捲到哪個才載入哪個。`,
     sidebar: false,
     body,
   });

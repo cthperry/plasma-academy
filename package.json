@@ -17,6 +17,7 @@
     "check:defects": "node tools/check-defects.mjs",
     "check:defect-svg": "node tools/check-defect-svg.mjs",
     "check:formulas": "node tools/check-formulas.mjs",
+    "check:labs": "node tools/check-labs.mjs",
     "check:shapes": "node tools/check-shapes.mjs",
     "check:package": "node tools/check-package.mjs",
     "check:bosch": "node tools/check-bosch.mjs",
