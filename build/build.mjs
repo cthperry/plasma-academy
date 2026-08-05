@@ -342,6 +342,9 @@ function run() {
   buildStubs();
   console.log(`   ${authored} 頁已撰寫 + ${pages.length - authored} 頁佔位 = ${pages.length} 頁`);
 
+  console.log("→ 產生 404 頁");
+  build404Page();
+
   console.log("→ 產生搜尋索引");
   buildSearchIndex();
 
@@ -489,6 +492,51 @@ function writeStub(spec) {
     file: "(stub)",
     stub: true,
   });
+}
+
+/**
+ * 404.html 放在 dist/ 根目錄,Vercel 對 outputDirectory 靜態部署的慣例是
+ * 遇到不存在的路徑就回傳這個檔案內容 —— 但瀏覽器網址列停在使用者打的
+ * 那個(可能任意深度的)路徑上,不是真的在根目錄。所以這裡的所有連結
+ * 都要用「/」開頭的絕對路徑,不能沿用其他頁面「相對於自己深度」的
+ * {{base}} 慣例(那個假設在 404 情境下不成立)。
+ */
+function build404Page() {
+  const base = "/";
+  const meta = { title: "找不到頁面 — Plasma Academy", type: "page", module: null };
+
+  const body =
+    '<div class="pa-chapter-header"><h1>404 — 找不到這個頁面</h1></div>' +
+    '<div class="pa-prose">' +
+    "<p>網址可能打錯了,或者這一頁被搬走了。可以試試:</p>" +
+    "<ul>" +
+    '<li>按右上角的搜尋(<kbd>Ctrl</kbd> + <kbd>K</kbd>)找你要的章節或術語</li>' +
+    `<li>回<a href="${base}">首頁</a>看學習路徑圖</li>` +
+    `<li>直接前往 <a href="${base}level/1/">L1 初階</a>、` +
+    `<a href="${base}level/2/">L2 中階</a>、` +
+    `<a href="${base}level/3/">L3 進階</a>、` +
+    `<a href="${base}level/4/">L4 專家</a></li>` +
+    `<li>查<a href="${base}glossary/">術語表</a>、` +
+    `<a href="${base}formulas/">公式手冊</a>、` +
+    `<a href="${base}gases/">氣體百科</a>、` +
+    `<a href="${base}defects/">缺陷圖鑑</a></li>` +
+    "</ul>" +
+    "</div>";
+
+  const html = TEMPLATE.replace(/\{\{base\}\}/g, base)
+    .replace(/\{\{title\}\}/g, esc(meta.title))
+    .replace(/\{\{description\}\}/g, esc("找不到這個頁面,回首頁或用搜尋找你要的內容。"))
+    .replace(/\{\{shellClass\}\}/g, "")
+    .replace(/\{\{sidebar\}\}/g, "")
+    .replace(/\{\{outline\}\}/g, "")
+    .replace(/\{\{mainAttrs\}\}/g, "")
+    .replace(/\{\{content\}\}/g, body)
+    .replace(/\{\{extraScripts\}\}/g, "")
+    .replace(/\{\{extraStyles\}\}/g, "")
+    .replace(/\{\{buildStamp\}\}/g, `建置於 ${stamp}`)
+    .replace(/\{\{commit\}\}/g, COMMIT);
+
+  writeFileSync(join(DIST, "404.html"), html, "utf8");
 }
 
 function buildGlossaryPage() {

@@ -47,7 +47,10 @@ for (const file of files) {
     if (!pathPart) continue;
 
     checked++;
-    let target = resolve(dir, pathPart);
+    // 「/」開頭是網站根相對路徑(404.html 用這種寫法,因為瀏覽器網址列
+    // 停在使用者打的任意深度路徑上,不能用一般頁面「相對於自己深度」
+    // 的寫法)—— 要相對於 DIST 根目錄解析,不是相對於檔案系統根目錄
+    let target = pathPart.startsWith("/") ? resolve(DIST, "." + pathPart) : resolve(dir, pathPart);
     // 目錄式 URL → index.html
     if (pathPart.endsWith("/") || !pathPart.split("/").pop().includes(".")) {
       target = join(target, "index.html");
