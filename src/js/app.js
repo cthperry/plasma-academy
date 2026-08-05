@@ -87,6 +87,12 @@
     );
   }
 
+  /** 首頁與階層頁的進度環,只有那些頁面會載 */
+  function ensureHome(cb) {
+    if (PA.home) return cb();
+    loadScripts(["js/core/home.js"], cb);
+  }
+
   /** /progress/ 頁面的畫面邏輯,只有那一頁會載 */
   function ensureProgressUI(cb) {
     if (PA.progressUI) return cb();
@@ -104,7 +110,6 @@
       ["nav", function () { PA.nav && PA.nav.init(); }],
       ["units", function () { PA.units && PA.units.init(); }],
       ["search", function () { PA.search && PA.search.init(); }],
-      ["home", function () { PA.home && PA.home.init(); }],
     ];
 
     steps.forEach(function (s) {
@@ -115,6 +120,28 @@
         console.error("[app] " + s[0] + " 初始化失敗", err);
       }
     });
+
+    /**
+     * 首頁/階層頁的進度環。
+     *
+     * home.js 原本掛在模板上、每一頁都載,但它只在有 [data-level-progress]
+     * 的頁面(首頁與四個階層頁)才有事做 —— 25 個章節頁白白背了 2.3 KB
+     * 的關鍵路徑。改成與 glossary / lab / quiz 同一套按需載入。
+     *
+     * 這是被預算逼出來的:補完術語標記之後,章節頁的關鍵路徑正好頂到
+     * 120.0 KB(上限是 < 120),差 20 個位元組。與其把標記砍回去,
+     * 不如把本來就不該載的東西移走。
+     */
+    if (document.querySelector("[data-level-progress]")) {
+      ensureHome(function (err) {
+        if (err) return;
+        try {
+          PA.home.init();
+        } catch (e) {
+          console.error("[app] 進度環初始化失敗", e);
+        }
+      });
+    }
 
     // 術語 tooltip:先綁事件,術語資料等到真的要顯示時才載
     if (document.querySelector(".pa-term")) {

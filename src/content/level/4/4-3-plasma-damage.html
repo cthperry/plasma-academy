@@ -59,7 +59,7 @@
 
 <div class="pa-prose">
   <p>
-    電漿本身是準中性的,晶圓表面收到的離子與電子長期必須相等 ——
+    <span class="pa-term" data-term="電漿">電漿</span>本身是<span class="pa-term" data-term="準中性">準中性</span>的,晶圓表面收到的離子與電子長期必須相等 ——
     否則表面會一直充電下去。問題出在<strong>結構把這個平衡破壞掉</strong>。
   </p>
 
@@ -102,7 +102,7 @@
       A29 實測:T_e 從 2 eV 加到 4 eV,天花板從 6.52 V 變成 13.03 V,<strong>剛好兩倍</strong>。
     </p>
     <p>
-      這是「低 T_e 電漿源」(微波、表面波 RLSA、遠端電漿)能減充電損傷的<strong>全部</strong>理由 ——
+      這是「低 T_e 電漿源」(微波、表面波 RLSA、<span class="pa-term" data-term="遠端電漿">遠端電漿</span>)能減<span class="pa-term" data-term="充電損傷">充電損傷</span>的<strong>全部</strong>理由 ——
       也同時說明它的天花板效果有限:T_e 從 3 eV 壓到 1.5 eV 已經很難,
       而那只換到一半的電位。想再往下就得動別的旋鈕。
     </p>
@@ -111,14 +111,14 @@
   <div class="pa-note pa-note--warn">
     <div class="pa-note__title">⚠️ 深寬比超過約 11 時,電漿端<strong>沒有</strong>天花板</div>
     <p>
-      電子飽和電流是離子的 108 倍(Ar)。所以只要有效收集係數還大於 1/108,
+      <span class="pa-term" data-term="電子飽和電流">電子飽和電流</span>是離子的 108 倍(Ar)。所以只要有效收集係數還大於 1/108,
       表面總能浮到某個電位把電子拉夠。<strong>但穿透率掉到 1/108 以下之後,
-      即使把表面充到電漿電位,進來的電子仍然補不回離子。</strong>
+      即使把表面充到<span class="pa-term" data-term="電漿電位">電漿電位</span>,進來的電子仍然補不回離子。</strong>
     </p>
     <p>
       這時候電位不是停在某個平衡點,而是<strong>一路漲到氧化層開始導通為止</strong> ——
       決定電位的不再是電漿,是氧化層。3D NAND 與 DRAM 電容那種
-      深寬比動輒 40:1 以上的結構,永遠在這個區間裡。
+      <span class="pa-term" data-term="深寬比">深寬比</span>動輒 40:1 以上的結構,永遠在這個區間裡。
     </p>
   </div>
 
@@ -131,7 +131,7 @@
     </p>
     <p>
       <strong>一點點沒被遮蔽的面積就能把整個天線的電位拉回來。</strong>
-      這也解釋了一個現場常見的現象:同一片上,埋在密集圖形區的天線比
+      這也解釋了一個現場常見的現象:同一片上,埋在密集圖形區的<span class="pa-term" data-term="天線比">天線比</span>
       跨過開闊區的天線容易出事,即使兩者的面積比一模一樣。
     </p>
   </div>
@@ -153,7 +153,7 @@
   </p>
   <div class="pa-prose">
     <p style="font-family: var(--pa-font-mono, monospace); line-height: 2;">
-      電子遮蔽 → 天線浮到 V_天花板 → 電位沿導線傳到閘極<br />
+      <span class="pa-term" data-term="電子遮蔽">電子遮蔽</span> → 天線浮到 V_天花板 → 電位沿導線傳到閘極<br />
       → 氧化層被迫導通,電流密度 = J_電漿 × <strong>天線比</strong><br />
       → 注入電荷累積 → 到 Q_bd 就崩潰
     </p>
@@ -223,7 +223,7 @@
   <p>
     各代製程都有天線比上限,典型 <strong>100–1000</strong>(不同金屬層、
     不同閘極氧化層厚度各有各的數字)。超過的線路必須加
-    <strong>天線二極體</strong> —— 一個接地的二極體,在電漿製程中提供洩放路徑,
+    <strong><span class="pa-term" data-term="天線二極體">天線二極體</span></strong> —— 一個接地的二極體,在電漿製程中提供洩放路徑,
     正常操作時逆偏不導通,不影響電路功能。
   </p>
   <p>
@@ -286,7 +286,7 @@
       <strong>所以天線二極體救不了它,設計規則也管不到它。</strong>
     </p>
     <p>
-      對策只能從電漿端下手:降低 T_e(減少高能激發 → 減少短波長光子)、
+      對策只能從電漿端下手:降低 T_e(減少高能<span class="pa-term" data-term="激發">激發</span> → 減少短波長光子)、
       改用低 T_e 電漿源、加遮蔽層。這也是為什麼「低 T_e」這件事的價值
       比它在充電損傷那條線上看起來的更高 —— 它同時壓兩種損傷。
     </p>
@@ -296,7 +296,7 @@
     <div class="pa-note__title">⚠️ Low-k 損傷是先進 BEOL 的核心難題</div>
     <p>
       <strong>所有含 O 的電漿步驟</strong>(灰化、蝕刻、清潔)都會傷 low-k。
-      機制很直接:O 自由基把 SiCOH 裡的甲基抽走,留下的 Si–OH 親水,
+      機制很直接:O <span class="pa-term" data-term="自由基">自由基</span>把 SiCOH 裡的甲基抽走,留下的 Si–OH 親水,
       吸了水氣之後 k 值上升 —— 而 low-k 存在的唯一理由就是 k 值要低。
     </p>
     <p>
@@ -409,7 +409,7 @@
 
 <div class="pa-prose">
   <p>
-    <strong>成因</strong>:局部電場集中(尖角、剝落處、微粒)、
+    <strong>成因</strong>:局部電場集中(尖角、剝落處、<span class="pa-term" data-term="微粒">微粒</span>)、
     絕緣件表面帶電、Paschen 谷底的寄生放電
     (見 <a href="../../1/1-4-glow-discharge/">1.4</a>)。
   </p>

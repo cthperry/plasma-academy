@@ -119,7 +119,7 @@
   <div class="pa-note pa-note--values">
     <div class="pa-note__title">📊 A20 實測:四個成因各貢獻多少</div>
     <p>
-      典型條件(20 mTorr、黏著係數 0.25、連續波),五種 CD 並排,
+      典型條件(20 mTorr、<span class="pa-term" data-term="黏著係數">黏著係數</span> 0.25、連續波),五種 CD 並排,
       蝕到最寬的那條達到深度 3 為止 —— <strong>ARDE 36.8 %</strong>。
       把成因逐一關掉:
     </p>
@@ -161,7 +161,7 @@
       </table>
     </div>
     <p>
-      原因很直接:<strong>速率隨深寬比持續下降</strong>,而窄溝槽的深寬比一直比寬的高。
+      原因很直接:<strong>速率隨<span class="pa-term" data-term="深寬比">深寬比</span>持續下降</strong>,而窄溝槽的深寬比一直比寬的高。
       多給的每一秒,寬溝槽都比窄溝槽多刻一些 —— <strong>時間是站在寬溝槽那一邊的。</strong>
     </p>
   </div>
@@ -169,8 +169,8 @@
   <h3 id="inverse">② Inverse RIE Lag(反向 ARDE)</h3>
   <p>
     <strong>症狀</strong>:窄的反而深。<br />
-    <strong>成因</strong>:聚合物前驅物是大分子、黏著係數接近 1,
-    <strong>比自由基更進不去窄孔</strong> → 窄孔的鈍化反而薄 → 刻得比寬孔快。<br />
+    <strong>成因</strong>:<span class="pa-term" data-term="聚合物">聚合物</span><span class="pa-term" data-term="前驅物">前驅物</span>是大分子、黏著係數接近 1,
+    <strong>比<span class="pa-term" data-term="自由基">自由基</span>更進不去窄孔</strong> → 窄孔的鈍化反而薄 → 刻得比寬孔快。<br />
     <strong>診斷意義</strong>:看到這個現象就代表製程<strong>落在高聚合區</strong> ——
     它本身就是一條線索,不只是一個缺陷。
   </p>
@@ -184,7 +184,7 @@
     <p>
       原因:模型裡聚合物在深寬比趨近 0 時供應最大,
       所以在它強到足以翻轉深度排序之前,會先<strong>把最寬的溝在開口就封死</strong>
-      —— 那變成 etch stop(第 ⑯ 條),不是反向 ARDE。
+      —— 那變成 etch stop(第 ⑯ 條),不是<span class="pa-term" data-term="反向 ARDE">反向 ARDE</span>。
       要跨過這一步得把「離子驅動的聚合物清除」也算進去,
       而那一項又會把深度依賴反轉回來,需要完整的聚合物收支。
     </p>
@@ -322,7 +322,7 @@
     </table>
   </div>
   <p>
-    <strong>三者的對策高度重疊</strong>:降 bias、加聚合、換硬遮罩(非晶碳或金屬)。
+    <strong>三者的對策高度重疊</strong>:降 bias、加聚合、換<span class="pa-term" data-term="硬遮罩">硬遮罩</span>(非晶碳或金屬)。
     這不是巧合 —— 它們都是「遮罩撐不住製程強度」的不同表現。
   </p>
   <p>
@@ -355,13 +355,13 @@
   <div class="pa-note pa-note--safety">
     <div class="pa-note__title">🔴 金屬腐蝕:唯一會在「出腔之後」持續惡化的缺陷</div>
     <p>
-      殘留的 Cl 遇到大氣中的濕氣生成 HCl,而 HCl 腐蝕 Al 又會釋放出更多 Cl ——
+      殘留的 Cl 遇到大氣中的濕氣生成 HCl,而 HCl <span class="pa-term" data-term="腐蝕">腐蝕</span> Al 又會釋放出更多 Cl ——
       這是一個<strong>自我維持的反應</strong>。所以它不是「量到才算數」的缺陷:
       <strong>出腔時量起來好好的,幾小時後才斷線。</strong>
     </p>
     <p>
       對策必須是<strong>流程上的強制規定</strong>,不是製程參數:
-      H₂O 電漿 / NH₃ 處理 / DI 沖洗,而且<strong>出腔到後處理的等待時間必須管制</strong>。
+      H₂O <span class="pa-term" data-term="電漿">電漿</span> / NH₃ 處理 / DI 沖洗,而且<strong>出腔到後處理的等待時間必須管制</strong>。
       這一條在 A21 裡標記為高風險。
     </p>
   </div>

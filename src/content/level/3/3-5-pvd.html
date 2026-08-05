@@ -36,8 +36,8 @@
   <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
   <p>
     前面四章都在講「怎麼把材料弄掉」或「怎麼長上去」。這一章講的是
-    <strong>把濺鍍當主業</strong>的製程 —— 以及三個和電漿有關的配角
-    (灰化、腔體清潔、seasoning),它們不做圖形,但沒有它們產線停擺。
+    <strong>把濺鍍當主業</strong>的製程 —— 以及三個和<span class="pa-term" data-term="電漿">電漿</span>有關的配角
+    (灰化、<span class="pa-term" data-term="腔體清潔">腔體清潔</span>、seasoning),它們不做圖形,但沒有它們產線停擺。
   </p>
   <ul>
     <li><strong>磁控的全部好處只有一件事:把電子的路徑拉長。</strong>
@@ -57,8 +57,8 @@
 
 <div class="pa-prose">
   <p>
-    <strong>濺鍍產額 Y</strong>:每個入射離子平均打出幾個靶材原子。
-    它和 <a href="../3-1-etch-mechanisms/#sputter">3.1.5</a> 的物理濺鍍是同一回事 ——
+    <strong><span class="pa-term" data-term="濺鍍產額">濺鍍產額</span> Y</strong>:每個入射離子平均打出幾個<span class="pa-term" data-term="靶材">靶材</span>原子。
+    它和 <a href="../3-1-etch-mechanisms/#sputter">3.1.5</a> 的<span class="pa-term" data-term="物理濺鍍">物理濺鍍</span>是同一回事 ——
     差別只在那裡濺的是晶圓,這裡濺的是靶材,而且我們**要**濺出來的東西。
   </p>
 
@@ -85,7 +85,7 @@
   </div>
 
   <p>
-    <strong>閾值能量 E<sub>th</sub> 約為昇華熱的 4 倍</strong>,典型 20–40 eV。
+    <strong><span class="pa-term" data-term="閾值能量">閾值能量</span> E<sub>th</sub> 約為昇華熱的 4 倍</strong>,典型 20–40 eV。
     表上的排序不是巧合:<strong>鍵結越強的材料,閾值越高、產額越低</strong> ——
     W 和 Ta 的熔點都在 3000 °C 上下,Cu 只有 1085 °C。
   </p>
@@ -98,7 +98,7 @@
     </p>
     <p>
       這些能量在原子落到晶圓上時會轉成表面遷移的本錢:
-      <strong>附著力好、膜緻密、階梯覆蓋率也比蒸鍍好</strong>。
+      <strong><span class="pa-term" data-term="附著">附著</span>力好、膜緻密、<span class="pa-term" data-term="階梯覆蓋率">階梯覆蓋率</span>也比蒸鍍好</strong>。
       所以 PVD 取代蒸鍍不是因為速率,是因為<strong>膜質</strong>。
     </p>
   </div>
@@ -108,7 +108,7 @@
 
 <div class="pa-prose">
   <p>
-    <strong>問題</strong>:單純的二極濺鍍游離效率太低,要靠高壓維持電漿 ——
+    <strong>問題</strong>:單純的二極濺鍍<span class="pa-term" data-term="游離">游離</span>效率太低,要靠高壓維持電漿 ——
     但高壓會<strong>散射濺出的原子</strong>,讓它們到不了晶圓,也失去方向性。
     這是一個死結:要電漿就得高壓,要膜質就得低壓。
   </p>
@@ -180,7 +180,7 @@
       靶材是消耗品裡最貴的一項,這個數字直接寫在 COO 上。
     </p>
     <p>
-      連帶的問題:侵蝕輪廓一路在變 → <strong>沉積率與均勻度隨靶齡漂移</strong>
+      連帶的問題:侵蝕輪廓一路在變 → <strong>沉積率與<span class="pa-term" data-term="均勻度">均勻度</span>隨靶齡漂移</strong>
       → 必須做 <strong>kWh 補償</strong>(依累積功率修正製程時間)。
     </p>
   </div>
@@ -260,7 +260,7 @@
   <div class="pa-note pa-note--intuition">
     <div class="pa-note__title">💡 正回饋不在靶面,在氣體收支</div>
     <p>
-      直覺會把遲滯歸給「靶面氮化 → 產額變低 → 更難清乾淨」。
+      直覺會把<span class="pa-term" data-term="遲滯">遲滯</span>歸給「靶面氮化 → 產額變低 → 更難清乾淨」。
       這條回饋確實存在,但<strong>單靠它算不出遲滯</strong> ——
       建模時第一版只寫靶面的收支,升流量與降流量走的是<strong>同一條線</strong>,
       完全沒有雙值區。
@@ -337,7 +337,7 @@
     <strong>三種解法其實是同一個邏輯</strong>:斜的不要,只留垂直的。
     差別只在「用電場選」(iPVD,不浪費材料)還是
     「用幾何擋」(準直與長距離,把斜的丟掉)。
-    這也是為什麼 iPVD 最後贏了 —— <strong>選擇比丟棄便宜</strong>。
+    這也是為什麼 iPVD 最後贏了 —— <strong><span class="pa-term" data-term="選擇比">選擇比</span>丟棄便宜</strong>。
   </p>
 </div>
 
@@ -346,7 +346,7 @@
 <div class="pa-prose">
   <p>
     <strong>目標</strong>:把光阻整層去掉,不損傷下層。
-    <strong>主氣體 O₂</strong> —— O 自由基把光阻(碳氫聚合物)氧化成 CO₂ 與 H₂O 抽走。
+    <strong>主氣體 O₂</strong> —— O <span class="pa-term" data-term="自由基">自由基</span>把光阻(碳氫<span class="pa-term" data-term="聚合物">聚合物</span>)氧化成 CO₂ 與 H₂O 抽走。
   </p>
 
   <div class="pa-table-wrap">
@@ -373,7 +373,7 @@
     </ul>
     <p>
       所以把電漿放在<strong>上游</strong>(downstream / remote),
-      只讓 O 自由基順著氣流下來,離子在路上就複合掉了。
+      只讓 O 自由基順著氣流下來,離子在路上就<span class="pa-term" data-term="複合">複合</span>掉了。
       結果是<strong>高速率 + 零損傷</strong> ——
       這是「先問要不要方向性」這個問題最漂亮的一次應用。
     </p>
@@ -384,7 +384,7 @@
     <p>
       高劑量佈植會把光阻表層<strong>碳化成一層硬殼</strong>。
       直接用一般 O₂ 灰化,下層的光阻受熱放氣而硬殼透不過去,
-      結果是<strong>爆殼</strong> —— 碎片噴出來變成微粒,污染整批。
+      結果是<strong>爆殼</strong> —— 碎片噴出來變成<span class="pa-term" data-term="微粒">微粒</span>,污染整批。
     </p>
     <p>
       正解是分段配方:<strong>低溫起步慢慢把硬殼打開,再升溫加速</strong>。
@@ -402,8 +402,8 @@
   </p>
 
   <p>
-    <strong>主流做法:NF₃ 遠端電漿清潔。</strong>
-    遠端源把 NF₃ 解離出大量 F,F 進腔體與 SiO₂ / SiN 反應成 SiF₄ 抽走。
+    <strong>主流做法:NF₃ <span class="pa-term" data-term="遠端電漿">遠端電漿</span>清潔。</strong>
+    遠端源把 NF₃ <span class="pa-term" data-term="解離">解離</span>出大量 F,F 進腔體與 SiO₂ / SiN 反應成 SiF₄ 抽走。
     關鍵是<strong>沒有離子</strong> —— 不傷腔體零件,所以可以做得很頻繁,
     先進機台甚至<strong>每片之間都清一次</strong>。
   </p>
@@ -430,12 +430,12 @@
     <div class="pa-note__title">⚠️ 清完就能直接跑片?—— First Wafer Effect</div>
     <p>
       清潔之後腔壁變成<strong>裸露的鋁或陽極處理面</strong>,
-      它對自由基的<strong>表面複合係數</strong>與帶製程時的腔壁完全不同。
+      它對自由基的<strong><span class="pa-term" data-term="表面複合係數">表面複合係數</span></strong>與帶製程時的腔壁完全不同。
       腔壁把自由基吃掉的速率變了,晶圓上拿到的通量就跟著變 ——
       <strong>第一片的結果會偏掉</strong>。
     </p>
     <p>
-      所以清潔後要跑 <strong>seasoning(預膜)</strong>:用 dummy wafer 或空跑沉積,
+      所以清潔後要跑 <strong>seasoning(<span class="pa-term" data-term="預膜">預膜</span>)</strong>:用 dummy wafer 或空跑沉積,
       把腔壁恢復到穩態的表面狀態再開始跑正式片。
     </p>
     <p>

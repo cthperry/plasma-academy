@@ -20,6 +20,7 @@
     "check:labs": "node tools/check-labs.mjs",
     "check:progress": "node tools/check-progress.mjs",
     "check:sitemap": "node tools/check-sitemap.mjs",
+    "check:glossary": "node tools/check-glossary-coverage.mjs",
     "check:shapes": "node tools/check-shapes.mjs",
     "check:package": "node tools/check-package.mjs",
     "check:bosch": "node tools/check-bosch.mjs",

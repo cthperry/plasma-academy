@@ -58,7 +58,7 @@
 <div class="pa-prose">
   <p>
     <strong>目標</strong>:在 1–2 nm 的閘極氧化層上蝕刻 50–100 nm 的多晶矽,CD 控制到 nm 級。<br />
-    <strong>挑戰</strong>:對 gate oxide 選擇比要 &gt; 100;CD 均勻度;不能有 footing 或 notching。<br />
+    <strong>挑戰</strong>:對 gate oxide <span class="pa-term" data-term="選擇比">選擇比</span>要 &gt; 100;CD <span class="pa-term" data-term="均勻度">均勻度</span>;不能有 footing 或 notching。<br />
     <strong>氣體</strong>:<code>Cl₂ / HBr / O₂</code>(BT 步另加含氟氣體)
   </p>
 
@@ -85,17 +85,17 @@
     </p>
     <p>
       這正是 <a href="../3-1-etch-mechanisms/#selectivity">3.1.5</a> 說的
-      <strong>閾值選擇性</strong>:不是靠鈍化、也不是靠產物揮發性差異,
+      <strong>閾值選擇性</strong>:不是靠鈍化、也不是靠產物<span class="pa-term" data-term="揮發性">揮發性</span>差異,
       而是靠「把 IEDF 整條壓到下層材料的閾值以下」。
       三種選擇比來源裡,它的窗最窄,但在這裡是唯一可行的。
     </p>
     <p>
-      代價是 OE 步的蝕刻率很低 —— 又是
+      代價是 OE 步的<span class="pa-term" data-term="蝕刻率">蝕刻率</span>很低 —— 又是
       <a href="../3-1-etch-mechanisms/#selectivity">選擇比與速率的那個 trade-off</a>。
     </p>
   </div>
 
-  <p><strong>常見問題</strong>:notching(SOI 或高選擇比 OE 時)、微負載、footing。</p>
+  <p><strong>常見問題</strong>:notching(SOI 或高選擇比 OE 時)、<span class="pa-term" data-term="微負載">微負載</span>、footing。</p>
 </div>
 
 <h2 id="har">3.2.2 介電質接觸孔 / 高深寬比蝕刻</h2>
@@ -120,12 +120,12 @@
     <div class="pa-note__title">📊 為什麼 O₂ 這麼敏感</div>
     <p>
       O₂ 同時做兩件方向相反的事:提高有效 F/C(消耗 C、放出 F)<strong>並且</strong>
-      直接燒掉已經沉積的聚合物。所以它是唯一能連續微調「側壁保護厚度」的旋鈕。
+      直接燒掉已經沉積的<span class="pa-term" data-term="聚合物">聚合物</span>。所以它是唯一能連續微調「側壁保護厚度」的旋鈕。
     </p>
     <p>
       加太少 → 聚合物過厚 → <strong>etch stop</strong>(孔刻不到底)。
       加太多 → 側壁沒保護 → <strong>bowing</strong>。
-      製程窗窄到常常以 <strong>1 sccm</strong> 為單位在調。
+      <span class="pa-term" data-term="製程窗">製程窗</span>窄到常常以 <strong>1 sccm</strong> 為單位在調。
     </p>
   </div>
 
@@ -150,8 +150,8 @@
     SiO₂ 用氧消耗聚合物是同一個機制,只是換成氮。O₂ 比例是選擇比的主旋鈕。
   </p>
   <p>
-    <strong>現代替代</strong>:<strong>準原子層蝕刻(Quasi-ALE)</strong> ——
-    沉積一層薄聚合物,再用 Ar 電漿活化反應,循環進行。
+    <strong>現代替代</strong>:<strong><span class="pa-term" data-term="準原子層蝕刻">準原子層蝕刻</span>(Quasi-ALE)</strong> ——
+    沉積一層薄聚合物,再用 Ar <span class="pa-term" data-term="電漿">電漿</span>活化反應,循環進行。
     選擇比與 CD 控制遠優於連續蝕刻(見 <a href="../../4/4-4-advanced-tech/">4.4</a>)。
   </p>
   <p class="pa-subtle">
@@ -248,7 +248,7 @@
     </p>
     <p>
       <strong>Bosch 的全部祕密就是這一句:把「保護」與「移除」分到不同的時間段。</strong>
-      3.1 的側壁鈍化是<em>同時</em>做這兩件事,Bosch 是<em>輪流</em>做 ——
+      3.1 的<span class="pa-term" data-term="側壁鈍化">側壁鈍化</span>是<em>同時</em>做這兩件事,Bosch 是<em>輪流</em>做 ——
       而輪流做的代價,就是下面的 scallop。
     </p>
   </div>

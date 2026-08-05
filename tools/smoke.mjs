@@ -353,6 +353,16 @@ console.log("\n【效能預算】");
     `${critical.length} 個資源`
   );
   ok("搜尋索引完全未載入(要按搜尋鈕才抓)", sizes.every((s) => !s.url.includes("search-index")));
+  /*
+     home.js 只在有 [data-level-progress] 的頁面(首頁與四個階層頁)有事做,
+     章節頁不該碰它。它原本掛在模板上、每頁都載,25 個章節頁白背 2.3 KB。
+     這條斷言把「章節頁不載 home.js」釘住,免得日後又被搬回模板。
+  */
+  ok(
+    "章節頁不載入首頁的進度環腳本",
+    sizes.every((s) => !s.url.includes("core/home.js")),
+    "home.js 只在首頁/階層頁按需載入"
+  );
 
   // 第二段:捲到元件才應該抓 a01.js
   await page.locator("[data-lab=A01]").scrollIntoViewIfNeeded();

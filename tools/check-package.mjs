@@ -40,15 +40,15 @@ ok(
   M.gases.every((g) => !/F/.test(g.label)),
   M.gases.map((g) => g.label).join("、")
 );
-ok("四支氣體齊備:Ar / O₂ / H₂系 / N₂", M.gases.length === 4);
+ok("五支氣體齊備:Ar / O₂ / Ar+O₂ / H₂系 / N₂", M.gases.length === 5);
 ok(
   "只有一支是還原性的(H₂ 系)",
   M.gases.filter((g) => g.redox < 0).length === 1,
   M.gases.filter((g) => g.redox < 0).map((g) => g.label).join("、")
 );
 ok(
-  "只有一支是氧化性的(O₂)",
-  M.gases.filter((g) => g.redox > 0).length === 1,
+  "有兩支是氧化性的(O₂ 純氣與 Ar+O₂ 混合,都含氧)",
+  M.gases.filter((g) => g.redox > 0).length === 2,
   M.gases.filter((g) => g.redox > 0).map((g) => g.label).join("、")
 );
 ok(
@@ -58,6 +58,24 @@ ok(
 ok(
   "O₂ 同時也是對有機材料最兇的(課文:最快傷到基材)",
   M.gases.every((g) => g.etch <= M.gasById("o2").etch)
+);
+
+/**
+ * Ar+O₂ 存在的理由不是「多一個選項」,是「活化/損傷比更好」——
+ * 這個比值就是製程窗寬度的代理指標,直接對應 3.7.2 加進去的那段課文。
+ */
+ok(
+  "**Ar+O₂ 的活化/損傷比是五支氣體裡最高的**(這就是「製程窗比純 O₂ 寬」的量化版本)",
+  (() => {
+    const ratio = (g) => g.act / g.etch;
+    const aro2 = M.gasById("aro2");
+    return M.gases.every((g) => g.id === "aro2" || ratio(aro2) > ratio(g));
+  })(),
+  M.gases.map((g) => `${g.label} ${(g.act / g.etch).toFixed(2)}`).join("、")
+);
+ok(
+  "但 Ar+O₂ 的活化效率仍不超過純 O₂(化學活化終究由 O₂ 主導,不是稀釋後變更快)",
+  M.gasById("aro2").act < M.gasById("o2").act
 );
 
 console.log("\n【未處理的接觸角:課文寫 70–90°(EMC/PI)】");

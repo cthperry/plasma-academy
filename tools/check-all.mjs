@@ -41,6 +41,7 @@ const STEPS = [
   ["建置", "build/build.mjs"],
   ["死鏈", "tools/check-links.mjs"],
   ["sitemap.xml / robots.txt", "tools/check-sitemap.mjs"],
+  ["術語 tooltip 覆蓋(docs/09 的「永遠可查」)", "tools/check-glossary-coverage.mjs"],
 ];
 
 function run(label, script, env) {

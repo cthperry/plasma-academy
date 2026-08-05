@@ -58,9 +58,9 @@
 
 <div class="pa-prose">
   <p>
-    熱 CVD 靠溫度把前驅物拆開;PECVD 靠<strong>電子碰撞</strong>把前驅物拆開。
+    熱 CVD 靠溫度把<span class="pa-term" data-term="前驅物">前驅物</span>拆開;PECVD 靠<strong>電子碰撞</strong>把前驅物拆開。
     這是 <a href="../../2/2-3-plasma-chemistry/">2.3</a> 那件事的直接應用 ——
-    電子溫度 2–5 eV 對應到上萬 K 的等效能量,而<strong>氣體本身還是接近室溫的</strong>。
+    <span class="pa-term" data-term="電子溫度">電子溫度</span> 2–5 eV 對應到上萬 K 的等效能量,而<strong>氣體本身還是接近室溫的</strong>。
   </p>
 
   <div class="pa-table-wrap">
@@ -114,7 +114,7 @@
   <div class="pa-note pa-note--intuition">
     <div class="pa-note__title">💡 TEOS 為什麼比 SiH₄ 好 —— 只差一個黏著係數</div>
     <p>
-      SiH₄ 的黏著係數高(模型取 <strong>0.95</strong>):撞到什麼就黏什麼。
+      SiH₄ 的<span class="pa-term" data-term="黏著係數">黏著係數</span>高(模型取 <strong>0.95</strong>):撞到什麼就黏什麼。
       TEOS 分子在表面<strong>遷移率高</strong>、黏著係數低(模型取 <strong>0.18</strong>):
       落下來以後還會四處移動,才找地方反應。
     </p>
@@ -125,7 +125,7 @@
     </p>
     <p>
       這是 <a href="../../2/2-3-plasma-chemistry/#sticking">2.3.5 黏著係數</a>
-      最直接的應用:同一個參數,在蝕刻裡決定側壁鈍化,在沉積裡決定覆蓋率。
+      最直接的應用:同一個參數,在蝕刻裡決定<span class="pa-term" data-term="側壁鈍化">側壁鈍化</span>,在沉積裡決定覆蓋率。
     </p>
   </div>
 </div>
@@ -156,10 +156,10 @@
     </p>
     <p>
       為什麼是低頻?回到 <a href="../../2/2-4-sheath-physics/">2.4</a>:
-      低頻的週期比離子穿越鞘層的時間長,<strong>離子跟得上瞬時電場</strong>,
+      低頻的週期比離子穿越<span class="pa-term" data-term="鞘層">鞘層</span>的時間長,<strong>離子跟得上瞬時電場</strong>,
       被加速到高能量;高頻時離子只感受到平均電場,能量低。
       所以低頻功率比例決定的其實是<strong>離子轟擊的強度</strong> ——
-      而轟擊把正在長的膜打緻密,就是壓應力的來源。
+      而轟擊把正在長的膜打緻密,就是<span class="pa-term" data-term="壓應力">壓應力</span>的來源。
     </p>
     <p>
       這條因果鏈和 <a href="../3-1-etch-mechanisms/">3.1</a> 的離子輔助是同一件事:
@@ -208,7 +208,7 @@
 
   <p>
     Void 是可靠度殺手:後續的 CMP、熱循環或封裝應力會讓它<strong>裂開</strong>,
-    而它在製程中<strong>量不到</strong> —— 膜厚、折射率、應力全部正常,
+    而它在製程中<strong>量不到</strong> —— 膜厚、<span class="pa-term" data-term="折射率">折射率</span>、應力全部正常,
     要剖片才看得見。
   </p>
 
@@ -233,7 +233,7 @@
     <div class="pa-note__title">📊 A23 實測:同樣的淨沉積厚度下,四種製程填溝的結果</div>
     <p>
       比較點是<strong>場區膜厚都長到溝寬的 1.5 倍</strong>(同形填滿只需 0.5 倍,
-      所以這是三倍餘裕)。深寬比 AR 3:
+      所以這是三倍餘裕)。<span class="pa-term" data-term="深寬比">深寬比</span> AR 3:
     </p>
     <div class="pa-table-wrap">
       <table class="pa-table">
@@ -275,7 +275,7 @@
   <p>
     <strong>為什麼能填溝 —— 第一個機制:cusp 正好是最好濺的角度。</strong>
     回到 <a href="../3-1-etch-mechanisms/#sputter-angle">3.1.6</a>:
-    濺鍍產額 Y(θ) 在入射角約 <strong>45°–60°</strong> 有極大值,遠高於垂直入射。
+    <span class="pa-term" data-term="濺鍍產額">濺鍍產額</span> Y(θ) 在入射角約 <strong>45°–60°</strong> 有極大值,遠高於垂直入射。
     而開口處剛長出來的 cusp,<strong>斜面正好就在 45° 附近</strong> ——
     於是它一形成就被優先削掉,開口保持敞開。
   </p>
@@ -346,7 +346,7 @@
       <strong>本模型還沒有重現這件事</strong> —— A23 的 HDP 一路到 AR 10 都填得滿。
       要重現需要把濺出通量的<strong>角度分布與直線飛行</strong>完整算出來,
       目前的模型只做了「落點沿深度指數衰減」的近似。
-      所以:<strong>A23 在極高 AR 的 HDP 結果是樂觀的,不要拿它當製程窗的依據。</strong>
+      所以:<strong>A23 在極高 AR 的 HDP 結果是樂觀的,不要拿它當<span class="pa-term" data-term="製程窗">製程窗</span>的依據。</strong>
       這一項記在 <code>docs/11</code> 的待辦裡。
     </p>
   </div>
@@ -419,7 +419,7 @@
       <strong>上面那張表是「自限制」的定義本身</strong>:過了飽和點,
       再通更久也不會更厚 —— 這是 ALD 與 CVD 的分界線。
       而<strong>下面那張表是機台工程師最該記住的一張</strong>:
-      吹除不乾淨,前驅物與自由基就在氣相相遇,製程<strong>退化成 CVD</strong>,
+      吹除不乾淨,前驅物與<span class="pa-term" data-term="自由基">自由基</span>就在氣相相遇,製程<strong>退化成 CVD</strong>,
       ALD 的三個優勢同時消失。
     </p>
   </div>
@@ -448,10 +448,10 @@
       可以做熱 ALD 做不到的材料(例如金屬氮化物)。
     </p>
     <p>
-      <strong>付出</strong>:<strong>方向性</strong>。自由基沿著深孔一路在壁上複合掉,
+      <strong>付出</strong>:<strong>方向性</strong>。自由基沿著深孔一路在壁上<span class="pa-term" data-term="複合">複合</span>掉,
       到得了溝底的比到得了開口的少。A22 實測:PEALD 到 AR 8 都還接近 100 %,
       <strong>AR 12 掉到九成</strong>。所以極高 AR 的結構上,
-      <strong>PEALD 的覆蓋率反而不如不用電漿的熱 ALD</strong>。
+      <strong>PEALD 的覆蓋率反而不如不用<span class="pa-term" data-term="電漿">電漿</span>的熱 ALD</strong>。
     </p>
     <p>
       這是本課程反覆出現的同一個模式:<strong>電漿給的是活性與低溫,

@@ -37,7 +37,7 @@
 <div class="pa-summary">
   <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
   <p>
-    前面五章教「電漿會做什麼」與「怎麼看它」。這一章是把它們用在
+    前面五章教「<span class="pa-term" data-term="電漿">電漿</span>會做什麼」與「怎麼看它」。這一章是把它們用在
     <strong>一條要出貨的線上</strong>。
   </p>
   <ul>
@@ -86,7 +86,7 @@
     <p>
       製程層的偏差是<strong>症狀</strong>,不是原因。改 recipe 等於把偏差
       鎖進配方裡 —— 那台機從此有一支「特調」配方,而
-      <strong>下次 PM 換掉那個消耗件之後,特調就變成新的偏差來源</strong>。
+      <strong>下次 PM 換掉那個<span class="pa-term" data-term="消耗件">消耗件</span>之後,特調就變成新的偏差來源</strong>。
     </p>
     <p>
       更糟的是,你失去了診斷能力:以後這台機再出事,你分不清是新問題
@@ -112,7 +112,7 @@
 
 <div class="pa-prose">
   <p>
-    <strong>製程窗</strong>:所有規格(蝕刻率、CD、選擇比、均勻度、缺陷)
+    <strong><span class="pa-term" data-term="製程窗">製程窗</span></strong>:所有規格(<span class="pa-term" data-term="蝕刻率">蝕刻率</span>、CD、<span class="pa-term" data-term="選擇比">選擇比</span>、<span class="pa-term" data-term="均勻度">均勻度</span>、缺陷)
     <strong>同時</strong>滿足的參數區域。注意是「同時」——
     單看一個指標畫出來的不是製程窗。
   </p>
@@ -152,7 +152,7 @@
 <h2 id="coo">4.6.3 COO 與 PM</h2>
 
 <div class="pa-prose">
-  <p><strong>擁有成本(Cost of Ownership)</strong> 的組成:</p>
+  <p><strong><span class="pa-term" data-term="擁有成本">擁有成本</span>(Cost of Ownership)</strong> 的組成:</p>
   <ul>
     <li>機台折舊</li>
     <li><strong>消耗件</strong>(聚焦環、噴淋頭、內襯、ESC)—— 先進蝕刻機台的大宗</li>
@@ -171,7 +171,7 @@
     <p>
       理想是用 FDC 指標做<strong>預測性維護</strong>。
       <a href="../4-2-endpoint-apc/">4.2.7</a> 那五個訊號
-      (節流閥位置、匹配電容位置、He 洩漏率、反射功率、OES 基線)
+      (<span class="pa-term" data-term="節流閥">節流閥</span>位置、匹配電容位置、He 洩漏率、<span class="pa-term" data-term="反射功率">反射功率</span>、OES 基線)
       在製程結果變壞之前就已經在動了 ——
       本章 4.6.6 的第一個情境就是活生生的例子。
     </p>
@@ -235,7 +235,7 @@
 
 <div class="pa-prose">
   <p>
-    半導體業的溫室氣體排放主要來自 <strong>PFC(全氟化物)</strong>。
+    半導體業的溫室氣體排放主要來自 <strong>PFC(<span class="pa-term" data-term="全氟化物">全氟化物</span>)</strong>。
   </p>
   <div class="pa-table-wrap">
     <table class="pa-table">
@@ -257,7 +257,7 @@
       不是。<strong>真正的排放指標是 GWP × 逃逸量</strong>,而不是 GWP。
     </p>
     <p>
-      C₂F₆ 在腔體清潔中的分解率只有六到八成,剩下的直接排掉;
+      C₂F₆ 在<span class="pa-term" data-term="腔體清潔">腔體清潔</span>中的分解率只有六到八成,剩下的直接排掉;
       <strong>NF₃ 的分解率接近 100 %</strong>,幾乎沒有未反應的分子逃出去。
       GWP 高了 45 %,逃逸量卻少了一個數量級 —— 淨排放大幅下降。
     </p>
@@ -297,8 +297,8 @@
   <div class="pa-note pa-note--intuition">
     <div class="pa-note__title">💡 根因:噴淋頭孔徑被沉積物逐漸縮小</div>
     <p>
-      三條線索指向同一件事:<strong>進氣的有效導傳變小了</strong>。
-      孔徑縮小 → 腔內分壓下降 → F 自由基變少(OES 下降)、
+      三條線索指向同一件事:<strong>進氣的有效<span class="pa-term" data-term="導傳">導傳</span>變小了</strong>。
+      孔徑縮小 → 腔內分壓下降 → F <span class="pa-term" data-term="自由基">自由基</span>變少(OES 下降)、
       電漿阻抗改變(匹配電容移動),而節流閥為了維持設定壓力必須開大。
     </p>
     <p>
@@ -306,7 +306,7 @@
       如果是局部堵塞,均勻度會先壞;整體均勻地縮小才會只掉速率。
     </p>
     <p>
-      <strong>處置</strong>:拆下噴淋頭清洗或更換,重新 seasoning 並重驗蝕刻率。<br />
+      <strong>處置</strong>:拆下<span class="pa-term" data-term="噴淋頭">噴淋頭</span>清洗或更換,重新 seasoning 並重驗蝕刻率。<br />
       <strong>預防</strong>:把節流閥與匹配電容位置納入日常趨勢圖 ——
       它們在蝕刻率掉 3 % 之前就已經在動了。
     </p>
@@ -317,14 +317,14 @@
     <strong>現象</strong>:同一支配方跑在四台同型機上,其中一台的 CD 系統性大 2 nm,
     而且<strong>晶圓邊緣比中心更明顯</strong>。中心區的 CD 幾乎一樣。
   </p>
-  <p><strong>手上的線索</strong>:該機台的聚焦環累積 RF hour 最長;
+  <p><strong>手上的線索</strong>:該機台的<span class="pa-term" data-term="聚焦環">聚焦環</span>累積 RF hour 最長;
     匹配電容位置與其他三台略有差異;蝕刻率與均勻度都還在規格內;
     OES 全譜比對不出明顯差異。</p>
   <div class="pa-note pa-note--intuition">
     <div class="pa-note__title">💡 根因:聚焦環消耗導致晶圓邊緣的鞘層傾斜</div>
     <p>
       <strong>「只有邊緣不同」這一點幾乎直接指認了聚焦環</strong>。
-      它的作用是把鞘層延伸到晶圓之外,讓邊緣的鞘層與中心一樣平;
+      它的作用是把<span class="pa-term" data-term="鞘層">鞘層</span>延伸到晶圓之外,讓邊緣的鞘層與中心一樣平;
       被消耗變薄之後,邊緣的鞘層邊界往下彎 → 離子入射角偏斜 →
       CD 與 profile 在邊緣先走樣。
     </p>
@@ -349,7 +349,7 @@
   <div class="pa-note pa-note--intuition">
     <div class="pa-note__title">💡 根因:First wafer effect —— 清潔後的乾淨腔壁不再消耗自由基</div>
     <p>
-      腔壁在製程中會被鍍上一層聚合物,而這層膜<strong>會消耗自由基</strong>。
+      腔壁在製程中會被鍍上一層<span class="pa-term" data-term="聚合物">聚合物</span>,而這層膜<strong>會消耗自由基</strong>。
       清潔之後壁面乾淨,自由基的壁面損失變小 → 有效濃度變高 →
       蝕刻率高、CD 偏小。跑過一片之後壁面重新鍍上,系統回到穩態。
     </p>
@@ -369,7 +369,7 @@
     <strong>現象</strong>:同一條線上,只有某一個產品別的閘極漏電與 TDDB 壽命異常,
     其他產品正常。<strong>機台 FDC 完全看不出異常</strong>。
   </p>
-  <p><strong>手上的線索</strong>:該產品的設計天線比是所有產品中最大的;
+  <p><strong>手上的線索</strong>:該產品的設計<span class="pa-term" data-term="天線比">天線比</span>是所有產品中最大的;
     問題出現在某一層金屬蝕刻之後;FDC 五個訊號全部在管制內;
     <strong>受影響的是 I/O 元件,核心元件正常</strong>。</p>
   <div class="pa-note pa-note--intuition">
@@ -386,7 +386,7 @@
       而 4–5 nm 的 I/O 氧化層兩頭都沒有保護。
     </p>
     <p>
-      <strong>處置</strong>:設計端加天線二極體;製程端把該步驟改為脈衝電漿。<br />
+      <strong>處置</strong>:設計端加<span class="pa-term" data-term="天線二極體">天線二極體</span>;製程端把該步驟改為<span class="pa-term" data-term="脈衝電漿">脈衝電漿</span>。<br />
       ⚠️ 天線規則要<strong>依氧化層厚度分開訂</strong>;
       而如果換脈衝之後仍沒改善,要回頭確認是<strong>硬崩潰</strong>還是磨耗失效 ——
       脈衝降的是平均劑量,降不了尖峰場強。
@@ -395,7 +395,7 @@
 
   <h3>情境 5:微粒數在 PM 後三天內攀升</h3>
   <p>
-    <strong>現象</strong>:PM 之後微粒數正常,但三天內逐步攀升到管制上限。
+    <strong>現象</strong>:PM 之後<span class="pa-term" data-term="微粒">微粒</span>數正常,但三天內逐步攀升到管制上限。
     微粒集中在<strong>晶圓中心區</strong>,而且<strong>在關電漿的瞬間增加最多</strong>。
   </p>
   <p><strong>手上的線索</strong>:微粒發生時間點與 RF 關斷高度相關;
@@ -403,7 +403,7 @@
   <div class="pa-note pa-note--intuition">
     <div class="pa-note__title">💡 根因:電漿中懸浮的微粒在功率關斷、鞘層塌陷的瞬間落到晶圓上</div>
     <p>
-      電漿裡的微粒帶負電,被<strong>鞘層電場托住</strong>懸浮在電漿與鞘層的交界處。
+      電漿裡的微粒帶負電,被<strong>鞘層電場<span class="pa-term" data-term="托">托</span>住</strong>懸浮在電漿與鞘層的交界處。
       功率一關,鞘層塌陷(<a href="../4-4-advanced-tech/">4.4</a>:
       鞘層電位 ∝ T_e,而 T_e 在數微秒內就崩),托住微粒的力立刻消失 →
       微粒直接落到晶圓中心。
@@ -417,7 +417,7 @@
       <strong>處置</strong>:製程結束改為<strong>功率緩降</strong>
       (先降 bias、再降 source,並在低功率維持數秒讓微粒被抽走)。<br />
       <strong>預防</strong>:把功率 ramp down 寫進所有配方的結尾 ——
-      這是最便宜、最常被忽略的一招,而且它同時降低電弧風險。
+      這是最便宜、最常被忽略的一招,而且它同時降低<span class="pa-term" data-term="電弧">電弧</span>風險。
     </p>
   </div>
 </div>

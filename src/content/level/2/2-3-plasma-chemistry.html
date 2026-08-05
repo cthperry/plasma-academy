@@ -38,13 +38,13 @@
 <div class="pa-summary">
   <div class="pa-summary__title">⚡ 5 分鐘摘要</div>
   <p>
-    電漿裡的每一個反應速率,都是<strong>兩條曲線的重疊面積</strong>:
-    碰撞截面 σ(E) 與電子能量分佈 f(E)。
+    <span class="pa-term" data-term="電漿">電漿</span>裡的每一個反應速率,都是<strong>兩條曲線的重疊面積</strong>:
+    <span class="pa-term" data-term="碰撞截面">碰撞截面</span> σ(E) 與電子能量分佈 f(E)。
   </p>
   <p>
     σ 有<strong>閾值</strong>(低於它完全不反應),f 的高能端<strong>指數衰減</strong> ——
     所以兩者只在高能尾巴那一小段重疊。
-    T_e 從 2 拉到 3 eV 只上升 50 %,游離率卻上升將近 20 倍。
+    T_e 從 2 拉到 3 eV 只上升 50 %,<span class="pa-term" data-term="游離">游離</span>率卻上升將近 20 倍。
   </p>
   <p>
     這個極端敏感性有一個重要後果:<strong>你幾乎無法用旋鈕直接調 T_e</strong>。
@@ -74,7 +74,7 @@
       </p>
       <p>
         尾巴是指數的,所以 T_e 稍微一動,那一段的高度就變很多 ——
-        整塊面積跟著大幅變化。這就是速率係數對 T_e 極度敏感的原因。
+        整塊面積跟著大幅變化。這就是<span class="pa-term" data-term="速率係數">速率係數</span>對 T_e 極度敏感的原因。
       </p>
       <p>
         <strong>Ar 的實際數字</strong>(本站模型,由 <code>tools/check-model.mjs</code> 驗證):
@@ -155,9 +155,9 @@
       本站模型在 T_e = 3 eV 時,兩者的游離率差了<strong>將近百倍</strong>。
     </p>
     <p>
-      <strong>當你用簡單模型算出來的自由基密度跟量測差很多,EEDF 形狀往往就是原因。</strong>
+      <strong>當你用簡單模型算出來的<span class="pa-term" data-term="自由基">自由基</span>密度跟量測差很多,EEDF 形狀往往就是原因。</strong>
       這不是模型「不準」,是模型假設了 Maxwellian 而實際不是。
-      真正要確認得靠 Langmuir 探針的二次微分(<a href="../../4/4-1-diagnostics/">L4 4.1</a>)。
+      真正要確認得靠 <span class="pa-term" data-term="Langmuir 探針">Langmuir 探針</span>的二次微分(<a href="../../4/4-1-diagnostics/">L4 4.1</a>)。
     </p>
   </div>
 </div>
@@ -165,7 +165,7 @@
 <h2 id="dissociation">2.3.3 解離、自由基與產物</h2>
 
 <div class="pa-prose">
-  <p>以 CF₄ 為例的解離鏈:</p>
+  <p>以 CF₄ 為例的<span class="pa-term" data-term="解離">解離</span>鏈:</p>
   <div class="pa-formula">
     <div class="pa-formula__body">
       <div class="pa-eq">e + CF₄ → e + CF₃ + F&nbsp;&nbsp;&nbsp;&nbsp;(主要)</div>
@@ -200,20 +200,20 @@
   <div class="pa-note pa-note--intuition">
     <div class="pa-note__title">💡 表面損失係數 —— 最常被忽略的參數</div>
     <p>
-      自由基撞到腔壁時,有一定機率就地複合而消失。這個機率<strong>強烈依賴表面材質</strong>:
+      自由基撞到腔壁時,有一定機率就地<span class="pa-term" data-term="複合">複合</span>而消失。這個機率<strong>強烈依賴表面材質</strong>:
     </p>
     <ul>
       <li><strong>F 在石英表面</strong> —— 複合機率很低,自由基壽命長</li>
       <li><strong>F 在金屬表面</strong> —— 複合機率高,自由基很快被吃掉</li>
     </ul>
     <p>
-      <strong>這就是為什麼腔體內襯材質換了、製程就變了。</strong>
+      <strong>這就是為什麼<span class="pa-term" data-term="腔體內襯">腔體內襯</span>材質換了、製程就變了。</strong>
       也是 seasoning 與 chamber memory 的物理根源之一
       (<a href="../../3/3-6-uniformity/">L3 3.6</a>)——
       腔壁上積了什麼,直接改變了自由基的壽命。
     </p>
     <p>
-      同一件事也解釋了 <a href="../2-1-vacuum/#residence">2.1</a> 的滯留時間為什麼重要:
+      同一件事也解釋了 <a href="../2-1-vacuum/#residence">2.1</a> 的<span class="pa-term" data-term="滯留時間">滯留時間</span>為什麼重要:
       τ 就是「被抽走」那一項的時間尺度。
     </p>
   </div>
@@ -237,7 +237,7 @@
     <div class="pa-note__title">💡 診斷蝕刻率異常的第一個分岔</div>
     <p>
       <strong>把這兩層分開想,是診斷問題最有效的第一步。</strong>
-      蝕刻率不對,先問一句:
+      <span class="pa-term" data-term="蝕刻率">蝕刻率</span>不對,先問一句:
     </p>
     <div class="pa-chain">
       <div class="pa-chain__step"><strong>是自由基不夠嗎?</strong>(氣相問題)→ 查功率、氣體配比、壓力、MFC</div>
