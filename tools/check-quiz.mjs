@@ -290,20 +290,33 @@ ok(
     return `難度 1:${d[1]}、2:${d[2]}、3:${d[3]}`;
   })()
 );
+/**
+ * L4 的情境與判讀題必須過半 —— 這是 80 % 門檻的前提。
+ *
+ * 這一條原本寫成相對式的「L3+L4 的占比 > L1 的兩倍」,而 docs/08 講的是
+ * 絕對規格:L4「一半以上是情境分析與判讀」,並把它當成 L4 門檻訂 80 %
+ * (其餘三階 75 %)的理由。相對式斷言的問題是它在 L4 只有 10 % 時照樣全綠 ——
+ * 因為 L1 只有 2 %,乘二還是很低。等於用一條永遠會過的斷言,
+ * 守著一個當時根本沒做到的規格。
+ *
+ * 換成絕對判準之後,L4 從 10 % 補到 50 %:13 題新寫的情境題(L4-078~L4-090)
+ * 加上 24 題把既有單選改寫成給數據、要判斷的情境題。
+ * ⚠️ 不要把 0.5 調低來讓測試變綠 —— 這個數字直接對應 docs/08 的門檻論證,
+ * 調低它等於讓 L4 的 80 % 失去依據。
+ */
+const scenarioRate = (k) => {
+  const b = BANK[k];
+  return b.filter((q) => q.type === "scenario" || q.type === "image").length / b.length;
+};
 ok(
-  "高階(L3/L4)的情境與判讀題占比明顯高於 L1",
-  (() => {
-    const rate = (k) => {
-      const b = BANK[k];
-      return b.filter((q) => q.type === "scenario" || q.type === "image").length / b.length;
-    };
-    return rate("3") + rate("4") > rate("1") * 2;
-  })(),
-  ["1", "2", "3", "4"].map((k) => {
-    const b = BANK[k];
-    const r = b.filter((q) => q.type === "scenario" || q.type === "image").length / b.length;
-    return `L${k} ${(r * 100).toFixed(0)} %`;
-  }).join("、")
+  "**L4 的情境與判讀題必須過半**(docs/08:這是 L4 門檻訂 80 % 的理由)",
+  scenarioRate("4") >= 0.5,
+  ["1", "2", "3", "4"].map((k) => `L${k} ${(scenarioRate(k) * 100).toFixed(0)} %`).join("、")
+);
+ok(
+  "情境與判讀題的占比逐階升高(L1 記憶為主 → L4 判斷為主)",
+  scenarioRate("1") <= scenarioRate("2") && scenarioRate("2") <= scenarioRate("3") && scenarioRate("3") < scenarioRate("4"),
+  `L1 → L4 單調遞增,L4 是 L1 的 ${(scenarioRate("4") / Math.max(scenarioRate("1"), 1e-9)).toFixed(0)} 倍`
 );
 ok(
   "每題都有 tags(供日後依主題抽題)",
