@@ -63,6 +63,15 @@
       neutralRel: neutralRel(s.radical),
       ionDiv: ionDiv(s.spread),
       ionReflect: (s.reflect || 0) / 100,
+      /**
+       * wallFlux —— 引擎那支「側壁的離子通量恆為 0」的修正,預設關閉。
+       * 這裡把它從 A18 的狀態透傳下去,好讓 tools/shapes-search.mjs 能在
+       * 開啟的情況下重搜八組預設。理由與下面的 polyLoss 同一套:
+       * 修正本身是對的(側壁本來就該有通量,整段鏡面反射也才會生效),
+       * 但打開之後八組預設全部要重新校準,所以先做成 opt-in;
+       * 等重搜出來的參數確實讓 check-shapes 變好,再改預設。
+       */
+      wallFlux: !!s.wallFlux,
       localCoverage: true,
       angularYield: true,
       // 再沉積是 taper / footing 的成因,也讓側壁不再完美垂直,
