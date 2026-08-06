@@ -23,7 +23,7 @@
     <li><label><input type="checkbox" /><span>解釋脈衝頻率的上下限各由什麼決定</span></label></li>
     <li><label><input type="checkbox" /><span>說出 ALE 的兩個自限制,並判斷一組配方是不是真的 ALE</span></label></li>
     <li><label><input type="checkbox" /><span>計算協同度,並說明它與 3.1.2 Coburn–Winters 實驗的關係</span></label></li>
-    <li><label><input type="checkbox" /><span>說出 HAR 蝕刻的技術路線與低溫蝕刻為什麼有效</span></label></li>
+    <li><label><input type="checkbox" /><span>說出 HAR 蝕刻的技術路線與<span class="pa-term" data-term="低溫蝕刻">低溫蝕刻</span>為什麼有效</span></label></li>
   </ul>
 </div>
 
@@ -50,7 +50,7 @@
       太高 → 孔底來不及放電。兩者夾出數 kHz 的可用區間。</li>
     <li><strong>ALE:兩個自限制讓蝕刻量只由循環數決定。</strong>
       吸附飽和(第一個)+ 能量窗(第二個)。少一個就退化成普通的循環蝕刻。</li>
-    <li><strong>⚠️ ALE 能量窗比教科書的窄,而且窗寬是你的配方決定的。</strong>
+    <li><strong>⚠️ <span class="pa-term" data-term="ALE 能量窗">ALE 能量窗</span>比教科書的窄,而且窗寬是你的配方決定的。</strong>
       閾值只說移除「開始」,沒說移除「來得及完成」。</li>
   </ul>
 </div>
@@ -190,7 +190,7 @@
     <div class="pa-lab__observe">
       此互動元件需要 JavaScript。六條對齊同一時間軸的波形(source、bias、n_e、T_e、
       鞘層電位、負離子)加上孔底累積電位;四種模式(CW / source / bias / 同步)
-      與七個旋鈕(頻率、佔空比、相位差、功率、壓力、氣體電負性、孔的深寬比)。
+      與七個旋鈕(頻率、<span class="pa-term" data-term="佔空比">佔空比</span>、相位差、功率、壓力、氣體電負性、孔的深寬比)。
     </div>
   </noscript>
 </div>
@@ -366,7 +366,7 @@
           <td><a href="../../3/3-3-defect-atlas/">3.3</a></td></tr>
         <tr><td><strong>脈衝 + 負離子</strong></td><td>中和孔底充電,防止 twisting</td>
           <td>本章 4.4.1 + <a href="../4-3-plasma-damage/">4.3</a></td></tr>
-        <tr><td>方波 / 客製化偏壓波形</td><td>把 IEDF 壓成單能量峰,精準控制</td>
+        <tr><td>方波 / <span class="pa-term" data-term="客製化偏壓波形">客製化偏壓波形</span></td><td>把 IEDF 壓成單能量峰,精準控制</td>
           <td><a href="../../2/2-4-sheath-physics/">2.4</a></td></tr>
         <tr><td>高選擇比硬遮罩(非晶碳、金屬)</td><td>承受長時間蝕刻</td>
           <td><a href="../../3/3-2-etch-applications/">3.2</a></td></tr>
@@ -406,13 +406,13 @@
     <table class="pa-table">
       <thead><tr><th>方向</th><th>在做什麼</th><th>為什麼重要</th></tr></thead>
       <tbody>
-        <tr><td><strong>選擇性沉積 ASD</strong></td><td>只在特定材料上長膜</td>
+        <tr><td><strong><span class="pa-term" data-term="選擇性沉積">選擇性沉積</span> ASD</strong></td><td>只在特定材料上長膜</td>
           <td>自對準製程,<strong>減少微影層數</strong></td></tr>
         <tr><td>客製化偏壓波形</td><td>用非正弦波形直接控制 IEDF 形狀</td>
           <td>把雙峰壓成單峰,能量選擇性大幅提高</td></tr>
         <tr><td>原子層清潔與表面平坦化</td><td>把 ALE 的自限制用在清潔與平坦化</td>
           <td>先進節點的表面品質要求</td></tr>
-        <tr><td>機器學習輔助 recipe 優化與虛擬量測</td><td>從 FDC 資料反推製程結果</td>
+        <tr><td>機器學習輔助 recipe 優化與<span class="pa-term" data-term="虛擬量測">虛擬量測</span></td><td>從 FDC 資料反推製程結果</td>
           <td>見 <a href="../4-2-endpoint-apc/">4.2.7</a> —— 補不了訓練資料裡沒有的故障</td></tr>
       </tbody>
     </table>

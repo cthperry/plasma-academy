@@ -22,7 +22,7 @@
     <li><label><input type="checkbox" /><span>由壓力直接算出中性粒子密度,並驗算 L1 的游離度</span></label></li>
     <li><label><input type="checkbox" /><span>用分壓算混氣配方,並說出「流量比 ≠ 腔內濃度比」的原因</span></label></li>
     <li><label><input type="checkbox" /><span>算出滯留時間 τ,解釋 τ 太短與太長各自的後果</span></label></li>
-    <li><label><input type="checkbox" /><span>用 Knudsen 數判斷流體區間,並說明它對腔體設計的意義</span></label></li>
+    <li><label><input type="checkbox" /><span>用 <span class="pa-term" data-term="Knudsen 數">Knudsen 數</span>判斷流體區間,並說明它對腔體設計的意義</span></label></li>
     <li><label><input type="checkbox" /><span>說出節流閥開度為什麼是最好用的健康指標</span></label></li>
     <li><label><input type="checkbox" /><span>依用途選對壓力計</span></label></li>
   </ul>
@@ -276,7 +276,7 @@
     <table class="pa-table">
       <thead><tr><th class="is-num">Kn</th><th>區間</th><th>行為</th></tr></thead>
       <tbody>
-        <tr><td class="is-num">&lt; 0.01</td><td><strong>黏滯流</strong> Viscous</td><td>分子互撞為主,整體像流體</td></tr>
+        <tr><td class="is-num">&lt; 0.01</td><td><strong><span class="pa-term" data-term="黏滯流">黏滯流</span></strong> Viscous</td><td>分子互撞為主,整體像流體</td></tr>
         <tr><td class="is-num">0.01 – 1</td><td><strong>過渡流</strong> Transition</td><td>兩者混合 —— 最難算,也最常見</td></tr>
         <tr><td class="is-num">&gt; 1</td><td><strong>分子流</strong> Molecular</td><td>分子只跟器壁碰,彼此不相干</td></tr>
       </tbody>
@@ -325,8 +325,8 @@
     <table class="pa-table">
       <thead><tr><th>泵</th><th class="is-num">工作區間</th><th>角色</th></tr></thead>
       <tbody>
-        <tr><td>乾式幫浦 Dry pump</td><td class="is-num">大氣 → 10⁻² Torr</td><td>前級,接排氣端</td></tr>
-        <tr><td><strong>渦輪分子泵 TMP</strong></td><td class="is-num">10⁻² → 10⁻⁸ Torr</td><td>主泵,製程時在跑的就是它</td></tr>
+        <tr><td><span class="pa-term" data-term="乾式幫浦">乾式幫浦</span> Dry pump</td><td class="is-num">大氣 → 10⁻² Torr</td><td>前級,接排氣端</td></tr>
+        <tr><td><strong><span class="pa-term" data-term="渦輪分子泵">渦輪分子泵</span> TMP</strong></td><td class="is-num">10⁻² → 10⁻⁸ Torr</td><td>主泵,製程時在跑的就是它</td></tr>
         <tr><td>冷凝泵 Cryo</td><td class="is-num">高真空</td><td>PVD 常用,抽水氣特別強</td></tr>
       </tbody>
     </table>
@@ -364,7 +364,7 @@
       <thead><tr><th>計種</th><th>原理</th><th class="is-num">範圍 (Torr)</th><th>特性</th></tr></thead>
       <tbody>
         <tr>
-          <td><strong>電容薄膜計 Baratron</strong></td>
+          <td><strong><span class="pa-term" data-term="電容薄膜計">電容薄膜計</span> Baratron</strong></td>
           <td>隔膜位移造成電容變化</td>
           <td class="is-num">10⁻⁴ – 1000</td>
           <td><strong>與氣體種類無關</strong> —— 製程控制的標準</td>
@@ -376,7 +376,7 @@
           <td>依氣體種類校正,便宜,只能當粗略指示</td>
         </tr>
         <tr>
-          <td>離子規 Ion gauge</td>
+          <td><span class="pa-term" data-term="離子規">離子規</span> Ion gauge</td>
           <td>游離電流</td>
           <td class="is-num">10⁻¹⁰ – 10⁻³</td>
           <td>量 base pressure 與漏氣檢查</td>
