@@ -38,6 +38,7 @@
     "check:faults": "node tools/check-faults.mjs",
     "check:quiz": "node tools/check-quiz.mjs",
     "check:quiz-mix": "node tools/check-quiz-mix.mjs",
+    "check:chapter-length": "node tools/check-chapter-length.mjs",
     "shapes:sweep": "node tools/shapes-sweep.mjs",
     "shapes:search": "node tools/shapes-search.mjs"
   },

@@ -192,7 +192,10 @@
 <h2 id="criteria">1.1.5 三個判準:什麼才算電漿</h2>
 
 <div class="pa-prose">
-  <p>一團帶電粒子要被稱為電漿,必須<strong>同時</strong>滿足三個條件:</p>
+  <p>
+    一團帶電粒子要被稱為電漿,不是「有離子就算」,必須<strong>同時</strong>滿足三個條件。
+    這三條判準各自守住一件事,少一件,整套「電漿」的物理圖像就垮掉:
+  </p>
 
   <div class="pa-table-wrap">
     <table class="pa-table">
@@ -215,8 +218,33 @@
   </div>
 
   <p>
-    λ<sub>D</sub> 與 ω<sub>pe</sub> 在 <a href="../1-2-parameters/">1.2</a> 定義。
-    這裡先建立一個觀念:<strong>電漿的定義是行為上的,不是成分上的。</strong>
+    第一條守「有沒有 bulk」:1.1.4 說準中性只在主體成立、鞘層不成立,
+    而鞘層厚度量級就是 λ<sub>D</sub>。λ<sub>D</sub> 若跟容器尺寸 L 差不多大,
+    整個容器等於都是鞘層,沒有主體能展現集體行為。
+    第二條守「遮蔽算不算統計行為」:Debye 遮蔽靠很多顆電子一起挪位置抵消外來電場,
+    Debye 球裡粒子太少,就只剩單顆粒子間的庫倫碰撞,談不上統計平均
+    (製程電漿的 N<sub>D</sub> 通常是 10⁴–10⁶ 量級,1.2 會算一次實際數字)。
+    第三條守「電漿自己的節奏贏不贏得過碰撞」:電子被擾動後靠電漿頻率
+    ω<sub>pe</sub> 振盪修正電荷分離,但碰撞時間 τ 一旦比振盪週期還短,
+    振盪還沒發生就被打斷,帶電粒子的運動改由碰撞主導,像摻了電荷的
+    普通氣體。ω<sub>pe</sub> 與 τ 的定義都在 1.2、1.3。
+  </p>
+
+  <div class="pa-note pa-note--misconception">
+    <div class="pa-note__title">⚠️ 常見誤解</div>
+    <div class="pa-misconception__wrong"><span>只要氣體裡有離子,就可以叫它電漿。</span></div>
+    <div class="pa-misconception__right">
+      <span>
+        游離只是必要條件。蠟燭火焰、雷擊路徑這類微弱游離的氣體通常滿足不了
+        後兩條判準——三條同時成立才算數,不是任何游離氣體都算。
+      </span>
+    </div>
+  </div>
+
+  <p>
+    λ<sub>D</sub> 與 ω<sub>pe</sub> 的定義式、以及拿 CCP 典型值把三條判準實際驗算一次,
+    留到 <a href="../1-2-parameters/">1.2</a>。這裡先建立一個觀念:
+    <strong>電漿的定義是行為上的,不是成分上的。</strong>
   </p>
 </div>
 

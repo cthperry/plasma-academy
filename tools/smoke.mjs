@@ -359,7 +359,7 @@ console.log("\n【效能預算】");
   await page.waitForTimeout(300);
 
   // 關鍵路徑 = 模板直接引用的 HTML/CSS/JS(不含任何按需載入的東西)
-  const DEFERRED = ["data/glossary.js", "js/lab/", "search-index"];
+  const DEFERRED = ["data/glossary.js", "js/lab/", "search-index", "core/search.js"];
   const critical = sizes.filter((s) => !DEFERRED.some((d) => s.url.includes(d)));
   const deferred = sizes.filter((s) => DEFERRED.some((d) => s.url.includes(d)));
 

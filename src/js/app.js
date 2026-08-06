@@ -1,9 +1,10 @@
 /* ==========================================================================
    app.js — 啟動流程與腳本載入器
 
-   初始載入只包含每一頁都需要的東西。兩塊大的按需載入:
+   初始載入只包含每一頁都需要的東西。按需載入的幾塊:
      · data/glossary.js(41 KB)—— 頁面有 .pa-term 時才需要
      · js/lab/*(48 KB)     —— 頁面有 [data-lab] 時才需要
+     · js/core/search.js(5.6 KB)—— 按鈕或 Ctrl/Cmd+K 觸發後才需要
 
    用 <script> 注入而非 dynamic import,file:// 直接開啟也能運作。
    ========================================================================== */
@@ -99,6 +100,45 @@
     loadScripts(["js/core/progress-ui.js"], cb);
   }
 
+  /** 全站搜尋,只有真的要用(按鈕或 Ctrl/Cmd+K)才載 */
+  function ensureSearch(cb) {
+    if (PA.search) return cb();
+    loadScripts(["js/core/search.js"], cb);
+  }
+
+  /**
+   * 搜尋 UI 的觸發按鈕與 Ctrl/Cmd+K 快捷鍵要在每一頁都能用,
+   * 但 search.js 本體(tokenize/index/render,5.6 KB)不必 ——
+   * 跟 home.js 同一個理由被搬到按需載入:1.1 補齊三判準的物理意義後,
+   * 章節頁的關鍵路徑又頂到了預算上緣。這裡先接住第一次觸發,
+   * 载入完成後補一次真正的開啟動作,使用者感覺不出差異。
+   */
+  function bootSearchTrigger() {
+    var btn = document.querySelector("[data-search-btn]");
+    var triggered = false;
+    function trigger() {
+      if (triggered) return;
+      triggered = true;
+      ensureSearch(function (err) {
+        if (err) return;
+        try {
+          PA.search.init();
+          var b = document.querySelector("[data-search-btn]");
+          if (b) b.click(); // 補一次剛剛那個被吃掉的觸發,真正打開搜尋框
+        } catch (e) {
+          console.error("[app] 搜尋初始化失敗", e);
+        }
+      });
+    }
+    if (btn) btn.addEventListener("click", trigger, { once: true });
+    document.addEventListener("keydown", function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        trigger();
+      }
+    });
+  }
+
   /** 瀏覽器閒置時預先載入,讓首次 hover 不用等 */
   function idle(fn) {
     if (window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 2500 });
@@ -109,7 +149,7 @@
     var steps = [
       ["nav", function () { PA.nav && PA.nav.init(); }],
       ["units", function () { PA.units && PA.units.init(); }],
-      ["search", function () { PA.search && PA.search.init(); }],
+      ["search", bootSearchTrigger],
     ];
 
     steps.forEach(function (s) {
