@@ -24,6 +24,7 @@
     "check:gascolors": "node tools/check-gas-colors.mjs",
     "check:shapes": "node tools/check-shapes.mjs",
     "check:package": "node tools/check-package.mjs",
+    "check:pcb": "node tools/check-pcb.mjs",
     "check:bosch": "node tools/check-bosch.mjs",
     "check:deposit": "node tools/check-deposit.mjs",
     "check:magnetron": "node tools/check-magnetron.mjs",

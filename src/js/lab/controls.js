@@ -29,6 +29,16 @@
   function fmt(v, digits) {
     if (!isFinite(v)) return "—";
     var a = Math.abs(v);
+    /**
+     * 呼叫端指定了小數位,就代表它宣告了「這個量在意的精度」。
+     * 小到那個精度下四捨五入是零的值,就該印成零 ——
+     * 不要因為它「絕對值很小」而切到科學記號。
+     *
+     * ⚠️ 這是 A34 抓到的:兩條速率相減得到 −8.9×10⁻¹⁶(浮點殘差),
+     * 面板上顯示「玻纖突出 −8.9×10⁻¹⁶ µm」,看起來像量到了什麼東西,
+     * 實際上就是 0.0 µm。大數那一端維持科學記號(n_e 之類仍需要)。
+     */
+    if (digits != null && a < 0.5 * Math.pow(10, -digits)) return (0).toFixed(digits);
     if (a !== 0 && (a >= 1e5 || a < 1e-3)) {
       var e = v.toExponential(digits == null ? 2 : digits);
       var m = e.match(/^(-?[\d.]+)e([+-]\d+)$/);
@@ -284,7 +294,27 @@
     return wrap;
   }
 
-  /** 觀察點區塊 */
+  /**
+   * `**粗體**` → <strong>,其餘一律當純文字跳脫。
+   *
+   * 先跳脫再換粗體,順序不能反 —— 反過來的話 <strong> 自己會被跳脫掉。
+   * 與 quiz/engine.js 的 mark() 是同一套規則(觀察點與題目解析用同一種寫法)。
+   */
+  function mark(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  }
+
+  /**
+   * 觀察點區塊。
+   *
+   * ⚠️ 這裡原本用 textContent,於是 34 個元件裡寫的 `**強調**` 全部
+   * 原封不動印出星號 —— 觀察點是元件的教學重點,強調卻變成雜訊。
+   * 改用跳脫過的 innerHTML,只放行粗體這一種標記。
+   */
   function observations(list) {
     var wrap = el("div", "pa-lab__observe");
     var t = el("div", "pa-lab__observe-title");
@@ -292,7 +322,7 @@
     var ul = el("ul");
     list.forEach(function (s) {
       var li = el("li");
-      li.textContent = s;
+      li.innerHTML = mark(s);
       ul.appendChild(li);
     });
     wrap.appendChild(t);

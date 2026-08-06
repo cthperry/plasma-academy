@@ -20,7 +20,7 @@
   var STAGES = {
     "1": { level: "1", label: "L1 初階結業測驗", draw: 20, minutes: 30, pass: 0.75 },
     "2": { level: "2", label: "L2 中階結業測驗", draw: 30, minutes: 50, pass: 0.75 },
-    "3": { level: "3", label: "L3 進階結業測驗", draw: 35, minutes: 60, pass: 0.75 },
+    "3": { level: "3", label: "L3 進階結業測驗", draw: 40, minutes: 70, pass: 0.75 },
     "4": { level: "4", label: "L4 專家結業測驗", draw: 30, minutes: 60, pass: 0.8 },
   };
 
@@ -421,8 +421,49 @@
     });
   }
 
+  /**
+   * 測驗頁上「題庫有多大」那幾個數字。
+   *
+   * 這幾個數字曾經是手寫在 content/quiz.html 裡的,結果每次擴充題庫都忘了同步 ——
+   * 使用者兩次直接在網站上看到「目前共 301 題」而實際已經 325 題。
+   * 手寫的統計數字必然會過期,所以改成開頁時由題庫自己算出來填進去:
+   * 加題、改出題數、加章節都不必再記得回來改這一頁。
+   */
+  function fillStats() {
+    var draws = document.querySelectorAll("[data-quiz-draws]");
+    Array.prototype.forEach.call(draws, function (el) {
+      el.textContent = ["1", "2", "3", "4"]
+        .map(function (k) { return "L" + k + " " + STAGES[k].draw; })
+        .join(" / ");
+    });
+
+    var chapters = document.querySelectorAll("[data-quiz-chapters]");
+    if (chapters.length && PA.curriculum) {
+      Array.prototype.forEach.call(chapters, function (el) {
+        el.textContent = PA.curriculum.modules.length + " 章自我檢測";
+      });
+    }
+
+    var stats = document.querySelectorAll("[data-quiz-stats]");
+    if (!stats.length || !PA.quizBank) return;
+    var total = 0;
+    var parts = ["1", "2", "3", "4"].map(function (k) {
+      var n = allOf(k).length;
+      total += n;
+      return "L" + k + " " + n + " / 出 " + STAGES[k].draw +
+        "(" + (n / STAGES[k].draw).toFixed(2) + " 倍)";
+    });
+    var chCount = PA.curriculum ? PA.curriculum.modules.length : 0;
+    Array.prototype.forEach.call(stats, function (el) {
+      el.textContent = "目前共 " + total + " 題" +
+        (chCount ? ",覆蓋全部 " + chCount + " 章" : "") +
+        ",四個階段都落在這個範圍內:" + parts.join("、") + "。";
+    });
+  }
+
   function scan() {
     var base = document.documentElement.getAttribute("data-base") || "";
+    fillStats();
     var hosts = document.querySelectorAll("[data-quiz]");
     Array.prototype.forEach.call(hosts, function (h) {
       if (h.hasAttribute("data-quiz-mounted")) return;
@@ -445,5 +486,6 @@
     ofChapter: ofChapter,
     grade: grade,
     scan: scan,
+    fillStats: fillStats,
   };
 })((window.PA = window.PA || {}));

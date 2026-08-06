@@ -2,7 +2,7 @@
    formulas.js — 全站公式手冊資料
    ⚠️ 自動產生,請勿手改。來源:src/content/level/ 底下各章節 html 的 .pa-formula 區塊
       重新產生:node tools/gen-formulas.mjs
-   共 47 條
+   共 48 條
    ========================================================================== */
 
 (function (PA) {
@@ -42,6 +42,7 @@
   { id: 'strong-hall-參數-strong-電子在兩次碰撞之間繞了幾圈-來源是跨磁場遷移率-sub-sub', eq: 'h = ω<sub>c</sub>·τ ,&nbsp;&nbsp; ω<sub>c</sub> = eB/m<sub>e</sub> ,&nbsp;&nbsp;\n      等效路徑放大 = 1 + h²', name: '<strong>Hall 參數</strong> —— 電子在兩次碰撞之間繞了幾圈。\n      來源是跨磁場遷移率 μ<sub>⊥</sub> = μ/(1+h²)', ch: '3.5.2', heading: '磁控濺鍍:一個參數說完', body: null, url: 'level/3/3-5-pvd/', anchor: 'magnetron' },
   { id: '兩種都叫-不均勻度-數字差很多', eq: '半幅法:(Max − Min) / (2 × Mean) × 100 %<br />\n      標準差法:1σ / Mean × 100 %', name: '兩種都叫「不均勻度」,數字差很多', ch: '3.6.1', heading: '先把定義講清楚', body: null, url: 'level/3/3-6-uniformity/', anchor: 'metric' },
   { id: 'girifalco-good-近似-表面能越高-接觸角越小-表面越親水', eq: 'cos θ = 2 √( γ<sub>s</sub> / γ<sub>l</sub> ) − 1', name: 'Girifalco–Good 近似 —— 表面能越高,接觸角越小,表面越親水', ch: '3.7.4', heading: '怎麼知道處理夠了:接觸角與表面能', body: null, url: 'level/3/3-7-package-clean/', anchor: 'metrology' },
+  { id: 'sif-在製程溫度下是氣體-這是玻纖唯一的離開途徑', eq: 'SiO₂ + 4F → SiF₄↑ + O₂', name: 'SiF₄ 在製程溫度下是氣體 —— 這是玻纖唯一的離開途徑', ch: '3.8.3', heading: '為什麼這裡反而非加 CF₄ 不可', body: null, url: 'level/3/3-8-pcb-desmear/', anchor: 'why-f' },
   { id: '後面那一項-strong-與-v-無關-strong-所以任何波形的-rf-調變-在指數區都只是把曲線整條平移-strong-斜率完全不變-strong', eq: '⟨exp((V − V_p − V_rf·f(t))/T_e)⟩<sub>t</sub>\n        = exp((V − V_p)/T_e) · ⟨exp(−V_rf·f/T_e)⟩', name: '後面那一項<strong>與 V 無關</strong> —— 所以任何波形的 RF 調變\n        在指數區都只是把曲線整條平移,<strong>斜率完全不變</strong>', ch: null, heading: '四個實務陷阱', body: null, url: 'level/4/4-1-diagnostics/', anchor: 'pitfalls' },
   { id: 'strong-問題就在這裡-strong-強度同時被濃度-n-e-t-e-決定', eq: 'I<sub>line</sub> ∝ n<sub>species</sub> × n<sub>e</sub> × exp(−E<sub>th</sub>/T<sub>e</sub>)', name: '<strong>問題就在這裡</strong>:強度同時被濃度、n_e、T_e 決定', ch: '4.1.4', heading: 'Actinometry:把相對強度變成相對濃度', body: null, url: 'level/4/4-1-diagnostics/', anchor: 'actinometry' },
   { id: '加-1-5-的-ar-當內標-取比值-n-e-與-t-e-一起被消掉', eq: '[F] / [Ar] ∝ I<sub>F</sub>(703.7) / I<sub>Ar</sub>(750.4)', name: '加 1–5 % 的 Ar 當內標,取比值 —— n_e 與 T_e 一起被消掉', ch: '4.1.4', heading: 'Actinometry:把相對強度變成相對濃度', body: null, url: 'level/4/4-1-diagnostics/', anchor: 'actinometry' },

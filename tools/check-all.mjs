@@ -22,6 +22,7 @@ const STEPS = [
   ["互動實驗室目錄(docs/05 + 課綱對照)", "tools/check-labs.mjs"],
   ["進度追蹤與徽章邏輯", "tools/check-progress.mjs"],
   ["封裝電漿模型與課文數值一致", "tools/check-package.mjs"],
+  ["PCB 除膠渣模型(3.8 / A34)", "tools/check-pcb.mjs"],
   ["Bosch 循環的兩個觀察點", "tools/check-bosch.mjs"],
   ["沉積與填溝的四個宣稱", "tools/check-deposit.mjs"],
   ["磁控與反應式濺鍍", "tools/check-magnetron.mjs"],

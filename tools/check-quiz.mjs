@@ -110,7 +110,7 @@ console.log(
   "    每章題數:" + modIds.map((id) => `${id}:${perCh[id] || 0}`).join("  ")
 );
 ok(
-  "**25 章每一章都有題目**(沒有考不到的章節)",
+  "**每一章都有題目**(沒有考不到的章節)",
   modIds.every((id) => (perCh[id] || 0) > 0),
   `最少的一章有 ${Math.min(...modIds.map((id) => perCh[id] || 0))} 題`
 );
@@ -425,7 +425,7 @@ for (const k of ["1", "2", "3", "4"]) {
 ok(
   "四階的出題數與通過門檻與 docs/08 一致",
   Q.STAGES["1"].draw === 20 && Q.STAGES["2"].draw === 30 &&
-    Q.STAGES["3"].draw === 35 && Q.STAGES["4"].draw === 30 &&
+    Q.STAGES["3"].draw === 40 && Q.STAGES["4"].draw === 30 &&
     Q.STAGES["4"].pass === 0.8 && Q.STAGES["1"].pass === 0.75,
   "L4 門檻 80 %,其餘 75 %"
 );

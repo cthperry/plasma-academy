@@ -549,11 +549,22 @@ console.log("\n【已撰寫章節通用檢查】");
           controls: el.querySelectorAll(".pa-ctrl").length,
           readouts: el.querySelectorAll(".pa-readout").length,
           observe: !!el.querySelector(".pa-lab__observe"),
+          /*
+             觀察點裡的 `**強調**` 要真的變成粗體。
+             controls.js 原本用 textContent,34 個元件寫的星號全部原封不動
+             印在畫面上 —— 純資料檢查看不到這種問題,只有真的渲染才抓得到。
+          */
+          rawStars: (el.querySelector(".pa-lab__observe") || { textContent: "" })
+            .textContent.indexOf("**") >= 0,
+          strongs: el.querySelectorAll(".pa-lab__observe strong").length,
         };
       }, labId);
       ok(`${labId} 掛載且有控制項與觀察點`,
         st.mounted && !st.error && st.visual && st.controls >= 2 && st.readouts >= 2 && st.observe,
         `控制項 ${st.controls} / 數值 ${st.readouts}`);
+      ok(`${labId} 觀察點的強調有渲染成粗體(沒有殘留星號)`,
+        !st.rawStars,
+        st.rawStars ? "畫面上看得到 ** 字面" : `${st.strongs} 處粗體`);
     }
 
     // 術語 tooltip 全部查得到定義(撰稿時打錯字會在這裡被抓到)
@@ -597,7 +608,13 @@ console.log("\n【測驗中心】");
     };
   });
   ok("兩種模式都掛載成功", mounted.selfOk && mounted.examOk, "");
-  ok("章節選單涵蓋全部 25 章", mounted.chapters === 25, `${mounted.chapters} 章`);
+  // 對照 curriculum.js 本身,不寫死數字 —— 3.8 獨立成章時這裡曾經因為
+  // 寫死 25 而假失敗,課綱才是唯一來源。
+  ok(
+    "章節選單涵蓋課綱的每一章",
+    mounted.chapters === EXPECT.modules,
+    `${mounted.chapters} 章 / 課綱 ${EXPECT.modules} 章`
+  );
   ok("預設章節有題目與選項",
     mounted.questions >= 1 && mounted.options >= 2,
     `${mounted.questions} 題 / ${mounted.options} 個選項`);

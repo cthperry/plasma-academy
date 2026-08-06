@@ -10,7 +10,7 @@
 <div class="pa-chapter-header">
   <h1>測驗中心</h1>
   <div class="pa-chapter-header__meta">
-    <span>25 章自我檢測</span>
+    <span data-quiz-chapters>各章自我檢測</span>
     <span>四階結業測驗</span>
     <span>資料源:<code>data/quiz/</code></span>
   </div>
@@ -29,7 +29,7 @@
   <table class="pa-table">
     <thead><tr><th></th><th>自我檢測</th><th>結業測驗</th></tr></thead>
     <tbody>
-      <tr><td>題數</td><td>該章全部</td><td>L1 20 / L2 30 / L3 35 / L4 30</td></tr>
+      <tr><td>題數</td><td>該章全部</td><td data-quiz-draws>依 docs/08 規格</td></tr>
       <tr><td>計分</td><td>不計分</td><td><strong>計分</strong></td></tr>
       <tr><td>回饋</td><td><strong>答完立即顯示</strong></td><td>交卷後顯示</td></tr>
       <tr><td>重測</td><td>無限次</td><td>無限次,<strong>每次重抽</strong></td></tr>
@@ -42,10 +42,8 @@
   <div class="pa-note__title">✅ 題庫規模已補齊到 docs/08 目標</div>
   <p>
     <code>docs/08-assessment.md</code> 訂的目標是各階段題庫為出題數的
-    2.5–3 倍,確保重測時題目有實質不同。目前共 325 題,覆蓋全部 25 章,
-    <strong>四個階段都落在這個範圍內</strong>:
-    L1 54 題 / 出 20(2.70 倍)、L2 78 / 出 30(2.60 倍)、
-    L3 103 / 出 35(2.94 倍)、L4 90 / 出 30(3.00 倍)。
+    2.5–3 倍,確保重測時題目有實質不同。
+    <span data-quiz-stats>(題庫載入後顯示實際規模)</span>
   </p>
   <p>
     重測時抽到的題目會有實質差異,不會像早期批次那樣容易在幾次重測內
