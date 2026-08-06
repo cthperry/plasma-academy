@@ -487,5 +487,10 @@
     grade: grade,
     scan: scan,
     fillStats: fillStats,
+    // rng/shuffle 匯出給 tools/check-quiz-mix.mjs 用——結業測驗實際抽題
+    // 用的就是這兩個函式,模擬要跑同一份演算法,不能自己另外複製一份
+    // 抽樣邏輯(那樣測到的只是「模擬」符不符合規格,不是「引擎」符不符合規格)。
+    rng: rng,
+    shuffle: shuffle,
   };
 })((window.PA = window.PA || {}));
