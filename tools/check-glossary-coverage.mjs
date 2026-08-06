@@ -166,10 +166,12 @@ ok(
 ok(
   "每一章都至少有一處術語標記(沒有整章都掛不出 tooltip 的章節)",
   (() => {
-    const chapters = files.filter((f) => /[1-4]-[1-7]-/.test(f));
+    // ⚠️ 不要用 [1-7] 之類的範圍寫死小節上限 —— 3.8 上線時就是被這個
+    // 漏掉的(顯示「25 章」而課綱有 26 章)。章節檔名一律用 \d-\d- 判斷。
+    const chapters = files.filter((f) => /[1-4]-\d-/.test(f));
     return chapters.every((f) => /class="[^"]*pa-term/.test(readFileSync(f, "utf8")));
   })(),
-  `${files.filter((f) => /[1-4]-[1-7]-/.test(f)).length} 章`
+  `${files.filter((f) => /[1-4]-\d-/.test(f)).length} 章`
 );
 
 console.log(`\n${fail ? "✗" : "✓"} 術語 tooltip 覆蓋 通過 ${pass} / ${pass + fail}`);
