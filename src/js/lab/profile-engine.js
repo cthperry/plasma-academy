@@ -233,19 +233,24 @@
      * **microtrench 立刻長得出來**(µtr 由 −2 變成 +8),
      * faceting 的遮罩開口也還在(widen 1.62)。
      *
-     * ⚠️ 但**預設仍然關閉**,因為打開之後 A18 的八組預設全部要重新校準:
-     * 側壁一旦會被蝕刻,`reflect` 開到 95–100 的那幾組(bowing / microtrench)
-     * 會把 µtr 推過門檻,於是 taper / footing / bowing 全部被判成
-     * Microtrench,成立數反而從 5 掉到 4。
+     * ⚠️ 引擎**函式參數的預設值仍然是關閉**(這裡的 `wallFlux` 沒給就是
+     * falsy),因為打開之後側壁一旦會被蝕刻,舊的八組 `defects.js` 預設
+     * 全部要重新校準——`reflect` 開到 95–100 的那幾組(bowing / microtrench)
+     * 會把 µtr 推過門檻,taper / footing / bowing 全部被判成 Microtrench。
      *
      * 已經確認**行不通**的一條路:再乘一個幾何投影 cos θ 來壓掉側壁的量。
      * 那會與 `angularYield()` 重複計算(Yamamura 的 Y(θ)/Y(0) 本來就是
      * 對「單位入射通量」歸一的),實測結果是 widen 全部塌回 1.00、
      * µtr 永遠上不了 3、mid 永遠超不過 top —— 八種形狀一個都做不出來。
      *
-     * 接手的人要做的是:開啟 wallFlux,然後把 defects.js 的八組 profile
-     * 參數(尤其是 reflect)重新搜一遍,而不是在引擎裡再加係數。
-     * 這與 `polyLoss` 是同一種處理:引擎支援、預設不開、原因寫在這裡。
+     * 2026-08 這一輪(docs/13 §6)把 `defects.js` 的 bowing / taper /
+     * microtrench 三組重新搜過,個別在 `profile.wallFlux: true` 選擇性
+     * 開啟(microtrench 連數值都不用動,舊參數一開 wallFlux 直接成立;
+     * bowing / taper 的 ion/passiv/radical/reflect 都换了新值,搜法見
+     * `tools/shapes-search.mjs`)。`check-shapes.mjs` 由 21/32 推進到
+     * 28/32。**undercut 仍然沒動**——遮罩開口在打開 wallFlux 後也一併
+     * 被撐大,`widen` 超過 1.25 直接被 classify() 判成 Faceting,
+     * 這個是幾何本身的限制,不是搜參數搜得不夠,留給下一輪單獨處理。
      */
     function ionFluxVec(x, y, div, wallFlux) {
       if (!div || div <= 0) return { f: ionFlux(x, y), slope: 0 };

@@ -1511,6 +1511,31 @@ footing / faceting 六個受限空間,沒有任何一組成立)。
 → **下一步很明確**:開啟 `wallFlux`,然後重新搜 `defects.js` 的八組
 profile 參數(尤其是 reflect),而不是在引擎裡再加係數。
 
+#### 2026-08 更新:bowing / taper 重搜完成,microtrench 免搜即過
+
+按 docs/13-plan-review.md §6 的建議,把上面那句「下一步」做掉了。
+`tools/shapes-search.mjs` 加了 `wallFlux: true` 的搜尋維度(命令稿留在
+`tools/` 底下供之後 undercut 用):
+
+- **microtrench**:舊參數(`ion 650 / passiv 50 / reflect 100`)完全不用動,
+  單純加上 `wallFlux: true` 就從「垂直 ✅」變成「Microtrench(溝底兩側深)」——
+  它本來就在正確的參數區間,只是引擎的錯把訊號蓋掉了。
+- **bowing**:`reflect` 從 95 降到 55、`ion` 從 550 拉到 750。舊的高 reflect
+  在側壁有通量之後會直接把 µtr 推過門檻變成 microtrench;新參數落在
+  「中段確實鼓出(mid 130 > top 115 的 1.12 倍)但兩側不深過門檻
+  (utr −34)」的窗內。
+- **taper**:`radical` 從 50 降到 35、`reflect` 從 15 壓到 4、`ion` 拉到 650。
+  wallFlux 開啟後側壁被蝕刻,舊參數的 bot/top 收不到 0.8 以下(側壁被
+  蝕得太均勻,判成 Footing 或 Microtrench);新參數讓化學蝕刻的貢獻小
+  一點、反射壓到最低,bot/top = 0.54,乾淨落在 taper 判準內。
+
+`check-shapes.mjs` 由 21/32 推進到 **28/32**,與 docs/13 估計的「約 28/32」
+吻合。剩下的 4 條紅字全部是既有的 **undercut** 已知缺口(判定、與垂直的
+差異量測、對策方向)——遮罩開口在打開 wallFlux 後也一併被撐大,直接被
+`classify()` 判成 Faceting(`widen` 超過 1.25),這是幾何本身的限制,
+不是參數沒搜到,**留給下一輪單獨處理**(docs/13 §6 原文就是這樣分工的,
+沒有改變)。
+
 ### ⚠️ A20 反向 ARDE:仍未達成,但診斷從定性變成定量
 
 試過補上「離子驅動的聚合物清除」(`dep_net = max(0, dep − k·ion)`),

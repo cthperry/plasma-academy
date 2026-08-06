@@ -153,7 +153,11 @@
       ],
       related: ["undercut", "faceting", "microtrench"],
       ch: "3.3.3",
-      profile: { ion: 550, spread: 8, passiv: 42, radical: 60, reflect: 95, multi: false },
+      // wallFlux 開啟後重搜(docs/13 §6):側壁真的有離子通量之後,舊參數的
+      // reflect 95 會把 microtrenchDepth 推過門檻,整組被誤判成 Microtrench。
+      // 這組把 reflect 降到 55、ion 拉高到 750,搜到的落點在「中段確實鼓出
+      // (mid 130 > top 115 的 1.12 倍)但兩側不深過門檻(utr −34)」的窗內。
+      profile: { ion: 750, spread: 6, passiv: 36, radical: 60, reflect: 55, wallFlux: true, multi: false },
       risk: null,
     },
     {
@@ -174,7 +178,12 @@
       ],
       related: ["etch-stop", "inverse-lag"],
       ch: "3.3.3",
-      profile: { ion: 300, spread: 10, passiv: 55, radical: 50, reflect: 15, multi: false },
+      // wallFlux 開啟後重搜(docs/13 §6):舊參數(ion 300 / passiv 55 / reflect 15)
+      // 開了 wallFlux 後側壁吃到通量,bot/top 收不到 0.8 以下,判成 Footing 或
+      // Microtrench。這組把 radical 降到 35(化學蝕刻的貢獻小一點,鈍化才守得住
+      // 側壁往下逐漸收窄的斜率)、reflect 壓到 4(避免推出 microtrench 門檻)、
+      // ion 拉高到 650 撐住足夠深度,bot/top = 0.54,乾淨落在 taper 判準內。
+      profile: { ion: 650, spread: 10, passiv: 75, radical: 35, reflect: 4, wallFlux: true, multi: false },
       risk: null,
     },
     {
@@ -213,7 +222,10 @@
       ],
       related: ["bowing", "footing"],
       ch: "3.3.3",
-      profile: { ion: 650, spread: 6, passiv: 50, radical: 50, reflect: 100, multi: false },
+      // wallFlux 開啟後重搜(docs/13 §6):這一組不必動數值,舊參數本身就
+      // 成立——microtrenchDepth 由 −2(側壁沒有通量、量不出兩側深溝)直接變成
+      // +8,一開 wallFlux 就通過。三組裡唯一不用重新搜尋的。
+      profile: { ion: 650, spread: 6, passiv: 50, radical: 50, reflect: 100, wallFlux: true, multi: false },
       risk: null,
     },
     {

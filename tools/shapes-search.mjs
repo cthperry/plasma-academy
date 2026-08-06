@@ -2,7 +2,15 @@
 
    搜尋空間對每個缺陷都是「受限」的 —— 範圍由 3.3 圖鑑寫的成因決定,
    例如 undercut 的鈍化必須低、etch stop 必須最高、faceting 的離子必須最高。
-   這樣找出來的參數才會與課文一致,而不是純粹湊出圖形。            */
+   這樣找出來的參數才會與課文一致,而不是純粹湊出圖形。
+
+   WALLFLUX=1 環境變數:強制每組都帶 `wallFlux: true` 搜(見
+   profile-engine.js 的 wallFlux 說明)。bowing / taper / microtrench 三組
+   下面的搜尋空間已經是 2026-08 那輪重搜、開著 wallFlux 找到解之後的區間
+   (見 docs/11 的「2026-08 更新」),重跑這支工具應該還是會在這個空間裡
+   命中同一批解。undercut 的空間還是舊的(不帶 wallFlux)——它是下一輪
+   要單獨處理的已知缺口,還沒有人在 wallFlux 開啟的情況下把它的空間搜過。
+   */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -17,9 +25,10 @@ for (const f of ["src/js/lab/profile-engine.js", "src/js/lab/profile-shapes.js"]
 const S = sandbox.window.PA.profileShapes;
 
 const SCALE = Number(process.env.SCALE || 0.6);
+const WALLFLUX = process.env.WALLFLUX === "1";
 
 function measure(p) {
-  const sim = S.start({ multi: false, ...p }, SCALE);
+  const sim = S.start({ multi: false, ...p, wallFlux: WALLFLUX || !!p.wallFlux }, SCALE);
   S.runToEndpoint(sim, { maxSteps: 4000 });
   const m = S.metrics(sim);
   return {
@@ -35,11 +44,13 @@ function measure(p) {
 
 const want = process.argv[2];
 
-// 受限搜尋空間:每一格的範圍都對應圖鑑寫的成因
+// 受限搜尋空間:每一格的範圍都對應圖鑑寫的成因。
+// bowing / taper / microtrench 是 WALLFLUX=1 時的空間(2026-08 重搜後的區間);
+// undercut 是舊的、不帶 wallFlux 的空間,還沒被重搜過。
 const SPACES = {
   undercut: { ion: [150, 250, 350], spread: [3, 6, 9], passiv: [0, 5, 12], radical: [75, 90, 100], reflect: [5, 15] },
-  taper: { ion: [200, 300, 400], spread: [2, 4], passiv: [82, 86, 90], radical: [35, 50, 65], reflect: [5, 15, 30] },
-  bowing: { ion: [400, 550, 700], spread: [4, 6, 8], passiv: [36, 42, 48], radical: [50, 65], reflect: [75, 90, 100] },
+  taper: { ion: [450, 550, 650], spread: [10], passiv: [75, 82, 88], radical: [35], reflect: [0, 4, 8] },
+  bowing: { ion: [450, 600, 750], spread: [6], passiv: [36, 42, 48], radical: [60], reflect: [40, 55, 70] },
   microtrench: { ion: [500, 650, 800], spread: [1, 2, 3], passiv: [36, 42, 48], radical: [45, 60], reflect: [90, 100] },
 };
 
