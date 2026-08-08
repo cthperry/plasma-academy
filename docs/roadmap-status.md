@@ -57,7 +57,7 @@ repo regression gate 與空間 acceptance 均已建立：`npm run check:profiles
 
 - 專案：`.openai/hosting.json` 的 `project_id` 為 `appgprj_6a69443bcaf08191b2d5014509f64348`。
 - 正式 URL：`https://plasma-academy-p0.pperry.chatgpt.site`。
-- 2026-08-08 runtime 驗證版本：Sites version 35，來源 commit `820f00db56323469a960722fa8344f9dd9d38b68`，deployment `appgdep_6a771fdb933c8191b1cd0296ad6ff525` 已成功。
+- 2026-08-09 runtime 驗證版本：Sites version 38，來源 commit `32a36ff59a9b8359bbd6307b4880d06bff31c55d`，deployment `appgdep_6a77a791e22c8191907aed9166956145` 已成功；正式首頁已以快取略過參數驗證新版學習儀表板、A18 靜態資產與無主控台錯誤。
 - Production HTTP 已驗證首頁、3.7 封裝清潔、3.8 PCB、4.1 診斷、L3 測驗、進度、sitemap、robots、CSS/JS/SVG、`data/evidence.js` 與自訂 404；正常頁含 CSP/referrer meta，404 另有完整 CSP、nosniff、no-referrer 與 Permissions-Policy response headers。
 - Production Browser 已驗證首頁、A33、A34、A27、L3 40 題／70 分鐘、26 章進度／完訓、無水平溢位與無 console error；封裝清潔頁的實際畫面亦已人工檢視。
 - Sites 目前不解析封裝內 `_headers`，且正常靜態 HTML 會在 Worker 前直接回應，因此正常 200 HTML 無法由此零框架輸出加入 response security headers。本站以 head-first CSP/referrer meta 作瀏覽器端保護；`frame-ancestors`、`nosniff` 與 Permissions-Policy 只在 Worker 產生的 404 回應完整提供。這是已驗證的 hosting 限制，不宣稱等同完整 response-header 防護。
