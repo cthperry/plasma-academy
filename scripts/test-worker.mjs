@@ -9,7 +9,7 @@ const env = {
   ASSETS: {
     async fetch(request) {
       const url = new URL(request.url);
-      assetRequests.push(url.pathname);
+      assetRequests.push({ pathname: url.pathname, method: request.method, body: request.method === "POST" ? await request.clone().text() : "" });
       if (url.pathname === "/existing/") {
         return new Response("<!doctype html><title>既有頁面</title>", {
           headers: { "Content-Type": "text/html; charset=utf-8", "X-Asset-Source": "stub" }
@@ -54,6 +54,14 @@ assert.equal(await asset.text(), "export const ready = true;");
 assert.equal(asset.headers.get("x-asset-source"), "stub");
 assert.equal(asset.headers.get("content-security-policy"), null, "HTML CSP 不得加到獨立資產。");
 
+const postAsset = await worker.fetch(new Request("https://example.test/assets/app.js", { method: "POST", body: "payload=保留" }), env);
+assert.equal(postAsset.status, 200);
+assert.deepEqual(assetRequests.at(-1), { pathname: "/assets/app.js", method: "POST", body: "payload=保留" }, "資產直通必須保留 method 與 body。");
+
+const postRedirect = await worker.fetch(new Request("https://example.test/existing?from=post", { method: "POST", body: "payload=redirect" }), env);
+assert.equal(postRedirect.status, 308, "POST canonical redirect 必須使用可保留 method/body 的 308。");
+assert.equal(postRedirect.headers.get("location"), "https://example.test/existing/?from=post");
+
 const svg = await worker.fetch(new Request("https://example.test/assets/diagram.svg"), env);
 assert.equal(svg.status, 200);
 assert.equal(svg.headers.get("content-security-policy"), null, "獨立 SVG 的內部 presentation style 不得被 HTML CSP 阻擋。");
@@ -63,6 +71,14 @@ const missing = await worker.fetch(new Request("https://example.test/not-found/"
 assert.equal(missing.status, 404, "自訂 404 內容必須保留 HTTP 404。");
 assert.match(await missing.text(), /找不到這個頁面/);
 assert.equal(missing.headers.get("content-security-policy"), CSP);
-assert.deepEqual(assetRequests.slice(-2), ["/not-found/", "/404.html"]);
+assert.deepEqual(assetRequests.slice(-2).map((entry) => entry.pathname), ["/not-found/", "/404.html"]);
 
-console.log("Worker 契約測試通過：redirect、HTML headers、資產直通與自訂 404。 ");
+const headMissing = await worker.fetch(new Request("https://example.test/head-missing/", { method: "HEAD" }), env);
+assert.equal(headMissing.status, 404);
+assert.equal(await headMissing.text(), "", "HEAD 404 不得回傳 response body。");
+assert.deepEqual(assetRequests.slice(-2).map(({ pathname, method }) => ({ pathname, method })), [
+  { pathname: "/head-missing/", method: "HEAD" },
+  { pathname: "/404.html", method: "GET" }
+]);
+
+console.log("Worker 契約測試通過：308、HTML headers、method/body 資產直通、HEAD 與自訂 404。 ");

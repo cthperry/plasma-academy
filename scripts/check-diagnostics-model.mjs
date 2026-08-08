@@ -1,4 +1,4 @@
-import { spectra } from "../src/data/spectra.js";
+import { isMolecularSourceApprovalComplete, isMolecularSourcePending, spectra } from "../src/data/spectra.js";
 import {
   probeGases,
   probeControlRanges,
@@ -40,7 +40,7 @@ for (const [species, wavelengthNm] of requiredDiagnosticLines) {
 }
 assert("Ar 750.3869/811.5311 應標示為 actinometry 內標", [750.3869, 811.5311].every((wavelength) => spectra.some((line) => line.species === "Ar" && line.wavelengthNm === wavelength && line.actinometryReference)));
 assert("相對強度應明示為教學權重", spectra.every((line) => line.intensityType === "pedagogical-weight"));
-assert("分子帶不得偽裝成 NIST 已核實", spectra.filter((line) => ["CO", "CN", "C2", "N2", "OH"].includes(line.species)).every((line) => line.sourceType === "pedagogical-molecular-band" && line.verificationStatus === "pending-source-review"));
+assert("分子帶必須為乾淨 pending 或 evidence-approved", spectra.filter((line) => ["CO", "CN", "C2", "N2", "OH"].includes(line.species)).every((line) => isMolecularSourcePending(line) || isMolecularSourceApprovalComplete(line)));
 assert("每條譜線都應有來源類型與核實狀態", spectra.every((line) => line.sourceType && line.verificationStatus));
 assert("13 條原子線應為逐線 NIST 核實", spectra.filter((line) => !["CO", "CN", "C2", "N2", "OH"].includes(line.species)).every((line) => line.sourceType === "official-database-line-record" && line.verificationStatus === "nist-line-verified"));
 assert("Br 470/478 nm 必須是 Br II", spectra.filter((line) => line.species === "Br").every((line) => line.spectrumStage === "II" && line.transition === "Br II atomic emission"));

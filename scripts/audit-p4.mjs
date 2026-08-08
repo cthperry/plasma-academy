@@ -11,7 +11,7 @@ import { formulas } from "../src/data/formulas.js";
 import { glossary } from "../src/data/glossary.js";
 import { labs } from "../src/data/labs.js";
 import { level4Questions } from "../src/data/quiz/level-4.js";
-import { spectra } from "../src/data/spectra.js";
+import { isMolecularSourceApprovalComplete, isMolecularSourcePending, spectra } from "../src/data/spectra.js";
 import { countApprovedReviews } from "./lib/review-packets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -61,14 +61,16 @@ if (strict && metrics.completedReviews < 3) {
 }
 
 const atomicLinesVerified = spectra.filter((line) => line.verificationStatus === "nist-line-verified").length;
-const molecularBandsPending = spectra.filter((line) => line.verificationStatus === "pending-source-review").length;
-console.log(`外部審閱狀態：OES 原子線已逐線 NIST 核實 ${atomicLinesVerified}/13、分子帶待來源審閱 ${molecularBandsPending}/9；L4 技術、教學與一致性審閱仍需具名審閱者簽核。`);
-if (atomicLinesVerified !== 13 || molecularBandsPending !== 9) {
-  console.error("OES 來源狀態門檻不符：必須為原子線 NIST 核實 13/13、分子帶待來源審閱 9/9。");
+const molecularBands = spectra.filter((line) => ["CO", "CN", "C2", "N2", "OH"].includes(line.species));
+const molecularBandsPending = molecularBands.filter(isMolecularSourcePending).length;
+const molecularBandsApproved = molecularBands.filter(isMolecularSourceApprovalComplete).length;
+console.log(`外部審閱狀態：OES 原子線已逐線 NIST 核實 ${atomicLinesVerified}/13、分子帶來源核准 ${molecularBandsApproved}/9、pending ${molecularBandsPending}/9；L4 技術、教學與一致性審閱仍需具名審閱者簽核。`);
+if (atomicLinesVerified !== 13 || molecularBands.length !== 9 || molecularBandsPending + molecularBandsApproved !== 9) {
+  console.error("OES 來源狀態門檻不符：必須為原子線 NIST 核實 13/13，且 9 個分子帶各自為乾淨 pending 或完整 evidence-approved 狀態。");
   if (repoStrict) process.exitCode = 1;
 }
 if (strict && molecularBandsPending > 0) {
-  console.error(`P4 strict 外部封鎖：OES 分子帶來源審閱 0/${molecularBandsPending}，全部仍為 pending-source-review。`);
+  console.error(`P4 strict 外部封鎖：OES 分子帶來源審閱 ${molecularBandsApproved}/9，尚有 ${molecularBandsPending} 筆 pending-source-review。`);
   process.exitCode = 1;
 }
 

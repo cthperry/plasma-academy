@@ -1,6 +1,7 @@
 import { gzipSync } from "node:zlib";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { staticModuleSpecifiers } from "./lib/module-dependencies.mjs";
 
 const client = path.resolve("dist/client");
 const homepage = path.join(client, "index.html");
@@ -17,8 +18,8 @@ const pendingJavaScript = [...resources.entries()].filter(([url]) => url.endsWit
 for (let index = 0; index < pendingJavaScript.length; index += 1) {
   const [url, file] = pendingJavaScript[index];
   const source = await readFile(file, "utf8");
-  for (const match of source.matchAll(/\bimport\s+(?:[^"'()]+?\s+from\s+)?["']([^"']+)["']/g)) {
-    const dependencyUrl = resolveUrl(match[1], url);
+  for (const specifier of await staticModuleSpecifiers(source)) {
+    const dependencyUrl = resolveUrl(specifier, url);
     if (!resources.has(dependencyUrl)) {
       addUrl(dependencyUrl, file);
       pendingJavaScript.push([dependencyUrl, resources.get(dependencyUrl)]);

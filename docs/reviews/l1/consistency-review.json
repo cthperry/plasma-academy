@@ -9,6 +9,6 @@
     "單位、圖號、章節順序與交叉引用符合撰稿規範",
     "桌機、手機、深淺主題與列印版面一致"
   ],
-  "evidence": ["npm run check:content", "npm run check", "npm run verify:ui"],
+  "evidence": [],
   "findings": []
 }

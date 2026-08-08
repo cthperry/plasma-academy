@@ -4,7 +4,7 @@ import { labs } from "../src/data/labs.js";
 import { dataSchemas } from "../src/data/schemas.js";
 import { processMapEntries } from "../src/assets/js/data/process-map.js";
 import { formulas } from "../src/data/formulas.js";
-import { spectra } from "../src/data/spectra.js";
+import { isMolecularSourceApprovalComplete, isMolecularSourcePending, spectra } from "../src/data/spectra.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
 import { chapterThreeEight } from "../src/content/chapter-3-8-pcb-desmear.mjs";
@@ -159,9 +159,7 @@ for (const line of spectra) {
   if (line.intensityType !== "pedagogical-weight") failures.push(`OES 譜線 ${line.id} 未明示 relativeIntensity 為教學權重。`);
   if (!line.sourceType || !line.verificationStatus) failures.push(`OES 譜線 ${line.id} 缺少 sourceType 或 verificationStatus。`);
   if (molecularSpecies.has(line.species)) {
-    if (line.sourceType !== "pedagogical-molecular-band" || line.verificationStatus !== "pending-source-review") {
-      failures.push(`分子帶 ${line.id} 不可偽裝成 NIST ASD 已核實資料。`);
-    }
+    if (!(isMolecularSourcePending(line) || isMolecularSourceApprovalComplete(line))) failures.push(`分子帶 ${line.id} 必須維持無預填證據的 pending 狀態，或具備完整來源核准證據。`);
   } else {
     if (line.sourceType !== "official-database-line-record" || line.verificationStatus !== "nist-line-verified") {
       failures.push(`原子譜線 ${line.id} 必須為逐線 NIST 核實資料。`);

@@ -1,5 +1,6 @@
 const nistAsdSource = "https://physics.nist.gov/PhysRefData/ASD/lines_form.html";
 const molecularTeachingSource = "Plasma Academy 教學近似；分子帶位置待正式光譜資料來源審查";
+const RFC3339_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
 function atomicLine(id, species, wavelengthNm, spectrumStage, transition, relativeIntensity, source, extra = {}) {
   return {
@@ -27,6 +28,11 @@ function molecularBand(id, species, wavelengthNm, transition, relativeIntensity,
     source: molecularTeachingSource,
     sourceType: "pedagogical-molecular-band",
     verificationStatus: "pending-source-review",
+    sourceApproval: {
+      reviewer: { name: "", role: "" },
+      reviewedAt: "",
+      evidence: []
+    },
     intensityType: "pedagogical-weight",
     ...extra
   };
@@ -71,3 +77,36 @@ export const spectrumSources = {
     scope: "CO、CN、C2、N2、OH 不宣稱已由 NIST ASD 核實"
   }
 };
+
+export function isMolecularSourceApprovalComplete(line) {
+  const approval = line?.sourceApproval;
+  return line?.verificationStatus === "molecular-source-approved"
+    && line?.sourceType === "reviewed-molecular-band-source"
+    && /^https:\/\//.test(line?.source ?? "")
+    && isNonEmptyString(approval?.reviewer?.name)
+    && isNonEmptyString(approval?.reviewer?.role)
+    && isRfc3339DateTime(approval?.reviewedAt)
+    && Array.isArray(approval?.evidence)
+    && approval.evidence.length > 0
+    && approval.evidence.every(isNonEmptyString);
+}
+
+export function isMolecularSourcePending(line) {
+  const approval = line?.sourceApproval;
+  return line?.verificationStatus === "pending-source-review"
+    && line?.sourceType === "pedagogical-molecular-band"
+    && line?.source === molecularTeachingSource
+    && !approval?.reviewer?.name
+    && !approval?.reviewer?.role
+    && !approval?.reviewedAt
+    && Array.isArray(approval?.evidence)
+    && approval.evidence.length === 0;
+}
+
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isRfc3339DateTime(value) {
+  return isNonEmptyString(value) && RFC3339_DATE_TIME.test(value) && !Number.isNaN(Date.parse(value));
+}

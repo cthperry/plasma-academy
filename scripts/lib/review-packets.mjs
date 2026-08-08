@@ -2,6 +2,8 @@ import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
 export const REVIEW_GATES = Object.freeze(["technical", "teaching", "consistency"]);
+const FULL_COMMIT_SHA = /^[0-9a-f]{40}$/i;
+const RFC3339_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
 const levelCriteria = {
   1: {
@@ -72,10 +74,10 @@ export async function validateReviewPackets(reviewRoot) {
         if (!requirement.test(criteria)) failures.push(`L${level} ${gate} criteria 缺少層級專屬準則：${requirement.source}。`);
       }
       if (review.status === "pending") {
-        if (review.reviewer?.name || review.reviewer?.role || review.reviewed_commit || review.approved_at) failures.push(`L${level} ${file} pending 時審閱者、reviewed_commit 與 approved_at 必須留白。`);
+        if (review.reviewer?.name || review.reviewer?.role || review.reviewed_commit || review.approved_at || review.evidence?.length) failures.push(`L${level} ${file} pending 時審閱者、reviewed_commit、approved_at 與 evidence 必須留白。`);
       }
       if (review.status === "approved") {
-        if (!review.reviewer?.name || !review.reviewer?.role || !review.reviewed_commit || !review.approved_at) failures.push(`L${level} ${file} approved 時必須填妥全部審閱證據。`);
+        if (!isReviewApprovalComplete(review)) failures.push(`L${level} ${file} approved 時必須填妥具名審閱者、完整 commit SHA、RFC 3339 核准時間與至少一筆證據。`);
       }
     }
   }
@@ -87,7 +89,7 @@ export async function countApprovedReviews(reviewRoot, level) {
   for (const gate of REVIEW_GATES) {
     try {
       const review = JSON.parse(await readFile(path.join(reviewRoot, `l${level}`, `${gate}-review.json`), "utf8"));
-      if (review.status === "approved" && review.reviewer?.name && review.reviewer?.role && review.reviewed_commit && review.approved_at) approved += 1;
+      if (isReviewApprovalComplete(review)) approved += 1;
     } catch (error) {
       if (error.code !== "ENOENT") throw error;
     }
@@ -101,11 +103,34 @@ export async function pendingReviewGates(reviewRoot) {
     for (const gate of REVIEW_GATES) {
       try {
         const review = JSON.parse(await readFile(path.join(reviewRoot, `l${level}`, `${gate}-review.json`), "utf8"));
-        if (!(review.status === "approved" && review.reviewer?.name && review.reviewer?.role && review.reviewed_commit && review.approved_at)) pending.push(`L${level} ${gate}`);
+        if (!isReviewApprovalComplete(review)) pending.push(`L${level} ${gate}`);
       } catch (_) {
         pending.push(`L${level} ${gate}`);
       }
     }
   }
   return pending;
+}
+
+export function isReviewApprovalComplete(review) {
+  return review?.status === "approved"
+    && isNonEmptyString(review.reviewer?.name)
+    && isNonEmptyString(review.reviewer?.role)
+    && FULL_COMMIT_SHA.test(review.reviewed_commit ?? "")
+    && isRfc3339DateTime(review.approved_at)
+    && Array.isArray(review.evidence)
+    && review.evidence.length > 0
+    && review.evidence.every(isEvidenceEntry);
+}
+
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isRfc3339DateTime(value) {
+  return isNonEmptyString(value) && RFC3339_DATE_TIME.test(value) && !Number.isNaN(Date.parse(value));
+}
+
+function isEvidenceEntry(value) {
+  return isNonEmptyString(value);
 }
