@@ -1305,6 +1305,7 @@ async function main() {
   await cp(path.join(root, "src", "data"), path.join(out, "assets", "data"), { recursive: true });
   await mkdir(path.join(out, "data"), { recursive: true });
   await cp(path.join(root, "src", "data", "spectra.js"), path.join(out, "data", "spectra.js"));
+  await cp(path.join(root, "src", "data", "evidence.js"), path.join(out, "data", "evidence.js"));
   await mkdir(path.join(root, "dist", "server"), { recursive: true });
   await cp(path.join(root, "worker", "index.js"), path.join(root, "dist", "server", "index.js"));
   try {

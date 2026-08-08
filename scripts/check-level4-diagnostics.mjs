@@ -12,6 +12,8 @@ const a27Path = path.join(root, "src", "assets", "js", "labs", "a27-oes.js");
 const labCssPath = path.join(root, "src", "assets", "css", "a26-a27.css");
 const contentCheckPath = path.join(root, "scripts", "check-content-style.mjs");
 const builtPagePath = path.join(root, "dist", "client", "level", "4", "4-1-diagnostics", "index.html");
+const builtSpectrumPath = path.join(root, "dist", "client", "data", "spectra.js");
+const builtEvidencePath = path.join(root, "dist", "client", "data", "evidence.js");
 
 const readRequired = async (file, label) => {
   try {
@@ -28,6 +30,8 @@ const a27Source = await readRequired(a27Path, "A27 UI module");
 const labCssSource = await readRequired(labCssPath, "A26/A27 CSS");
 const contentCheckSource = await readRequired(contentCheckPath, "內容規範檢查");
 const builtPage = await readRequired(builtPagePath, "建置後 4.1 頁面");
+const builtSpectrum = await readRequired(builtSpectrumPath, "A27 建置後 spectra module");
+const builtEvidence = await readRequired(builtEvidencePath, "A27 建置後 evidence dependency");
 
 let chapter;
 if (chapterSource) {
@@ -104,6 +108,8 @@ if (builtPage) {
     if (!builtPage.includes(required)) failures.push(`建置後 4.1 頁面缺少：${required}`);
   }
 }
+if (builtSpectrum && !builtSpectrum.includes('from "./evidence.js"')) failures.push("建置後 spectra module 必須保留 evidence dependency。 ");
+if (builtEvidence && !builtEvidence.includes("isValidRfc3339DateTime")) failures.push("建置後 evidence dependency 缺少核准日期 validator。 ");
 
 if (failures.length) {
   console.error(failures.join("\n"));
