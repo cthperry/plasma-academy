@@ -54,6 +54,12 @@ export const sdsEvidence = gases.map((gas) => {
     cas: gas.cas,
     reviewStatus: "supplier-reviewed",
     localApprovalStatus: "pending",
+    localApproval: {
+      reviewer: { name: "", role: "" },
+      site: "",
+      approvedAt: "",
+      evidence: []
+    },
     reviewedAt: "2026-07-30",
     ...document,
     reviewScope: ["產品名稱", "CAS", "GHS 危害分類", "修訂日期與版本"],
@@ -64,3 +70,13 @@ export const sdsEvidence = gases.map((gas) => {
 });
 
 export const sdsEvidenceByGas = Object.fromEntries(sdsEvidence.map((entry) => [entry.gasId, entry]));
+
+export function isLocalApprovalComplete(evidence) {
+  return evidence.localApprovalStatus === "approved"
+    && Boolean(evidence.localApproval?.reviewer?.name)
+    && Boolean(evidence.localApproval?.reviewer?.role)
+    && Boolean(evidence.localApproval?.site)
+    && Boolean(evidence.localApproval?.approvedAt)
+    && Array.isArray(evidence.localApproval?.evidence)
+    && evidence.localApproval.evidence.length > 0;
+}

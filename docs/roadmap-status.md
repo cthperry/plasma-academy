@@ -11,13 +11,13 @@
 - 一般自動化：`npm run check`。這個命令驗 repo 交付，不會因人工、廠區或外部來源仍 pending 而假失敗。
 - 狀態稽核：`npm run audit:roadmap`。它完整執行 P1-P4 並揭露各層 `0/3`，pending 外部核准不改成完成。
 - 完成稽核：`npm run audit:roadmap -- --strict`。任何人工、廠區、來源或列明的模型 acceptance 未完成時必須 nonzero。
-- 發布驗證：`npm run verify:release`，依序包含完整自動化、`verify:ui` 與 strict completion audit；UI 不是未記錄的手動加項。
+- 發布驗證：`npm run verify:release`，依序包含完整自動化與 `verify:ui`；UI 不是未記錄的手動加項。外部完成度仍以獨立的 `npm run audit:roadmap -- --strict` 判定，不阻止已清楚揭露 pending 邊界的增量版本部署。
 
 ## Repo 交付證據
 
 | 階段 | 已實作的 repo 交付 | 本地命令證據 |
 | --- | --- | --- |
-| P0 | 無 inline executable code；Sites Worker HTML-only CSP/security headers；slash redirect、asset pass-through、自訂 404 status/body；registry 衍生 404/sitemap/robots；homepage dependency graph gzip 預算；DCL 與 reduced-motion browser gate | `npm run build`；`npm run check:sites`；`npm run check:size` 為 17 項、raw 118.4 KB、gzip 34.3 KB；`npm run verify:task13-ui` 的最新 DCL 中位數為 1440px 50.5 ms、375px 63.3 ms，A01/A04 reduced-motion 通過 |
+| P0 | 無 inline executable code；Sites Worker HTML-only CSP/security headers；slash redirect、asset pass-through、自訂 404 status/body；registry 衍生 404/sitemap/robots；homepage dependency graph gzip 預算；DCL 與 reduced-motion browser gate | `npm run build`；`npm run check:sites`；`npm run check:size` 為 17 項、raw 118.4 KB、gzip 34.3 KB；完整 `npm run verify:ui` 中 Task 13 的 DCL 中位數為 1440px 59.0 ms、375px 74.8 ms，A01/A04 reduced-motion 通過 |
 | P1 | 6 章、35 self-check、55 題、35 SVG 與初階互動/測驗交付 | `npm run audit:p1` 的 repo metrics 達標；三道審閱另列 pending |
 | P2 | 6 章、32 氣體、A08-A16、80 題、40 SVG；32 份公開供應商 SDS 證據 | `npm run audit:p2` 與 `npm run check:data`；供應商文件 32/32，廠區核准另列 0/32 |
 | P3 | 8 章、A17-A25/A33/A34、19 缺陷、116 題、49 SVG、PCB 模型與章節 | `npm run audit:p3`；`npm run check:pcb`；`npm run check:l3-exam`；三道審閱與高階模型 acceptance 另列 pending |
@@ -34,7 +34,7 @@
 | L3 | pending，未具名 | pending，未具名 | pending，未具名 | 0/3 |
 | L4 | pending，未具名 | pending，未具名 | pending，未具名 | 0/3 |
 
-只有責任審閱者填妥姓名、角色、`reviewed_commit`、`approved_at` 並提供 criteria evidence 後，`approved` 才計入完成。現在沒有任何核准可宣稱。
+只有責任審閱者填妥姓名、角色、`reviewed_commit`、`approved_at` 並提供 criteria evidence 後，`approved` 才計入完成。現在沒有任何核准可宣稱。廠區 SDS 核准同樣必須填妥具名審閱者、角色、廠區、核准日期與證據清單；只改狀態字串不會被計入。
 
 ## SDS 與 OES 外部邊界
 

@@ -15,6 +15,8 @@ import { spectra } from "../src/data/spectra.js";
 import { countApprovedReviews } from "./lib/review-packets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const strict = process.argv.includes("--strict");
+const repoStrict = strict || process.argv.includes("--repo-strict");
 const chapters = [chapterFourOne, chapterFourTwo, chapterFourThree, chapterFourFour, chapterFourFive, chapterFourSix];
 const metrics = {
   chapters: chapters.length,
@@ -49,11 +51,11 @@ console.log(`P4 三道審閱核准：${metrics.completedReviews}/3。`);
 const incomplete = rows.filter((row) => !row.complete && row.item !== "completedReviews");
 if (incomplete.length) {
   console.error(`P4 repo 交付尚有 ${incomplete.length} 個缺口：${incomplete.map((row) => row.item).join(", ")}。`);
-  if (process.argv.includes("--strict")) process.exitCode = 1;
+  if (repoStrict) process.exitCode = 1;
 } else {
   console.log("P4 repo 量化交付達標：L4 內容、A26-A32、測驗、公式、術語、案例與測驗路由均已納入品質門。 ");
 }
-if (process.argv.includes("--strict") && metrics.completedReviews < 3) {
+if (strict && metrics.completedReviews < 3) {
   console.error(`P4 strict 外部封鎖：三道具名審閱核准 ${metrics.completedReviews}/3。`);
   process.exitCode = 1;
 }
@@ -63,9 +65,9 @@ const molecularBandsPending = spectra.filter((line) => line.verificationStatus =
 console.log(`外部審閱狀態：OES 原子線已逐線 NIST 核實 ${atomicLinesVerified}/13、分子帶待來源審閱 ${molecularBandsPending}/9；L4 技術、教學與一致性審閱仍需具名審閱者簽核。`);
 if (atomicLinesVerified !== 13 || molecularBandsPending !== 9) {
   console.error("OES 來源狀態門檻不符：必須為原子線 NIST 核實 13/13、分子帶待來源審閱 9/9。");
-  if (process.argv.includes("--strict")) process.exitCode = 1;
+  if (repoStrict) process.exitCode = 1;
 }
-if (process.argv.includes("--strict") && molecularBandsPending > 0) {
+if (strict && molecularBandsPending > 0) {
   console.error(`P4 strict 外部封鎖：OES 分子帶來源審閱 0/${molecularBandsPending}，全部仍為 pending-source-review。`);
   process.exitCode = 1;
 }

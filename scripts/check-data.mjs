@@ -14,7 +14,7 @@ import { level2ExamSpec, level2Questions } from "../src/data/quiz/level-2.js";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { gases, gasFamilies, hazardLevels } from "../src/data/gases.js";
-import { sdsEvidence } from "../src/data/sds-evidence.js";
+import { isLocalApprovalComplete, sdsEvidence } from "../src/data/sds-evidence.js";
 import { childLangmuirSheathMm, eedfReactionModel, effectivePumpingSpeedLps, findAutoMatch, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, simulateIedf, sourceCouplingModel, townsendDischarge, virtualToolModel } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
@@ -52,12 +52,17 @@ for (const evidence of sdsEvidence) {
     }
     if (evidence.reviewScope.length < 4) failures.push(`SDS 證據 ${evidence.gasId} 的核對範圍不完整。`);
   }
+  if (!["pending", "approved"].includes(evidence.localApprovalStatus)) failures.push(`SDS 證據 ${evidence.gasId} 使用未知 localApprovalStatus。`);
   if (evidence.localApprovalStatus === "approved" && evidence.reviewStatus !== "supplier-reviewed") failures.push(`SDS 證據 ${evidence.gasId} 不可在供應商文件未核對前標示廠區核准。`);
+  if (evidence.localApprovalStatus === "approved" && !isLocalApprovalComplete(evidence)) failures.push(`SDS 證據 ${evidence.gasId} 標示廠區核准時必須填妥具名審閱者、廠區、日期與證據。`);
+  if (evidence.localApprovalStatus === "pending") {
+    const approval = evidence.localApproval;
+    if (approval?.reviewer?.name || approval?.reviewer?.role || approval?.site || approval?.approvedAt || approval?.evidence?.length) failures.push(`SDS 證據 ${evidence.gasId} pending 時不得預填廠區核准證據。`);
+  }
 }
 
 if (sdsEvidence.filter((evidence) => evidence.reviewStatus === "supplier-reviewed").length !== 32) failures.push("SDS 供應商公開文件核對必須為 32/32。");
-if (sdsEvidence.filter((evidence) => evidence.localApprovalStatus === "approved").length !== 0) failures.push("SDS 廠區核准不得被視為完成；必須為 0/32。");
-if (!sdsEvidence.every((evidence) => evidence.localApprovalStatus === "pending" && evidence.supplier && evidence.documentId && evidence.revisionDate && evidence.version && evidence.reviewScope?.length >= 4)) failures.push("每筆 SDS 必須完整核對供應商文件，且廠區核准保持 pending。");
+if (!sdsEvidence.every((evidence) => evidence.supplier && evidence.documentId && evidence.revisionDate && evidence.version && evidence.reviewScope?.length >= 4)) failures.push("每筆 SDS 必須完整核對供應商文件。");
 if (!sdsEvidence.every((evidence) => /不取代廠區核准.*供應濃度.*在地版本.*供氣系統.*abatement.*EH&S 程序/.test(evidence.note))) failures.push("每筆 SDS 必須揭露供應商文件不取代廠區核准。");
 if (!sdsEvidence.filter((evidence) => typeof evidence.revisionDate === "string" && Number(evidence.revisionDate.slice(0, 4)) < 2024).every((evidence) => /確認是否有新版/.test(evidence.note))) failures.push("舊版 SDS 文件必須要求確認供應商新版。");
 const requiredSupplierDocuments = {

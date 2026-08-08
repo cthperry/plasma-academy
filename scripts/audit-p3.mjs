@@ -20,6 +20,8 @@ import { level3Questions } from "../src/data/quiz/level-3.js";
 import { countApprovedReviews } from "./lib/review-packets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const strict = process.argv.includes("--strict");
+const repoStrict = strict || process.argv.includes("--repo-strict");
 const chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven, chapterThreeEight];
 const stripHtml = (value) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
 const narrativeContent = chapters.flatMap((chapter) => [
@@ -66,11 +68,11 @@ console.log(`P3 三道審閱核准：${metrics.completedReviews}/3。`);
 const incomplete = rows.filter((row) => !row.complete && row.item !== "completedReviews");
 if (incomplete.length) {
   console.log(`P3 repo 尚有 ${incomplete.length} 個量化缺口：${incomplete.map((row) => row.item).join(", ")}。`);
-  if (process.argv.includes("--strict")) process.exit(1);
+  if (repoStrict) process.exit(1);
 } else {
   console.log("P3 repo 量化交付物達標；人工審閱與高階模型 acceptance 另行揭露。 ");
 }
-if (process.argv.includes("--strict") && metrics.completedReviews < 3) {
+if (strict && metrics.completedReviews < 3) {
   console.error(`P3 strict 外部封鎖：三道具名審閱核准 ${metrics.completedReviews}/3。`);
   process.exitCode = 1;
 }

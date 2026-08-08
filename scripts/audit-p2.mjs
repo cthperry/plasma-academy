@@ -12,10 +12,12 @@ import { formulas } from "../src/data/formulas.js";
 import { gases } from "../src/data/gases.js";
 import { labs } from "../src/data/labs.js";
 import { level2Questions } from "../src/data/quiz/level-2.js";
-import { sdsEvidence } from "../src/data/sds-evidence.js";
+import { isLocalApprovalComplete, sdsEvidence } from "../src/data/sds-evidence.js";
 import { countApprovedReviews } from "./lib/review-packets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const strict = process.argv.includes("--strict");
+const repoStrict = strict || process.argv.includes("--repo-strict");
 const chapters = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
 const stripHtml = (value) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
 const content = chapters.flatMap((chapter) => [
@@ -60,24 +62,24 @@ const rows = Object.entries(targets).map(([item, target]) => ({ item, current: m
 console.table(rows);
 console.log(`P2 三道審閱核准：${metrics.completedReviews}/3。`);
 const supplierReviewed = sdsEvidence.filter((item) => item.reviewStatus === "supplier-reviewed").length;
-const plantApproved = sdsEvidence.filter((item) => item.localApprovalStatus === "approved").length;
+const plantApproved = sdsEvidence.filter(isLocalApprovalComplete).length;
 console.log(`SDS 證據進度：供應商公開文件已核對 ${supplierReviewed}/32；廠區核准 ${plantApproved}/32（pending ${sdsEvidence.filter((item) => item.localApprovalStatus === "pending").length}/32，未視為完成）。`);
-if (supplierReviewed !== 32 || plantApproved !== 0) {
-  console.error("SDS 證據門檻不符：必須為供應商公開文件 32/32、廠區核准 0/32。");
-  if (process.argv.includes("--strict")) process.exitCode = 1;
+if (supplierReviewed !== 32) {
+  console.error("SDS repo 證據門檻不符：供應商公開文件必須核對 32/32。");
+  if (repoStrict) process.exitCode = 1;
 }
-if (process.argv.includes("--strict") && plantApproved < 32) {
+if (strict && plantApproved < 32) {
   console.error(`P2 strict 外部封鎖：廠區 EH&S SDS 核准 ${plantApproved}/32，尚有 ${32 - plantApproved} 筆 pending。`);
   process.exitCode = 1;
 }
 const incomplete = rows.filter((row) => !row.complete && row.item !== "completedReviews");
 if (incomplete.length) {
   console.log(`P2 repo 尚有 ${incomplete.length} 個量化缺口：${incomplete.map((row) => row.item).join(", ")}。`);
-  if (process.argv.includes("--strict")) process.exit(1);
+  if (repoStrict) process.exit(1);
 } else {
   console.log("P2 repo 量化交付物與 supplier-document evidence 達標；廠區與人工核准另行揭露。 ");
 }
-if (process.argv.includes("--strict") && metrics.completedReviews < 3) {
+if (strict && metrics.completedReviews < 3) {
   console.error(`P2 strict 外部封鎖：三道具名審閱核准 ${metrics.completedReviews}/3。`);
   process.exitCode = 1;
 }

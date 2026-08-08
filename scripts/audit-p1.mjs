@@ -9,6 +9,8 @@ import { quizBanks } from "../src/data/quiz.js";
 import { countApprovedReviews } from "./lib/review-packets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const strict = process.argv.includes("--strict");
+const repoStrict = strict || process.argv.includes("--repo-strict");
 const chapters = expandL1Content([chapterOneOneBase, ...l1FoundationChaptersBase]);
 const stripHtml = (value) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
 const content = chapters.flatMap((chapter) => [
@@ -41,11 +43,11 @@ console.log(`P1 三道審閱核准：${metrics.completedReviews}/3。`);
 const incomplete = rows.filter((row) => !row.complete && row.item !== "completedReviews");
 if (incomplete.length) {
   console.log(`P1 repo 尚有 ${incomplete.length} 個量化缺口：${incomplete.map((row) => row.item).join(", ")}。`);
-  if (process.argv.includes("--strict")) process.exit(1);
+  if (repoStrict) process.exit(1);
 } else {
   console.log("P1 repo 量化交付物達標；三道人工審閱狀態另行揭露。 ");
 }
-if (process.argv.includes("--strict") && metrics.completedReviews < 3) {
+if (strict && metrics.completedReviews < 3) {
   console.error(`P1 strict 外部封鎖：三道具名審閱核准 ${metrics.completedReviews}/3。`);
   process.exitCode = 1;
 }
