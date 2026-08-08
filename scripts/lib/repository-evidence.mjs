@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { access } from "node:fs/promises";
+import { lstat } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { isEvidenceReference } from "../../src/data/evidence.js";
@@ -23,8 +23,9 @@ export async function areTrackedEvidenceFiles(repoRoot, references) {
     const absolute = path.resolve(repoRoot, reference);
     if (!absolute.startsWith(`${path.resolve(repoRoot)}${path.sep}`)) return false;
     try {
-      await access(absolute);
-      await execFileAsync("git", ["-C", repoRoot, "ls-files", "--error-unmatch", "--", reference]);
+      if (!(await lstat(absolute)).isFile()) return false;
+      const { stdout } = await execFileAsync("git", ["-C", repoRoot, "cat-file", "-t", `HEAD:${reference}`]);
+      if (stdout.trim() !== "blob") return false;
     } catch (_) {
       return false;
     }

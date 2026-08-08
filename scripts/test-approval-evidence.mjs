@@ -24,6 +24,8 @@ try {
   await execFileAsync("git", ["commit", "-m", "Add review evidence fixture"], { cwd: fixture });
   const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: fixture });
   const reviewedCommit = stdout.trim();
+  const { stdout: tree } = await execFileAsync("git", ["write-tree"], { cwd: fixture });
+  const { stdout: orphan } = await execFileAsync("git", ["commit-tree", tree.trim(), "-m", "Unreachable review target"], { cwd: fixture });
 
   const validReview = {
     gate: "technical",
@@ -45,6 +47,7 @@ try {
     { ...validReview, evidence: [] },
     { ...validReview, evidence: ["x"] },
     { ...validReview, reviewed_commit: "f".repeat(40) },
+    { ...validReview, reviewed_commit: orphan.trim() },
     { ...validReview, approved_at: "2026-02-31T12:34:56Z" },
     { ...validReview, reviewer: { name: " ", role: "技術審閱者" } }
   ]) {
@@ -53,6 +56,22 @@ try {
     assert.equal(await countApprovedReviews(reviewRoot, 1, fixture), 0, "caller 不得計入無效核准。");
     assert.equal((await pendingReviewGates(reviewRoot, fixture)).includes("L1 technical"), true, "無效核准必須回到 pending 清單。");
   }
+
+  const directoryReference = "docs/reviews/evidence/directory.md";
+  await mkdir(path.join(fixture, ...directoryReference.split("/")), { recursive: true });
+  await writeFile(path.join(fixture, ...directoryReference.split("/"), "child.txt"), "tracked child\n");
+  await execFileAsync("git", ["add", `${directoryReference}/child.txt`], { cwd: fixture });
+  await execFileAsync("git", ["commit", "-m", "Add directory evidence trap"], { cwd: fixture });
+  const directoryEvidence = { ...validReview, evidence: [directoryReference] };
+  await writeFile(reviewFile, JSON.stringify(directoryEvidence));
+  assert.equal(await isReviewApprovalComplete(directoryEvidence, fixture), false, "名稱像附件的目錄不得當成 regular evidence file。");
+
+  const stagedReference = "docs/reviews/evidence/staged-only.md";
+  await writeFile(path.join(fixture, ...stagedReference.split("/")), "staged only\n");
+  await execFileAsync("git", ["add", stagedReference], { cwd: fixture });
+  const stagedEvidence = { ...validReview, evidence: [stagedReference] };
+  await writeFile(reviewFile, JSON.stringify(stagedEvidence));
+  assert.equal(await isReviewApprovalComplete(stagedEvidence, fixture), false, "只存在於 Git index、尚未進入 HEAD 的附件不得解除 blocker。");
 
   await writeFile(reviewFile, JSON.stringify(validReview));
   await rm(evidenceFile);
