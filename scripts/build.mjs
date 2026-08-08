@@ -98,18 +98,6 @@ function homepage() {
             <a class="button secondary" href="/lab/">查看互動實驗室</a>
           </div>
         </div>
-        <div class="system-panel" aria-label="P0 系統狀態">
-          <div class="panel-header">
-            <strong>P0 骨架狀態</strong>
-            <span>Static · No framework</span>
-          </div>
-          <dl class="status-grid">
-            <div><dt>主題</dt><dd>auto / light / dark</dd></div>
-            <div><dt>進度</dt><dd>localStorage + JSON</dd></div>
-            <div><dt>搜尋</dt><dd>延遲載入索引</dd></div>
-            <div><dt>互動庫</dt><dd>lifecycle + controls</dd></div>
-          </dl>
-        </div>
       </section>
 
       <section class="band">
@@ -186,6 +174,9 @@ function levelPage(levelId) {
 }
 
 function chapterPage() {
+  const sidebar = curriculum.levels[0].modules.map((module) => `
+    <a class="${module.id === "1.1" ? "current" : ""}" href="${module.href}">${module.id} ${module.title}</a>
+  `).join("");
   const objectives = chapterOneOne.objectives.map((item, index) => `
     <label class="objective">
       <input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapterOneOne.id}">
@@ -219,9 +210,7 @@ function chapterPage() {
     <main class="chapter-layout" data-chapter-id="${chapterOneOne.id}">
       <aside class="chapter-sidebar">
         <strong>課程目錄</strong>
-        <a class="current" href="/level/1/1-1-fourth-state/">1.1 物質第四態</a>
-        <a href="/level/1/">L1 模組列表</a>
-        <a href="/lab/">互動實驗室</a>
+        ${sidebar}
       </aside>
       <article class="chapter-main">
         ${breadcrumb(["首頁", "L1 初階", "1.1 物質第四態"])}
@@ -316,17 +305,15 @@ function l1ChapterPage(chapter, index) {
   `).join("");
   const prerequisites = chapter.prerequisites.map((item) => `<li>${item}</li>`).join("");
   const readings = chapter.readings.map((item) => `<li>${item}</li>`).join("");
-  const sidebar = [
-    ["1.1 物質第四態", "/level/1/1-1-fourth-state/"],
-    ...l1FoundationChapters.map((item) => [item.title, item.route])
-  ].map(([title, href]) => `<a class="${href === chapter.route ? "current" : ""}" href="${href}">${title}</a>`).join("");
+  const sidebar = curriculum.levels[0].modules.map((module) => `
+    <a class="${module.href === chapter.route ? "current" : ""}" href="${module.href}">${module.id} ${module.title}</a>
+  `).join("");
 
   return page(chapter.route, chapter.title, `
     <main class="chapter-layout" data-chapter-id="${chapter.id}">
       <aside class="chapter-sidebar">
         <strong>課程目錄</strong>
         ${sidebar}
-        <a href="/level/1/">L1 模組列表</a>
       </aside>
       <article class="chapter-main">
         ${breadcrumb(["首頁", "L1 初階", chapter.title])}

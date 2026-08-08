@@ -58,27 +58,6 @@
   font-weight: 700;
 }
 
-.status-grid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.status-grid div {
-  background: var(--pa-surface-sunken);
-  border-radius: 6px;
-  padding: 12px;
-}
-
-.status-grid dt {
-  color: var(--pa-text-muted);
-  font-size: var(--pa-text-xs);
-}
-
-.status-grid dd {
-  margin: 0;
-}
-
 .progress-ring {
   height: 72px;
   width: 72px;
@@ -1547,7 +1526,6 @@
 }
 
 @media (max-width: 640px) {
-  .status-grid,
   .lab-card {
     grid-template-columns: 1fr;
   }
