@@ -34,15 +34,16 @@ function relativeError(actual, expected) {
 
 assert("A27 譜線資料應恰有 22 線", spectra.length === 22, `${spectra.length} 線`);
 assert("A27 譜線 ID 必須唯一", new Set(spectra.map((line) => line.id)).size === spectra.length);
-const requiredDiagnosticLines = [["F", 703.7], ["Ar", 750.4], ["O", 777.4], ["CO", 483.5], ["Si", 251.6], ["CN", 387.1], ["C2", 516.5], ["H", 656.3], ["Cl", 837.6], ["Br", 470], ["N2", 336], ["OH", 306]];
+const requiredDiagnosticLines = [["F", 703.7469], ["Ar", 750.3869], ["O", 777.417], ["CO", 483.5], ["Si", 251.6112], ["CN", 387.1], ["C2", 516.5], ["H", 656.28518], ["Cl", 837.594], ["Br", 470.492], ["N2", 336], ["OH", 306]];
 for (const [species, wavelengthNm] of requiredDiagnosticLines) {
   assert(`A27 應包含 ${species} ${wavelengthNm} nm`, spectra.some((line) => line.species === species && Math.abs(line.wavelengthNm - wavelengthNm) < 0.06));
 }
-assert("Ar 750.4/811.5 應標示為 actinometry 內標", [750.4, 811.5].every((wavelength) => spectra.some((line) => line.species === "Ar" && Math.abs(line.wavelengthNm - wavelength) < 0.06 && line.actinometryReference)));
+assert("Ar 750.3869/811.5311 應標示為 actinometry 內標", [750.3869, 811.5311].every((wavelength) => spectra.some((line) => line.species === "Ar" && line.wavelengthNm === wavelength && line.actinometryReference)));
 assert("相對強度應明示為教學權重", spectra.every((line) => line.intensityType === "pedagogical-weight"));
 assert("分子帶不得偽裝成 NIST 已核實", spectra.filter((line) => ["CO", "CN", "C2", "N2", "OH"].includes(line.species)).every((line) => line.sourceType === "pedagogical-molecular-band" && line.verificationStatus === "pending-source-review"));
 assert("每條譜線都應有來源類型與核實狀態", spectra.every((line) => line.sourceType && line.verificationStatus));
-assert("原子線資料庫參考不得偽裝成逐線核實", spectra.filter((line) => !["CO", "CN", "C2", "N2", "OH"].includes(line.species)).every((line) => line.sourceType === "official-database-reference" && line.verificationStatus === "pending-line-review"));
+assert("13 條原子線應為逐線 NIST 核實", spectra.filter((line) => !["CO", "CN", "C2", "N2", "OH"].includes(line.species)).every((line) => line.sourceType === "official-database-line-record" && line.verificationStatus === "nist-line-verified"));
+assert("Br 470/478 nm 必須是 Br II", spectra.filter((line) => line.species === "Br").every((line) => line.spectrumStage === "II" && line.transition === "Br II atomic emission"));
 
 const truth = createProbeState({ gas: "Ar", electronTemperatureEv: 3.2, electronDensityCm3: 2.4e10, plasmaPotentialV: 18, rfAmplitudeV: 0, coatingPercent: 0 });
 const cleanSweep = generateProbeSweep(truth);

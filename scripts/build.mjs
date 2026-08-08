@@ -656,7 +656,7 @@ function chapterFourPage(chapter) {
     : ["4-4", "4-5"].includes(chapter.id)
       ? "/assets/css/a30-a32.css"
       : ["4-2", "4-3"].includes(chapter.id) ? "/assets/css/a28-a29.css" : null;
-  const sourceDisclosure = chapter.id === "4-1" ? `<p>原子線：<code>pending-line-review</code>；分子帶：<code>pending-source-review</code>。本站 <code>relativeIntensity</code> 僅為教學權重。</p>` : "";
+  const sourceDisclosure = chapter.id === "4-1" ? `<p>13 條原子線：<code>nist-line-verified</code>；分子帶：<code>pending-source-review</code>；Br 470.492/478.548 nm 為 Br II。本站 <code>relativeIntensity</code> 僅為教學權重，非 NIST 相對強度。</p>` : "";
   return page(chapter.route, chapter.title, `
     <main class="chapter-layout" data-chapter-id="${chapter.id}">
       <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/4/">L4 模組列表</a><a href="/lab/">互動實驗室</a></aside>

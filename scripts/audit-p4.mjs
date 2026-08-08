@@ -50,9 +50,13 @@ if (incomplete.length) {
   console.log("P4 repo 量化交付達標：L4 內容、A26-A32、測驗、公式、術語、案例與測驗路由均已納入品質門。 ");
 }
 
-const atomicLinesPending = spectra.filter((line) => line.verificationStatus === "pending-line-review").length;
+const atomicLinesVerified = spectra.filter((line) => line.verificationStatus === "nist-line-verified").length;
 const molecularBandsPending = spectra.filter((line) => line.verificationStatus === "pending-source-review").length;
-console.log(`外部審閱狀態（不偽造為 repo 完成）：OES 原子線待逐線核對 ${atomicLinesPending}、分子帶待來源審閱 ${molecularBandsPending}；L4 技術、教學與一致性審閱仍需具名審閱者簽核。`);
+console.log(`外部審閱狀態：OES 原子線已逐線 NIST 核實 ${atomicLinesVerified}/13、分子帶待來源審閱 ${molecularBandsPending}/9；L4 技術、教學與一致性審閱仍需具名審閱者簽核。`);
+if (atomicLinesVerified !== 13 || molecularBandsPending !== 9) {
+  console.error("OES 來源狀態門檻不符：必須為原子線 NIST 核實 13/13、分子帶待來源審閱 9/9。");
+  if (process.argv.includes("--strict")) process.exitCode = 1;
+}
 
 async function fileExists(file) {
   try {

@@ -7,7 +7,7 @@ export const chapterFourOne = {
   objectives: [
     "依量測量、侵入性、時間解析度與量產可維護性選擇診斷工具。",
     "從 Langmuir I-V 曲線求得 Vf、Te、Vp、ne，並判別結果何時已失去可信度。",
-    "用 OES 譜線辨識物種，區分教學權重、待審原子線與待查分子帶。",
+    "用 OES 譜線辨識物種，區分逐線 NIST 核實原子線、教學權重與待查分子帶。",
     "列出 actinometry 三個成立前提，並用正確與錯誤內標解釋比值漂移。",
     "把 OES 與 VI probe 組成雙工具診斷，將蝕刻率下降收斂成可驗證假設。"
   ],
@@ -58,20 +58,20 @@ export const chapterFourOne = {
       title: "OES 物種辨識、22 線資料與來源狀態",
       body: `<p>OES 量的是激發態粒子退激發時的光，不是基態濃度本身。波長可作為物種指紋，但強度同時受粒子濃度、電子密度、EEDF、激發截面、淬熄、光學收集效率與視窗透光率影響。工程師可以用它辨識製程轉換、端點與異常模式，卻不能看到某條線變高就直接宣告該自由基濃度等比例增加。任何定量推論都需要模型、校正或內標。</p>
       <div class="table-wrap"><table><thead><tr><th>物種</th><th>教學關鍵位置 nm</th><th>常見診斷用途</th><th>本站狀態</th></tr></thead><tbody>
-      <tr><td>F</td><td>703.7、685.6</td><td>氟系化學與 F/Ar actinometry</td><td>pending-line-review</td></tr>
-      <tr><td>Ar</td><td>750.4、811.5</td><td>內標與放電狀態</td><td>pending-line-review</td></tr>
-      <tr><td>O</td><td>777.4、844.6</td><td>灰化、含氧化學與清潔</td><td>pending-line-review</td></tr>
+      <tr><td>F I</td><td>703.7469、685.603</td><td>氟系化學與 F/Ar actinometry</td><td>nist-line-verified</td></tr>
+      <tr><td>Ar I</td><td>750.3869、811.5311</td><td>內標與放電狀態</td><td>nist-line-verified</td></tr>
+      <tr><td>O I</td><td>777.417、844.625</td><td>灰化、含氧化學與清潔</td><td>nist-line-verified</td></tr>
       <tr><td>CO</td><td>483.5、519.0</td><td>氧化物蝕刻產物與端點</td><td>pending-source-review</td></tr>
-      <tr><td>Si</td><td>251.6、288.2</td><td>矽產物、poly 與清潔進程</td><td>pending-line-review</td></tr>
+      <tr><td>Si I</td><td>251.6112、288.15771</td><td>矽產物、poly 與清潔進程</td><td>nist-line-verified</td></tr>
       <tr><td>CN</td><td>387.1、388.3</td><td>含氮有機物或光阻片段</td><td>pending-source-review</td></tr>
       <tr><td>C2</td><td>516.5</td><td>碳系片段與聚合傾向</td><td>pending-source-review</td></tr>
-      <tr><td>H</td><td>656.3</td><td>含氫製程與水氣相關線索</td><td>pending-line-review</td></tr>
-      <tr><td>Cl</td><td>837.6、725.7</td><td>氯系蝕刻</td><td>pending-line-review</td></tr>
-      <tr><td>Br</td><td>470.0、478.0</td><td>溴系 poly 蝕刻</td><td>pending-line-review</td></tr>
+      <tr><td>H I</td><td>656.28518</td><td>含氫製程與水氣相關線索</td><td>nist-line-verified</td></tr>
+      <tr><td>Cl I</td><td>837.594、725.662</td><td>氯系蝕刻</td><td>nist-line-verified</td></tr>
+      <tr><td>Br II</td><td>470.492、478.548</td><td>溴系 poly 蝕刻</td><td>nist-line-verified</td></tr>
       <tr><td>N2</td><td>336.0、357.0</td><td>氮系製程與空氣洩漏線索</td><td>pending-source-review</td></tr>
       <tr><td>OH</td><td>306.0、309.0</td><td>水氣與濕氣污染線索</td><td>pending-source-review</td></tr>
       </tbody></table></div>
-      <p>本站資料刻意保留兩種未完成狀態。原子線使用 NIST Atomic Spectra Database 作為資料庫入口，但在逐線保存查詢條件與轉移證據之前標成 <code>pending-line-review</code>。CO、CN、C2、N2、OH 是分子帶教學標記，NIST ASD 並不是其完整分子光譜來源，因此標成 <code>pending-source-review</code>。這些狀態是來源治理訊號，不是品質裝飾；正式教材審查後才可提升狀態。</p>
+      <p>13 條原子線已依各元素 NIST Handbook 強線表逐線核實，資料標成 <code>nist-line-verified</code>；其中 Br 470.492 與 478.548 nm 是 <strong>Br II atomic emission</strong>，模型的物種 abundance key 仍可使用 Br。CO、CN、C2、N2、OH 是分子帶教學標記，NIST ASD 並不是其完整分子光譜來源，因此仍標成 <code>pending-source-review</code>。原子線的核實不延伸到分子帶，正式教材審查仍需為分子帶補足適當來源。</p>
       <p><code>relativeIntensity</code> 在本站只代表製程情境模型的<strong>教學權重</strong>，其 <code>intensityType</code> 為 <code>pedagogical-weight</code>。它用來讓五種製程的主要線在畫面上可辨識，不能稱為 NIST 相對強度，也不能拿來做跨儀器濃度校正。真實量測還需要儀器光譜響應校正、暗電流扣除、波長校正、飽和檢查與視窗基線。A27 顯示 22 根 stick spectrum，目的在比較因果趨勢與來源狀態，不是取代設備光譜庫。</p>
       <p>五種製程情境各有應被看見的主訊號：SiO2 蝕刻以 CO、F、O 為線索；poly-Si 蝕刻以 Si、Cl、Br 為線索；光阻灰化以 O、CO、H、OH 為線索；NF3 腔體清潔以 Si 與 F 的進程變化為線索；洩漏監測則關注 OH、N2、O 與 H 的共同異常。單線警報容易被重疊峰、視窗污染或功率漂移欺騙，量產規則應使用多線比例、基線模型與設備狀態共同判斷。</p>`
     },
@@ -113,13 +113,13 @@ export const chapterFourOne = {
       </tbody></table></div>
       <p><strong>案例：同一 recipe 的蝕刻率下降 12%。</strong>第一步先鎖定量測系統，確認膜厚站、wafer 溫度、端點時間、氣體 lot 與產品結構沒有同時改變。第二步讀 OES：若 F/Ar actinometry 比值下降，而 Ar 絕對線與 VI 實功率大致穩定，假設偏向 F 供應、腔壁消耗或氣體組成；可檢查 MFC 實流量、clean seasoning、含水/含氧線與 chamber history。若 F/Ar 穩定但所有絕對線與 VI 實功率一起下降，假設偏向功率耦合或觀測鏈；先區分視窗污染與真實 ne 下降。</p>
       <p>第三種情況是 OES 比值與絕對強度近似穩定，但 VI 相位、阻抗或諧波偏離基線。此時自由基供應可能未變，離子能量或鞘層波形卻改變；應檢查匹配網路、接地回路、電極溫度、沉積膜與 bias delivery。第四種情況是 OES 與 VI 都穩定，蝕刻率仍下降，則把注意力移向晶圓表面：溫控、背氦、前處理、遮罩、膜質、聚合物收支或量測站。這個分支設計的重點是每一步都能被第二項證據反駁。</p>
-      <p>量產使用時，不應讓模型直接寫 recipe。正確流程是：定義健康基線與允許區間；保存 raw spectrum、比值、VI 原始特徵和設備狀態；以 monitor wafer 或產品 metrology 建立結果關聯；在足夠 lot 與 chamber 狀態下驗證誤報、漏報和漂移；建立警報後的 hold、複測、工程判讀與解除規則。本站 A26/A27 的數值是教學模型，來源狀態仍含 pending-line-review 與 pending-source-review，不能作為第三方認證、設備規格或產品放行標準。</p>
+      <p>量產使用時，不應讓模型直接寫 recipe。正確流程是：定義健康基線與允許區間；保存 raw spectrum、比值、VI 原始特徵和設備狀態；以 monitor wafer 或產品 metrology 建立結果關聯；在足夠 lot 與 chamber 狀態下驗證誤報、漏報和漂移；建立警報後的 hold、複測、工程判讀與解除規則。本站 A26/A27 的原子波長為 <code>nist-line-verified</code>，分子帶仍為 <code>pending-source-review</code>；所有 relativeIntensity 數值仍是教學權重，不能作為第三方認證、設備規格或產品放行標準。</p>
       <p>最後要保留不確定度與替代解釋。OES 比值穩定不代表濃度必然穩定，因為兩條線可能同時受未建模機制影響；VI 穩定不代表晶圓面的 IEDF 完全相同；探針在一個位置量到的 Te 也不代表整片晶圓。高品質診斷不是永遠給出唯一答案，而是以最少測試排除最多假設，明確寫出剩餘風險，並讓下一班工程師能重現判讀。</p>`
     }
   ],
   callouts: [
     { type: "intuition", title: "工程師直覺", body: "先寫出兩個互斥假設，再問哪個量測能讓它們得到不同結果。診斷不是收集更多訊號，而是設計能反駁假設的證據。" },
-    { type: "warning", title: "來源與模型界線", body: "原子譜線仍為 pending-line-review，分子帶仍為 pending-source-review；relativeIntensity 是本站教學權重。A26/A27 只用於因果教學，不是 NIST 相對強度資料、設備規格或量產放行工具。" },
+    { type: "warning", title: "來源與模型界線", body: "13 條原子譜線為 nist-line-verified，Br 兩條線為 Br II；分子帶仍為 pending-source-review。relativeIntensity 是本站教學權重，不是 NIST 相對強度資料。A26/A27 只用於因果教學，不是設備規格或量產放行工具。" },
     { type: "misconception", title: "常見誤解", body: "OES 強度上升不等於物種濃度等比例上升；Langmuir 分析器輸出數字也不等於掃描範圍、表面狀態與 RF 補償已經有效。" }
   ],
   labs: [
@@ -149,7 +149,7 @@ export const chapterFourOne = {
     ["Langmuir I-V 的 Vf、Te、Vp、ne 分別如何取得？", "Vf 由 I=0 零交越，Te 由扣除離子基線後 ln(Ie)-V 斜率倒數，Vp 由 dI/dV 最大轉折，ne 由飽和電流、Bohm 速度、面積與 Te 反推。"],
     ["A26 為何不呈現 RF 未補償使 Te 高估兩倍？", "純指數過渡區的 RF 週期平均只乘上一個與 V 無關的因子，所以半對數斜率近似不變；模型只能誠實呈現 Vp/Vf 嚴重偏移。"],
     ["探針鍍膜為什麼可能產生看似合理但錯誤的 ne？", "鍍膜降低有效導電面積和電流尺度，曲線形狀仍可能平滑；若分析仍用原始面積，就會把面積損失誤判成密度下降。"],
-    ["本站 spectra 的 pending-line-review 與 pending-source-review 有何差別？", "前者是原子線已指向官方資料庫但尚未逐線保存審查證據；後者是分子帶教學位置尚待適當分子光譜來源審查。"],
+    ["本站 spectra 的 nist-line-verified 與 pending-source-review 有何差別？", "前者是 13 條原子線已逐線對應 NIST Handbook 強線表；後者是分子帶教學位置尚待適當分子光譜來源審查。Br 470.492 與 478.548 nm 必須讀作 Br II。"],
     ["Actinometry 的三個前提是什麼？", "內標比例低且穩定、不擾動電漿；分析線與參考線激發閾值接近；兩條線以可比較的直接電子激發為主。"],
     ["為什麼共同視窗污染在本站模型中可由比值抵消，實機仍需驗證？", "模型把透光率視為所有波長共用倍率；真實沉積膜與儀器響應可能隨波長不同，兩條線不一定等比例衰減。"],
     ["蝕刻率下降時，OES 與 VI probe 如何形成雙工具診斷？", "OES actinometry 主要檢查物種與自由基趨勢，VI probe 檢查功率耦合、阻抗與鞘層非線性；兩者分支後再用晶圓量測與設備檢查確認。"]
@@ -157,7 +157,7 @@ export const chapterFourOne = {
   readings: [
     "Lieberman and Lichtenberg, Principles of Plasma Discharges and Materials Processing, plasma diagnostics chapters.",
     "Hutchinson, Principles of Plasma Diagnostics, probe theory and measurement uncertainty.",
-    "NIST Atomic Spectra Database, atomic line reference entry; individual Plasma Academy lines remain pending-line-review.",
+    "NIST Handbook of Basic Atomic Spectroscopic Data, element strong-line tables; 13 條 Plasma Academy 原子線為 nist-line-verified，Br 470.492/478.548 nm 為 Br II。",
     "設備供應商核准的 OES、VI probe、RGA、FTIR 與 RF 補償操作及校正程序。"
   ]
 };

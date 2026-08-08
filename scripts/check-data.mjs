@@ -54,6 +54,23 @@ for (const evidence of sdsEvidence) {
   if (evidence.localApprovalStatus === "approved" && evidence.reviewStatus !== "supplier-reviewed") failures.push(`SDS 證據 ${evidence.gasId} 不可在供應商文件未核對前標示廠區核准。`);
 }
 
+if (sdsEvidence.filter((evidence) => evidence.reviewStatus === "supplier-reviewed").length !== 32) failures.push("SDS 供應商公開文件核對必須為 32/32。");
+if (sdsEvidence.filter((evidence) => evidence.localApprovalStatus === "approved").length !== 0) failures.push("SDS 廠區核准不得被視為完成；必須為 0/32。");
+if (!sdsEvidence.every((evidence) => evidence.localApprovalStatus === "pending" && evidence.supplier && evidence.documentId && evidence.revisionDate && evidence.version && evidence.reviewScope?.length >= 4)) failures.push("每筆 SDS 必須完整核對供應商文件，且廠區核准保持 pending。");
+if (!sdsEvidence.every((evidence) => /不取代廠區核准.*供應濃度.*在地版本.*供氣系統.*abatement.*EH&S 程序/.test(evidence.note))) failures.push("每筆 SDS 必須揭露供應商文件不取代廠區核准。");
+if (!sdsEvidence.filter((evidence) => typeof evidence.revisionDate === "string" && Number(evidence.revisionDate.slice(0, 4)) < 2024).every((evidence) => /確認是否有新版/.test(evidence.note))) failures.push("舊版 SDS 文件必須要求確認供應商新版。");
+const requiredSupplierDocuments = {
+  c4f6: { supplier: "Airgas USA, LLC", sourceUrl: "https://www.airgas.com/msds/001138.pdf", documentId: "001138", revisionDate: "2022-03-04", version: "0.01" },
+  c5f8: { supplier: "Air Liquide Far Eastern Ltd.", sourceUrl: "https://tw.airliquide.com/sites/al_tw/files/2022-06/alfe-0082-c5f8-v09-20220302.pdf", documentId: "ALFE0082", revisionDate: "2022-03-02", version: "09" },
+  teos: { supplier: "Sigma-Aldrich Inc.", sourceUrl: "https://www.sigmaaldrich.com/US/en/sds/aldrich/333859", documentId: "ALDRICH-333859", revisionDate: "2026-04-20", version: "6.11" },
+  wf6: { supplier: "Air Liquide (China) Holding Co., Ltd.", sourceUrl: "https://cn.airliquide.com/sites/al_cn/files/2022-10/alc-sds-p047_tungsten-hexafluoride-wf6-2.pdf", documentId: "ALC-SDS-P047", revisionDate: "2022-02", version: "2" },
+  so2: { supplier: "Air Liquide Far Eastern Ltd.", sourceUrl: "https://tw.airliquide.com/sites/al_tw/files/2022-06/alfe-0054-so2-v08-20190902.pdf", documentId: "ALFE0054", revisionDate: "2019-09-02", version: "08" }
+};
+for (const [gasId, expected] of Object.entries(requiredSupplierDocuments)) {
+  const evidence = sdsEvidence.find((item) => item.gasId === gasId);
+  if (!evidence || Object.entries(expected).some(([field, value]) => evidence[field] !== value)) failures.push("指定 SDS 供應商文件資料不正確：" + gasId + "。");
+}
+
 if (glossary.length < 242) {
   failures.push(`術語表至少應包含來源文件 242 條，目前 ${glossary.length} 條。`);
 }
@@ -137,12 +154,34 @@ for (const line of spectra) {
       failures.push(`分子帶 ${line.id} 不可偽裝成 NIST ASD 已核實資料。`);
     }
   } else {
-    if (line.sourceType !== "official-database-reference" || line.verificationStatus !== "pending-line-review") {
-      failures.push(`原子譜線 ${line.id} 不可在未保存逐線查詢前標示為已核實。`);
+    if (line.sourceType !== "official-database-line-record" || line.verificationStatus !== "nist-line-verified") {
+      failures.push(`原子譜線 ${line.id} 必須為逐線 NIST 核實資料。`);
     }
     if (!/^https:\/\/physics\.nist\.gov\//.test(line.source)) failures.push(`原子譜線 ${line.id} 的 NIST ASD 來源無效。`);
   }
 }
+if (spectra.filter((line) => !molecularSpecies.has(line.species)).length !== 13) failures.push("原子譜線必須恰有 13 條。");
+const requiredAtomicLines = {
+  "f-703.7": [703.7469, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/fluorinetable2.htm"],
+  "f-685.6": [685.603, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/fluorinetable2.htm"],
+  "ar-750.4": [750.3869, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/argontable2.htm"],
+  "ar-811.5": [811.5311, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/argontable2.htm"],
+  "o-777.4": [777.417, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/oxygentable2_a.htm"],
+  "o-844.6": [844.625, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/oxygentable2_a.htm"],
+  "si-251.6": [251.6112, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/silicontable2_a.htm"],
+  "si-288.2": [288.15771, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/silicontable2_a.htm"],
+  "h-656.3": [656.28518, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/hydrogentable2.htm"],
+  "cl-837.6": [837.594, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/chlorinetable2.htm"],
+  "cl-725.7": [725.662, "I", "https://physics.nist.gov/PhysRefData/Handbook/Tables/chlorinetable2.htm"],
+  "br-470.0": [470.492, "II", "https://physics.nist.gov/PhysRefData/Handbook/Tables/brominetable2.htm"],
+  "br-478.0": [478.548, "II", "https://physics.nist.gov/PhysRefData/Handbook/Tables/brominetable2.htm"]
+};
+for (const [id, [wavelengthNm, spectrumStage, source]] of Object.entries(requiredAtomicLines)) {
+  const line = spectra.find((item) => item.id === id);
+  if (!line || line.wavelengthNm !== wavelengthNm || line.spectrumStage !== spectrumStage || line.source !== source || line.sourceType !== "official-database-line-record" || line.verificationStatus !== "nist-line-verified") failures.push("原子譜線逐線 NIST 記錄不正確：" + id + "。");
+}
+if (!spectra.filter((line) => line.species === "Br").every((line) => line.spectrumStage === "II" && line.transition === "Br II atomic emission")) failures.push("Br 470/478 nm 必須明示為 Br II 原子發射。");
+
 const formulaRequiredFields = [...dataSchemas.formula.required, "derivation", "typicalValues"];
 const unsafeFormulaMarkup = /<\s*\/?\s*(script|style)\b|\bon\w+\s*=|javascript\s*:/i;
 for (const [key, formula] of Object.entries(formulas)) {

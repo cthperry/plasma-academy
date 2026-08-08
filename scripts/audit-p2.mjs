@@ -34,7 +34,7 @@ const metrics = {
   sections: chapters.reduce((total, chapter) => total + (chapter.sections?.length ?? 0), 0),
   contentUnits: contentCharacters,
   gases: gases.length,
-  sdsVerified: gases.filter((gas) => gas.sdsStatus === "verified").length,
+  supplierDocumentsReviewed: sdsEvidence.filter((item) => item.reviewStatus === "supplier-reviewed").length,
   labsImplemented: labs.filter((lab) => lab.level === 2 && lab.href !== "/lab/").length,
   selfChecks: chapters.reduce((total, chapter) => total + (chapter.selfCheck?.length ?? 0), 0),
   levelExamQuestions: level2Questions.length,
@@ -47,7 +47,7 @@ const targets = {
   sections: 26,
   contentUnits: 50000,
   gases: 32,
-  sdsVerified: 32,
+  supplierDocumentsReviewed: 32,
   labsImplemented: 9,
   selfChecks: 43,
   levelExamQuestions: 80,
@@ -57,7 +57,13 @@ const targets = {
 };
 const rows = Object.entries(targets).map(([item, target]) => ({ item, current: metrics[item], target, complete: metrics[item] >= target }));
 console.table(rows);
-console.log(`SDS 證據進度：供應商文件已核對 ${sdsEvidence.filter((item) => item.reviewStatus === "supplier-reviewed").length}/32；廠區核准 ${sdsEvidence.filter((item) => item.localApprovalStatus === "approved").length}/32。`);
+const supplierReviewed = sdsEvidence.filter((item) => item.reviewStatus === "supplier-reviewed").length;
+const plantApproved = sdsEvidence.filter((item) => item.localApprovalStatus === "approved").length;
+console.log(`SDS 證據進度：供應商公開文件已核對 ${supplierReviewed}/32；廠區核准 ${plantApproved}/32（pending ${sdsEvidence.filter((item) => item.localApprovalStatus === "pending").length}/32，未視為完成）。`);
+if (supplierReviewed !== 32 || plantApproved !== 0) {
+  console.error("SDS 證據門檻不符：必須為供應商公開文件 32/32、廠區核准 0/32。");
+  if (process.argv.includes("--strict")) process.exitCode = 1;
+}
 const incomplete = rows.filter((row) => !row.complete);
 if (incomplete.length) {
   console.log(`P2 尚有 ${incomplete.length} 個量化缺口：${incomplete.map((row) => row.item).join(", ")}。`);

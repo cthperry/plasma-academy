@@ -1450,7 +1450,7 @@ console.log(JSON.stringify(result, null, 2));
 if (themeAfterClick !== "light" && themeAfterClick !== "dark") throw new Error("主題切換未解析為 light/dark。");
 if (searchCount < 1) throw new Error("搜尋沒有回傳結果。");
 if (!packagingSearchHit.includes("封裝") || !packagingH1.includes("封裝清潔")) throw new Error("封裝清潔頁或搜尋入口未通過驗證。");
-if (gasCardCount !== 32 || fluorocarbonCardCount !== 8 || extremeGasCount !== 3 || gasSearchTitle !== "三氟化氮" || !fcLabelsDoNotOverlap || gasSdsStatusCount !== 32 || gasSupplierReviewedCount !== 27) throw new Error("A11 氣體百科資料、篩選、F/C 標尺或 SDS 證據狀態未通過驗證。");
+if (gasCardCount !== 32 || fluorocarbonCardCount !== 8 || extremeGasCount !== 3 || gasSearchTitle !== "三氟化氮" || !fcLabelsDoNotOverlap || gasSdsStatusCount !== 32 || gasSupplierReviewedCount !== 32) throw new Error("A11 氣體百科資料、篩選、F/C 標尺或 SDS 證據狀態未通過驗證。");
 if (mobileGasOverflow || mobileGasCardCount !== 32) throw new Error("A11 氣體百科手機版發生溢位或卡片缺漏。");
 for (const check of l1Checks) {
   if (!check.title.includes(check.expectedTitle) || check.labPixels < 100000 || check.selfCheckCount !== check.expectedSelfChecks || check.diagramCount !== check.expectedDiagrams || !check.diagramsLoaded || !check.figureNumbersValid || check.chapterSupportCount !== 2 || !check.observationsValid) {
@@ -1549,7 +1549,7 @@ if (a27InitialStatus === a27LeakStatus || a27InitialAbsolute === a27HighPowerAbs
 if (a27CanvasPixels < 150000) throw new Error("A27 Canvas 看起來是空白。");
 if (JSON.stringify(a27ThemeBefore) === JSON.stringify(a27ThemeAfter)) throw new Error("A27 Canvas 未隨主題切換重新取色。");
 if (a27ResetState.process !== "oxide" || JSON.stringify(a27ResetState.ranges) !== JSON.stringify([500, 20, 0.03, 1]) || a27ResetState.mode !== "正確 F / Ar" || a27ResetState.absolute !== a27InitialAbsolute) throw new Error(`A27 重設未恢復預設控制、模式或讀值：${JSON.stringify(a27ResetState)}`);
-if (!mobileA27SourceText.includes("原子線待逐線核對") || !mobileA27SourceText.includes("分子帶待來源核對") || /pending-(line|source)-review/.test(mobileA27SourceText)) throw new Error(`A27 手機來源狀態不可讀：${mobileA27SourceText}`);
+if (!mobileA27SourceText.includes("原子線逐線 NIST 核實") || !mobileA27SourceText.includes("分子帶待來源核對") || /pending-line-review/.test(mobileA27SourceText)) throw new Error(`A27 手機來源狀態不可讀：${mobileA27SourceText}`);
 if (mobileA26Overflow || mobileA27Overflow || !mobileL4ControlsFit) throw new Error("A26/A27 手機版有水平溢出或控制項超出面板。");
 if (chapterOneOneSelfChecks !== 5 || chapterOneOneDiagramCount !== 5 || chapterOneOneSupportCount !== 2 || chapterOneOneObservationCount !== 3 || !chapterOneOneFigureNumbersValid) throw new Error("1.1 自我檢測、圖解、章節結構或觀察點未完整顯示。");
 if (!examLockedStatus.includes("還需") || !examLockedLinkHidden || !examUnlockedStatus.includes("30 分鐘")) throw new Error("L1 測驗的 80% 章節解鎖條件未正確運作。");

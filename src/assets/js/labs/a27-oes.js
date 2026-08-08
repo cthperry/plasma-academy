@@ -37,7 +37,7 @@ export function init(container) {
       canvas.dataset.renderState = "complete";
       canvas.dataset.lineCount = String(spectrum.lines.length);
       canvas.dataset.ratioMode = state.ratioMode;
-      status.textContent = `${oesProcesses[state.process].label}，功率 ${state.powerW} W；${state.ratioMode === "correct" ? "正確 F / Ar" : "錯誤 F / Si"} 比值 ${ratio.ratio.toFixed(3)}。${ratio.reason} 原子線待逐線核對；分子帶待來源核對。`;
+      status.textContent = `${oesProcesses[state.process].label}，功率 ${state.powerW} W；${state.ratioMode === "correct" ? "正確 F / Ar" : "錯誤 F / Si"} 比值 ${ratio.ratio.toFixed(3)}。${ratio.reason} 原子線逐線 NIST 核實；分子帶待來源核對。`;
     },
     reset() {
       Object.assign(state, defaults);
@@ -191,7 +191,7 @@ function updatePanel(panel, lineCount, absoluteF, ratio, electronTemperatureEv) 
     "Actinometry 比值": ratio.ratio.toFixed(3),
     "電子溫度 Te": `${electronTemperatureEv.toFixed(2)} eV`,
     "比值判定": ratio.valid ? "適用於教學比較" : "錯誤參考線",
-    "來源狀態": "原子線待逐線核對；分子帶待來源核對"
+    "來源狀態": "原子線逐線 NIST 核實；分子帶待來源核對"
   };
   for (const item of panel.querySelectorAll("dd")) item.textContent = values[item.dataset.valueKey];
 }

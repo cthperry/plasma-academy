@@ -30,39 +30,36 @@ const reviewedDocuments = {
   cos: { documentId: "001012", revisionDate: "2017-07-03", version: "1" }
 };
 
+const airgasSupplier = "Airgas USA, LLC";
+const supplierDocuments = {
+  ...Object.fromEntries(Object.entries(reviewedDocuments).map(([gasId, document]) => [
+    gasId,
+    { ...document, supplier: airgasSupplier, sourceUrl: `https://www.airgas.com/msds/${document.documentId}.pdf` }
+  ])),
+  c4f6: { supplier: airgasSupplier, sourceUrl: "https://www.airgas.com/msds/001138.pdf", documentId: "001138", revisionDate: "2022-03-04", version: "0.01" },
+  c5f8: { supplier: "Air Liquide Far Eastern Ltd.", sourceUrl: "https://tw.airliquide.com/sites/al_tw/files/2022-06/alfe-0082-c5f8-v09-20220302.pdf", documentId: "ALFE0082", revisionDate: "2022-03-02", version: "09" },
+  teos: { supplier: "Sigma-Aldrich Inc.", sourceUrl: "https://www.sigmaaldrich.com/US/en/sds/aldrich/333859", documentId: "ALDRICH-333859", revisionDate: "2026-04-20", version: "6.11" },
+  wf6: { supplier: "Air Liquide (China) Holding Co., Ltd.", sourceUrl: "https://cn.airliquide.com/sites/al_cn/files/2022-10/alc-sds-p047_tungsten-hexafluoride-wf6-2.pdf", documentId: "ALC-SDS-P047", revisionDate: "2022-02", version: "2" },
+  so2: { supplier: "Air Liquide Far Eastern Ltd.", sourceUrl: "https://tw.airliquide.com/sites/al_tw/files/2022-06/alfe-0054-so2-v08-20190902.pdf", documentId: "ALFE0054", revisionDate: "2019-09-02", version: "08" }
+};
+const plantApprovalBoundary = "公開供應商文件核對不取代廠區核准；仍須以廠區核准的供應濃度、在地版本、供氣系統、abatement 與 EH&S 程序為準。";
+
 export const sdsEvidence = gases.map((gas) => {
-  const document = reviewedDocuments[gas.id];
-  if (!document) {
-    return {
-      gasId: gas.id,
-      cas: gas.cas,
-      supplier: "Airgas",
-      sourceUrl: gas.sdsSource,
-      reviewStatus: "directory-only",
-      localApprovalStatus: "pending",
-      reviewedAt: null,
-      documentId: null,
-      revisionDate: null,
-      version: null,
-      reviewScope: [],
-      note: "已有供應商 SDS 目錄入口；仍需定位與核對純物質文件，再比對廠區核准版本。"
-    };
-  }
+  const document = supplierDocuments[gas.id];
+  if (!document) throw new Error(`缺少 ${gas.id} 的供應商 SDS 文件。`);
 
   const revisionYear = Number(document.revisionDate.slice(0, 4));
   return {
     gasId: gas.id,
     cas: gas.cas,
-    supplier: "Airgas USA, LLC",
-    sourceUrl: `https://www.airgas.com/msds/${document.documentId}.pdf`,
     reviewStatus: "supplier-reviewed",
     localApprovalStatus: "pending",
     reviewedAt: "2026-07-30",
     ...document,
     reviewScope: ["產品名稱", "CAS", "GHS 危害分類", "修訂日期與版本"],
     note: revisionYear >= 2024
-      ? "已核對供應商文件；仍須由廠區 EH&S 比對實際供應濃度、在地版本與核准程序。"
-      : "供應商文件已核對，但修訂日早於 2024；需先向供應商確認是否有新版，再進行廠區核准。"
+      ? `已核對供應商公開文件。 ${plantApprovalBoundary}`
+      : `已核對供應商公開文件，但修訂日早於 2024；在廠區核准前，請向供應商確認是否有新版。 ${plantApprovalBoundary}`
   };
 });
 

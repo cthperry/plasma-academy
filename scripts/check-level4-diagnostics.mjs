@@ -58,7 +58,7 @@ if (chapter) {
 
   const disclosure = [prose, ...(chapter.callouts ?? []).map((item) => `${item.title} ${item.body}`)].join(" ");
   for (const required of [
-    "純指數", "Vp/Vf", "Te 高估兩倍", "pending-line-review", "pending-source-review",
+    "純指數", "Vp/Vf", "Te 高估兩倍", "nist-line-verified", "pending-source-review",
     "relativeIntensity", "教學權重", "actinometry", "激發閾值", "內標比例", "光路",
     "量產", "蝕刻率下降"
   ]) {
@@ -83,7 +83,7 @@ for (const id of ["A26", "A27"]) {
 
 for (const [label, source, requirements] of [
   ["A26", a26Source, ["createLifecycle", "createSegmentedControl", "watchTheme", "generateProbeSweep", "analyzeProbeSweep", "deriveEedf", "線性 I-V", "半對數", "EEDF", "RF 未補償", "純指數", "Vf 誤差", "Te 誤差", "referenceSweep", "syncCanvasResolution", "minEffectiveFontCssPx", "normalizeNearZero"]],
-  ["A27", a27Source, ["createLifecycle", "createSegmentedControl", "watchTheme", "generateSpectrum", "calculateActinometry", "22", "F / Ar", "F / Si", "原子線待逐線核對", "分子帶待來源核對", "syncCanvasResolution", "minEffectiveFontCssPx", "annotationLimit"]]
+  ["A27", a27Source, ["createLifecycle", "createSegmentedControl", "watchTheme", "generateSpectrum", "calculateActinometry", "22", "F / Ar", "F / Si", "原子線逐線 NIST 核實", "分子帶待來源核對", "syncCanvasResolution", "minEffectiveFontCssPx", "annotationLimit"]]
 ]) {
   for (const required of requirements) {
     if (source && !source.includes(required)) failures.push(`${label} UI 缺少契約標記：${required}`);
@@ -100,7 +100,7 @@ if (builtPage) {
   if (count(/class="prose-section"/g) !== 7) failures.push("建置後 4.1 頁面必須有 7 個 prose section。");
   if (count(/data-lab-module=/g) !== 2) failures.push("建置後 4.1 頁面必須有 2 個 lab。");
   if (count(/class="check-card"/g) !== 8) failures.push("建置後 4.1 頁面必須有 8 個 self-check。");
-  for (const required of ["上一章：", "下一章：", "pending-line-review", "pending-source-review", "data-unit-converter", "/assets/css/a26-a27.css"] ) {
+  for (const required of ["上一章：", "下一章：", "nist-line-verified", "pending-source-review", "Br II", "data-unit-converter", "/assets/css/a26-a27.css"] ) {
     if (!builtPage.includes(required)) failures.push(`建置後 4.1 頁面缺少：${required}`);
   }
 }
