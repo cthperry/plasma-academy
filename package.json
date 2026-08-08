@@ -14,7 +14,7 @@
     "check:links": "node scripts/check-links.mjs",
     "check:size": "node scripts/check-size.mjs",
     "check:size-parser": "node scripts/test-module-dependencies.mjs",
-    "check:sites": "node scripts/check-sites-package.mjs && node scripts/test-worker.mjs && node scripts/check-html-security.mjs && node scripts/check-sitemap.mjs",
+    "check:sites": "node scripts/check-sites-package.mjs && node scripts/test-worker.mjs && node scripts/check-html-security.mjs && node scripts/test-html-security.mjs && node scripts/check-sitemap.mjs",
     "check:sitemap": "node scripts/check-sitemap.mjs",
     "check:reviews": "node scripts/check-review-packets.mjs && node scripts/test-review-packets.mjs && node scripts/test-approval-evidence.mjs",
     "check:roadmap-orchestrator": "node scripts/test-roadmap-audit.mjs",
@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "es-module-lexer": "^2.0.0",
+    "parse5": "^8.0.1",
     "playwright": "^1.62.0"
   }
 }
