@@ -17,7 +17,7 @@
 
 | 階段 | 已實作的 repo 交付 | 本地命令證據 |
 | --- | --- | --- |
-| P0 | 無 inline executable code；Sites Worker HTML-only CSP/security headers；slash redirect、asset pass-through、自訂 404 status/body；registry 衍生 404/sitemap/robots；homepage dependency graph gzip 預算；DCL 與 reduced-motion browser gate | `npm run build`；`npm run check:sites`；`npm run check:size` 為 17 項、raw 118.4 KB、gzip 34.3 KB；完整 `npm run verify:ui` 中 Task 13 的 DCL 中位數為 1440px 59.0 ms、375px 74.8 ms，A01/A04 reduced-motion 通過 |
+| P0 | 42 頁無 inline executable code，且以結構解析驗證 CSP/referrer meta 的數量、內容與順序；Sites Worker 對 redirect 與 404 加完整 security headers；asset pass-through、自訂 404 status/body、registry 衍生 sitemap/robots、homepage dependency graph gzip 預算、DCL 與 reduced-motion browser gate | `npm run build`；`npm run check:sites`；`npm run check:size` 為 17 項、raw 118.4 KB、gzip 34.3 KB；最終 `npm run verify:release` 通過，Task 13 DCL 中位數為 1440px 49.4 ms、375px 34.1 ms，A01/A04 reduced-motion 通過 |
 | P1 | 6 章、35 self-check、55 題、35 SVG 與初階互動/測驗交付 | `npm run audit:p1` 的 repo metrics 達標；三道審閱另列 pending |
 | P2 | 6 章、32 氣體、A08-A16、80 題、40 SVG；32 份公開供應商 SDS 證據 | `npm run audit:p2` 與 `npm run check:data`；供應商文件 32/32，廠區核准另列 0/32 |
 | P3 | 8 章、A17-A25/A33/A34、19 缺陷、116 題、49 SVG、PCB 模型與章節 | `npm run audit:p3`；`npm run check:pcb`；`npm run check:l3-exam`；三道審閱與高階模型 acceptance 另列 pending |
@@ -57,8 +57,10 @@
 
 - 專案：`.openai/hosting.json` 的 `project_id` 為 `appgprj_6a69443bcaf08191b2d5014509f64348`。
 - 正式 URL：`https://plasma-academy-p0.pperry.chatgpt.site`。
-- 最後有 repo 報告證據的正式版本：Sites version 31，來源 commit `395b4a3`；Task 10 報告記錄該版本的 HTTP 與 Playwright 驗證通過。
-- Task 11、Task 12 與 Task 13 的本地提交晚於 version 31，Task 13 不執行部署。因此不能把目前 workspace 說成已在正式 URL 上線；version 31 之後的實際 save/deploy/provenance 與 live headers/browser 狀態必須由後續 release task 重新驗證並回寫本節。
+- 2026-08-08 runtime 驗證版本：Sites version 35，來源 commit `820f00db56323469a960722fa8344f9dd9d38b68`，deployment `appgdep_6a771fdb933c8191b1cd0296ad6ff525` 已成功。
+- Production HTTP 已驗證首頁、3.7 封裝清潔、3.8 PCB、4.1 診斷、L3 測驗、進度、sitemap、robots、CSS/JS/SVG、`data/evidence.js` 與自訂 404；正常頁含 CSP/referrer meta，404 另有完整 CSP、nosniff、no-referrer 與 Permissions-Policy response headers。
+- Production Browser 已驗證首頁、A33、A34、A27、L3 40 題／70 分鐘、26 章進度／完訓、無水平溢位與無 console error；封裝清潔頁的實際畫面亦已人工檢視。
+- Sites 目前不解析封裝內 `_headers`，且正常靜態 HTML 會在 Worker 前直接回應，因此正常 200 HTML 無法由此零框架輸出加入 response security headers。本站以 head-first CSP/referrer meta 作瀏覽器端保護；`frame-ancestors`、`nosniff` 與 Permissions-Policy 只在 Worker 產生的 404 回應完整提供。這是已驗證的 hosting 限制，不宣稱等同完整 response-header 防護。
 
 ## Strict 結論
 

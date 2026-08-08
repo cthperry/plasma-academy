@@ -56,4 +56,6 @@ Task 13: fix round 3/5 (committed regular evidence blob and unreachable commit m
 Task 13: review clean (full check, full UI, focused evidence/OES audit fixtures)
 Task 13: complete (commits 1725597, d656ca3, b312dc6, 3bcd0c2, 70c3c2f; final review approved)
 
-Task 14: in progress
+Task 14: release verified (Sites version 35, source 820f00d; strict audit remains 17 blockers)
+Task 14: final CSP review fix c7b84c8 approved (Critical 0, Important 0, Minor 0)
+Task 14: complete after documentation-bearing Sites deploy; strict roadmap completion remains 17 blockers
