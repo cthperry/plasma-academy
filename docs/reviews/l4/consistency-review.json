@@ -1,0 +1,14 @@
+{
+  "gate": "consistency",
+  "status": "pending",
+  "reviewer": { "name": "", "role": "" },
+  "reviewed_commit": "",
+  "approved_at": "",
+  "criteria": [
+    "診斷、控制、損傷、進階模型與量產術語在章節、互動、測驗及 glossary 一致",
+    "OES 譜線名稱、來源狀態、教學權重與待審標示一致",
+    "A26-A32 圖號、單位、狀態、桌機、手機、主題與列印輸出一致"
+  ],
+  "evidence": [],
+  "findings": []
+}

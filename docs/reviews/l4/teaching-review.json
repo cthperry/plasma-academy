@@ -1,0 +1,14 @@
+{
+  "gate": "teaching",
+  "status": "pending",
+  "reviewer": { "name": "", "role": "" },
+  "reviewed_commit": "",
+  "approved_at": "",
+  "criteria": [
+    "L4 專家六章能由診斷推進到控制、損傷、模型與量產決策",
+    "A26-A32 能讓學員區分直接量測、代理訊號、模型輸出與放行證據",
+    "量產案例、測驗與證書揭露限制，不暗示第三方認證或 recipe 核可"
+  ],
+  "evidence": [],
+  "findings": []
+}

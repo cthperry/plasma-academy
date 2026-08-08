@@ -1,7 +1,7 @@
 {
   "gate": "consistency",
   "status": "pending",
-  "reviewer": { "name": "", "role": "撰稿統籌" },
+  "reviewer": { "name": "", "role": "" },
   "reviewed_commit": "",
   "approved_at": "",
   "criteria": [

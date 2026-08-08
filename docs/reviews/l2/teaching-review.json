@@ -1,0 +1,14 @@
+{
+  "gate": "teaching",
+  "status": "pending",
+  "reviewer": { "name": "", "role": "" },
+  "reviewed_commit": "",
+  "approved_at": "",
+  "criteria": [
+    "L2 中階六章能由氣體選擇推進到電漿源與製程判讀",
+    "氣體百科能讓學員辨識用途、危害與不可直接放行的資訊邊界",
+    "A08-A16、案例、自我檢測與測驗能揭露錯誤心智模型"
+  ],
+  "evidence": [],
+  "findings": []
+}

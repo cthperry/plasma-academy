@@ -1,4 +1,4 @@
-import { readFile, readdir } from "node:fs/promises";
+import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chapterTwoOne } from "../src/content/chapter-2-1.mjs";
@@ -13,6 +13,7 @@ import { gases } from "../src/data/gases.js";
 import { labs } from "../src/data/labs.js";
 import { level2Questions } from "../src/data/quiz/level-2.js";
 import { sdsEvidence } from "../src/data/sds-evidence.js";
+import { countApprovedReviews } from "./lib/review-packets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const chapters = [chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
@@ -40,7 +41,7 @@ const metrics = {
   levelExamQuestions: level2Questions.length,
   formulas: Object.keys(formulas).length,
   svgDiagrams: await countFiles(path.join(root, "src", "assets", "svg", "l2"), ".svg"),
-  completedReviews: await countApprovedReviews(path.join(root, "docs", "reviews", "l2"))
+  completedReviews: await countApprovedReviews(path.join(root, "docs", "reviews"), 2)
 };
 const targets = {
   chapters: 6,
@@ -57,6 +58,7 @@ const targets = {
 };
 const rows = Object.entries(targets).map(([item, target]) => ({ item, current: metrics[item], target, complete: metrics[item] >= target }));
 console.table(rows);
+console.log(`P2 三道審閱核准：${metrics.completedReviews}/3。`);
 const supplierReviewed = sdsEvidence.filter((item) => item.reviewStatus === "supplier-reviewed").length;
 const plantApproved = sdsEvidence.filter((item) => item.localApprovalStatus === "approved").length;
 console.log(`SDS 證據進度：供應商公開文件已核對 ${supplierReviewed}/32；廠區核准 ${plantApproved}/32（pending ${sdsEvidence.filter((item) => item.localApprovalStatus === "pending").length}/32，未視為完成）。`);
@@ -64,34 +66,26 @@ if (supplierReviewed !== 32 || plantApproved !== 0) {
   console.error("SDS 證據門檻不符：必須為供應商公開文件 32/32、廠區核准 0/32。");
   if (process.argv.includes("--strict")) process.exitCode = 1;
 }
-const incomplete = rows.filter((row) => !row.complete);
+if (process.argv.includes("--strict") && plantApproved < 32) {
+  console.error(`P2 strict 外部封鎖：廠區 EH&S SDS 核准 ${plantApproved}/32，尚有 ${32 - plantApproved} 筆 pending。`);
+  process.exitCode = 1;
+}
+const incomplete = rows.filter((row) => !row.complete && row.item !== "completedReviews");
 if (incomplete.length) {
-  console.log(`P2 尚有 ${incomplete.length} 個量化缺口：${incomplete.map((row) => row.item).join(", ")}。`);
+  console.log(`P2 repo 尚有 ${incomplete.length} 個量化缺口：${incomplete.map((row) => row.item).join(", ")}。`);
   if (process.argv.includes("--strict")) process.exit(1);
 } else {
-  console.log("P2 量化交付物達標；仍需逐項核對物理模型、SDS 證據與三道審閱內容。");
+  console.log("P2 repo 量化交付物與 supplier-document evidence 達標；廠區與人工核准另行揭露。 ");
+}
+if (process.argv.includes("--strict") && metrics.completedReviews < 3) {
+  console.error(`P2 strict 外部封鎖：三道具名審閱核准 ${metrics.completedReviews}/3。`);
+  process.exitCode = 1;
 }
 
 async function countFiles(directory, extension) {
   try {
     const entries = await readdir(directory, { withFileTypes: true, recursive: true });
     return entries.filter((entry) => entry.isFile() && entry.name.endsWith(extension)).length;
-  } catch (error) {
-    if (error.code === "ENOENT") return 0;
-    throw error;
-  }
-}
-
-async function countApprovedReviews(directory) {
-  try {
-    const entries = await readdir(directory, { withFileTypes: true });
-    let approved = 0;
-    for (const entry of entries) {
-      if (!entry.isFile() || !entry.name.endsWith(".json")) continue;
-      const review = JSON.parse(await readFile(path.join(directory, entry.name), "utf8"));
-      if (review.status === "approved" && review.reviewer?.name && review.reviewer?.role && review.reviewed_commit && review.approved_at) approved += 1;
-    }
-    return approved;
   } catch (error) {
     if (error.code === "ENOENT") return 0;
     throw error;

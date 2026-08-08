@@ -1,0 +1,14 @@
+{
+  "gate": "consistency",
+  "status": "pending",
+  "reviewer": { "name": "", "role": "" },
+  "reviewed_commit": "",
+  "approved_at": "",
+  "criteria": [
+    "缺陷圖鑑、封裝、PCB、章節與 glossary 的名稱及分類一致",
+    "A17-A34 的編號、模型名稱、單位、圖號與來源邊界一致",
+    "八章導覽、案例、測驗、桌機、手機、主題與列印輸出一致"
+  ],
+  "evidence": [],
+  "findings": []
+}

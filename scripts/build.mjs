@@ -48,6 +48,7 @@ import { formulaCard, callout, labContainer, progressRing } from "../src/templat
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const out = path.join(root, "dist", "client");
+const siteUrl = "https://plasma-academy-p0.pperry.chatgpt.site";
 const [chapterOneOne, ...l1FoundationChapters] = expandL1Content([chapterOneOneBase, ...l1FoundationChaptersBase]);
 
 const page = (route, title, body, options = {}) => ({
@@ -703,7 +704,7 @@ function defectAtlasPage() {
       <details><summary>物理成因、對策與副作用</summary><h3>物理成因</h3><ol>${causes}</ol><div class="table-wrap"><table><thead><tr><th>旋鈕</th><th>理由</th><th>副作用</th></tr></thead><tbody>${fixes}</tbody></table></div><p><strong>相關：</strong>${related}</p><div class="defect-actions">${simulator}<a class="button secondary" href="${chapterThreeThree.route}#lab-a21">開啟診斷器</a></div></details></div>
     </article>`;
   }).join("");
-  return page("/defects/", "缺陷圖鑑", `<main class="page-shell defect-atlas" data-defect-atlas>${breadcrumb(["首頁", "缺陷圖鑑"])}<header class="page-heading"><p class="eyebrow">L3 工程工具</p><h1>蝕刻缺陷圖鑑</h1><p>18 種規畫書缺陷共用同一份症狀、成因、區分、對策與副作用資料。先看位置與形狀，再用證據收斂原因。</p></header><div class="defect-toolbar"><label>搜尋症狀或成因<input type="search" data-defect-search placeholder="例如 bowing、充電、遮罩"></label><div class="filter-row"><button class="active" type="button" data-defect-filter="all">全部 18 種</button>${filters}</div><output data-defect-count>${atlasDefects.length} 種</output></div><div class="defect-list">${cards}</div></main><script type="module">import { initDefectAtlas } from "/assets/js/defect-atlas.js"; initDefectAtlas();</script>`, { pageType: "defects", description: "18 種常見電漿蝕刻缺陷的剖面圖、成因、診斷區分、對策與副作用。", extraStyles: ["/assets/css/a20-a21.css"] });
+  return page("/defects/", "缺陷圖鑑", `<main class="page-shell defect-atlas" data-defect-atlas>${breadcrumb(["首頁", "缺陷圖鑑"])}<header class="page-heading"><p class="eyebrow">L3 工程工具</p><h1>蝕刻缺陷圖鑑</h1><p>18 種規畫書缺陷共用同一份症狀、成因、區分、對策與副作用資料。先看位置與形狀，再用證據收斂原因。</p></header><div class="defect-toolbar"><label>搜尋症狀或成因<input type="search" data-defect-search placeholder="例如 bowing、充電、遮罩"></label><div class="filter-row"><button class="active" type="button" data-defect-filter="all">全部 18 種</button>${filters}</div><output data-defect-count>${atlasDefects.length} 種</output></div><div class="defect-list">${cards}</div></main>`, { pageType: "defects", description: "18 種常見電漿蝕刻缺陷的剖面圖、成因、診斷區分、對策與副作用。", extraStyles: ["/assets/css/a20-a21.css"] });
 }
 
 function chapterTwoOnePage() {
@@ -1274,6 +1275,23 @@ function formulasPage() {
   `);
 }
 
+function notFoundPage() {
+  return page("/404.html", "找不到頁面", `
+    <main class="content-shell narrow">
+      ${breadcrumb(["首頁", "找不到頁面"])}
+      <section class="page-intro">
+        <p class="chapter-meta">HTTP 404</p>
+        <h1>找不到這個頁面</h1>
+        <p>網址可能已變更或輸入錯誤。請回到首頁、學習路徑或互動實驗室繼續查找。</p>
+        <div class="hero-actions">
+          <a class="button primary" href="/">回到首頁</a>
+          <a class="button secondary" href="/lab/">前往互動實驗室</a>
+        </div>
+      </section>
+    </main>
+  `, { pageType: "not-found", description: "Plasma Academy 找不到頁面的導覽入口。" });
+}
+
 async function writePage(pageDef) {
   const dir = path.join(out, pageDef.route);
   await mkdir(dir, { recursive: true });
@@ -1331,6 +1349,10 @@ async function main() {
     formulasPage()
   ];
   await Promise.all(pages.map(writePage));
+  await writeFile(path.join(out, "404.html"), notFoundPage().html);
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(({ route }) => `  <url><loc>${siteUrl}${route}</loc></url>`).join("\n")}\n</urlset>\n`;
+  await writeFile(path.join(out, "sitemap.xml"), sitemap);
+  await writeFile(path.join(out, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
 
   const searchDocs = pages.map((item) => ({
     title: item.title,

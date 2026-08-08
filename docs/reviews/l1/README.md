@@ -1,6 +1,6 @@
 # L1 三道審閱
 
-這個目錄保存 P1 發佈前的三道審閱證據。建立檔案不等於通過；只有 `status` 為 `approved`，且填妥審閱者姓名、角色、`reviewed_commit` 與 `approved_at`，才會被 `npm run audit:p1` 計為完成。
+這個目錄保存 P1 發佈前的三道審閱證據。建立檔案不等於通過；只有具名責任者把 `status` 改為 `approved`，且填妥審閱者姓名、角色、`reviewed_commit` 與 `approved_at`，才會被 `npm run audit:p1 -- --strict` 計為完成。
 
 ## 流程
 

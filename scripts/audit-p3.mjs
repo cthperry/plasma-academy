@@ -17,6 +17,7 @@ import { defects } from "../src/data/defects.js";
 import { labs } from "../src/data/labs.js";
 import { l3Diagrams } from "../src/data/l3-diagrams.js";
 import { level3Questions } from "../src/data/quiz/level-3.js";
+import { countApprovedReviews } from "./lib/review-packets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven, chapterThreeEight];
@@ -52,20 +53,26 @@ const metrics = {
   labsImplemented: labs.filter((lab) => lab.level === 3 && lab.href !== "/lab/").length,
   selfChecks: chapters.reduce((total, chapter) => total + (chapter.selfCheck?.length ?? 0), 0),
   levelExamQuestions: level3Questions.length,
-  svgDiagrams: await countFiles(path.join(root, "src", "assets", "svg", "l3"), ".svg")
+  svgDiagrams: await countFiles(path.join(root, "src", "assets", "svg", "l3"), ".svg"),
+  completedReviews: await countApprovedReviews(path.join(root, "docs", "reviews"), 3)
 };
-const targets = { chapters: 8, sections: 35, contentUnits: 68000, defects: 19, labsImplemented: 11, selfChecks: 52, levelExamQuestions: 116, svgDiagrams: 49 };
+const targets = { chapters: 8, sections: 35, contentUnits: 68000, defects: 19, labsImplemented: 11, selfChecks: 52, levelExamQuestions: 116, svgDiagrams: 49, completedReviews: 3 };
 const rows = Object.entries(targets).map(([item, target]) => ({ item, current: metrics[item], target, complete: metrics[item] >= target }));
 
 console.log(`P3 正文口徑：章節核心 ${narrativeUnits.toLocaleString("zh-TW")} + 現場指南、案例、交班與製程/封裝手冊 ${casebookUnits.toLocaleString("zh-TW")} = ${metrics.contentUnits.toLocaleString("zh-TW")} 字元單位。`);
 console.log(`另有圖解、缺陷圖鑑與認證題庫 ${learningAssetUnits.toLocaleString("zh-TW")} 字元單位，不列入 68,000 正文目標。`);
 console.table(rows);
-const incomplete = rows.filter((row) => !row.complete);
+console.log(`P3 三道審閱核准：${metrics.completedReviews}/3。`);
+const incomplete = rows.filter((row) => !row.complete && row.item !== "completedReviews");
 if (incomplete.length) {
-  console.log(`P3 尚有 ${incomplete.length} 個量化缺口：${incomplete.map((row) => row.item).join(", ")}。`);
+  console.log(`P3 repo 尚有 ${incomplete.length} 個量化缺口：${incomplete.map((row) => row.item).join(", ")}。`);
   if (process.argv.includes("--strict")) process.exit(1);
 } else {
-  console.log("P3 量化交付物達標；仍需逐項核對模型、圖形辨識、題庫品質與外部審閱。 ");
+  console.log("P3 repo 量化交付物達標；人工審閱與高階模型 acceptance 另行揭露。 ");
+}
+if (process.argv.includes("--strict") && metrics.completedReviews < 3) {
+  console.error(`P3 strict 外部封鎖：三道具名審閱核准 ${metrics.completedReviews}/3。`);
+  process.exitCode = 1;
 }
 
 async function countFiles(directory, extension) {

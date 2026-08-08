@@ -1,0 +1,14 @@
+{
+  "gate": "consistency",
+  "status": "pending",
+  "reviewer": { "name": "", "role": "" },
+  "reviewed_commit": "",
+  "approved_at": "",
+  "criteria": [
+    "氣體名稱、CAS、F/C、危害分級與 glossary 術語一致",
+    "SDS 來源連結、供應商審閱與廠區核准狀態的用語一致",
+    "L2 圖號、單位、互動標籤與跨章引用在桌機、手機與列印版一致"
+  ],
+  "evidence": [],
+  "findings": []
+}

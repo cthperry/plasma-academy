@@ -19,3 +19,6 @@ if (document.querySelector("[data-exam-page], [data-exam-gate]")) {
 if (document.querySelector("[data-gas-browser]")) {
   import("./gas-browser.js").then(({ initGasBrowser }) => initGasBrowser());
 }
+if (document.body.dataset.pageType === "defects") {
+  import("./defect-atlas.js").then(({ initDefectAtlas }) => initDefectAtlas());
+}

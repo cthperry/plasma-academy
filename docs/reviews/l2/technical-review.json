@@ -1,0 +1,14 @@
+{
+  "gate": "technical",
+  "status": "pending",
+  "reviewer": { "name": "", "role": "" },
+  "reviewed_commit": "",
+  "approved_at": "",
+  "criteria": [
+    "L2 氣體性質、解離、電漿源與耦合模型在適用範圍內正確",
+    "32 種氣體的危害、CAS、F/C 與供應商 SDS 證據可追溯",
+    "安全教材明示不取代廠區 EH&S 核准、設備相容性與現行 SDS 的邊界"
+  ],
+  "evidence": [],
+  "findings": []
+}

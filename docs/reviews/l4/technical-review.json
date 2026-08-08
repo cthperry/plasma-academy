@@ -1,0 +1,14 @@
+{
+  "gate": "technical",
+  "status": "pending",
+  "reviewer": { "name": "", "role": "" },
+  "reviewed_commit": "",
+  "approved_at": "",
+  "criteria": [
+    "L4 diagnostics 診斷、control 控制與 damage 損傷機制的量測、因果與不確定度正確",
+    "advanced 進階 models 模型與 production 量產案例明示適用範圍、驗證與放行邊界",
+    "OES 原子線與分子帶的 source 來源狀態清楚，未完成的來源審閱 boundaries 邊界不被宣稱為核准"
+  ],
+  "evidence": [],
+  "findings": []
+}

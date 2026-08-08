@@ -1,13 +1,13 @@
 {
   "gate": "technical",
   "status": "pending",
-  "reviewer": { "name": "", "role": "具電漿背景的資深工程師或學界人士" },
+  "reviewer": { "name": "", "role": "" },
   "reviewed_commit": "",
   "approved_at": "",
   "criteria": [
     "物理敘述、公式與典型數值正確",
     "簡化內容未造成錯誤因果",
-    "電子溫度、游離度、鞘層尺度與面積比說明符合審閱重點"
+    "L1 電子溫度、游離度、鞘層尺度與面積比模型邊界符合審閱重點"
   ],
   "evidence": [],
   "findings": []
