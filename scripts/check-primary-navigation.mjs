@@ -12,6 +12,12 @@ const l1Modules = curriculum.levels.find((level) => level.id === 1).modules;
 if (home.includes("P0 骨架狀態") || home.includes('class="system-panel"')) {
   failures.push("首頁仍顯示 P0 骨架狀態區塊。");
 }
+if (home.includes("把 recipe 上的數字") || home.includes('class="hero"')) failures.push("首頁仍使用舊版大型宣傳 hero。");
+if (home.includes('class="role-grid"') || home.includes("依角色推薦路徑") || home.includes("data-role=")) failures.push("首頁仍顯示角色推薦區塊。");
+if (["Static · No framework", "localStorage + JSON", "lifecycle + controls", "延遲載入索引"].some((text) => home.includes(text))) failures.push("首頁仍向學員顯示技術實作資訊。");
+if (!home.includes('data-home-dashboard') || !home.includes("<h1>Plasma Academy</h1>")) failures.push("首頁缺少新版學習儀表板與產品主標。");
+if (!home.includes('data-home-next-link') || !home.includes('data-home-completed')) failures.push("首頁缺少繼續學習與完成章數摘要。");
+if ((home.match(/data-level-progress=/g) ?? []).length !== 4) failures.push("首頁必須顯示四階課程進度。");
 
 for (const module of l1Modules) {
   const link = `href="${module.href}">${module.id} ${module.title}</a>`;

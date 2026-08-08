@@ -52,7 +52,7 @@ export const chapterThreeThree = {
   labs: [
     {
       id: "a20", title: "A20 ARDE 深寬比效應", module: "/assets/js/labs/a20-arde.js",
-      observation: ["逐一關閉四個機制，記錄 lag 變化並比較哪一項在目前條件下占主導。", "增加時間，觀察窄溝與寬溝差距是否縮小。", "切換反向 ARDE 並提高黏著係數，確認窄溝因鈍化前驅物供應不足而更深。"]
+      observation: ["逐一關閉四個機制，記錄 lag 變化並比較哪一項在目前條件下占主導。", "增加時間，觀察窄溝與寬溝差距是否縮小。", "切換反向 ARDE 並提高黏著係數，確認窄溝因鈍化前驅物供應不足而更深。", "比較寬窄溝的孔底鈍化覆蓋與沿深度聚合物 balance，確認反向 lag 來自可追蹤的空間機制。"]
     },
     {
       id: "a21", title: "A21 缺陷診斷器", module: "/assets/js/labs/a21-defect-diagnosis.js",

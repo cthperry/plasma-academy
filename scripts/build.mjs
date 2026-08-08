@@ -1,7 +1,7 @@
 import { access, mkdir, rm, cp, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { curriculum, rolePaths } from "../src/data/curriculum.js";
+import { curriculum } from "../src/data/curriculum.js";
 import { labs } from "../src/data/labs.js";
 import { glossary } from "../src/data/glossary.js";
 import { formulas } from "../src/data/formulas.js";
@@ -44,7 +44,7 @@ import { level2ExamSpec } from "../src/data/quiz/level-2.js";
 import { level3ExamSpec } from "../src/data/quiz/level-3.js";
 import { level4ExamSpec } from "../src/data/quiz/level-4.js";
 import { shell, navItems, breadcrumb } from "../src/templates/page-shell.mjs";
-import { formulaCard, callout, labContainer, progressRing } from "../src/templates/components.mjs";
+import { formulaCard, callout, labContainer } from "../src/templates/components.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const out = path.join(root, "dist", "client");
@@ -68,61 +68,59 @@ const page = (route, title, body, options = {}) => ({
 
 function homepage() {
   const levels = curriculum.levels.map((level) => `
-    <article class="level-node level-${level.id}">
-      ${progressRing(level.progress, `L${level.id}`)}
-      <div>
-        <h3>${level.title}</h3>
-        <p>${level.summary}</p>
-        <p class="meta">${level.modules.length} 模組 · ${level.hours} h · ${level.labs.length} 件互動元件</p>
-        <a class="text-link" href="/level/${level.id}/">進入 L${level.id}</a>
+    <article class="level-node level-${level.id}" data-level-card data-level-chapters="${level.modules.map((module) => module.id.replace(".", "-")).join(",")}">
+      <div class="level-node__head">
+        <span class="level-label">L${level.id}</span>
+        <span class="meta" data-level-progress="${level.id}">0 / ${level.modules.length} 章</span>
+      </div>
+      <h3>${level.name} · ${level.title.split("·").at(-1).trim()}</h3>
+      <p>${level.summary}</p>
+      <progress value="0" max="${level.modules.length}" aria-label="L${level.id} 完成進度"></progress>
+      <div class="level-node__foot">
+        <span class="meta">${level.hours} 小時</span>
+        <a class="text-link" href="/level/${level.id}/">查看課程</a>
       </div>
     </article>
   `).join("");
 
-  const roles = rolePaths.map((role) => `
-    <button class="role-card" type="button" data-role="${role.id}">
-      <span>${role.name}</span>
-      <small>${role.duration}</small>
-      <strong>${role.path}</strong>
-    </button>
+  const chapterMap = curriculum.levels.flatMap((level) => level.modules).map((module) => `
+    <a data-home-chapter="${module.id.replace(".", "-")}" href="${module.href}">${module.id} ${module.title}</a>
   `).join("");
 
   return page("/", "Plasma Academy", `
-    <main class="home-shell">
-      <section class="hero">
-        <div class="hero-copy">
-          <h1>把 recipe 上的數字，連回電漿狀態與晶圓結果。</h1>
-          <p>為半導體製程工程師設計的電漿教材。網站共用同一套骨架、元件庫與進度追蹤，34 件互動元件都從一致的模型與介面契約長出來。</p>
-          <div class="hero-actions">
-            <a class="button primary" href="/level/1/1-1-fourth-state/">從 1.1 開始</a>
-            <a class="button secondary" href="/lab/">查看互動實驗室</a>
-          </div>
+    <main class="home-shell" data-home-dashboard>
+      <header class="home-intro">
+        <div class="home-intro__copy">
+          <h1>Plasma Academy</h1>
+          <p>從電漿基礎、製程氣體到蝕刻、沉積、封裝清潔與量產診斷。</p>
         </div>
-      </section>
+        <section class="continue-panel" aria-label="繼續學習">
+          <p class="continue-panel__label">繼續學習</p>
+          <h2 data-home-next-title>1.1 物質第四態</h2>
+          <p><strong data-home-completed>0 / 26</strong> 章完成 · <span data-home-visited>0</span> 章已瀏覽</p>
+          <a class="button primary" href="/level/1/1-1-fourth-state/" data-home-next-link>開啟章節</a>
+        </section>
+      </header>
 
-      <section class="band">
+      <section class="home-section" aria-labelledby="home-courses-title">
         <div class="section-heading">
-          <h2>學習路徑</h2>
-          <p>四個階段可獨立進入；每一階都保留前置知識連結，但不封鎖學習。</p>
+          <h2 id="home-courses-title">課程階段</h2>
         </div>
-        <div class="path-map">${levels}</div>
+        <div class="course-grid">${levels}</div>
       </section>
 
-      <section class="quick-grid" aria-label="快速入口">
-        <a href="/lab/"><strong>互動實驗室</strong><span>34 件元件的獨立入口</span></a>
-        <a href="/gases/"><strong>氣體百科</strong><span>32 種製程氣體與安全欄位</span></a>
-        <a href="/progress/"><strong>個人進度</strong><span>匯出與匯入瀏覽器進度</span></a>
-        <a href="/glossary/"><strong>術語表</strong><span>中英並列與 tooltip 來源</span></a>
-        <a href="/formulas/"><strong>公式手冊</strong><span>可展開的公式卡資料</span></a>
+      <section class="home-section home-tools" aria-labelledby="home-tools-title">
+        <div class="section-heading"><h2 id="home-tools-title">常用工具</h2></div>
+        <nav class="tool-links" aria-label="常用工具">
+          <a href="/lab/">互動實驗室</a>
+          <a href="/gases/">氣體與安全</a>
+          <a href="/defects/">缺陷圖鑑</a>
+          <a href="/formulas/">公式手冊</a>
+          <a href="/glossary/">術語表</a>
+          <a href="/progress/">學習進度</a>
+        </nav>
       </section>
-
-      <section class="band">
-        <div class="section-heading">
-          <h2>依角色推薦路徑</h2>
-          <p>首次選擇會記在這台瀏覽器，之後可在進度頁匯出備份。</p>
-        </div>
-        <div class="role-grid">${roles}</div>
-      </section>
+      <nav data-home-chapter-map hidden>${chapterMap}</nav>
     </main>
   `, { pageType: "home" });
 }
@@ -1270,7 +1268,7 @@ function notFoundPage() {
         <p class="chapter-meta">HTTP 404</p>
         <h1>找不到這個頁面</h1>
         <p>網址可能已變更或輸入錯誤。請回到首頁、學習路徑或互動實驗室繼續查找。</p>
-        <div class="hero-actions">
+        <div class="button-row">
           <a class="button primary" href="/">回到首頁</a>
           <a class="button secondary" href="/lab/">前往互動實驗室</a>
         </div>

@@ -39,6 +39,29 @@ function molecularBand(id, species, wavelengthNm, transition, relativeIntensity,
   };
 }
 
+const molecularCandidateSources = {
+  CO: [
+    { url: "https://physics.mff.cuni.cz/wds/proc/pdf05/WDS05_070_f2_Smid.pdf", scope: "CO Angstrom system 483.53 與 519.82 nm 實驗觀測" },
+    { url: "https://adsabs.harvard.edu/pdf/1927ApJ....65..214D", scope: "CO Angstrom bands 4834.8 與 5197.6 A 的早期實驗資料" }
+  ],
+  CN: [
+    { url: "https://doi.org/10.1021/acs.jpca.0c00361", scope: "雷射電漿中的 CN violet emission 實驗" },
+    { url: "https://doi.org/10.1016/0022-2852(74)90100-3", scope: "CN violet system Delta-v=0 與 +1 的實驗光譜" }
+  ],
+  C2: [
+    { url: "https://doi.org/10.1016/0022-4073(94)90036-1", scope: "電漿 C2 Swan system 實驗光譜" },
+    { url: "https://www.osti.gov/servlets/purl/1335676", scope: "鑽石 CVD OES 中 516.52 nm C2 Swan bandhead" }
+  ],
+  N2: [
+    { url: "https://doi.org/10.1364/AO.22.003612", scope: "N2 second positive system 337.1 與 357.69 nm 實驗量測" },
+    { url: "https://doi.org/10.1103/PhysRevA.53.2239", scope: "電子撞擊激發 N2 second positive system" }
+  ],
+  OH: [
+    { url: "https://opg.optica.org/josab/abstract.cfm?uri=josab-11-1-3", scope: "OH A-X Fourier-transform emission spectrum" },
+    { url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6053385/", scope: "電漿 OH(A-X) 309.0 nm 實驗訊號" }
+  ]
+};
+
 // relativeIntensity 僅供本站製程情境計算，不是 NIST ASD 的通用相對強度。
 export const spectra = [
   atomicLine("f-703.7", "F", 703.7469, "I", "F I atomic emission", 0.9, "https://physics.nist.gov/PhysRefData/Handbook/Tables/fluorinetable2.htm", { excitationThresholdEv: 14.75 }),
@@ -47,22 +70,22 @@ export const spectra = [
   atomicLine("ar-811.5", "Ar", 811.5311, "I", "Ar I atomic emission", 0.75, "https://physics.nist.gov/PhysRefData/Handbook/Tables/argontable2.htm", { excitationThresholdEv: 13.08, actinometryReference: true }),
   atomicLine("o-777.4", "O", 777.417, "I", "O I atomic triplet", 1, "https://physics.nist.gov/PhysRefData/Handbook/Tables/oxygentable2_a.htm", { excitationThresholdEv: 10.74 }),
   atomicLine("o-844.6", "O", 844.625, "I", "O I atomic emission", 0.7, "https://physics.nist.gov/PhysRefData/Handbook/Tables/oxygentable2_a.htm", { excitationThresholdEv: 10.99 }),
-  molecularBand("co-483.5", "CO", 483.5, "Molecular band teaching marker", 1, { excitationThresholdEv: 11 }),
-  molecularBand("co-519.0", "CO", 519, "Molecular band teaching marker", 0.65, { excitationThresholdEv: 11.2 }),
+  molecularBand("co-483.5", "CO", 483.5, "Angstrom system teaching marker", 1, { excitationThresholdEv: 11, candidateSources: molecularCandidateSources.CO }),
+  molecularBand("co-519.0", "CO", 519, "Angstrom system teaching marker; published bandhead is near 519.8 nm", 0.65, { excitationThresholdEv: 11.2, candidateSources: molecularCandidateSources.CO }),
   atomicLine("si-251.6", "Si", 251.6112, "I", "Si I atomic emission", 1, "https://physics.nist.gov/PhysRefData/Handbook/Tables/silicontable2_a.htm", { excitationThresholdEv: 5.1 }),
   atomicLine("si-288.2", "Si", 288.15771, "I", "Si I atomic emission", 0.65, "https://physics.nist.gov/PhysRefData/Handbook/Tables/silicontable2_a.htm", { excitationThresholdEv: 5.08 }),
-  molecularBand("cn-387.1", "CN", 387.1, "Violet system band head", 0.7, { excitationThresholdEv: 3.2 }),
-  molecularBand("cn-388.3", "CN", 388.3, "Violet system band head", 0.5, { excitationThresholdEv: 3.2 }),
-  molecularBand("c2-516.5", "C2", 516.5, "Swan system band head", 0.7, { excitationThresholdEv: 2.5 }),
+  molecularBand("cn-387.1", "CN", 387.1, "Violet system Delta-v=0 teaching marker", 0.7, { excitationThresholdEv: 3.2, candidateSources: molecularCandidateSources.CN }),
+  molecularBand("cn-388.3", "CN", 388.3, "Violet system (0,0) band head", 0.5, { excitationThresholdEv: 3.2, candidateSources: molecularCandidateSources.CN }),
+  molecularBand("c2-516.5", "C2", 516.5, "Swan system (0,0) band head", 0.7, { excitationThresholdEv: 2.5, candidateSources: molecularCandidateSources.C2 }),
   atomicLine("h-656.3", "H", 656.28518, "I", "Balmer H-alpha", 0.8, "https://physics.nist.gov/PhysRefData/Handbook/Tables/hydrogentable2.htm", { excitationThresholdEv: 12.09 }),
   atomicLine("cl-837.6", "Cl", 837.594, "I", "Cl I atomic emission", 0.85, "https://physics.nist.gov/PhysRefData/Handbook/Tables/chlorinetable2.htm", { excitationThresholdEv: 10.6 }),
   atomicLine("cl-725.7", "Cl", 725.662, "I", "Cl I atomic emission", 0.55, "https://physics.nist.gov/PhysRefData/Handbook/Tables/chlorinetable2.htm", { excitationThresholdEv: 10.8 }),
   atomicLine("br-470.0", "Br", 470.492, "II", "Br II atomic emission", 0.8, "https://physics.nist.gov/PhysRefData/Handbook/Tables/brominetable2.htm", { excitationThresholdEv: 9 }),
   atomicLine("br-478.0", "Br", 478.548, "II", "Br II atomic emission", 0.55, "https://physics.nist.gov/PhysRefData/Handbook/Tables/brominetable2.htm", { excitationThresholdEv: 9.1 }),
-  molecularBand("n2-336.0", "N2", 336, "Second positive system teaching marker", 0.9, { excitationThresholdEv: 11 }),
-  molecularBand("n2-357.0", "N2", 357, "Second positive system teaching marker", 0.6, { excitationThresholdEv: 11.1 }),
-  molecularBand("oh-306.0", "OH", 306, "A-X band teaching marker", 0.9, { excitationThresholdEv: 9 }),
-  molecularBand("oh-309.0", "OH", 309, "A-X band teaching marker", 0.65, { excitationThresholdEv: 9.1 })
+  molecularBand("n2-336.0", "N2", 336, "Second positive system teaching marker; published (0,0) bandhead is near 337.1 nm", 0.9, { excitationThresholdEv: 11, candidateSources: molecularCandidateSources.N2 }),
+  molecularBand("n2-357.0", "N2", 357, "Second positive system teaching marker; published (0,1) bandhead is near 357.69 nm", 0.6, { excitationThresholdEv: 11.1, candidateSources: molecularCandidateSources.N2 }),
+  molecularBand("oh-306.0", "OH", 306, "A-X 306-310 nm envelope teaching marker", 0.9, { excitationThresholdEv: 9, candidateSources: molecularCandidateSources.OH }),
+  molecularBand("oh-309.0", "OH", 309, "A-X (0,0) band head teaching marker", 0.65, { excitationThresholdEv: 9.1, candidateSources: molecularCandidateSources.OH })
 ];
 
 export const spectrumSources = {

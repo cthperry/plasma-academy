@@ -11,9 +11,52 @@ const levelNames = ["L1 電漿入門", "L2 氣體與電漿源", "L3 製程應用
 export function initProgress() {
   markVisitedChapter();
   initObjectiveChecks();
+  initHomeDashboard();
   initRoleSelection();
   initQuiz();
   initProgressPage();
+}
+
+function initHomeDashboard() {
+  const dashboard = document.querySelector("[data-home-dashboard]");
+  if (!dashboard) return;
+  const render = () => {
+    const progress = getProgress();
+    const chapterLinks = [...dashboard.querySelectorAll("[data-home-chapter]")];
+    const completedIds = new Set(Object.keys(chapterObjectiveCounts).filter((id) => isChapterComplete(progress, id)));
+    const visitedEntries = Object.entries(progress.chapters)
+      .filter(([, chapter]) => chapter?.visited)
+      .sort((left, right) => Date.parse(right[1].lastVisit ?? 0) - Date.parse(left[1].lastVisit ?? 0));
+    const recentIncomplete = visitedEntries.find(([id]) => !completedIds.has(id));
+    const nextLink = chapterLinks.find((link) => link.dataset.homeChapter === recentIncomplete?.[0])
+      ?? chapterLinks.find((link) => !completedIds.has(link.dataset.homeChapter));
+    const nextTitle = dashboard.querySelector("[data-home-next-title]");
+    const nextButton = dashboard.querySelector("[data-home-next-link]");
+
+    dashboard.querySelector("[data-home-completed]").textContent = `${completedIds.size} / ${Object.keys(chapterObjectiveCounts).length}`;
+    dashboard.querySelector("[data-home-visited]").textContent = String(visitedEntries.length);
+    nextTitle.textContent = nextLink?.textContent.trim() ?? "全部課程已完成";
+    nextButton.href = nextLink?.href ?? "/progress/";
+    nextButton.textContent = nextLink ? "開啟章節" : "查看學習成果";
+
+    dashboard.querySelectorAll("[data-level-card]").forEach((card) => {
+      const ids = card.dataset.levelChapters.split(",").filter(Boolean);
+      const completed = ids.filter((id) => completedIds.has(id)).length;
+      const level = card.querySelector("[data-level-progress]");
+      const bar = card.querySelector("progress");
+      level.textContent = `${completed} / ${ids.length} 章`;
+      bar.value = completed;
+      bar.setAttribute("aria-label", `${card.querySelector(".level-label").textContent} 已完成 ${completed}/${ids.length} 章`);
+    });
+  };
+  render();
+  document.addEventListener("pa:progresschange", render);
+}
+
+function isChapterComplete(progress, id) {
+  const expected = chapterObjectiveCounts[id];
+  const objectives = progress.chapters[id]?.objectives ?? [];
+  return Number.isInteger(expected) && objectives.length >= expected && objectives.slice(0, expected).every(Boolean);
 }
 
 function markVisitedChapter() {

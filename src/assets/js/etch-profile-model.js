@@ -76,7 +76,50 @@ export function evaluateEtchProfile(input) {
     ardeDepths
   };
   metrics.shape = classifyEtchProfile(metrics);
+  if (input.wallFlux) {
+    metrics.spatialModel = "wall-flux-2d-v1";
+    metrics.wallFlux = evaluateWallFlux({ ionNorm, spreadNorm, reflectionNorm, passNorm });
+    metrics.profileBoundary = buildProfileBoundary(metrics, metrics.wallFlux.depthBins);
+  }
   return metrics;
+}
+
+function evaluateWallFlux({ ionNorm, spreadNorm, reflectionNorm, passNorm }) {
+  const depthBins = Array.from({ length: 32 }, (_, index) => index / 31);
+  const side = depthBins.map((depth) => {
+    const direct = ionNorm * (0.08 + spreadNorm * 0.28) * Math.exp(-depth * (1.5 + passNorm));
+    const middleFocus = Math.exp(-Math.pow((depth - 0.5) / 0.2, 2));
+    const bottomFocus = Math.exp(-Math.pow((depth - 0.88) / 0.12, 2));
+    const reflected = reflectionNorm * ionNorm * (0.12 + spreadNorm * 0.72) * (middleFocus + bottomFocus * 0.38);
+    return {
+      depth,
+      direct,
+      reflected,
+      total: direct + reflected
+    };
+  });
+  const clone = (cell) => ({ ...cell });
+  const integrated = side.reduce((sum, cell) => sum + cell.total, 0) / side.length;
+  return {
+    depthBins,
+    left: side.map(clone),
+    right: side.map(clone),
+    integrated
+  };
+}
+
+function buildProfileBoundary(metrics, depthBins) {
+  return depthBins.map((depth) => {
+    const width = depth <= 0.5
+      ? lerp(metrics.topWidth, metrics.middleWidth, smoothstep(depth * 2))
+      : lerp(metrics.middleWidth, metrics.bottomWidth, smoothstep((depth - 0.5) * 2));
+    return {
+      depth,
+      width,
+      left: -width / 2,
+      right: width / 2
+    };
+  });
 }
 
 export function classifyEtchProfile(metrics) {
@@ -104,4 +147,13 @@ export function coburnWintersRate(gasFraction, ionFraction) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
+}
+
+function lerp(start, end, amount) {
+  return start + (end - start) * amount;
+}
+
+function smoothstep(value) {
+  const amount = clamp(value, 0, 1);
+  return amount * amount * (3 - 2 * amount);
 }

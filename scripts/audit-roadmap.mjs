@@ -5,6 +5,7 @@ import { runPhaseAudits } from "./lib/roadmap-audit.mjs";
 import { sdsEvidence } from "../src/data/sds-evidence.js";
 import { isMolecularSourcePending, spectra } from "../src/data/spectra.js";
 import { countCompleteLocalApprovals, isMolecularSourceReviewComplete } from "./lib/repository-evidence.mjs";
+import { evaluateAdvancedModelAcceptance } from "./lib/advanced-model-acceptance.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const strict = process.argv.includes("--strict");
@@ -28,9 +29,9 @@ const molecularBands = spectra.filter((item) => ["CO", "CN", "C2", "N2", "OH"].i
 const molecularPending = molecularBands.filter(isMolecularSourcePending);
 const molecularApproved = (await Promise.all(molecularBands.map((item) => isMolecularSourceReviewComplete(item, root)))).filter(Boolean).length;
 if (molecularPending.length) blockers.push(`OES 分子帶來源審閱 ${molecularApproved}/9，${molecularPending.length} 筆 pending：${molecularPending.map((item) => item.id).join(", ")}`);
-blockers.push("A18 wallFlux／二維輪廓模型 acceptance 尚未建立");
-blockers.push("A20 反向 ARDE 高階空間解析 acceptance 尚未建立");
-blockers.push("A23 AR>6 HDP 填溝高階空間解析 acceptance 尚未建立");
+for (const acceptance of evaluateAdvancedModelAcceptance()) {
+  if (!acceptance.passed) blockers.push(`${acceptance.id} ${acceptance.title} acceptance 未通過：${acceptance.failedChecks.join(", ")}`);
+}
 
 if (blockers.length || phaseFailure) {
   const blockerCount = blockers.length + (phaseFailure ? 1 : 0);

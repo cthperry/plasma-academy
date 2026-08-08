@@ -76,26 +76,8 @@
   max-width: 860px;
 }
 
-.hero {
-  align-items: center;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  min-height: min(720px, calc(100vh - 150px));
-}
-
-.hero h1 {
-  font-size: clamp(34px, 5vw, 58px);
-  max-width: 850px;
-}
-
-.hero p {
-  color: var(--pa-text-muted);
-  font-size: var(--pa-text-lg);
-  max-width: 720px;
-}
-
-.hero-actions,
-.progress-actions {
+.progress-actions,
+.button-row {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -121,10 +103,6 @@
   gap: 16px;
 }
 
-.band {
-  padding: 56px 0;
-}
-
 .section-heading,
 .page-intro {
   max-width: 760px;
@@ -136,15 +114,62 @@
   color: var(--pa-text-muted);
 }
 
-.path-map {
+.home-intro {
+  align-items: end;
+  display: grid;
+  gap: 48px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+  padding: 30px 0 42px;
+}
+
+.home-intro__copy h1 {
+  font-size: 44px;
+  margin-bottom: 12px;
+}
+
+.home-intro__copy > p:last-child {
+  color: var(--pa-text-muted);
+  font-size: var(--pa-text-lg);
+  max-width: 640px;
+}
+
+.continue-panel__label,
+.level-label {
+  color: var(--pa-primary);
+  font-size: var(--pa-text-sm);
+  font-weight: 800;
+}
+
+.continue-panel {
+  background: var(--pa-surface);
+  border: 1px solid var(--pa-border);
+  border-left: 4px solid var(--pa-primary);
+  border-radius: var(--pa-radius);
+  padding: 20px;
+}
+
+.continue-panel h2 {
+  font-size: var(--pa-text-xl);
+  margin: 6px 0;
+}
+
+.continue-panel p {
+  color: var(--pa-text-muted);
+  margin-bottom: 14px;
+}
+
+.home-section {
+  border-top: 1px solid var(--pa-border);
+  padding: 36px 0;
+}
+
+.course-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .level-node,
-.quick-grid a,
-.role-card,
 .module-card,
 .lab-card {
   background: var(--pa-surface);
@@ -154,9 +179,31 @@
 
 .level-node {
   display: grid;
-  gap: 14px;
-  grid-template-rows: auto 1fr;
-  padding: 18px;
+  gap: 12px;
+  padding: 20px;
+}
+
+.level-node__head,
+.level-node__foot {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.level-node h3 {
+  font-size: var(--pa-text-xl);
+  margin: 0;
+}
+
+.level-node > p {
+  color: var(--pa-text-muted);
+  margin: 0;
+}
+
+.level-node progress {
+  accent-color: var(--pa-primary);
+  height: 8px;
+  width: 100%;
 }
 
 .level-1 { border-top: 4px solid var(--pa-level-1); }
@@ -164,39 +211,28 @@
 .level-3 { border-top: 4px solid var(--pa-level-3); }
 .level-4 { border-top: 4px solid var(--pa-level-4); }
 
-.quick-grid,
-.role-grid,
 .module-grid,
 .lab-grid {
   display: grid;
   gap: 16px;
 }
 
-.quick-grid {
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-}
-
-.role-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.quick-grid a,
-.role-card {
-  color: var(--pa-text);
+.tool-links {
   display: grid;
-  gap: 8px;
-  min-height: 118px;
-  padding: 18px;
-  text-align: left;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tool-links a {
+  border-bottom: 1px solid var(--pa-border);
+  color: var(--pa-text);
+  font-weight: 700;
+  padding: 14px 4px;
   text-decoration: none;
 }
 
-.quick-grid span,
-.role-card small,
-.role-card strong {
-  color: var(--pa-text-muted);
-  font-size: var(--pa-text-sm);
-  font-weight: 500;
+.tool-links a:hover {
+  border-color: var(--pa-primary);
+  color: var(--pa-primary);
 }
 
 .module-grid {
@@ -281,10 +317,7 @@
 }
 
 @media (max-width: 1100px) {
-  .hero,
-  .path-map,
-  .quick-grid,
-  .role-grid,
+  .course-grid,
   .module-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -311,10 +344,9 @@
     padding-bottom: 10px;
   }
 
-  .hero,
-  .path-map,
-  .quick-grid,
-  .role-grid,
+  .home-intro,
+  .course-grid,
+  .tool-links,
   .module-grid,
   .chapter-layout {
     grid-template-columns: 1fr;
@@ -327,9 +359,9 @@
     padding-right: 16px;
   }
 
-  .hero {
-    min-height: auto;
-    padding-top: 18px;
+  .home-intro {
+    gap: 24px;
+    padding-top: 12px;
   }
 
   .chapter-sidebar {

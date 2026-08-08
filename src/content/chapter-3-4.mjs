@@ -57,7 +57,7 @@ export const chapterThreeFour = {
   ],
   labs: [
     { id: "a22", title: "A22 PEALD 循環與階梯覆蓋率", module: "/assets/js/labs/a22-peald-cycle.js", observation: ["將前驅物脈衝由不足拉到飽和，找出厚度開始進平台的位置。", "縮短 purge，觀察 GPC 超過 0.08 nm/cycle 並轉成寄生 CVD。", "切到 PECVD 對照，在 AR 6 比較底部覆蓋率。"] },
-    { id: "a23", title: "A23 HDP vs PECVD 填溝", module: "/assets/js/labs/a23-gap-fill.js", observation: ["固定 AR 4、D/S 5，提高時間並比較兩側是否封口。", "把 D/S 提到 15，觀察 HDP 因濺鍍不足也形成 void。", "把 AR 提到 8，確認適當 D/S 仍超出 HDP 完整填充窗口。"] }
+    { id: "a23", title: "A23 HDP vs PECVD 填溝", module: "/assets/js/labs/a23-gap-fill.js", observation: ["固定 AR 4、D/S 5，提高時間並比較兩側是否封口。", "把 D/S 提到 15，觀察 HDP 因濺鍍不足也形成 void。", "把 AR 提到 8，確認適當 D/S 仍超出 HDP 完整填充窗口。", "比較 AR 4 與 AR 8 的孔底 LOS 到達率及側壁捕獲率，確認 void 判定由角度傳輸結果驅動。"] }
   ],
   selfCheck: [
     ["PECVD 為何能降低基材溫度？", "高能電子先解離前驅物，讓活性自由基在較低基材溫度完成表面反應。"],

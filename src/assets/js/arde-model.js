@@ -27,7 +27,16 @@ export function evaluateArdeProcess(input = {}) {
       depthUm += rateUmMin * dtMinutes;
       last = { aspectRatio, rateUmMin, factors };
     }
-    return { cdUm, depthUm, aspectRatio: depthUm / cdUm, rateUmMin: last.rateUmMin, factors: last.factors };
+    return {
+      cdUm,
+      depthUm,
+      aspectRatio: depthUm / cdUm,
+      rateUmMin: last.rateUmMin,
+      factors: last.factors,
+      polymerProfile: last.factors.polymerProfile,
+      bottomPolymerCoverage: last.factors.bottomPolymerCoverage,
+      bottomPolymerBalance: last.factors.bottomPolymerBalance
+    };
   });
 
   const widest = trenches.at(-1).depthUm;
@@ -38,6 +47,7 @@ export function evaluateArdeProcess(input = {}) {
     trenches,
     lagPercent,
     spreadPercent: (Math.max(...rates) - Math.min(...rates)) / Math.max(...rates) * 100,
+    spatialModel: "polymer-balance-2d-v1",
     mode: inverse ? "inverse" : "normal",
     classification: lagPercent < -5 ? "反向 ARDE" : lagPercent > 5 ? "ARDE / RIE lag" : "CD 差異不明顯"
   };
@@ -52,10 +62,15 @@ function mechanismFactors({ aspectRatio, pressureMtorr, angleSpreadDeg, sticking
   const shadowing = enabled.shadowing ? 1 / (1 + 0.075 * ar * spread) : 1;
   const product = enabled.product ? 1 / (1 + 0.026 * Math.pow(ar, 1.35) * pressure) : 1;
   const charging = enabled.charging ? 1 / (1 + 0.035 * Math.pow(ar, 1.28)) : 1;
+  const polymer = spatialPolymerBalance({
+    aspectRatio: ar,
+    sticking,
+    neutralArrival,
+    ionArrival: shadowing * charging
+  });
 
   if (inverse) {
-    const polymerArrival = 1 / (1 + 0.22 * ar * Math.pow(sticking / 0.55, 0.7));
-    const passivationPenalty = clamp(1 - 0.72 * polymerArrival, 0.20, 1);
+    const passivationPenalty = clamp(1 - 0.78 * polymer.bottomCoverage, 0.20, 1);
     const inverseTransport = enabled.transport ? 0.86 + 0.14 * transport : 1;
     const inverseShadowing = enabled.shadowing ? 0.88 + 0.12 * shadowing : 1;
     const inverseProduct = enabled.product ? 0.88 + 0.12 * product : 1;
@@ -66,6 +81,9 @@ function mechanismFactors({ aspectRatio, pressureMtorr, angleSpreadDeg, sticking
       product: inverseProduct,
       charging: inverseCharging,
       passivation: passivationPenalty,
+      polymerProfile: polymer.profile,
+      bottomPolymerCoverage: polymer.bottomCoverage,
+      bottomPolymerBalance: polymer.bottomBalance,
       total: clamp(inverseTransport * inverseShadowing * inverseProduct * inverseCharging * passivationPenalty, 0.02, 1)
     };
   }
@@ -76,7 +94,36 @@ function mechanismFactors({ aspectRatio, pressureMtorr, angleSpreadDeg, sticking
     product,
     charging,
     passivation: 1,
+    polymerProfile: polymer.profile,
+    bottomPolymerCoverage: polymer.bottomCoverage,
+    bottomPolymerBalance: polymer.bottomBalance,
     total: clamp(transport * shadowing * product * charging, 0.02, 1)
+  };
+}
+
+function spatialPolymerBalance({ aspectRatio, sticking, neutralArrival, ionArrival }) {
+  const profile = Array.from({ length: 32 }, (_, index) => {
+    const depth = index / 31;
+    const localAspectRatio = aspectRatio * depth;
+    const polymerArrival = Math.exp(-0.32 * localAspectRatio * Math.sqrt(sticking));
+    const deposition = sticking * polymerArrival * (0.78 + 0.22 * neutralArrival);
+    const ionClearance = ionArrival * (0.16 + 0.34 * Math.pow(1 - depth, 0.7));
+    const balance = deposition - ionClearance;
+    const coverage = clamp(deposition / Math.max(0.001, deposition + ionClearance + 0.08), 0, 1);
+    return {
+      depth,
+      coverage,
+      leftBalance: balance,
+      rightBalance: balance,
+      deposition,
+      ionClearance
+    };
+  });
+  const bottom = profile.at(-1);
+  return {
+    profile,
+    bottomCoverage: bottom.coverage,
+    bottomBalance: bottom.leftBalance
   };
 }
 

@@ -81,6 +81,19 @@ assert("ARDE 深度應隨 CD 單調增加", vertical.ardeDepths.every((depth, in
 assert("窄寬溝 ARDE 落差應超過 30%", vertical.ardeDepths[0] / vertical.ardeDepths[2] < 0.7);
 assert("未知預設應回到垂直基準", profilePresetById("missing").id === "vertical");
 
+const spatialVertical = evaluateEtchProfile({ ...profilePresetById("vertical"), wallFlux: true });
+assert("A18 空間模型應揭露版本", spatialVertical.spatialModel === "wall-flux-2d-v1");
+assert("A18 應輸出至少 24 個深度分箱", spatialVertical.wallFlux?.depthBins.length >= 24);
+assert("A18 左右側壁通量應逐深度成對輸出", spatialVertical.wallFlux?.left.length === spatialVertical.wallFlux?.right.length);
+assert("A18 側壁通量不得為負值", spatialVertical.wallFlux?.left.every((cell) => cell.total >= 0 && cell.direct >= 0 && cell.reflected >= 0));
+assert("A18 二維輪廓邊界應連續涵蓋頂至底", spatialVertical.profileBoundary?.length === spatialVertical.wallFlux?.depthBins.length && spatialVertical.profileBoundary[0].depth === 0 && spatialVertical.profileBoundary.at(-1).depth === 1);
+const spatialBowing = evaluateEtchProfile({ ...profilePresetById("bowing"), wallFlux: true });
+const topFlux = spatialBowing.wallFlux.left.slice(0, 6).reduce((sum, cell) => sum + cell.total, 0) / 6;
+const middleFlux = spatialBowing.wallFlux.left.slice(10, 18).reduce((sum, cell) => sum + cell.total, 0) / 8;
+assert("Bowing 條件的反射通量應集中於側壁中段", middleFlux > topFlux * 1.08, `${topFlux.toFixed(3)} -> ${middleFlux.toFixed(3)}`);
+const noReflection = evaluateEtchProfile({ ...profilePresetById("microtrench"), reflection: 0, wallFlux: true });
+assert("關閉反射後側壁反射通量應歸零", noReflection.wallFlux.left.every((cell) => cell.reflected === 0));
+
 if (failures.length) {
   console.error(`蝕刻輪廓模型檢查失敗（${failures.length}/${checks}）：`);
   failures.forEach((failure) => console.error(`- ${failure}`));

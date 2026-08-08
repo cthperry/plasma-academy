@@ -37,6 +37,11 @@ const inverse = evaluateArdeProcess({ inverse: true, sticking: 0.9 });
 assert("反向模式應讓窄溝更深", inverse.trenches[0].depthUm > inverse.trenches.at(-1).depthUm);
 assert("反向 ARDE 應明顯可見", inverse.lagPercent < -20, `${inverse.lagPercent.toFixed(1)}%`);
 assert("反向模式應正確分類", inverse.classification === "反向 ARDE");
+assert("A20 應揭露空間聚合物模型版本", inverse.spatialModel === "polymer-balance-2d-v1");
+assert("每個 CD 應輸出至少 24 個深度分箱", inverse.trenches.every((item) => item.polymerProfile?.length >= 24));
+assert("聚合物分箱應分離左右側壁與孔底收支", inverse.trenches.every((item) => item.polymerProfile.every((cell) => Number.isFinite(cell.leftBalance) && Number.isFinite(cell.rightBalance)) && Number.isFinite(item.bottomPolymerBalance)));
+assert("高黏著反向模式中窄溝孔底聚合物應少於寬溝", inverse.trenches[0].bottomPolymerCoverage < inverse.trenches.at(-1).bottomPolymerCoverage);
+assert("所有聚合物覆蓋率應維持物理界線", inverse.trenches.every((item) => item.polymerProfile.every((cell) => cell.coverage >= 0 && cell.coverage <= 1)));
 
 if (failures.length) {
   console.error(`A20 ARDE 模型檢查失敗（${failures.length}/${checks}）：`);

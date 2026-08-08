@@ -32,6 +32,12 @@ const highAr = evaluateGapFill({ aspectRatio: 8, dsRatio: 5, timePercent: 80 });
 assert("AR 8 應超出 HDP 完整填充窗口", highAr.hdp.void);
 const sputterHeavy = evaluateGapFill({ aspectRatio: 4, dsRatio: 1, timePercent: 80 });
 assert("D/S 過低應無淨沉積", sputterHeavy.hdp.netDeposition <= 0 && sputterHeavy.hdp.classification.includes("無淨填充"));
+assert("A23 應揭露角度視線傳輸模型版本", highAr.spatialModel === "ballistic-los-2d-v1");
+assert("A23 應保留逐角度射線取樣", highAr.transport?.rays.length >= 41);
+assert("所有射線應落在孔底、左壁或右壁", highAr.transport?.rays.every((ray) => ["bottom", "left-wall", "right-wall"].includes(ray.target)));
+assert("AR 8 的孔底視線到達率應低於 AR 4", highAr.transport.bottomArrivalFraction < gap.transport.bottomArrivalFraction);
+assert("AR 8 的側壁截留率應高於 AR 4", highAr.transport.sidewallCaptureFraction > gap.transport.sidewallCaptureFraction);
+assert("HDP 應輸出可繪製的二維沉積輪廓", highAr.hdp.profile?.length >= 24 && highAr.hdp.profile.every((cell) => cell.leftThickness >= 0 && cell.rightThickness >= 0));
 
 if (failures.length) {
   console.error(`A22/A23 沉積模型檢查失敗（${failures.length}/${checks}）：`);

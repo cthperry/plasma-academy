@@ -11,9 +11,9 @@ export function init(container) {
   canvas.setAttribute("aria-label", "PECVD 與 HDP-CVD 高深寬比填溝對照");
   const ctx = canvas.getContext("2d");
   const state = { aspectRatio: 4, dsRatio: 5, timePercent: 70, theme: readCanvasTheme() };
-  const panel = createValuePanel([["PECVD 判定", "—"], ["PECVD 覆蓋率", "—"], ["HDP 判定", "—"], ["HDP 覆蓋率", "—"], ["HDP 淨沉積", "—"]]);
+  const panel = createValuePanel([["PECVD 判定", "—"], ["PECVD 覆蓋率", "—"], ["HDP 判定", "—"], ["HDP 覆蓋率", "—"], ["孔底 LOS", "—"], ["HDP 淨沉積", "—"]]);
   const instance = {
-    render() { const result = evaluateGapFill(state); drawGapFill(ctx, state, result); updatePanel(panel, result); status.textContent = `PECVD：${result.pecvd.classification}；HDP：${result.hdp.classification}。D/S ${state.dsRatio.toFixed(1)}、AR ${state.aspectRatio.toFixed(1)}。模型只比較填溝機制方向。`; },
+    render() { const result = evaluateGapFill(state); drawGapFill(ctx, state, result); updatePanel(panel, result); status.textContent = `PECVD：${result.pecvd.classification}；HDP：${result.hdp.classification}。D/S ${state.dsRatio.toFixed(1)}、AR ${state.aspectRatio.toFixed(1)}、孔底視線到達率 ${(result.transport.bottomArrivalFraction * 100).toFixed(1)}%。模型只比較填溝機制方向。`; },
     reset() {}, applyTheme(theme) { state.theme = theme; this.render(); }, destroy() { unwatch(); }
   };
   const component = createLifecycle(instance); const unwatch = watchTheme(component);
@@ -53,6 +53,15 @@ function drawCell(ctx, left, right, label, metrics, state, theme, hdp) {
     ctx.strokeStyle = "#c63434"; ctx.lineWidth = 2; ctx.stroke();
   }
   if (hdp) {
+    metrics.profile.forEach((cell, index) => {
+      if (index % 2 !== 0) return;
+      const y = top + cell.depth * (bottom - top);
+      const thickness = Math.max(1, cell.leftThickness * 12);
+      ctx.strokeStyle = theme.electron; ctx.lineWidth = thickness; ctx.globalAlpha = 0.5;
+      ctx.beginPath(); ctx.moveTo(center - opening / 2, y); ctx.lineTo(center - opening / 2 + thickness, y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(center + opening / 2, y); ctx.lineTo(center + opening / 2 - thickness, y); ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
     ctx.strokeStyle = theme.ion; ctx.lineWidth = 2;
     for (const dir of [-1, 1]) { ctx.beginPath(); ctx.moveTo(center + dir * 88, top - 25); ctx.lineTo(center + dir * (opening / 2 + 12), top + 28); ctx.stroke(); }
     ctx.fillStyle = theme.muted; ctx.font = "12px system-ui"; ctx.textAlign = "center"; ctx.fillText("45° 肩部濺鍍", center, top - 8);
@@ -62,6 +71,6 @@ function drawCell(ctx, left, right, label, metrics, state, theme, hdp) {
 }
 
 function updatePanel(panel, result) {
-  const values = { "PECVD 判定": result.pecvd.classification, "PECVD 覆蓋率": `${result.pecvd.stepCoveragePercent.toFixed(1)}%`, "HDP 判定": result.hdp.classification, "HDP 覆蓋率": `${result.hdp.stepCoveragePercent.toFixed(1)}%`, "HDP 淨沉積": result.hdp.netDeposition.toFixed(2) };
+  const values = { "PECVD 判定": result.pecvd.classification, "PECVD 覆蓋率": `${result.pecvd.stepCoveragePercent.toFixed(1)}%`, "HDP 判定": result.hdp.classification, "HDP 覆蓋率": `${result.hdp.stepCoveragePercent.toFixed(1)}%`, "孔底 LOS": `${(result.transport.bottomArrivalFraction * 100).toFixed(1)}%`, "HDP 淨沉積": result.hdp.netDeposition.toFixed(2) };
   for (const item of panel.querySelectorAll("dd")) item.textContent = values[item.dataset.valueKey];
 }

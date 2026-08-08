@@ -60,20 +60,25 @@ export function evaluateGapFill(input = {}) {
   const pecvdCoverage = clamp(86 - aspectRatio * 13, 8, 78);
   const pecvdCusp = clamp(progress * aspectRatio * 11.5, 0, 95);
   const pecvdVoid = aspectRatio > 3 && pecvdCusp > 30;
+  const transport = traceBallisticTransport(aspectRatio);
 
   const sputterShare = 1 / dsRatio;
   const netDeposition = clamp(1 - sputterShare * 1.45, -0.3, 1);
   const cuspRemoval = clamp(sputterShare * 5.2, 0, 1.25);
   const hdpCusp = clamp(progress * aspectRatio * 9 * (1 - cuspRemoval), 0, 96);
-  const hdpWindow = aspectRatio <= 6 && dsRatio >= 2.3 && dsRatio <= 8.5;
-  const hdpVoid = !hdpWindow && progress > 0.55 && (aspectRatio > 6 || dsRatio > 8.5);
+  const transportWindow = transport.bottomArrivalFraction >= 0.085;
+  const hdpWindow = transportWindow && dsRatio >= 2.3 && dsRatio <= 8.5;
+  const hdpVoid = !hdpWindow && progress > 0.55 && (!transportWindow || dsRatio > 8.5);
   const hdpFillPercent = clamp(progress * 118 * Math.max(0, netDeposition) * (hdpWindow ? 1 : 0.64), 0, 100);
   const hdpClassification = netDeposition <= 0 ? "濺鍍過強：無淨填充" : hdpVoid ? "HDP 夾 void" : hdpWindow ? "HDP 填溝窗口" : "HDP 邊界條件";
+  const hdpProfile = buildGapProfile({ transport, progress, dsRatio, fillPercent: hdpFillPercent });
 
   return {
     aspectRatio,
     dsRatio,
     timePercent,
+    spatialModel: "ballistic-los-2d-v1",
+    transport,
     pecvd: {
       stepCoveragePercent: pecvdCoverage,
       cuspPercent: pecvdCusp,
@@ -87,9 +92,57 @@ export function evaluateGapFill(input = {}) {
       fillPercent: hdpFillPercent,
       void: hdpVoid,
       netDeposition,
+      profile: hdpProfile,
       classification: hdpClassification
     }
   };
+}
+
+function traceBallisticTransport(aspectRatio) {
+  const depth = aspectRatio;
+  const halfWidth = 0.5;
+  const rays = Array.from({ length: 61 }, (_, index) => {
+    const angleDeg = -70 + index * (140 / 60);
+    const angleRad = angleDeg * Math.PI / 180;
+    const lateralAtBottom = Math.tan(angleRad) * depth;
+    const reachesBottom = Math.abs(lateralAtBottom) <= halfWidth;
+    const hitDepth = reachesBottom ? depth : halfWidth / Math.max(0.0001, Math.abs(Math.tan(angleRad)));
+    const depositionWeight = Math.pow(Math.max(0, Math.cos(angleRad)), 2);
+    const sputterWeight = Math.pow(Math.max(0, Math.cos(angleRad)), 10);
+    return {
+      angleDeg,
+      weight: depositionWeight,
+      sputterWeight,
+      target: reachesBottom ? "bottom" : angleDeg < 0 ? "left-wall" : "right-wall",
+      normalizedHitDepth: clamp(hitDepth / depth, 0, 1)
+    };
+  });
+  const totalWeight = rays.reduce((sum, ray) => sum + ray.weight, 0);
+  const bottomWeight = rays.filter((ray) => ray.target === "bottom").reduce((sum, ray) => sum + ray.weight, 0);
+  const bottomArrivalFraction = bottomWeight / totalWeight;
+  return {
+    rays,
+    bottomArrivalFraction,
+    sidewallCaptureFraction: 1 - bottomArrivalFraction
+  };
+}
+
+function buildGapProfile({ transport, progress, dsRatio, fillPercent }) {
+  const depositionShare = dsRatio / (dsRatio + 1);
+  const sputterShare = 1 / (dsRatio + 1);
+  return Array.from({ length: 32 }, (_, index) => {
+    const depth = index / 31;
+    const nearby = transport.rays.filter((ray) => ray.target !== "bottom" && Math.abs(ray.normalizedHitDepth - depth) < 0.08);
+    const sideArrival = nearby.reduce((sum, ray) => sum + ray.weight, 0) / Math.max(1, transport.rays.length);
+    const shoulderSputter = Math.exp(-depth * 5) * sputterShare;
+    const sideThickness = clamp(progress * (0.12 * depositionShare + sideArrival * 2.8 - shoulderSputter * 0.75), 0, 1);
+    return {
+      depth,
+      leftThickness: sideThickness,
+      rightThickness: sideThickness,
+      bottomThickness: depth === 1 ? fillPercent / 100 * transport.bottomArrivalFraction : 0
+    };
+  });
 }
 
 function clamp(value, min, max) {

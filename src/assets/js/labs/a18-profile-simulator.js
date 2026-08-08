@@ -14,9 +14,9 @@ export function init(container) {
   const ctx = canvas.getContext("2d");
   const requestedPreset = new URLSearchParams(window.location.search).get("profile");
   const initial = profilePresetById(requestedPreset || "vertical");
-  const state = { ...initial, preset: initial.id, multi: false, elapsed: 0, lastTime: 0, theme: readCanvasTheme() };
+  const state = { ...initial, preset: initial.id, multi: false, wallFlux: false, elapsed: 0, lastTime: 0, theme: readCanvasTheme() };
   const panel = createValuePanel([
-    ["判定形狀", "—"], ["蝕刻深度", "—"], ["頂／中／底寬", "—"], ["遮罩開口", "—"], ["底角深溝", "—"], ["聚合物收支", "—"]
+    ["判定形狀", "—"], ["蝕刻深度", "—"], ["頂／中／底寬", "—"], ["遮罩開口", "—"], ["底角深溝", "—"], ["側壁通量", "—"], ["聚合物收支", "—"]
   ]);
 
   const instance = {
@@ -79,6 +79,7 @@ export function init(container) {
       presetControl,
       ...sliders,
       createToggle({ label: "多 CD 視圖（ARDE）", checked: state.multi, onChange: (value) => { state.multi = value; component.render(); } }),
+      createToggle({ label: "空間側壁通量", checked: state.wallFlux, onChange: (value) => { state.wallFlux = value; component.render(); } }),
       panel
     );
   }
@@ -135,8 +136,26 @@ function drawSingleProfile(ctx, state, metrics) {
   ctx.fill();
 
   drawPassivation(ctx, state, metrics, center, topHalf, middleHalf, bottomHalf, maskY, depth);
+  if (metrics.wallFlux) drawWallFlux(ctx, state, metrics, center, topHalf, middleHalf, bottomHalf, maskY, depth);
   drawIons(ctx, state, center, openHalf, maskY, etchBottom);
   drawProfileLabels(ctx, state, metrics);
+}
+
+function drawWallFlux(ctx, state, metrics, center, topHalf, middleHalf, bottomHalf, top, depth) {
+  ctx.strokeStyle = state.theme.ion;
+  ctx.lineWidth = 1.5;
+  ctx.globalAlpha = 0.78;
+  metrics.wallFlux.left.forEach((cell, index) => {
+    if (index % 3 !== 0) return;
+    const halfWidth = cell.depth <= 0.5
+      ? topHalf + (middleHalf - topHalf) * cell.depth * 2
+      : middleHalf + (bottomHalf - middleHalf) * (cell.depth - 0.5) * 2;
+    const y = top + cell.depth * depth;
+    const length = Math.min(19, 3 + cell.total * 15);
+    ctx.beginPath(); ctx.moveTo(center - halfWidth + length, y); ctx.lineTo(center - halfWidth + 2, y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(center + halfWidth - length, y); ctx.lineTo(center + halfWidth - 2, y); ctx.stroke();
+  });
+  ctx.globalAlpha = 1;
 }
 
 function drawPassivation(ctx, state, metrics, center, topHalf, middleHalf, bottomHalf, y, depth) {
@@ -217,6 +236,7 @@ function updatePanel(panel, metrics) {
     "頂／中／底寬": `${metrics.topWidth.toFixed(0)} / ${metrics.middleWidth.toFixed(0)} / ${metrics.bottomWidth.toFixed(0)}%`,
     "遮罩開口": `${metrics.maskOpening.toFixed(2)}×`,
     "底角深溝": `${metrics.microtrench.toFixed(1)} a.u.`,
+    "側壁通量": metrics.wallFlux ? metrics.wallFlux.integrated.toFixed(2) : "未啟用",
     "聚合物收支": `${metrics.polymerBalance >= 0 ? "+" : ""}${metrics.polymerBalance.toFixed(2)}`
   };
   for (const item of panel.querySelectorAll("dd")) item.textContent = values[item.dataset.valueKey];

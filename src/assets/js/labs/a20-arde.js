@@ -20,7 +20,7 @@ export function init(container) {
     mechanisms: Object.fromEntries(ardeMechanisms.map(({ key }) => [key, true])),
     elapsed: 0, lastTime: 0, theme: readCanvasTheme()
   };
-  const panel = createValuePanel([["模式", "—"], ["窄溝深度", "—"], ["寬溝深度", "—"], ["RIE lag", "—"], ["速率差", "—"]]);
+  const panel = createValuePanel([["模式", "—"], ["窄溝深度", "—"], ["寬溝深度", "—"], ["RIE lag", "—"], ["速率差", "—"], ["窄／寬孔底鈍化", "—"]]);
 
   const instance = {
     update(time = 0) {
@@ -34,7 +34,8 @@ export function init(container) {
       drawCurve(svg, result);
       updatePanel(panel, result);
       const direction = result.lagPercent < 0 ? `窄溝比寬溝深 ${Math.abs(result.lagPercent).toFixed(1)}%` : `窄溝比寬溝淺 ${result.lagPercent.toFixed(1)}%`;
-      status.textContent = `${result.classification}；${direction}。此模型用於比較機制方向，不能直接換算量產 recipe。`;
+      const polymerNote = state.inverse ? `孔底聚合物覆蓋 ${result.trenches[0].bottomPolymerCoverage.toFixed(2)}／${result.trenches.at(-1).bottomPolymerCoverage.toFixed(2)}。` : "";
+      status.textContent = `${result.classification}；${direction}。${polymerNote}此模型用於比較機制方向，不能直接換算量產 recipe。`;
     },
     reset() {},
     applyTheme(theme) { state.theme = theme; this.render(); },
@@ -79,6 +80,12 @@ function drawTrenches(ctx, state, result) {
     const depth = Math.min(260, item.depthUm / 5.2 * 260);
     ctx.fillStyle = theme.bg;
     ctx.fillRect(centers[index] - width / 2, 68, width, depth);
+    const polymer = item.bottomPolymerCoverage;
+    ctx.fillStyle = theme.electron;
+    ctx.globalAlpha = 0.18 + polymer * 0.55;
+    ctx.fillRect(centers[index] - width / 2, 68, Math.max(2, width * 0.08), depth);
+    ctx.fillRect(centers[index] + width / 2 - Math.max(2, width * 0.08), 68, Math.max(2, width * 0.08), depth);
+    ctx.globalAlpha = 1;
     ctx.fillStyle = "#d5b34b";
     ctx.fillRect(centers[index] - 58, 46, 58 - width / 2, 25);
     ctx.fillRect(centers[index] + width / 2, 46, 58 - width / 2, 25);
@@ -114,7 +121,8 @@ function updatePanel(panel, result) {
     "窄溝深度": `${result.trenches[0].depthUm.toFixed(2)} µm`,
     "寬溝深度": `${result.trenches.at(-1).depthUm.toFixed(2)} µm`,
     "RIE lag": `${result.lagPercent.toFixed(1)}%`,
-    "速率差": `${result.spreadPercent.toFixed(1)}%`
+    "速率差": `${result.spreadPercent.toFixed(1)}%`,
+    "窄／寬孔底鈍化": `${result.trenches[0].bottomPolymerCoverage.toFixed(2)} / ${result.trenches.at(-1).bottomPolymerCoverage.toFixed(2)}`
   };
   for (const item of panel.querySelectorAll("dd")) item.textContent = values[item.dataset.valueKey];
 }
