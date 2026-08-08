@@ -5,7 +5,7 @@ import { chapterFourSix } from "../src/content/chapter-4-6.mjs";
 import { curriculum } from "../src/data/curriculum.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const builtPath = path.join(root, "dist", "client", "level", "4", "4-6-production-yield-safety", "index.html");
+const builtPath = path.join(root, "dist", "client", "__pages", "level", "4", "4-6-production-yield-safety", "index.html");
 const failures = [];
 const requiredFields = ["id", "title", "phenomenon", "data", "hypotheses", "verification", "rootCause", "action", "release", "prevention", "engineeringNote"];
 const requiredTokens = [

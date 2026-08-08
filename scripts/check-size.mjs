@@ -4,7 +4,7 @@ import path from "node:path";
 import { staticModuleSpecifiers } from "./lib/module-dependencies.mjs";
 
 const client = path.resolve("dist/client");
-const homepage = path.join(client, "index.html");
+const homepage = path.join(client, "__pages", "index.html");
 const resources = new Map([["/", homepage]]);
 const html = await readFile(homepage, "utf8");
 

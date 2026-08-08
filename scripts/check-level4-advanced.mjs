@@ -100,7 +100,7 @@ for (const spec of specs) {
     if (new Set(longParagraphs).size !== longParagraphs.length) failures.push(`${spec.moduleId} 不可跨 section 重複長段落灌字。`);
   }
 
-  const builtPath = chapter?.route ? `dist/client${chapter.route}index.html` : "";
+  const builtPath = chapter?.route ? `dist/client/__pages${chapter.route}index.html` : "";
   const built = builtPath ? await readRequired(builtPath, `建置後 ${spec.moduleId} 頁面`) : "";
   if (built) {
     const count = (pattern) => (built.match(pattern) ?? []).length;
@@ -130,7 +130,7 @@ const cssSource = await readRequired("src/assets/css/a30-a32.css", "A30-A32 CSS"
 if (!/aspect-ratio:\s*720\s*\/\s*430/.test(cssSource) || !/height:\s*auto/.test(cssSource)) failures.push("A30-A32 Canvas CSS 必須固定 720/430 並以 height:auto 顯示。");
 if (/min-height\s*:/.test(cssSource)) failures.push("A30-A32 Canvas CSS 不可使用 min-height。");
 
-const built43 = await readRequired("dist/client/level/4/4-3-plasma-damage/index.html", "建置後 4.3 頁面");
+const built43 = await readRequired("dist/client/__pages/level/4/4-3-plasma-damage/index.html", "建置後 4.3 頁面");
 if (built43 && !built43.includes("下一章：4.4")) failures.push("建置後 4.3 下一章未指向 4.4。");
 
 if (failures.length) {

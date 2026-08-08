@@ -48,6 +48,7 @@ import { formulaCard, callout, labContainer, progressRing } from "../src/templat
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const out = path.join(root, "dist", "client");
+const pageOut = path.join(out, "__pages");
 const siteUrl = "https://plasma-academy-p0.pperry.chatgpt.site";
 const [chapterOneOne, ...l1FoundationChapters] = expandL1Content([chapterOneOneBase, ...l1FoundationChaptersBase]);
 
@@ -1293,7 +1294,7 @@ function notFoundPage() {
 }
 
 async function writePage(pageDef) {
-  const dir = path.join(out, pageDef.route);
+  const dir = path.join(pageOut, pageDef.route);
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, "index.html"), pageDef.html);
 }
@@ -1303,7 +1304,6 @@ async function main() {
   await mkdir(out, { recursive: true });
   await cp(path.join(root, "src", "assets"), path.join(out, "assets"), { recursive: true });
   await cp(path.join(root, "src", "data"), path.join(out, "assets", "data"), { recursive: true });
-  await cp(path.join(root, "src", "static", "_headers"), path.join(out, "_headers"));
   await mkdir(path.join(out, "data"), { recursive: true });
   await cp(path.join(root, "src", "data", "spectra.js"), path.join(out, "data", "spectra.js"));
   await cp(path.join(root, "src", "data", "evidence.js"), path.join(out, "data", "evidence.js"));
@@ -1351,7 +1351,7 @@ async function main() {
     formulasPage()
   ];
   await Promise.all(pages.map(writePage));
-  await writeFile(path.join(out, "404.html"), notFoundPage().html);
+  await writeFile(path.join(pageOut, "404.html"), notFoundPage().html);
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(({ route }) => `  <url><loc>${siteUrl}${route}</loc></url>`).join("\n")}\n</urlset>\n`;
   await writeFile(path.join(out, "sitemap.xml"), sitemap);
   await writeFile(path.join(out, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);

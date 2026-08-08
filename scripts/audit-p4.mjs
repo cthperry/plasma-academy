@@ -35,7 +35,7 @@ const metrics = {
   formulas: Object.keys(formulas).length,
   glossaryTerms: glossary.length,
   productionCases: chapterFourSix.cases.length,
-  examPage: await fileExists(path.join(root, "dist", "client", "level", "4", "exam", "index.html")) ? 1 : 0,
+  examPage: await fileExists(path.join(root, "dist", "client", "__pages", "level", "4", "exam", "index.html")) ? 1 : 0,
   completedReviews: await countApprovedReviews(path.join(root, "docs", "reviews"), 4)
 };
 const targets = {
