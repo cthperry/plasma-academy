@@ -1,6 +1,7 @@
+import { isEvidenceReference, isValidRfc3339DateTime } from "./evidence.js";
+
 const nistAsdSource = "https://physics.nist.gov/PhysRefData/ASD/lines_form.html";
 const molecularTeachingSource = "Plasma Academy 教學近似；分子帶位置待正式光譜資料來源審查";
-const RFC3339_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
 function atomicLine(id, species, wavelengthNm, spectrumStage, transition, relativeIntensity, source, extra = {}) {
   return {
@@ -85,10 +86,10 @@ export function isMolecularSourceApprovalComplete(line) {
     && /^https:\/\//.test(line?.source ?? "")
     && isNonEmptyString(approval?.reviewer?.name)
     && isNonEmptyString(approval?.reviewer?.role)
-    && isRfc3339DateTime(approval?.reviewedAt)
+    && isValidRfc3339DateTime(approval?.reviewedAt)
     && Array.isArray(approval?.evidence)
     && approval.evidence.length > 0
-    && approval.evidence.every(isNonEmptyString);
+    && approval.evidence.every(isEvidenceReference);
 }
 
 export function isMolecularSourcePending(line) {
@@ -105,8 +106,4 @@ export function isMolecularSourcePending(line) {
 
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
-}
-
-function isRfc3339DateTime(value) {
-  return isNonEmptyString(value) && RFC3339_DATE_TIME.test(value) && !Number.isNaN(Date.parse(value));
 }

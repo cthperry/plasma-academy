@@ -3,7 +3,8 @@ import { fileURLToPath } from "node:url";
 import { pendingReviewGates } from "./lib/review-packets.mjs";
 import { runPhaseAudits } from "./lib/roadmap-audit.mjs";
 import { isLocalApprovalComplete, sdsEvidence } from "../src/data/sds-evidence.js";
-import { isMolecularSourceApprovalComplete, isMolecularSourcePending, spectra } from "../src/data/spectra.js";
+import { isMolecularSourcePending, spectra } from "../src/data/spectra.js";
+import { isMolecularSourceReviewComplete } from "./lib/repository-evidence.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const strict = process.argv.includes("--strict");
@@ -25,7 +26,7 @@ const plantApproved = sdsEvidence.filter(isLocalApprovalComplete).length;
 if (plantApproved < sdsEvidence.length) blockers.push(`廠區 EH&S SDS 核准 ${plantApproved}/${sdsEvidence.length}，${sdsEvidence.length - plantApproved} 筆 pending`);
 const molecularBands = spectra.filter((item) => ["CO", "CN", "C2", "N2", "OH"].includes(item.species));
 const molecularPending = molecularBands.filter(isMolecularSourcePending);
-const molecularApproved = molecularBands.filter(isMolecularSourceApprovalComplete).length;
+const molecularApproved = (await Promise.all(molecularBands.map((item) => isMolecularSourceReviewComplete(item, root)))).filter(Boolean).length;
 if (molecularPending.length) blockers.push(`OES 分子帶來源審閱 ${molecularApproved}/9，${molecularPending.length} 筆 pending：${molecularPending.map((item) => item.id).join(", ")}`);
 blockers.push("A18 wallFlux／二維輪廓模型 acceptance 尚未建立");
 blockers.push("A20 反向 ARDE 高階空間解析 acceptance 尚未建立");

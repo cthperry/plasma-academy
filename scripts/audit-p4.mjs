@@ -1,4 +1,4 @@
-import { access } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
@@ -11,10 +11,17 @@ import { formulas } from "../src/data/formulas.js";
 import { glossary } from "../src/data/glossary.js";
 import { labs } from "../src/data/labs.js";
 import { level4Questions } from "../src/data/quiz/level-4.js";
-import { isMolecularSourceApprovalComplete, isMolecularSourcePending, spectra } from "../src/data/spectra.js";
+import { isMolecularSourcePending, spectra } from "../src/data/spectra.js";
 import { countApprovedReviews } from "./lib/review-packets.mjs";
+import { isMolecularSourceReviewComplete } from "./lib/repository-evidence.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const spectraFixtureIndex = process.argv.indexOf("--spectra-fixture");
+const evidenceRepoIndex = process.argv.indexOf("--evidence-repo");
+const spectraData = spectraFixtureIndex >= 0
+  ? JSON.parse(await readFile(path.resolve(process.argv[spectraFixtureIndex + 1]), "utf8"))
+  : spectra;
+const evidenceRepo = evidenceRepoIndex >= 0 ? path.resolve(process.argv[evidenceRepoIndex + 1]) : root;
 const strict = process.argv.includes("--strict");
 const repoStrict = strict || process.argv.includes("--repo-strict");
 const chapters = [chapterFourOne, chapterFourTwo, chapterFourThree, chapterFourFour, chapterFourFive, chapterFourSix];
@@ -24,7 +31,7 @@ const metrics = {
   selfChecks: chapters.reduce((total, chapter) => total + chapter.selfCheck.length, 0),
   labsImplemented: labs.filter((lab) => lab.level === 4 && lab.href !== "/lab/").length,
   levelExamQuestions: level4Questions.length,
-  spectra: spectra.length,
+  spectra: spectraData.length,
   formulas: Object.keys(formulas).length,
   glossaryTerms: glossary.length,
   productionCases: chapterFourSix.cases.length,
@@ -60,10 +67,11 @@ if (strict && metrics.completedReviews < 3) {
   process.exitCode = 1;
 }
 
-const atomicLinesVerified = spectra.filter((line) => line.verificationStatus === "nist-line-verified").length;
-const molecularBands = spectra.filter((line) => ["CO", "CN", "C2", "N2", "OH"].includes(line.species));
+const atomicLinesVerified = spectraData.filter((line) => line.verificationStatus === "nist-line-verified").length;
+const molecularBands = spectraData.filter((line) => ["CO", "CN", "C2", "N2", "OH"].includes(line.species));
 const molecularBandsPending = molecularBands.filter(isMolecularSourcePending).length;
-const molecularBandsApproved = molecularBands.filter(isMolecularSourceApprovalComplete).length;
+const molecularApprovalChecks = await Promise.all(molecularBands.map((line) => isMolecularSourceReviewComplete(line, evidenceRepo)));
+const molecularBandsApproved = molecularApprovalChecks.filter(Boolean).length;
 console.log(`外部審閱狀態：OES 原子線已逐線 NIST 核實 ${atomicLinesVerified}/13、分子帶來源核准 ${molecularBandsApproved}/9、pending ${molecularBandsPending}/9；L4 技術、教學與一致性審閱仍需具名審閱者簽核。`);
 if (atomicLinesVerified !== 13 || molecularBands.length !== 9 || molecularBandsPending + molecularBandsApproved !== 9) {
   console.error("OES 來源狀態門檻不符：必須為原子線 NIST 核實 13/13，且 9 個分子帶各自為乾淨 pending 或完整 evidence-approved 狀態。");

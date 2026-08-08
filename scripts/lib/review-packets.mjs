@@ -1,9 +1,10 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
+import { isEvidenceReference, isValidRfc3339DateTime } from "../../src/data/evidence.js";
+import { areTrackedEvidenceFiles, isCommitReachable } from "./repository-evidence.mjs";
 
 export const REVIEW_GATES = Object.freeze(["technical", "teaching", "consistency"]);
 const FULL_COMMIT_SHA = /^[0-9a-f]{40}$/i;
-const RFC3339_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
 const levelCriteria = {
   1: {
@@ -28,7 +29,7 @@ const levelCriteria = {
   }
 };
 
-export async function validateReviewPackets(reviewRoot) {
+export async function validateReviewPackets(reviewRoot, repoRoot = path.resolve(reviewRoot, "../..")) {
   const failures = [];
   for (const level of [1, 2, 3, 4]) {
     const directory = path.join(reviewRoot, `l${level}`);
@@ -77,19 +78,19 @@ export async function validateReviewPackets(reviewRoot) {
         if (review.reviewer?.name || review.reviewer?.role || review.reviewed_commit || review.approved_at || review.evidence?.length) failures.push(`L${level} ${file} pending 時審閱者、reviewed_commit、approved_at 與 evidence 必須留白。`);
       }
       if (review.status === "approved") {
-        if (!isReviewApprovalComplete(review)) failures.push(`L${level} ${file} approved 時必須填妥具名審閱者、完整 commit SHA、RFC 3339 核准時間與至少一筆證據。`);
+        if (!(await isReviewApprovalComplete(review, repoRoot))) failures.push(`L${level} ${file} approved 時必須填妥具名審閱者、可追溯 commit、有效 RFC 3339 核准時間與已納入 Git 的審閱證據檔。`);
       }
     }
   }
   return failures;
 }
 
-export async function countApprovedReviews(reviewRoot, level) {
+export async function countApprovedReviews(reviewRoot, level, repoRoot = path.resolve(reviewRoot, "../..")) {
   let approved = 0;
   for (const gate of REVIEW_GATES) {
     try {
       const review = JSON.parse(await readFile(path.join(reviewRoot, `l${level}`, `${gate}-review.json`), "utf8"));
-      if (isReviewApprovalComplete(review)) approved += 1;
+      if (await isReviewApprovalComplete(review, repoRoot)) approved += 1;
     } catch (error) {
       if (error.code !== "ENOENT") throw error;
     }
@@ -97,13 +98,13 @@ export async function countApprovedReviews(reviewRoot, level) {
   return approved;
 }
 
-export async function pendingReviewGates(reviewRoot) {
+export async function pendingReviewGates(reviewRoot, repoRoot = path.resolve(reviewRoot, "../..")) {
   const pending = [];
   for (const level of [1, 2, 3, 4]) {
     for (const gate of REVIEW_GATES) {
       try {
         const review = JSON.parse(await readFile(path.join(reviewRoot, `l${level}`, `${gate}-review.json`), "utf8"));
-        if (!isReviewApprovalComplete(review)) pending.push(`L${level} ${gate}`);
+        if (!(await isReviewApprovalComplete(review, repoRoot))) pending.push(`L${level} ${gate}`);
       } catch (_) {
         pending.push(`L${level} ${gate}`);
       }
@@ -112,25 +113,20 @@ export async function pendingReviewGates(reviewRoot) {
   return pending;
 }
 
-export function isReviewApprovalComplete(review) {
-  return review?.status === "approved"
+export async function isReviewApprovalComplete(review, repoRoot) {
+  const completeShape = review?.status === "approved"
     && isNonEmptyString(review.reviewer?.name)
     && isNonEmptyString(review.reviewer?.role)
     && FULL_COMMIT_SHA.test(review.reviewed_commit ?? "")
-    && isRfc3339DateTime(review.approved_at)
+    && isValidRfc3339DateTime(review.approved_at)
     && Array.isArray(review.evidence)
     && review.evidence.length > 0
-    && review.evidence.every(isEvidenceEntry);
+    && review.evidence.every(isEvidenceReference);
+  if (!completeShape || !repoRoot) return false;
+  return (await isCommitReachable(repoRoot, review.reviewed_commit))
+    && (await areTrackedEvidenceFiles(repoRoot, review.evidence));
 }
 
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
-}
-
-function isRfc3339DateTime(value) {
-  return isNonEmptyString(value) && RFC3339_DATE_TIME.test(value) && !Number.isNaN(Date.parse(value));
-}
-
-function isEvidenceEntry(value) {
-  return isNonEmptyString(value);
 }

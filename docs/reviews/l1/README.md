@@ -1,6 +1,6 @@
 # L1 三道審閱
 
-這個目錄保存 P1 發佈前的三道審閱證據。建立檔案不等於通過；只有具名責任者把 `status` 改為 `approved`，且填妥審閱者姓名、角色、40 字元 `reviewed_commit`、RFC 3339 `approved_at` 與至少一筆非空 `evidence`，才會被 `npm run audit:p1 -- --strict` 計為完成。
+這個目錄保存 P1 發佈前的三道審閱證據。建立檔案不等於通過；只有具名責任者把 `status` 改為 `approved`，且填妥審閱者姓名、角色、可由目前 Git 追溯的 40 字元 `reviewed_commit`、有效 RFC 3339 `approved_at`，並在 `docs/reviews/evidence/` 放入至少一份已納入 Git 的證據檔，才會被 `npm run audit:p1 -- --strict` 計為完成。
 
 ## 流程
 

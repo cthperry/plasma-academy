@@ -15,9 +15,11 @@ import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { gases, gasFamilies, hazardLevels } from "../src/data/gases.js";
 import { isLocalApprovalComplete, sdsEvidence } from "../src/data/sds-evidence.js";
+import { isMolecularSourceReviewComplete } from "./lib/repository-evidence.mjs";
 import { childLangmuirSheathMm, eedfReactionModel, effectivePumpingSpeedLps, findAutoMatch, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, simulateIedf, sourceCouplingModel, townsendDischarge, virtualToolModel } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 if (gases.length !== 32) failures.push(`P2 氣體百科必須包含 32 種氣體，目前 ${gases.length} 種。`);
 const gasIds = new Set();
@@ -160,6 +162,7 @@ for (const line of spectra) {
   if (!line.sourceType || !line.verificationStatus) failures.push(`OES 譜線 ${line.id} 缺少 sourceType 或 verificationStatus。`);
   if (molecularSpecies.has(line.species)) {
     if (!(isMolecularSourcePending(line) || isMolecularSourceApprovalComplete(line))) failures.push(`分子帶 ${line.id} 必須維持無預填證據的 pending 狀態，或具備完整來源核准證據。`);
+    if (isMolecularSourceApprovalComplete(line) && !(await isMolecularSourceReviewComplete(line, root))) failures.push(`分子帶 ${line.id} 的來源核准證據檔必須存在且已納入 Git。`);
   } else {
     if (line.sourceType !== "official-database-line-record" || line.verificationStatus !== "nist-line-verified") {
       failures.push(`原子譜線 ${line.id} 必須為逐線 NIST 核實資料。`);
@@ -382,3 +385,5 @@ if (failures.length) {
 }
 
 console.log("資料模組檢查通過。");
+import path from "node:path";
+import { fileURLToPath } from "node:url";

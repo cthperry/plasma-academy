@@ -4,7 +4,7 @@ import { validateReviewPackets } from "./lib/review-packets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const reviewRoot = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, "docs", "reviews");
-const failures = await validateReviewPackets(reviewRoot);
+const failures = await validateReviewPackets(reviewRoot, root);
 
 if (failures.length) {
   failures.forEach((failure) => console.error(`- ${failure}`));
