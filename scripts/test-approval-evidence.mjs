@@ -6,6 +6,8 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { countApprovedReviews, isReviewApprovalComplete, pendingReviewGates } from "./lib/review-packets.mjs";
 import { isMolecularSourceApprovalComplete, isMolecularSourcePending } from "../src/data/spectra.js";
+import { isLocalApprovalShapeComplete } from "../src/data/sds-evidence.js";
+import { countCompleteLocalApprovals, isLocalApprovalReviewComplete } from "./lib/repository-evidence.mjs";
 
 const execFileAsync = promisify(execFile);
 const fixture = await mkdtemp(path.join(os.tmpdir(), "plasma-approval-evidence-"));
@@ -43,6 +45,33 @@ try {
   assert.equal(await countApprovedReviews(reviewRoot, 1, fixture), 1, "完整核准必須由 caller 計入。");
   assert.equal((await pendingReviewGates(reviewRoot, fixture)).includes("L1 technical"), false, "完整核准不得留在 pending 清單。");
 
+  const validSdsApproval = {
+    gasId: "ar",
+    reviewStatus: "supplier-reviewed",
+    localApprovalStatus: "approved",
+    localApproval: {
+      reviewer: { name: "林工程師", role: "廠區 EH&S 審閱者" },
+      site: "測試廠區",
+      approvedAt: "2026-08-08T12:34:56+08:00",
+      evidence: [evidenceReference]
+    }
+  };
+  assert.equal(isLocalApprovalShapeComplete(validSdsApproval), true);
+  assert.equal(await isLocalApprovalReviewComplete(validSdsApproval, fixture), true);
+  assert.equal(await countCompleteLocalApprovals([validSdsApproval], fixture), 1, "完整 SDS 廠區核准必須由共用 caller 計入。");
+
+  for (const invalidSds of [
+    { ...validSdsApproval, localApproval: { ...validSdsApproval.localApproval, approvedAt: "not-a-date" } },
+    { ...validSdsApproval, localApproval: { ...validSdsApproval.localApproval, approvedAt: "2026-02-31T12:34:56Z" } },
+    { ...validSdsApproval, localApproval: { ...validSdsApproval.localApproval, reviewer: { name: " ", role: "EH&S" } } },
+    { ...validSdsApproval, localApproval: { ...validSdsApproval.localApproval, site: " " } },
+    { ...validSdsApproval, localApproval: { ...validSdsApproval.localApproval, evidence: ["not-tracked"] } },
+    { ...validSdsApproval, localApproval: { ...validSdsApproval.localApproval, evidence: ["docs/reviews/evidence/missing.md"] } }
+  ]) {
+    assert.equal(await isLocalApprovalReviewComplete(invalidSds, fixture), false, "虛假 SDS 廠區核准不得通過 repository validator。");
+    assert.equal(await countCompleteLocalApprovals([invalidSds], fixture), 0, "虛假 SDS 廠區核准不得解除 strict blocker。");
+  }
+
   for (const invalid of [
     { ...validReview, evidence: [] },
     { ...validReview, evidence: ["x"] },
@@ -65,6 +94,8 @@ try {
   const directoryEvidence = { ...validReview, evidence: [directoryReference] };
   await writeFile(reviewFile, JSON.stringify(directoryEvidence));
   assert.equal(await isReviewApprovalComplete(directoryEvidence, fixture), false, "名稱像附件的目錄不得當成 regular evidence file。");
+  const directorySds = { ...validSdsApproval, localApproval: { ...validSdsApproval.localApproval, evidence: [directoryReference] } };
+  assert.equal(await isLocalApprovalReviewComplete(directorySds, fixture), false, "SDS evidence 不得使用名稱像附件的目錄。");
 
   const stagedReference = "docs/reviews/evidence/staged-only.md";
   await writeFile(path.join(fixture, ...stagedReference.split("/")), "staged only\n");
@@ -72,10 +103,13 @@ try {
   const stagedEvidence = { ...validReview, evidence: [stagedReference] };
   await writeFile(reviewFile, JSON.stringify(stagedEvidence));
   assert.equal(await isReviewApprovalComplete(stagedEvidence, fixture), false, "只存在於 Git index、尚未進入 HEAD 的附件不得解除 blocker。");
+  const stagedSds = { ...validSdsApproval, localApproval: { ...validSdsApproval.localApproval, evidence: [stagedReference] } };
+  assert.equal(await isLocalApprovalReviewComplete(stagedSds, fixture), false, "SDS staged-only evidence 不得解除 blocker。");
 
   await writeFile(reviewFile, JSON.stringify(validReview));
   await rm(evidenceFile);
   assert.equal(await countApprovedReviews(reviewRoot, 1, fixture), 0, "工作樹中不存在的證據檔不得解除 blocker。");
+  assert.equal(await countCompleteLocalApprovals([validSdsApproval], fixture), 0, "工作樹中不存在的 SDS 證據檔不得解除 blocker。");
 } finally {
   await rm(fixture, { recursive: true, force: true });
 }
@@ -103,4 +137,4 @@ assert.equal(isMolecularSourceApprovalComplete(approvedBand), true);
 assert.equal(isMolecularSourceApprovalComplete({ ...approvedBand, sourceApproval: { ...approvedBand.sourceApproval, evidence: ["x"] } }), false);
 assert.equal(isMolecularSourceApprovalComplete({ ...approvedBand, sourceApproval: { ...approvedBand.sourceApproval, reviewedAt: "2026-02-31T12:34:56Z" } }), false);
 
-console.log("人工與 OES 核准證據測試通過：caller 會拒絕不存在的日期、commit 與 Git 證據檔。 ");
+console.log("人工、OES 與 SDS 核准證據測試通過：caller 會拒絕無效日期、虛假責任者與非 HEAD regular evidence。 ");

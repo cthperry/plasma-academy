@@ -1,4 +1,5 @@
 import { gases } from "./gases.js";
+import { isEvidenceReference, isValidRfc3339DateTime } from "./evidence.js";
 
 const reviewedDocuments = {
   he: { documentId: "001025", revisionDate: "2025-03-28", version: "6.04" },
@@ -71,12 +72,17 @@ export const sdsEvidence = gases.map((gas) => {
 
 export const sdsEvidenceByGas = Object.fromEntries(sdsEvidence.map((entry) => [entry.gasId, entry]));
 
-export function isLocalApprovalComplete(evidence) {
+export function isLocalApprovalShapeComplete(evidence) {
   return evidence.localApprovalStatus === "approved"
-    && Boolean(evidence.localApproval?.reviewer?.name)
-    && Boolean(evidence.localApproval?.reviewer?.role)
-    && Boolean(evidence.localApproval?.site)
-    && Boolean(evidence.localApproval?.approvedAt)
+    && isNonEmptyString(evidence.localApproval?.reviewer?.name)
+    && isNonEmptyString(evidence.localApproval?.reviewer?.role)
+    && isNonEmptyString(evidence.localApproval?.site)
+    && isValidRfc3339DateTime(evidence.localApproval?.approvedAt)
     && Array.isArray(evidence.localApproval?.evidence)
-    && evidence.localApproval.evidence.length > 0;
+    && evidence.localApproval.evidence.length > 0
+    && evidence.localApproval.evidence.every(isEvidenceReference);
+}
+
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
 }

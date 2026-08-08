@@ -2,9 +2,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { pendingReviewGates } from "./lib/review-packets.mjs";
 import { runPhaseAudits } from "./lib/roadmap-audit.mjs";
-import { isLocalApprovalComplete, sdsEvidence } from "../src/data/sds-evidence.js";
+import { sdsEvidence } from "../src/data/sds-evidence.js";
 import { isMolecularSourcePending, spectra } from "../src/data/spectra.js";
-import { isMolecularSourceReviewComplete } from "./lib/repository-evidence.mjs";
+import { countCompleteLocalApprovals, isMolecularSourceReviewComplete } from "./lib/repository-evidence.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const strict = process.argv.includes("--strict");
@@ -22,7 +22,7 @@ if (!strict) {
 
 const blockers = [];
 for (const gate of await pendingReviewGates(path.join(root, "docs", "reviews"))) blockers.push(`${gate} 具名核准 pending`);
-const plantApproved = sdsEvidence.filter(isLocalApprovalComplete).length;
+const plantApproved = await countCompleteLocalApprovals(sdsEvidence, root);
 if (plantApproved < sdsEvidence.length) blockers.push(`廠區 EH&S SDS 核准 ${plantApproved}/${sdsEvidence.length}，${sdsEvidence.length - plantApproved} 筆 pending`);
 const molecularBands = spectra.filter((item) => ["CO", "CN", "C2", "N2", "OH"].includes(item.species));
 const molecularPending = molecularBands.filter(isMolecularSourcePending);

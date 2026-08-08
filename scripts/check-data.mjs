@@ -14,8 +14,8 @@ import { level2ExamSpec, level2Questions } from "../src/data/quiz/level-2.js";
 import { l1Diagrams } from "../src/data/l1-diagrams.js";
 import { l2Diagrams } from "../src/data/l2-diagrams.js";
 import { gases, gasFamilies, hazardLevels } from "../src/data/gases.js";
-import { isLocalApprovalComplete, sdsEvidence } from "../src/data/sds-evidence.js";
-import { isMolecularSourceReviewComplete } from "./lib/repository-evidence.mjs";
+import { isLocalApprovalShapeComplete, sdsEvidence } from "../src/data/sds-evidence.js";
+import { isLocalApprovalReviewComplete, isMolecularSourceReviewComplete } from "./lib/repository-evidence.mjs";
 import { childLangmuirSheathMm, eedfReactionModel, effectivePumpingSpeedLps, findAutoMatch, floatingPotentialDropEv, fluorocarbonProfile, ionAngularFwhmDeg, meanFreePathCm, neutralGasDensityCm3, paschenGases, paschenVoltage, residenceTimeSeconds, simulateIedf, sourceCouplingModel, townsendDischarge, virtualToolModel } from "../src/assets/js/plasma-model.js";
 
 const failures = [];
@@ -56,7 +56,8 @@ for (const evidence of sdsEvidence) {
   }
   if (!["pending", "approved"].includes(evidence.localApprovalStatus)) failures.push(`SDS 證據 ${evidence.gasId} 使用未知 localApprovalStatus。`);
   if (evidence.localApprovalStatus === "approved" && evidence.reviewStatus !== "supplier-reviewed") failures.push(`SDS 證據 ${evidence.gasId} 不可在供應商文件未核對前標示廠區核准。`);
-  if (evidence.localApprovalStatus === "approved" && !isLocalApprovalComplete(evidence)) failures.push(`SDS 證據 ${evidence.gasId} 標示廠區核准時必須填妥具名審閱者、廠區、日期與證據。`);
+  if (evidence.localApprovalStatus === "approved" && !isLocalApprovalShapeComplete(evidence)) failures.push(`SDS 證據 ${evidence.gasId} 標示廠區核准時必須填妥具名審閱者、廠區、有效 RFC 3339 日期與合法證據路徑。`);
+  if (evidence.localApprovalStatus === "approved" && isLocalApprovalShapeComplete(evidence) && !(await isLocalApprovalReviewComplete(evidence, root))) failures.push(`SDS 證據 ${evidence.gasId} 的廠區核准附件必須是已存在於 HEAD 的 regular file。`);
   if (evidence.localApprovalStatus === "pending") {
     const approval = evidence.localApproval;
     if (approval?.reviewer?.name || approval?.reviewer?.role || approval?.site || approval?.approvedAt || approval?.evidence?.length) failures.push(`SDS 證據 ${evidence.gasId} pending 時不得預填廠區核准證據。`);

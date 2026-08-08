@@ -12,8 +12,9 @@ import { formulas } from "../src/data/formulas.js";
 import { gases } from "../src/data/gases.js";
 import { labs } from "../src/data/labs.js";
 import { level2Questions } from "../src/data/quiz/level-2.js";
-import { isLocalApprovalComplete, sdsEvidence } from "../src/data/sds-evidence.js";
+import { sdsEvidence } from "../src/data/sds-evidence.js";
 import { countApprovedReviews } from "./lib/review-packets.mjs";
+import { countCompleteLocalApprovals } from "./lib/repository-evidence.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const strict = process.argv.includes("--strict");
@@ -62,7 +63,7 @@ const rows = Object.entries(targets).map(([item, target]) => ({ item, current: m
 console.table(rows);
 console.log(`P2 三道審閱核准：${metrics.completedReviews}/3。`);
 const supplierReviewed = sdsEvidence.filter((item) => item.reviewStatus === "supplier-reviewed").length;
-const plantApproved = sdsEvidence.filter(isLocalApprovalComplete).length;
+const plantApproved = await countCompleteLocalApprovals(sdsEvidence, root);
 console.log(`SDS 證據進度：供應商公開文件已核對 ${supplierReviewed}/32；廠區核准 ${plantApproved}/32（pending ${sdsEvidence.filter((item) => item.localApprovalStatus === "pending").length}/32，未視為完成）。`);
 if (supplierReviewed !== 32) {
   console.error("SDS repo 證據門檻不符：供應商公開文件必須核對 32/32。");
