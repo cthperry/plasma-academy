@@ -4,6 +4,7 @@ import {
   glassRemovalRate,
   resinRemovalRate
 } from "../src/assets/js/pcb-model.js";
+import { buildPcbVisualizationLayout, pcbDepthMessage } from "../src/assets/js/labs/a34-pcb-desmear.js";
 
 const failures = [];
 let checks = 0;
@@ -55,6 +56,16 @@ assert("5% CF4 必須深度通過但 flushness 失敗", desmear.depthPass && !de
 const etchback = evaluatePcbProcess({ ...reference, cf4Percent: 20, timeMinutes: 50, targetMode: "etchback" });
 assert("etchback 深度窗必須是 12-25 um", etchback.depthWindow.min === 12 && etchback.depthWindow.max === 25);
 assert("20% CF4 50 分鐘樹脂去除約 16 um 並進入 etchback 窗", approximately(etchback.resinDepthUm, 16, 0.1) && etchback.depthPass, `${etchback.resinDepthUm}`);
+
+const belowWindow = evaluatePcbProcess({ cf4Percent: 0, powerW: 100, pressureTorr: 0.1, timeMinutes: 5, targetMode: "desmear" });
+const aboveWindow = evaluatePcbProcess({ cf4Percent: 80, powerW: 600, pressureTorr: 1, timeMinutes: 60, targetMode: "desmear" });
+assert("低於深度窗必須顯示低於下限", pcbDepthMessage(belowWindow).includes("低於") && pcbDepthMessage(belowWindow).includes("下限"), pcbDepthMessage(belowWindow));
+assert("高於深度窗必須顯示高於上限", pcbDepthMessage(aboveWindow).includes("高於") && pcbDepthMessage(aboveWindow).includes("上限"), pcbDepthMessage(aboveWindow));
+for (const [width, height] of [[720, 360], [343, 580]]) {
+  const layout = buildPcbVisualizationLayout({ width, height, state: { cf4Percent: 80, powerW: 600, pressureTorr: 1 }, result: aboveWindow });
+  assert(`${width}px 極限條件視覺座標必須受限`, layout.bounded, JSON.stringify(layout.bounds));
+  assert(`${width}px 極限條件深度與速率尺度必須涵蓋資料`, layout.depthMax >= Math.max(aboveWindow.resinDepthUm, aboveWindow.glassDepthUm) && layout.rateMax >= Math.max(...layout.rates), JSON.stringify({ depthMax: layout.depthMax, rateMax: layout.rateMax }));
+}
 
 if (failures.length) {
   console.error(`PCB 模型檢查失敗（${failures.length} 項）：`);

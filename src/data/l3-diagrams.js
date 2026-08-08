@@ -51,5 +51,10 @@ export const l3Diagrams = [
   diagram("l3-42", "3-7", "plasma-cleaning-modes", "O₂、Ar 與 H₂/Ar 的作用差異", "O₂ 適合氧化有機物，Ar 提供物理活化，H₂/Ar 可降低特定金屬氧化，但每條路徑都有材料副作用。", "compare", ["O₂｜有機物氧化｜金屬氧化風險", "Ar／H₂-Ar｜物理活化或還原｜濺鍍與安全限制"], "氣體選擇以 package stack 與核准證據為準。"),
   diagram("l3-43", "3-7", "wet-clean-integration", "濕式與電漿清潔整合", "濕式步驟移除可溶污染後需乾燥與控時，電漿再處理薄殘留並活化，兩者間等待會造成再污染。", "flow", ["濕式去污", "乾燥／搬送", "電漿薄層清潔與活化", "受控 queue 後接合"], "界面歷史比最後一個步驟名稱更重要。"),
   diagram("l3-44", "3-7", "process-window", "封裝清潔的劑量上限", "接觸角可能隨劑量持續下降，但接著力在活化飽和後會因弱邊界層、氧化或鏈斷裂而反降。", "plot", ["累積 plasma dose", "接觸角／接著力", "前段：去污與活化", "後段：過度處理"], "最低接觸角不等於最高可靠度。"),
-  diagram("l3-45", "3-7", "acceptance-and-reliability", "Clean-to-bond Queue Time", "活化表面隨等待發生疏水回復、再污染或金屬氧化，接合必須在驗證時窗內完成。", "plot", ["清潔後等待時間", "表面能／接合餘裕", "初始活化狀態", "超時：回復與再污染"], "超時重清潔需受累積 dose 與再處理規範限制。")
+  diagram("l3-45", "3-7", "acceptance-and-reliability", "Clean-to-bond Queue Time", "活化表面隨等待發生疏水回復、再污染或金屬氧化，接合必須在驗證時窗內完成。", "plot", ["清潔後等待時間", "表面能／接合餘裕", "初始活化狀態", "超時：回復與再污染"], "超時重清潔需受累積 dose 與再處理規範限制。"),
+
+  diagram("l3-46", "3-8", "drilling-smear", "鑽孔 Smear 與潛在界面失效", "鑽孔熱把環氧樹脂抹到露出的內層銅；局部接觸可先導通，熱循環後弱界面才可能開裂。", "pcb-smear", [], "初始 continuity 通過不等於鍍覆界面可靠。"),
+  diagram("l3-47", "3-8", "desmear-etchback", "Desmear 深度通過但 Flushness 失敗", "純 O2 可讓樹脂回縮到 desmear 深度窗，卻不能移除 SiO2 玻纖，因此仍可能留下突出。", "pcb-depth", [], "樹脂深度與玻纖 flushness 必須分開驗收。"),
+  diagram("l3-48", "3-8", "cf4-material-exception", "CF4 比例與樹脂／玻纖共同窗口", "樹脂去除在中等 CF4 比例出現峰值，玻纖去除則隨 CF4 上升；兩者接近才形成共同窗口。", "pcb-cf4", [], "最高單一材料速率不等於最佳共同製程窗。"),
+  diagram("l3-49", "3-8", "acceptance-and-doe", "大型 Panel 的位置別均勻度", "相同名義配方在中心、邊緣與載具方位可能產生不同 resin depth 與 glass recess，需建立截面 map。", "pcb-panel", [], "量產放行需位置別截面、設備 DOE、abatement 與 EHS 證據。")
 ];

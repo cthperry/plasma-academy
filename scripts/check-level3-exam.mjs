@@ -1,5 +1,6 @@
 import { l3Diagrams } from "../src/data/l3-diagrams.js";
 import { level3ExamSpec, level3Questions } from "../src/data/quiz/level-3.js";
+import { chapterRoute } from "../src/assets/js/exam.js";
 
 const failures = [];
 const ids = new Set();
@@ -25,6 +26,12 @@ for (const question of level3Questions) {
 }
 const pcbQuestions = level3Questions.filter((question) => question.chapter === "3.8");
 if (pcbQuestions.length !== 21) failures.push(`3.8 應有 21 題題庫覆蓋，目前 ${pcbQuestions.length} 題。`);
+const pcbDiagramIds = new Set(["l3-46", "l3-47", "l3-48", "l3-49"]);
+const pcbDiagrams = l3Diagrams.filter((diagram) => diagram.chapter === "3-8");
+const pcbGraphicQuestions = pcbQuestions.filter((question) => question.type === "graphic");
+if (pcbDiagrams.length !== 4 || pcbDiagrams.some((diagram) => !pcbDiagramIds.has(diagram.id) || !diagram.type.startsWith("pcb-"))) failures.push("3.8 必須有四張 PCB 專用語意圖解。");
+if (pcbGraphicQuestions.length !== 4 || new Set(pcbGraphicQuestions.map((question) => question.image)).size !== 4 || pcbGraphicQuestions.some((question) => !pcbDiagramIds.has(question.image?.split("/").at(-1)?.replace(".svg", "")))) failures.push("3.8 四題圖形題必須各自使用一張 PCB 專用圖解。");
+if (chapterRoute("3.8") !== "/level/3/3-8-pcb-desmear/") failures.push("3.8 測驗解析回鏈錯誤。");
 const requiredPcbTags = ["smear-cause", "latent-reliability", "desmear-etchback", "oxygen-glass", "sif4", "cf4-optimum", "excess-cf4", "depth-flushness", "wet-dry", "panel-uniformity", "pfc-abatement"];
 for (const tag of requiredPcbTags) if (!pcbQuestions.some((question) => question.tags.includes(tag))) failures.push(`3.8 題庫缺少 ${tag} 概念。`);
 if (failures.length) {

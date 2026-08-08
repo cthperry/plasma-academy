@@ -362,7 +362,7 @@ function renderResults(config, spec, graded, correctCount, percent, passed, time
     <section class="exam-review-list"><h2>逐題解析</h2>${reviews}</section>`;
 }
 
-function chapterRoute(chapter) {
+export function chapterRoute(chapter) {
   const routes = {
     "1.1": "/level/1/1-1-fourth-state/",
     "1.2": "/level/1/1-2-parameters/",
@@ -383,6 +383,7 @@ function chapterRoute(chapter) {
     "3.5": "/level/3/3-5-pvd-cleaning/",
     "3.6": "/level/3/3-6-uniformity-chamber/",
     "3.7": "/level/3/3-7-packaging-cleaning/",
+    "3.8": "/level/3/3-8-pcb-desmear/",
     "4.1": "/level/4/4-1-diagnostics/",
     "4.2": "/level/4/4-2-endpoint-control/",
     "4.3": "/level/4/4-3-plasma-damage/",

@@ -91,7 +91,7 @@ function homepage() {
       <section class="hero">
         <div class="hero-copy">
           <h1>把 recipe 上的數字，連回電漿狀態與晶圓結果。</h1>
-          <p>為半導體製程工程師設計的電漿教材。網站共用同一套骨架、元件庫與進度追蹤，33 件互動元件都從一致的模型與介面契約長出來。</p>
+          <p>為半導體製程工程師設計的電漿教材。網站共用同一套骨架、元件庫與進度追蹤，34 件互動元件都從一致的模型與介面契約長出來。</p>
           <div class="hero-actions">
             <a class="button primary" href="/level/1/1-1-fourth-state/">從 1.1 開始</a>
             <a class="button secondary" href="/lab/">查看互動實驗室</a>
@@ -120,7 +120,7 @@ function homepage() {
       </section>
 
       <section class="quick-grid" aria-label="快速入口">
-        <a href="/lab/"><strong>互動實驗室</strong><span>33 件元件的獨立入口</span></a>
+        <a href="/lab/"><strong>互動實驗室</strong><span>34 件元件的獨立入口</span></a>
         <a href="/gases/"><strong>氣體百科</strong><span>32 種製程氣體與安全欄位</span></a>
         <a href="/progress/"><strong>個人進度</strong><span>匯出與匯入瀏覽器進度</span></a>
         <a href="/glossary/"><strong>術語表</strong><span>中英並列與 tooltip 來源</span></a>
@@ -649,7 +649,7 @@ function chapterFourPage(chapter) {
   const labsHtml = chapter.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapter.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
   const chapterIndex = l4Chapters.findIndex((item) => item.id === chapter.id);
-  const previous = chapterIndex === 0 ? chapterThreeSeven : l4Chapters[chapterIndex - 1];
+  const previous = chapterIndex === 0 ? chapterThreeEight : l4Chapters[chapterIndex - 1];
   const next = l4Chapters[chapterIndex + 1];
   const sidebar = l4Chapters.map((item) => `<a class="${item.id === chapter.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
   const activityLabel = chapter.labs.length
@@ -1027,7 +1027,7 @@ function labPage() {
       ${breadcrumb(["首頁", "互動實驗室"])}
       <section class="page-intro">
         <h1>互動實驗室</h1>
-        <p>33 件互動元件共用同一套 lifecycle、controls、plot、particle engine 與 canvas theme 模組；已完成的元件可從章節直接操作。</p>
+        <p>34 件互動元件共用同一套 lifecycle、controls、plot、particle engine 與 canvas theme 模組；已完成的元件可從章節直接操作。</p>
       </section>
       <div class="filter-row" role="group" aria-label="實驗室篩選">
         <button type="button" class="segmented active" data-filter="all">全部</button>

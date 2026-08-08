@@ -47,6 +47,21 @@ await ranges.nth(0).fill("20");
 await ranges.nth(3).fill("50");
 const etchbackDepth = await desktop.locator('#lab-a34 [data-value-key="樹脂深度"]').textContent();
 const etchbackPass = await desktop.locator('#lab-a34 [data-value-key="深度判定"]').textContent();
+await ranges.nth(0).fill("80");
+await ranges.nth(1).fill("600");
+await ranges.nth(2).fill("1");
+await ranges.nth(3).fill("60");
+const extremeDepthMessage = await desktop.locator('#lab-a34 [data-value-key="深度判定"]').textContent();
+const extremeCanvasLayout = await desktop.locator("#lab-a34 canvas").evaluate((canvas) => {
+  const canvasRect = canvas.getBoundingClientRect();
+  const stageRect = canvas.closest(".lab-stage").getBoundingClientRect();
+  return {
+    portrait: canvasRect.height > canvasRect.width,
+    bounded: canvasRect.left >= stageRect.left - 1 && canvasRect.right <= stageRect.right + 1,
+    intrinsicWidth: canvas.width,
+    intrinsicHeight: canvas.height
+  };
+});
 await desktop.screenshot({ path: path.join(qaDir, "desktop-a34-pcb-desmear.png"), fullPage: false });
 
 await desktop.evaluate(() => {
@@ -83,6 +98,28 @@ const mobileControlsFit = await mobile.locator("#lab-a34 [data-lab-controls]").e
 const mobileCanvasPixels = await nonBlankPixels(mobile, "#lab-a34 canvas");
 await mobile.screenshot({ path: path.join(qaDir, "mobile-a34-pcb-desmear.png"), fullPage: false });
 
+const reducedContext = await browser.newContext({ viewport: { width: 375, height: 812 }, reducedMotion: "reduce" });
+await reducedContext.addInitScript(() => {
+  const requestFrame = window.requestAnimationFrame.bind(window);
+  window.__task12RafCount = 0;
+  window.requestAnimationFrame = (callback) => {
+    window.__task12RafCount += 1;
+    return requestFrame(callback);
+  };
+});
+const reduced = await reducedContext.newPage();
+watch(reduced);
+await reduced.goto(`${base}/level/3/3-8-pcb-desmear/`, { waitUntil: "networkidle" });
+await reduced.locator("#lab-a34").scrollIntoViewIfNeeded();
+await reduced.locator("#lab-a34 input[type=range]").first().waitFor();
+await reduced.waitForTimeout(250);
+const reducedMotionState = await reduced.evaluate(() => ({
+  matches: matchMedia("(prefers-reduced-motion: reduce)").matches,
+  rafCount: window.__task12RafCount,
+  outputs: document.querySelectorAll("#lab-a34 .value-panel dd").length
+}));
+await reducedContext.close();
+
 await browser.close();
 
 if (a34RangeCount !== 4 || a34ModeCount !== 2 || a34OutputCount !== 6) throw new Error(`A34 控制或讀值不完整：range=${a34RangeCount} mode=${a34ModeCount} output=${a34OutputCount}`);
@@ -90,12 +127,14 @@ if (a34CanvasPixels < 100000 || mobileCanvasPixels < 100000) throw new Error("A3
 if (JSON.stringify(themeBefore) === JSON.stringify(themeAfter)) throw new Error("A34 主題切換後未重繪 Canvas。");
 if (!lowCf4Depth.includes("通過") || !lowCf4Flushness.includes("不通過")) throw new Error(`A34 未呈現 5% CF4 深度通過、flushness 失敗：${lowCf4Depth} / ${lowCf4Flushness}`);
 if (Math.abs(Number.parseFloat(etchbackDepth) - 16) > 0.1 || !etchbackPass.includes("通過")) throw new Error(`A34 未呈現 20% CF4、50 分鐘 etchback：${etchbackDepth} / ${etchbackPass}`);
+if (!extremeDepthMessage.includes("高於上限") || !extremeCanvasLayout.portrait || !extremeCanvasLayout.bounded || extremeCanvasLayout.intrinsicHeight <= extremeCanvasLayout.intrinsicWidth) throw new Error(`A34 極限條件的判定或動態畫布不正確：${extremeDepthMessage} / ${JSON.stringify(extremeCanvasLayout)}`);
 if (l3QuestionCount !== 40 || JSON.stringify(l3Draw) !== JSON.stringify({ single: 12, multi: 5, graphic: 12, scenario: 11 })) throw new Error(`L3 40 題抽題分布錯誤：${JSON.stringify(l3Draw)}`);
 if (!durationDisclosure.includes("70 分鐘")) throw new Error(`L3 未揭露 70 分鐘：${durationDisclosure}`);
 if (mobileOverflow || !mobileControlsFit) throw new Error(`A34 375px 溢位或控制項超框：overflow=${mobileOverflow} controlsFit=${mobileControlsFit}`);
+if (!reducedMotionState.matches || reducedMotionState.rafCount !== 0 || reducedMotionState.outputs !== 6) throw new Error(`A34 reduced-motion 未停止動畫迴圈或內容不完整：${JSON.stringify(reducedMotionState)}`);
 if (errors.length) throw new Error(`Task 12 UI 出現 console/page errors：${errors.join(" | ")}`);
 
-console.log("Task 12 UI 驗證通過：A34 1440/375、主題重繪、深度/flushness、L3 40 題抽題與 70 分鐘。 ");
+console.log("Task 12 UI 驗證通過：A34 1440/375、極限尺度、reduced-motion、主題重繪、深度/flushness、L3 40 題抽題與 70 分鐘。 ");
 
 function watch(page) {
   page.on("pageerror", (error) => errors.push(error.message));

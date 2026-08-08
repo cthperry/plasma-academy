@@ -54,7 +54,7 @@ const metrics = {
   levelExamQuestions: level3Questions.length,
   svgDiagrams: await countFiles(path.join(root, "src", "assets", "svg", "l3"), ".svg")
 };
-const targets = { chapters: 8, sections: 35, contentUnits: 68000, defects: 19, labsImplemented: 11, selfChecks: 52, levelExamQuestions: 116, svgDiagrams: 45 };
+const targets = { chapters: 8, sections: 35, contentUnits: 68000, defects: 19, labsImplemented: 11, selfChecks: 52, levelExamQuestions: 116, svgDiagrams: 49 };
 const rows = Object.entries(targets).map(([item, target]) => ({ item, current: metrics[item], target, complete: metrics[item] >= target }));
 
 console.log(`P3 正文口徑：章節核心 ${narrativeUnits.toLocaleString("zh-TW")} + 現場指南、案例、交班與製程/封裝手冊 ${casebookUnits.toLocaleString("zh-TW")} = ${metrics.contentUnits.toLocaleString("zh-TW")} 字元單位。`);

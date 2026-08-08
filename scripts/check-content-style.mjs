@@ -166,7 +166,7 @@ for (const chapter of p3Chapters) {
   for (const entry of figures) {
     if (!chapter.sections.some((section) => section.id === entry.section)) failures.push(`${entry.id} 指向不存在的小節 ${chapter.id}/${entry.section}。`);
     if (entry.caption.length < 20 || entry.caption.length > 80) failures.push(`${entry.id} 圖說應為 20–80 字，目前 ${entry.caption.length} 字。`);
-    if (!entry.note || !["flow", "compare", "plot", "profile", "wafer"].includes(entry.type)) failures.push(`${entry.id} 缺少有效圖型或教學註記。`);
+    if (!entry.note || (!["flow", "compare", "plot", "profile", "wafer"].includes(entry.type) && !entry.type.startsWith("pcb-"))) failures.push(`${entry.id} 缺少有效圖型或教學註記。`);
   }
 
   if (chapter.id === "3-8") continue;
@@ -198,7 +198,7 @@ for (const chapter of p3Chapters) {
   if (exerciseLength < 220) failures.push(`${chapter.id} 進階交班演練至少需 220 個有效字元，目前 ${exerciseLength}。`);
 }
 
-if (l3Diagrams.length !== 45) failures.push(`L3 應有 45 張圖解資料，目前 ${l3Diagrams.length} 張。`);
+if (l3Diagrams.length !== 49) failures.push(`L3 應有 49 張圖解資料，目前 ${l3Diagrams.length} 張。`);
 
 if (packagingCleaningProtocols.length !== 8) failures.push(`3-7 封裝清潔工程手冊應有 8 單元，目前 ${packagingCleaningProtocols.length} 單元。`);
 const protocolIds = new Set();
