@@ -10,7 +10,7 @@ await mkdir(qaDir, { recursive: true });
 const objectiveCounts = {
   "1-1": 4, "1-2": 4, "1-3": 3, "1-4": 3, "1-5": 4, "1-6": 3,
   "2-1": 3, "2-2": 4, "2-3": 4, "2-4": 4, "2-5": 4, "2-6": 5,
-  "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 5,
+  "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 5, "3-8": 5,
   "4-1": 5, "4-2": 5, "4-3": 5, "4-4": 4, "4-5": 4, "4-6": 4
 };
 const questionById = new Map(level4Questions.map((question) => [question.id, question]));
@@ -91,12 +91,14 @@ await page.locator("[data-import-progress]").setInputFiles({
   mimeType: "application/json",
   buffer: Buffer.from("{not valid json", "utf8")
 });
+await page.waitForFunction(() => document.querySelector("[data-import-status]")?.textContent?.includes("匯入失敗"));
 const invalidImportStatus = await page.locator("[data-import-status]").textContent();
 await page.locator("[data-import-progress]").setInputFiles({
   name: "normalized-progress.json",
   mimeType: "application/json",
   buffer: Buffer.from(JSON.stringify({ chapters: null, quizzes: null, labUsage: null }), "utf8")
 });
+await page.waitForFunction(() => document.querySelector("[data-import-status]")?.textContent?.includes("進度匯入完成"));
 const normalizedImportStatus = await page.locator("[data-import-status]").textContent();
 const normalizedProgress = await page.evaluate(() => JSON.parse(localStorage.getItem("plasma-academy.progress")));
 await setProgress(page, generatedProgress);
@@ -130,15 +132,15 @@ if (!unlockedStatus.includes("已完成 5/6 章") || startDisabled) throw new Er
 if (questionCount !== 30 || JSON.stringify(draw) !== JSON.stringify({ single: 8, multi: 4, numeric: 3, graphic: 5, scenario: 10 })) throw new Error(`L4 draw 錯誤：${questionCount} / ${JSON.stringify(draw)}`);
 if (!graphicLoaded) throw new Error("L4 圖形題未載入有效本機圖片與 alt text。");
 if (score !== 100 || !storedL4?.passed || storedL4.bestScore !== 100 || !l4Badge) throw new Error("L4 滿分作答、持久化或電漿專家徽章失敗。");
-if (!partialCertificateDisabled) throw new Error("只通過 L4、尚未完成 25 章時不應允許產生證書。");
-if (!fullBadge || !certificateEnabled || moduleCount !== 25) throw new Error("全程完訓徽章、證書資格或 25 模組清單失敗。");
+if (!partialCertificateDisabled) throw new Error("只通過 L4、尚未完成 26 章時不應允許產生證書。");
+if (!fullBadge || !certificateEnabled || moduleCount !== 26) throw new Error("全程完訓徽章、證書資格或 26 模組清單失敗。");
 if (!certificateText.includes("測試學員") || !certificateText.includes("完成日期") || !certificateText.includes("L4 電漿專家") || !certificateText.includes("本證書由學習者本機產生，供內部訓練紀錄參考，非第三方認證。")) throw new Error("證書姓名、階段、日期或固定聲明缺失。");
 if (!invalidImportStatus.includes("匯入失敗") || !normalizedImportStatus.includes("匯入完成") || Object.keys(normalizedProgress.chapters).length || Object.keys(normalizedProgress.quizzes).length || Object.keys(normalizedProgress.labUsage).length) throw new Error("進度匯入錯誤處理或資料正規化失敗。");
 if (printGeometry.display === "none" || printGeometry.left < -1 || printGeometry.right > printGeometry.viewport + 1) throw new Error(`列印證書版面溢出：${JSON.stringify(printGeometry)}`);
 if (mobileProgressOverflow || mobileExamOverflow) throw new Error(`375px 發生水平溢出：progress=${mobileProgressOverflow}, exam=${mobileExamOverflow}`);
 if (errors.length) throw new Error(`L4 exam UI 發生錯誤：${errors.join(" | ")}`);
 
-console.log(`L4 測驗 UI 驗證通過：locked/unlocked、${questionCount} 題 draw、100 分、四階徽章、25 章證書、375px 與列印版面。`);
+console.log(`L4 測驗 UI 驗證通過：locked/unlocked、${questionCount} 題 draw、100 分、四階徽章、26 章證書、375px 與列印版面。`);
 
 function makeProgress(counts, quizzes = {}) {
   return {

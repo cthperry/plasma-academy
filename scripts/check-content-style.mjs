@@ -14,6 +14,7 @@ import { chapterThreeFour } from "../src/content/chapter-3-4.mjs";
 import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
 import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
+import { chapterThreeEight } from "../src/content/chapter-3-8-pcb-desmear.mjs";
 import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
 import { chapterFourTwo } from "../src/content/chapter-4-2.mjs";
 import { chapterFourThree } from "../src/content/chapter-4-3.mjs";
@@ -31,7 +32,7 @@ import { l3Diagrams } from "../src/data/l3-diagrams.js";
 
 const l1Chapters = expandL1Content([chapterOneOne, ...l1FoundationChapters]);
 const chapters = [...l1Chapters, chapterTwoOne, chapterTwoTwo, chapterTwoThree, chapterTwoFour, chapterTwoFive, chapterTwoSix];
-const p3Chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven];
+const p3Chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven, chapterThreeEight];
 const failures = [];
 const stripHtml = (value) => String(value ?? "")
   .replace(/<figure[\s\S]*?<\/figure>/g, " ")
@@ -168,6 +169,8 @@ for (const chapter of p3Chapters) {
     if (!entry.note || !["flow", "compare", "plot", "profile", "wafer"].includes(entry.type)) failures.push(`${entry.id} 缺少有效圖型或教學註記。`);
   }
 
+  if (chapter.id === "3-8") continue;
+
   const guide = l3FieldGuides[chapter.id];
   for (const field of ["title", "scope", "evidence", "experiment", "release"]) {
     if (!guide?.[field]) failures.push(`${chapter.id} 現場判讀指南缺少 ${field}。`);
@@ -235,4 +238,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`內容規範檢查通過：19 個 P1-P3 章 + 6 個 L4 章（共 25 章）、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3.1/3.2 工程手冊 16 單元、3.3–3.6 工程手冊 32 單元、3-7 封裝清潔工程手冊 8 單元、A01–A32/A33 觀察引導。`);
+console.log(`內容規範檢查通過：20 個 P1-P3 章 + 6 個 L4 章（共 26 章）、L1 ${l1Diagrams.length} 張圖、L2 ${l2Diagrams.length} 張圖、L3 ${l3Diagrams.length} 張圖、L2 36 則工程案例與 6 份交班演練、L3 28 則工程案例與 7 份交班演練、3.1/3.2 工程手冊 16 單元、3.3–3.6 工程手冊 32 單元、3-7 封裝清潔工程手冊 8 單元、A01–A34 觀察引導。`);

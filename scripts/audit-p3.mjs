@@ -8,6 +8,7 @@ import { chapterThreeFour } from "../src/content/chapter-3-4.mjs";
 import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
 import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
+import { chapterThreeEight } from "../src/content/chapter-3-8-pcb-desmear.mjs";
 import { l3FieldGuides, l3EngineeringCases, l3ShiftExercises } from "../src/content/l3-engineering-casebook.mjs";
 import { packagingCleaningProtocols } from "../src/content/l3-packaging-cleaning-handbook.mjs";
 import { l3ProcessProtocolsPart1 } from "../src/content/l3-process-handbooks-part1.mjs";
@@ -18,7 +19,7 @@ import { l3Diagrams } from "../src/data/l3-diagrams.js";
 import { level3Questions } from "../src/data/quiz/level-3.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven];
+const chapters = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven, chapterThreeEight];
 const stripHtml = (value) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
 const narrativeContent = chapters.flatMap((chapter) => [
   chapter.title,
@@ -53,7 +54,7 @@ const metrics = {
   levelExamQuestions: level3Questions.length,
   svgDiagrams: await countFiles(path.join(root, "src", "assets", "svg", "l3"), ".svg")
 };
-const targets = { chapters: 7, sections: 30, contentUnits: 68000, defects: 19, labsImplemented: 10, selfChecks: 45, levelExamQuestions: 95, svgDiagrams: 45 };
+const targets = { chapters: 8, sections: 35, contentUnits: 68000, defects: 19, labsImplemented: 11, selfChecks: 52, levelExamQuestions: 116, svgDiagrams: 45 };
 const rows = Object.entries(targets).map(([item, target]) => ({ item, current: metrics[item], target, complete: metrics[item] >= target }));
 
 console.log(`P3 正文口徑：章節核心 ${narrativeUnits.toLocaleString("zh-TW")} + 現場指南、案例、交班與製程/封裝手冊 ${casebookUnits.toLocaleString("zh-TW")} = ${metrics.contentUnits.toLocaleString("zh-TW")} 字元單位。`);

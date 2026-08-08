@@ -3,7 +3,7 @@ import { clearProgress, getProgress, normalizeProgress, saveProgress } from "./p
 const chapterObjectiveCounts = {
   "1-1": 4, "1-2": 4, "1-3": 3, "1-4": 3, "1-5": 4, "1-6": 3,
   "2-1": 3, "2-2": 4, "2-3": 4, "2-4": 4, "2-5": 4, "2-6": 5,
-  "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 5,
+  "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 5, "3-8": 5,
   "4-1": 5, "4-2": 5, "4-3": 5, "4-4": 4, "4-5": 4, "4-6": 4
 };
 const levelNames = ["L1 電漿入門", "L2 氣體與電漿源", "L3 製程應用與診斷", "L4 電漿專家"];
@@ -101,11 +101,11 @@ function initProgressPage() {
     const generateButton = page.querySelector("[data-certificate-generate]");
     allBadge.classList.toggle("earned", eligible);
     allStatus.textContent = eligible
-      ? "四階測驗與 25 章全部學習目標均已完成"
-      : `已通過 ${passedLevels.length}/4 階測驗 · 已完成 ${completedChapters}/25 章`;
+      ? "四階測驗與 26 章全部學習目標均已完成"
+      : `已通過 ${passedLevels.length}/4 階測驗 · 已完成 ${completedChapters}/26 章`;
     certificateStatus.textContent = eligible
       ? "資格已確認。輸入姓名後可在這台裝置產生證書。"
-      : `尚未符合資格：需通過 4/4 階測驗並完成 25/25 章，目前為 ${passedLevels.length}/4 與 ${completedChapters}/25。`;
+      : `尚未符合資格：需通過 4/4 階測驗並完成 26/26 章，目前為 ${passedLevels.length}/4 與 ${completedChapters}/26。`;
     generateButton.disabled = !eligible;
     const certificate = progress.certificate;
     if (eligible && certificate?.learnerName && (certificate.completedAt || certificate.issuedAt)) showCertificate(page, certificate);

@@ -7,6 +7,7 @@ import { formulas } from "../src/data/formulas.js";
 import { spectra } from "../src/data/spectra.js";
 import { chapterOneOne } from "../src/content/chapter-1-1.mjs";
 import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
+import { chapterThreeEight } from "../src/content/chapter-3-8-pcb-desmear.mjs";
 import { l1FoundationChapters } from "../src/content/l1-foundation-chapters.mjs";
 import { level1ExamSpec, level1Questions } from "../src/data/quiz/level-1.js";
 import { level2ExamSpec, level2Questions } from "../src/data/quiz/level-2.js";
@@ -82,9 +83,14 @@ for (const [index, term] of glossary.entries()) {
 }
 
 const modules = curriculum.levels.flatMap((level) => level.modules);
-if (modules.length < 12) {
-  failures.push(`P0 curriculum 應至少列出 L1/L2 的 12 個模組，目前 ${modules.length} 個。`);
+if (modules.length !== 26) failures.push(`課程應為 26 個模組，目前 ${modules.length} 個。`);
+for (const level of curriculum.levels) {
+  const moduleHours = level.modules.reduce((total, module) => total + module.hours, 0);
+  if (level.hours !== moduleHours) failures.push(`L${level.id} 宣告時數 ${level.hours} h 與模組加總 ${moduleHours} h 不一致。`);
 }
+if (curriculum.levels.reduce((total, level) => total + level.hours, 0) !== 65.5) failures.push("課程總時數應為 65.5 h。");
+const levelThree = curriculum.levels.find((level) => level.id === 3);
+if (levelThree?.hours !== 25.5 || levelThree?.modules.find((module) => module.id === "3.2")?.hours !== 4 || levelThree?.modules.at(-1)?.id !== "3.8" || levelThree.modules.at(-1).href !== chapterThreeEight.route) failures.push("L3 3.2、3.8、25.5 h 或 route 未正確登錄。");
 
 for (const requiredTerm of ["重佈線層", "凸塊下金屬層", "底填膠", "表面活化", "離子污染"]) {
   if (!glossary.some((term) => term.zh === requiredTerm)) {
@@ -92,9 +98,7 @@ for (const requiredTerm of ["重佈線層", "凸塊下金屬層", "底填膠", "
   }
 }
 
-if (labs.length !== 33 || !labs.some((lab) => lab.id === "A33" && lab.chapter === "3.7")) {
-  failures.push(`互動元件清單應為 A01-A33 共 33 件，且 A33 必須屬於 3.7，目前 ${labs.length} 件。`);
-}
+if (labs.length !== 34 || !labs.some((lab) => lab.id === "A33" && lab.chapter === "3.7") || !labs.some((lab) => lab.id === "A34" && lab.chapter === "3.8" && lab.href === `${chapterThreeEight.route}#lab-a34`)) failures.push(`互動元件清單應為 A01-A34 共 34 件，且 A33/A34 必須分別屬於 3.7/3.8，目前 ${labs.length} 件。`);
 for (const id of ["A17", "A18"]) {
   const lab = labs.find((item) => item.id === id);
   if (!lab || lab.href !== `/level/3/3-1-etch-mechanisms/#lab-${id.toLowerCase()}`) failures.push(`${id} 尚未正確接到 3.1 章節。`);

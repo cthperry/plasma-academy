@@ -23,8 +23,8 @@ const examConfigs = {
     dataPath: "/assets/data/quiz/level-3.js",
     questionExport: "level3Questions",
     specExport: "level3ExamSpec",
-    objectiveCounts: { "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 5 },
-    requiredChapters: 6
+    objectiveCounts: { "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 5, "3-8": 5 },
+    requiredChapters: 7
   },
   4: {
     key: "L4",

@@ -38,18 +38,19 @@ export const curriculum = {
       id: 3,
       name: "進階",
       title: "L3 進階 · 製程應用與整合",
-      hours: 22,
+      hours: 25.5,
       progress: 0,
       summary: "把蝕刻、沉積、缺陷、均勻度與封裝清潔轉成可診斷的工程工具。",
-      labs: ["A17", "A18", "A19", "A20", "A21", "A22", "A23", "A24", "A25", "A33"],
+      labs: ["A17", "A18", "A19", "A20", "A21", "A22", "A23", "A24", "A25", "A33", "A34"],
       modules: [
         { id: "3.1", title: "異向性蝕刻與協同效應", hours: 3, labs: ["A17", "A18"], prerequisites: "2.2, 2.4", href: "/level/3/3-1-etch-mechanisms/", description: "從 Coburn-Winters 實驗一路連到 profile 控制。" },
-        { id: "3.2", title: "深矽與循環蝕刻", hours: 2.5, labs: ["A19"], prerequisites: "3.1", href: "/level/3/3-2-deep-silicon-etch/", description: "Bosch 製程、scallop 與高深寬比限制。" },
+        { id: "3.2", title: "深矽與循環蝕刻", hours: 4, labs: ["A19"], prerequisites: "3.1", href: "/level/3/3-2-deep-silicon-etch/", description: "Bosch 製程、scallop 與高深寬比限制。" },
         { id: "3.3", title: "缺陷圖鑑與診斷", hours: 4, labs: ["A20", "A21"], prerequisites: "3.1, 3.2", href: "/level/3/3-3-defect-atlas/", description: "把 profile 症狀轉成可能成因與對策。" },
         { id: "3.4", title: "電漿沉積與填溝", hours: 4, labs: ["A22", "A23"], prerequisites: "2.3, 2.5", href: "/level/3/3-4-plasma-deposition/", description: "PECVD、HDP-CVD、PEALD 與階梯覆蓋率。" },
         { id: "3.5", title: "PVD 與腔體清潔", hours: 2.5, labs: ["A24"], prerequisites: "2.5", href: "/level/3/3-5-pvd-cleaning/", description: "磁控濺鍍、靶材利用率與 NF3 遠端腔體清潔。" },
         { id: "3.6", title: "均勻度、PM 與腔體記憶", hours: 2.5, labs: ["A25"], prerequisites: "3.1-3.5", href: "/level/3/3-6-uniformity-chamber/", description: "晶圓 map、first wafer effect 與量產穩定度。" },
-        { id: "3.7", title: "封裝清潔與表面活化", hours: 3, labs: ["A33"], prerequisites: "2.1, 2.2, 3.4", href: "/level/3/3-7-packaging-cleaning/", description: "RDL、UBM、凸塊、underfill 與模封前後的污染控制。" }
+        { id: "3.7", title: "封裝清潔與表面活化", hours: 3, labs: ["A33"], prerequisites: "2.1, 2.2, 3.4", href: "/level/3/3-7-packaging-cleaning/", description: "RDL、UBM、凸塊、underfill 與模封前後的污染控制。" },
+        { id: "3.8", title: "PCB 電漿除膠渣與咬蝕", hours: 2.5, labs: ["A34"], prerequisites: "2.2, 3.7", href: "/level/3/3-8-pcb-desmear/", description: "以樹脂深度與玻纖 flushness 建立 PCB via wall 的除膠渣與咬蝕窗口。" }
       ]
     },
     {

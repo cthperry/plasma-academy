@@ -19,6 +19,7 @@ import { chapterThreeFour } from "../src/content/chapter-3-4.mjs";
 import { chapterThreeFive } from "../src/content/chapter-3-5.mjs";
 import { chapterThreeSix } from "../src/content/chapter-3-6.mjs";
 import { chapterThreeSeven } from "../src/content/chapter-3-7-packaging-cleaning.mjs";
+import { chapterThreeEight } from "../src/content/chapter-3-8-pcb-desmear.mjs";
 import { chapterFourOne } from "../src/content/chapter-4-1.mjs";
 import { chapterFourTwo } from "../src/content/chapter-4-2.mjs";
 import { chapterFourThree } from "../src/content/chapter-4-3.mjs";
@@ -153,7 +154,7 @@ function levelPage(levelId) {
   `).join("");
 
   const examSpec = { 1: level1ExamSpec, 2: level2ExamSpec, 3: level3ExamSpec, 4: level4ExamSpec }[level.id];
-  const examRequirement = level.id === 3 ? "完成 7 章中的 6 章學習目標後啟用" : "完成 6 章中的 5 章學習目標後啟用";
+  const examRequirement = level.id === 3 ? "完成 8 章中的 7 章學習目標後啟用" : "完成 6 章中的 5 章學習目標後啟用";
   const assessment = examSpec ? `
       <section class="assessment-gate" data-exam-gate data-exam-level="${level.id}">
         <h2>L${level.id} 結業測驗</h2>
@@ -387,7 +388,7 @@ function packagingCleaningPage() {
     <main class="chapter-layout" data-chapter-id="${chapterThreeSeven.id}">
       <aside class="chapter-sidebar">
         <strong>課程目錄</strong>
-        ${[chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven].map((item) => `<a class="${item.id === chapterThreeSeven.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("")}
+        ${[chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven, chapterThreeEight].map((item) => `<a class="${item.id === chapterThreeSeven.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("")}
         <a href="/level/3/">L3 模組列表</a>
         <a href="/glossary/">術語表</a>
       </aside>
@@ -413,7 +414,7 @@ function packagingCleaningPage() {
         <section class="chapter-support"><h2>延伸閱讀</h2><ul>${readings}</ul></section>
         <nav class="chapter-nav" aria-label="章節導覽">
           <a class="button secondary" href="${chapterThreeSix.route}">上一章：${chapterThreeSix.title}</a>
-          <a class="button primary" href="/lab/">前往互動實驗室</a>
+          <a class="button primary" href="${chapterThreeEight.route}">下一章：${chapterThreeEight.title}</a>
         </nav>
       </article>
       <aside class="chapter-outline">
@@ -443,6 +444,7 @@ function chapterThreeOnePage() {
         <strong>課程目錄</strong>
         <a class="current" href="${chapterThreeOne.route}">${chapterThreeOne.title}</a>
         <a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a>
+        <a href="${chapterThreeEight.route}">${chapterThreeEight.title}</a>
         <a href="/level/3/">L3 模組列表</a>
         <a href="/lab/">互動實驗室</a>
       </aside>
@@ -478,7 +480,7 @@ function chapterThreeTwoPage() {
   const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree].map((item) => `<a class="${item.id === chapterThreeTwo.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
   return page(chapterThreeTwo.route, chapterThreeTwo.title, `
     <main class="chapter-layout" data-chapter-id="${chapterThreeTwo.id}">
-      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a><a href="/level/3/">L3 模組列表</a></aside>
+      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a><a href="${chapterThreeEight.route}">${chapterThreeEight.title}</a><a href="/level/3/">L3 模組列表</a></aside>
       <article class="chapter-main">
         ${breadcrumb(["首頁", "L3 進階", chapterThreeTwo.title])}
         <header class="chapter-header"><p class="chapter-meta">時數 ${chapterThreeTwo.hours} h · 互動元件 A19</p><h1>${chapterThreeTwo.title}</h1><p>${chapterThreeTwo.summary}</p></header>
@@ -507,7 +509,7 @@ function chapterThreeThreePage() {
   const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree].map((item) => `<a class="${item.id === chapterThreeThree.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
   return page(chapterThreeThree.route, chapterThreeThree.title, `
     <main class="chapter-layout" data-chapter-id="${chapterThreeThree.id}">
-      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a><a href="/defects/">缺陷圖鑑</a><a href="/level/3/">L3 模組列表</a></aside>
+      <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/3-7-packaging-cleaning/">3.7 封裝清潔與表面活化</a><a href="${chapterThreeEight.route}">${chapterThreeEight.title}</a><a href="/defects/">缺陷圖鑑</a><a href="/level/3/">L3 模組列表</a></aside>
       <article class="chapter-main">
         ${breadcrumb(["首頁", "L3 進階", chapterThreeThree.title])}
         <header class="chapter-header"><p class="chapter-meta">時數 ${chapterThreeThree.hours} h · 互動元件 A20、A21</p><h1>${chapterThreeThree.title}</h1><p>${chapterThreeThree.summary}</p></header>
@@ -533,7 +535,7 @@ function chapterThreeFourPage() {
   const callouts = chapterThreeFour.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapterThreeFour.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapterThreeFour.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
-  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven].map((item) => `<a class="${item.id === chapterThreeFour.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven, chapterThreeEight].map((item) => `<a class="${item.id === chapterThreeFour.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
   return page(chapterThreeFour.route, chapterThreeFour.title, `
     <main class="chapter-layout" data-chapter-id="${chapterThreeFour.id}">
       <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/">L3 模組列表</a></aside>
@@ -573,6 +575,16 @@ function chapterThreeSixPage() {
   });
 }
 
+function chapterThreeEightPage() {
+  return p3ChapterPage(chapterThreeEight, {
+    labLabel: "A34",
+    previous: chapterThreeSeven,
+    next: chapterFourOne,
+    description: "PCB FR-4 via wall 的電漿除膠渣、咬蝕、玻纖 flushness 與量產驗證邊界。",
+    extraStyles: []
+  });
+}
+
 function p3ChapterPage(chapter, { labLabel, previous, next, description, extraStyles }) {
   const objectives = chapter.objectives.map((item, index) => `<label class="objective"><input type="checkbox" aria-label="完成目標：${item}" data-objective="${index}" data-chapter-id="${chapter.id}"><span>${item}</span></label>`).join("");
   const prerequisites = chapter.prerequisites.map((item) => `<li>${item}</li>`).join("");
@@ -582,7 +594,7 @@ function p3ChapterPage(chapter, { labLabel, previous, next, description, extraSt
   const callouts = chapter.callouts.map((item) => callout(item.type, item.title, item.body)).join("");
   const labsHtml = chapter.labs.map((lab) => labContainer(lab)).join("");
   const checks = chapter.selfCheck.map(([prompt, answer]) => `<details class="check-card"><summary>${prompt}</summary><p>${answer}</p></details>`).join("");
-  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven].map((item) => `<a class="${item.id === chapter.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
+  const sidebar = [chapterThreeOne, chapterThreeTwo, chapterThreeThree, chapterThreeFour, chapterThreeFive, chapterThreeSix, chapterThreeSeven, chapterThreeEight].map((item) => `<a class="${item.id === chapter.id ? "current" : ""}" href="${item.route}">${item.title}</a>`).join("");
   return page(chapter.route, chapter.title, `
     <main class="chapter-layout" data-chapter-id="${chapter.id}">
       <aside class="chapter-sidebar"><strong>課程目錄</strong>${sidebar}<a href="/level/3/">L3 模組列表</a></aside>
@@ -1081,13 +1093,13 @@ function progressPage() {
         <section class="progress-badge progress-badge--completion" data-progress-all-badge>
           <div>
             <span class="badge-mark" aria-hidden="true">ALL</span>
-            <div><strong>全程完訓</strong><p data-progress-all-status>需通過四階測驗並完成 25 章全部學習目標</p></div>
+            <div><strong>全程完訓</strong><p data-progress-all-status>需通過四階測驗並完成 26 章全部學習目標</p></div>
           </div>
         </section>
         <section class="certificate-panel" data-certificate-panel>
           <div>
             <h2>本機完訓證書</h2>
-            <p>通過四階測驗並完成 25 章全部學習目標後，可輸入姓名產生列印版訓練紀錄。</p>
+            <p>通過四階測驗並完成 26 章全部學習目標後，可輸入姓名產生列印版訓練紀錄。</p>
           </div>
           <label class="certificate-name"><span>學員姓名</span><input type="text" maxlength="80" autocomplete="name" data-certificate-name></label>
           <p class="meta" data-certificate-status aria-live="polite">正在確認完訓資格…</p>
@@ -1104,7 +1116,7 @@ function progressPage() {
             <div><dt>完成日期</dt><dd data-certificate-date></dd></div>
           </dl>
           <section>
-            <h3>完成模組（25）</h3>
+            <h3>完成模組（26）</h3>
             <ol class="certificate-modules">${certificateModules}</ol>
           </section>
           <p class="certificate-disclaimer">本證書由學習者本機產生，供內部訓練紀錄參考，非第三方認證。</p>
@@ -1124,10 +1136,10 @@ function progressPage() {
 
 function examPage(level) {
   const spec = { 1: level1ExamSpec, 2: level2ExamSpec, 3: level3ExamSpec, 4: level4ExamSpec }[level];
-  const bankSize = { 1: 55, 2: 80, 3: 95, 4: 85 }[level];
+  const bankSize = { 1: 55, 2: 80, 3: 116, 4: 85 }[level];
   const drawCount = Object.values(spec.draw).reduce((sum, count) => sum + count, 0);
   const levelName = { 1: "初階", 2: "中階", 3: "進階", 4: "專家" }[level];
-  const chapterRequirement = level === 3 ? "完成 7 章中的 6 章學習目標後可開始" : "完成 6 章中的 5 章學習目標後可開始";
+  const chapterRequirement = level === 3 ? "完成 8 章中的 7 章學習目標後可開始" : "完成 6 章中的 5 章學習目標後可開始";
   return page(`/level/${level}/exam/`, spec.title, `
     <main class="content-shell narrow" data-exam-page data-exam-level="${level}" data-exam-minutes="${spec.durationMinutes}">
       ${breadcrumb(["首頁", `L${level} ${levelName}`, "結業測驗"])}
@@ -1305,6 +1317,7 @@ async function main() {
     chapterThreeFivePage(),
     chapterThreeSixPage(),
     packagingCleaningPage(),
+    chapterThreeEightPage(),
     ...l4Chapters.map(chapterFourPage),
     labPage(),
     progressPage(),

@@ -1041,7 +1041,7 @@ await desktop.waitForFunction(() => !document.querySelector("[data-exam-gate-sta
 const l3ExamLockedStatus = await desktop.locator("[data-exam-gate-status]").textContent();
 const l3ExamLockedLinkHidden = await desktop.locator("[data-exam-link]").isHidden();
 await desktop.evaluate(() => {
-  const counts = { "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5 };
+  const counts = { "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 5 };
   const chapters = Object.fromEntries(Object.entries(counts).map(([id, count]) => [id, { visited: true, objectives: Array(count).fill(true) }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
 });
@@ -1403,7 +1403,7 @@ const mobileL2ExamQuestionCount = await mobile.locator("[data-exam-question-nav]
 await mobile.screenshot({ path: path.join(qaDir, "mobile-l2-exam.png"), fullPage: false });
 
 await mobile.evaluate(() => {
-  const counts = { "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5 };
+  const counts = { "3-1": 6, "3-2": 5, "3-3": 5, "3-4": 5, "3-5": 5, "3-6": 5, "3-7": 5 };
   const chapters = Object.fromEntries(Object.entries(counts).map(([id, count]) => [id, { visited: true, objectives: Array(count).fill(true) }]));
   localStorage.setItem("plasma-academy.progress", JSON.stringify({ version: 1, chapters, quizzes: {}, labUsage: {} }));
 });
@@ -1583,11 +1583,11 @@ for (const check of mobileProcessHandbookChecks) {
 if (!["Cu oxide", "LMWOM", "queue time", "累積 dose", "re-clean", "supplier-specific"].every((term) => l3PackagingCaseText.includes(term))) throw new Error("L3 封裝清潔案例缺少金屬氧化、弱邊界層、超時重清潔或材料差異重點。");
 if (!["package stack", "Direct plasma", "Dose Window", "MSA", "MES", "累積損傷", "Qualification", "EH&S"].every((term) => packagingHandbookText.includes(term))) throw new Error("封裝清潔工程手冊缺少材料、設備、量測、物流、重清潔或核准重點。");
 if (mobileL3CasebookOverflow) throw new Error("L3 封裝清潔案例在手機版發生水平溢位。");
-if (!l3ExamLockedStatus.includes("還需完成 6 章") || !l3ExamLockedLinkHidden || !l3ExamUnlockedStatus.includes("60 分鐘")) throw new Error("L3 測驗的 6/7 章解鎖條件未正確運作。");
-if (l3ExamQuestionCount !== 35 || JSON.stringify(l3ExamDraw) !== JSON.stringify({ single: 10, multi: 5, graphic: 10, scenario: 10 })) throw new Error(`L3 測驗抽題分布錯誤：${JSON.stringify(l3ExamDraw)}`);
-if (!l3GraphicLoaded || l3ExamScore !== 100 || l3ExamReviewCount !== 35 || !l3ExamStoredProgress.passed || l3ExamStoredProgress.bestScore !== 100) throw new Error("L3 圖形題、計分、解析或進度寫入未通過。");
+if (!l3ExamLockedStatus.includes("還需完成 7 章") || !l3ExamLockedLinkHidden || !l3ExamUnlockedStatus.includes("70 分鐘")) throw new Error("L3 測驗的 7/8 章解鎖條件未正確運作。");
+if (l3ExamQuestionCount !== 40 || JSON.stringify(l3ExamDraw) !== JSON.stringify({ single: 12, multi: 5, graphic: 12, scenario: 11 })) throw new Error(`L3 測驗抽題分布錯誤：${JSON.stringify(l3ExamDraw)}`);
+if (!l3GraphicLoaded || l3ExamScore !== 100 || l3ExamReviewCount !== 40 || !l3ExamStoredProgress.passed || l3ExamStoredProgress.bestScore !== 100) throw new Error("L3 圖形題、計分、解析或進度寫入未通過。");
 if (!l3ExamBadgeEarned || !l3ExamBadgeStatus.includes("最佳成績 100%")) throw new Error("L3 通過徽章未正確顯示在進度頁。");
-if (mobileL3ExamOverflow || mobileL3GraphicOverflow || mobileL3ExamQuestionCount !== 35 || !mobileL3GraphicLoaded) throw new Error("L3 測驗手機版發生溢位、圖形缺漏或題目導覽缺漏。");
+if (mobileL3ExamOverflow || mobileL3GraphicOverflow || mobileL3ExamQuestionCount !== 40 || !mobileL3GraphicLoaded) throw new Error("L3 測驗手機版發生溢位、圖形缺漏或題目導覽缺漏。");
 if (a33ControlCount !== 4 || a33OutputCount !== 7 || a33PathCount !== 2 || mobileA33ControlCount !== 4 || mobileA33OutputCount !== 7 || mobileA33PathCount !== 2) throw new Error("A33 控制項、讀值或雙曲線沒有完整渲染。");
 if (!(a33InitialAngle < 30) || !(a33OvertreatedAngle <= a33InitialAngle) || !(a33OvertreatedAdhesion < a33InitialAdhesion) || !a33OvertreatedStatus.includes("處理過頭")) throw new Error("A33 未呈現接觸角持續下降但接著力因過量處理反降的製程上限。");
 if (!(a33ReducedOxide < a33OxidizedOxide) || !(a33ReducedAdhesion > a33OxidizedAdhesion) || !a33OxidizedStatus.includes("NSOP")) throw new Error("A33 的 H2/Ar 去氧化或 O2 氧化 Cu 趨勢未通過。");

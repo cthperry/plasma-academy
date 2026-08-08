@@ -116,16 +116,17 @@ for (const route of ["4-1-diagnostics", "4-2-endpoint-control", "4-3-plasma-dama
 }
 
 const modules = curriculum.levels.flatMap((level) => level.modules);
-if (modules.length !== 25 || new Set(modules.map((module) => module.id)).size !== 25) failures.push(`證書模組來源必須是 25 個唯一模組，目前 ${modules.length}。`);
+if (modules.length !== 26 || new Set(modules.map((module) => module.id)).size !== 26) failures.push(`證書模組來源必須是 26 個唯一模組，目前 ${modules.length}。`);
 const objectiveEntries = [...sourceFiles["src/assets/js/progress.js"].matchAll(/"([1-4]-\d)":\s*(\d+)/g)];
 const runtimeObjectiveCounts = new Map(objectiveEntries.map((match) => [match[1], Number(match[2])]));
-if (runtimeObjectiveCounts.size !== 25) failures.push("完整完訓資格未明確涵蓋 25 章 objectives。");
+if (runtimeObjectiveCounts.size !== 26) failures.push("完整完訓資格未明確涵蓋 26 章 objectives。");
 
 const contentFiles = [
   "chapter-1-1.mjs", "l1-foundation-chapters.mjs",
   ...[1, 2, 3, 4, 5, 6].map((number) => `chapter-2-${number}.mjs`),
   ...[1, 2, 3, 4, 5, 6].map((number) => `chapter-3-${number}.mjs`),
   "chapter-3-7-packaging-cleaning.mjs",
+  "chapter-3-8-pcb-desmear.mjs",
   ...[1, 2, 3, 4, 5, 6].map((number) => `chapter-4-${number}.mjs`)
 ];
 const contentChapters = [];
@@ -135,7 +136,7 @@ for (const file of contentFiles) {
     if (value?.id && Array.isArray(value.objectives)) contentChapters.push(value);
   }
 }
-if (contentChapters.length !== 25) failures.push(`內容來源應提供 25 章 objectives，目前 ${contentChapters.length} 章。`);
+if (contentChapters.length !== 26) failures.push(`內容來源應提供 26 章 objectives，目前 ${contentChapters.length} 章。`);
 for (const chapter of contentChapters) {
   if (runtimeObjectiveCounts.get(chapter.id) !== chapter.objectives.length) failures.push(`${chapter.id} 的完訓目標數應為 ${chapter.objectives.length}，runtime 為 ${runtimeObjectiveCounts.get(chapter.id) ?? "缺少"}。`);
 }
@@ -146,4 +147,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`L4 測驗與證書整合檢查通過：85/85、30 題 draw、5/6 gate、25 章完訓契約。`);
+console.log(`L4 測驗與證書整合檢查通過：85/85、30 題 draw、5/6 gate、26 章完訓契約。`);
