@@ -4,7 +4,8 @@
 
 - 實作提交：`3b92344`（Implement Task 12 PCB desmear curriculum）
 - 基準提交：`2092a17`
-- 結果：程式、內容與聚焦 UI 驗證完成；外部技術審閱仍依整體路線圖狀態追蹤。
+- 審查修正提交：`7d051fe`（Fix Task 12 review findings）
+- 結果：程式、內容、聚焦 UI 驗證與第一輪獨立程式碼審查修正完成；外部教材技術審閱仍依整體路線圖狀態追蹤。
 
 ## 交付內容
 
@@ -27,19 +28,20 @@
 
 - `npm run build`：通過，產生 35 張 L1、40 張 L2、45 張 L3 圖解與 41 個 HTML 頁面。
 - `npm run check:data`：通過。
-- `npm run check:pcb`：22/22 通過。
+- `npm run check:pcb`：28/28 通過，新增深度上下限文字及 720/343 px 極端尺度邊界斷言。
 - `npm run check:l3-exam`：116/116 通過，題型庫分布 single 24、multi 23、graphic 23、scenario 46。
 - `npm run audit:p3 -- --strict`：通過，8/8 章、11/11 元件、116/116 題。
 - `npm run check:links`：41 個 HTML 通過。
 - `npm run check:a11y`：41 個 HTML 通過。
 - `npm run check:contrast`：深淺主題全部達指定門檻。
 - `npm run check:content`：26 章與 A01-A34 觀察引導通過。
-- `npm run verify:task12-ui`：通過；A34 於 1440 px 與 375 px 無水平溢位，Canvas 非空白、主題重繪、控制與判讀正確，L3 抽題 40 題且揭露 70 分鐘。
+- `npm run verify:task12-ui`：通過；A34 於 1440 px 與 375 px 無水平溢位，Canvas 非空白、極端值自動尺度、reduced-motion 無持續動畫、主題重繪、控制與判讀正確，L3 抽題 40 題且揭露 70 分鐘。
 - 獨立 in-app Browser 檢查：3.8 實際頁面載入後有 4 個滑桿、2 個模式、6 個判讀值，章節前後導覽正確且頁面無水平溢位。
 - 獨立資料加總：各層宣告時數等於模組加總，總計 65.5 小時；26 模組、34 個實驗室、116 題均一致。
 
 ## 自我審查與注意事項
 
 - `src/assets/svg/l3/` 是建置會重產的既有未追蹤輸出，本任務未將其納入提交。
+- 第一輪獨立審查提出四項 Important 與三項 Minor，已於 `7d051fe` 修正：新增四張 PCB 專用題圖與語意鎖定、補 3.8 測驗回鏈及 4.1 反向導覽、A34 動態尺度、34 件揭露、上下限訊息及 reduced-motion 測試。
 - A34 的絕對速率與製程窗是代表性教學模型，不能宣稱已由設備或實驗資料驗證。
 - 人工技術、教學與一致性審閱，以及現場 EHS／製程核准，仍必須由後續嚴格完成閘門如實呈現。
