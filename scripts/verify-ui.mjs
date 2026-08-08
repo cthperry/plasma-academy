@@ -11,6 +11,7 @@ try {
   if (!existsSync(chromePath)) throw error;
   browser = await chromium.launch({ headless: true, executablePath: chromePath });
 }
+try {
 const base = "http://localhost:4173";
 const qaDir = path.resolve("qa");
 await mkdir(qaDir, { recursive: true });
@@ -1425,8 +1426,6 @@ const mobileL3GraphicLoaded = await mobile.locator(".exam-graphic img").evaluate
 const mobileL3GraphicOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
 await mobile.screenshot({ path: path.join(qaDir, "mobile-l3-exam.png"), fullPage: false });
 
-await browser.close();
-
 const result = { themeAfterClick, searchCount, packagingSearchHit, packagingH1, l1Checks, gasCardCount, fluorocarbonCardCount, extremeGasCount, gasSearchTitle, fcLabelsDoNotOverlap, gasSdsStatusCount, mobileGasOverflow, mobileGasCardCount, formulaCardCount, formulaPageText, a08InitialPanel, a08InitialDensity, a08HighFlowResidence, a08HighFlowDensity, a08HighPressureResidence, a08HighPressureDensity, a08CanvasPixels, a08ThemePixelBefore, a08ThemePixelAfter, mobileA08Overflow, mobileA08CanvasPixels, chapterOneOneSelfChecks, chapterOneOneDiagramCount, chapterOneOneSupportCount, chapterOneOneObservationCount, chapterOneOneFigureNumbersValid, examLockedStatus, examLockedLinkHidden, examUnlockedStatus, examQuestionCount, examDraw, examScore, examReviewCount, examStoredProgress, examBadgeStatus, examBadgeEarned, mobileExamOverflow, mobileExamQuestionCount, a02Initial, a02AfterDensity, a02Polarity, a02SvgPathCount, a02CanvasPixels, a03InitialPanel, a03LowPressureFwhm, a03HighPressurePanel, a03HighPressureFwhm, a03XePanel, a03ScaleToggle, a03CanvasPixels, a04InitialStatus, a04InitialPanel, a04CriticalGamma, a04ZeroGammaStatus, a04ZeroGammaFeedback, a04CriticalStatus, a04PausedButton, a04CanvasPixels, a05Initial, a05CurveCountInitial, a05AfterO2, a05Status, a05CanvasPixels, a06SteadyStatus, a06InitialDrop, a06LowDensitySheath, a06HighDensitySheath, a06DropAt4Ev, a06CurveCount, a06PlayButton, a06PlaybackPosition, a06CanvasPixels, a07InitialRegions, a07InitialInfo, a07CleaningRegions, a07SearchRegions, a07SearchInfo, a07SearchLink, a07PvdInfo, a07PvdLink, canvasInfo, mobileCanvasInfo, mobileA03CanvasPixels, mobileA04CanvasPixels, mobileA06CanvasPixels, mobileA07Regions, quizText, mobileOverflow, mobileA03Overflow, mobileA04Overflow, mobileA06Overflow, mobileA07Overflow, errors };
 Object.assign(result, { formulaDetailHeadings, formulaDetailText });
 Object.assign(result, { a09NodeCount, a09Cases, a09CuText, a10InitialStatus, a10InitialFc, a10HighStatus, a10LowStatus, a10OxideRate, a10SiRate, a10CanvasPixels, mobileA10Overflow, mobileA10CanvasPixels });
@@ -1628,3 +1627,6 @@ if (mobileA04Overflow) throw new Error("A04 手機版有水平溢出。");
 if (mobileA06Overflow) throw new Error("A06 手機版有水平溢出。");
 if (mobileA07Overflow) throw new Error("A07 手機版有水平溢出。");
 if (errors.length) throw new Error(`瀏覽器 console/page errors: ${errors.join("; ")}`);
+} finally {
+  await browser.close();
+}
