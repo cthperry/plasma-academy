@@ -2,7 +2,6 @@ import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const client = path.resolve("dist/client");
-const pageRoot = path.join(client, "__pages");
 const htmlFiles = [];
 await walk(client);
 let failed = false;
@@ -15,7 +14,7 @@ for (const file of htmlFiles) {
     const clean = link.split("#")[0].split("?")[0];
     if (!clean) continue;
     const target = clean.startsWith("/")
-      ? clean.endsWith("/") ? path.join(pageRoot, clean) : path.join(client, clean)
+      ? path.join(client, clean)
       : path.join(path.dirname(file), clean);
     const resolved = clean.endsWith("/") ? path.join(target, "index.html") : target;
     try {

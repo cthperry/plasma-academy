@@ -2,7 +2,6 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const client = path.resolve("dist/client");
-const pageRoot = path.join(client, "__pages");
 const pages = [
   "/",
   "/level/1/",
@@ -25,7 +24,7 @@ function tokenize(text) {
 
 const docs = [];
 for (const route of pages) {
-  const html = await readFile(path.join(pageRoot, route, "index.html"), "utf8");
+  const html = await readFile(path.join(client, route, "index.html"), "utf8");
   const title = html.match(/<title>(.*?)<\/title>/)?.[1] ?? route;
   docs.push({ title, url: route, text: html.replace(/<[^>]+>/g, " ") });
 }

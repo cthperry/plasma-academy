@@ -11,7 +11,7 @@ const a26Path = path.join(root, "src", "assets", "js", "labs", "a26-langmuir-pro
 const a27Path = path.join(root, "src", "assets", "js", "labs", "a27-oes.js");
 const labCssPath = path.join(root, "src", "assets", "css", "a26-a27.css");
 const contentCheckPath = path.join(root, "scripts", "check-content-style.mjs");
-const builtPagePath = path.join(root, "dist", "client", "__pages", "level", "4", "4-1-diagnostics", "index.html");
+const builtPagePath = path.join(root, "dist", "client", "level", "4", "4-1-diagnostics", "index.html");
 const builtSpectrumPath = path.join(root, "dist", "client", "data", "spectra.js");
 const builtEvidencePath = path.join(root, "dist", "client", "data", "evidence.js");
 

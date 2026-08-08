@@ -114,7 +114,9 @@ try {
 
 async function serveAsset(request) {
   const url = new URL(request.url);
-  const pathname = decodeURIComponent(url.pathname);
+  let pathname = decodeURIComponent(url.pathname);
+  if (pathname === "/") pathname = "/index.html";
+  else if (pathname.endsWith("/")) pathname += "index.html";
   const file = path.resolve(client, `.${pathname}`);
   if (!file.startsWith(`${client}${path.sep}`)) return new Response("禁止存取此路徑。", { status: 403 });
   try {

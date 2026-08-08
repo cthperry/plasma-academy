@@ -13,10 +13,10 @@ export default {
       return Response.redirect(url.toString(), 308);
     }
 
-    const response = await env.ASSETS.fetch(pageAssetRequest(request));
+    const response = await env.ASSETS.fetch(request);
     if (response.status !== 404) return secureHtml(response);
 
-    const fallbackRequest = new Request(new URL("/__pages/404.html", request.url), {
+    const fallbackRequest = new Request(new URL("/404.html", request.url), {
       method: "GET",
       headers: request.headers
     });
@@ -29,15 +29,6 @@ export default {
     }));
   }
 };
-
-function pageAssetRequest(request) {
-  const url = new URL(request.url);
-  if (url.pathname.includes(".")) return request;
-  url.pathname = url.pathname === "/"
-    ? "/__pages/index.html"
-    : `/__pages${url.pathname}index.html`;
-  return new Request(url, request);
-}
 
 function secureHtml(response) {
   if (!response.headers.get("content-type")?.toLowerCase().includes("text/html")) return response;

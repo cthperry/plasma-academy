@@ -3,12 +3,11 @@ import path from "node:path";
 
 const SITE_URL = "https://plasma-academy-p0.pperry.chatgpt.site";
 const client = path.resolve("dist/client");
-const pageRoot = path.join(client, "__pages");
 const sitemapPath = path.join(client, "sitemap.xml");
 const robotsPath = path.join(client, "robots.txt");
 const failures = [];
 
-for (const file of [sitemapPath, robotsPath, path.join(pageRoot, "404.html")]) {
+for (const file of [sitemapPath, robotsPath, path.join(client, "404.html")]) {
   try {
     await access(file);
   } catch (_) {
@@ -19,10 +18,10 @@ for (const file of [sitemapPath, robotsPath, path.join(pageRoot, "404.html")]) {
 if (!failures.length) {
   const sitemap = await readFile(sitemapPath, "utf8");
   const robots = await readFile(robotsPath, "utf8");
-  const notFound = await readFile(path.join(pageRoot, "404.html"), "utf8");
+  const notFound = await readFile(path.join(client, "404.html"), "utf8");
   const listedUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   const listedRoutes = listedUrls.map((url) => new URL(url).pathname);
-  const actualRoutes = await canonicalRoutes(pageRoot);
+  const actualRoutes = await canonicalRoutes(client);
 
   if (new Set(listedUrls).size !== listedUrls.length) failures.push("sitemap 含有重複 URL。");
   if (listedUrls.some((url) => !url.startsWith(`${SITE_URL}/`) && url !== `${SITE_URL}/`)) failures.push("sitemap 含有非正式站台 URL。");
@@ -32,7 +31,7 @@ if (!failures.length) {
     failures.push(`sitemap 與 canonical HTML 不是一對一：sitemap=${listedRoutes.length}，pages=${actualRoutes.length}。`);
   }
   for (const route of listedRoutes) {
-    const target = route === "/" ? path.join(pageRoot, "index.html") : path.join(pageRoot, route, "index.html");
+    const target = route === "/" ? path.join(client, "index.html") : path.join(client, route, "index.html");
     try {
       await access(target);
     } catch (_) {

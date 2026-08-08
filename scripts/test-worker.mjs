@@ -10,7 +10,7 @@ const env = {
     async fetch(request) {
       const url = new URL(request.url);
       assetRequests.push({ pathname: url.pathname, method: request.method, body: request.method === "POST" ? await request.clone().text() : "" });
-      if (url.pathname === "/__pages/existing/index.html") {
+      if (url.pathname === "/existing/") {
         return new Response("<!doctype html><title>既有頁面</title>", {
           headers: { "Content-Type": "text/html; charset=utf-8", "X-Asset-Source": "stub" }
         });
@@ -25,7 +25,7 @@ const env = {
           headers: { "Content-Type": "image/svg+xml", "X-Asset-Source": "stub" }
         });
       }
-      if (url.pathname === "/__pages/404.html") {
+      if (url.pathname === "/404.html") {
         return new Response("<!doctype html><title>找不到頁面</title><h1>找不到這個頁面</h1>", {
           headers: { "Content-Type": "text/html; charset=utf-8", "X-Asset-Source": "stub" }
         });
@@ -47,7 +47,6 @@ assert.equal(html.headers.get("x-content-type-options"), "nosniff");
 assert.equal(html.headers.get("referrer-policy"), "no-referrer");
 assert.equal(html.headers.get("permissions-policy"), PERMISSIONS);
 assert.equal(html.headers.get("x-asset-source"), "stub");
-assert.equal(assetRequests.at(-1).pathname, "/__pages/existing/index.html", "HTML 路由必須經 Worker 轉送至內部頁面資產。");
 
 const asset = await worker.fetch(new Request("https://example.test/assets/app.js"), env);
 assert.equal(asset.status, 200);
@@ -72,14 +71,14 @@ const missing = await worker.fetch(new Request("https://example.test/not-found/"
 assert.equal(missing.status, 404, "自訂 404 內容必須保留 HTTP 404。");
 assert.match(await missing.text(), /找不到這個頁面/);
 assert.equal(missing.headers.get("content-security-policy"), CSP);
-assert.deepEqual(assetRequests.slice(-2).map((entry) => entry.pathname), ["/__pages/not-found/index.html", "/__pages/404.html"]);
+assert.deepEqual(assetRequests.slice(-2).map((entry) => entry.pathname), ["/not-found/", "/404.html"]);
 
 const headMissing = await worker.fetch(new Request("https://example.test/head-missing/", { method: "HEAD" }), env);
 assert.equal(headMissing.status, 404);
 assert.equal(await headMissing.text(), "", "HEAD 404 不得回傳 response body。");
 assert.deepEqual(assetRequests.slice(-2).map(({ pathname, method }) => ({ pathname, method })), [
-  { pathname: "/__pages/head-missing/index.html", method: "HEAD" },
-  { pathname: "/__pages/404.html", method: "GET" }
+  { pathname: "/head-missing/", method: "HEAD" },
+  { pathname: "/404.html", method: "GET" }
 ]);
 
 console.log("Worker 契約測試通過：308、HTML headers、method/body 資產直通、HEAD 與自訂 404。 ");

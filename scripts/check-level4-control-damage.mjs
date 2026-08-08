@@ -29,7 +29,7 @@ const specs = [
     selfChecks: 7,
     lab: "A28",
     labId: "a28",
-    built: "dist/client/__pages/level/4/4-2-endpoint-control/index.html",
+    built: "dist/client/level/4/4-2-endpoint-control/index.html",
     textUnits: 7500,
     required: ["Timed etch", "開口率", "0.1%", "lambda", "2n", "干涉式", "移動平均", "一階微分", "歸一化", "視窗污染", "R2R", "EWMA", "FDC", "Virtual Metrology"]
   },
@@ -45,7 +45,7 @@ const specs = [
     selfChecks: 7,
     lab: "A29",
     labId: "a29",
-    built: "dist/client/__pages/level/4/4-3-plasma-damage/index.html",
+    built: "dist/client/level/4/4-3-plasma-damage/index.html",
     textUnits: 7000,
     required: ["天線比", "electron shading", "脈衝", "off-phase", "天線二極體", "UV/VUV", "無法", "離子轟擊", "污染", "Low-k", "CHARM", "TDDB", "Arcing"]
   }
