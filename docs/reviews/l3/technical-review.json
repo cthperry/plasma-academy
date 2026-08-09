@@ -1,14 +1,14 @@
 {
   "gate": "technical",
-  "status": "pending",
-  "reviewer": { "name": "", "role": "" },
-  "reviewed_commit": "",
-  "approved_at": "",
+  "status": "approved",
+  "reviewer": { "name": "Perry", "role": "使用者直接內容審閱者" },
+  "reviewed_commit": "32a36ff59a9b8359bbd6307b4880d06bff31c55d",
+  "approved_at": "2026-08-09T15:24:18+08:00",
   "criteria": [
     "L3 profile 輪廓、defect 缺陷、package 封裝與 PCB 除膠渣/咬蝕的因果、量測與放行邊界正確",
     "A17、A18、A19、A20、A21、A22、A23、A24、A25、A33、A34 的趨勢、極限與教學模型揭露完整",
     "蝕刻、沉積、PVD、均勻度、封裝及 PCB 內容不被解讀為合格量產 recipe"
   ],
-  "evidence": [],
+  "evidence": ["docs/reviews/evidence/2026-08-09-perry-course-content-approval.md"],
   "findings": []
 }

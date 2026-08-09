@@ -1,14 +1,14 @@
 {
   "gate": "consistency",
-  "status": "pending",
-  "reviewer": { "name": "", "role": "" },
-  "reviewed_commit": "",
-  "approved_at": "",
+  "status": "approved",
+  "reviewer": { "name": "Perry", "role": "使用者直接內容審閱者" },
+  "reviewed_commit": "32a36ff59a9b8359bbd6307b4880d06bff31c55d",
+  "approved_at": "2026-08-09T15:24:18+08:00",
   "criteria": [
     "氣體名稱、CAS、F/C、危害分級與 glossary 術語一致",
     "SDS 來源連結、供應商審閱與廠區核准狀態的用語一致",
     "L2 圖號、單位、互動標籤與跨章引用在桌機、手機與列印版一致"
   ],
-  "evidence": [],
+  "evidence": ["docs/reviews/evidence/2026-08-09-perry-course-content-approval.md"],
   "findings": []
 }

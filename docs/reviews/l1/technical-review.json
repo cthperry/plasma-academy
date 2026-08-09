@@ -1,14 +1,14 @@
 {
   "gate": "technical",
-  "status": "pending",
-  "reviewer": { "name": "", "role": "" },
-  "reviewed_commit": "",
-  "approved_at": "",
+  "status": "approved",
+  "reviewer": { "name": "Perry", "role": "使用者直接內容審閱者" },
+  "reviewed_commit": "32a36ff59a9b8359bbd6307b4880d06bff31c55d",
+  "approved_at": "2026-08-09T15:24:18+08:00",
   "criteria": [
     "物理敘述、公式與典型數值正確",
     "簡化內容未造成錯誤因果",
     "L1 電子溫度、游離度、鞘層尺度與面積比模型邊界符合審閱重點"
   ],
-  "evidence": [],
+  "evidence": ["docs/reviews/evidence/2026-08-09-perry-course-content-approval.md"],
   "findings": []
 }

@@ -1,14 +1,14 @@
 {
   "gate": "consistency",
-  "status": "pending",
-  "reviewer": { "name": "", "role": "" },
-  "reviewed_commit": "",
-  "approved_at": "",
+  "status": "approved",
+  "reviewer": { "name": "Perry", "role": "使用者直接內容審閱者" },
+  "reviewed_commit": "32a36ff59a9b8359bbd6307b4880d06bff31c55d",
+  "approved_at": "2026-08-09T15:24:18+08:00",
   "criteria": [
     "缺陷圖鑑、封裝、PCB、章節與 glossary 的名稱及分類一致",
     "A17-A34 的編號、模型名稱、單位、圖號與來源邊界一致",
     "八章導覽、案例、測驗、桌機、手機、主題與列印輸出一致"
   ],
-  "evidence": [],
+  "evidence": ["docs/reviews/evidence/2026-08-09-perry-course-content-approval.md"],
   "findings": []
 }
