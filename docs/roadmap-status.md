@@ -9,7 +9,7 @@
 - 上游基線：`79928bc72175bd20a5cdd586f3911406ddfd16c7`，commit date `2026-08-06T12:41:28Z`。
 - 本地 Task 13 起點：`e55b96dc81956d4d548eb6418af1375a4b464c5d`。
 - 一般自動化：`npm run check`。這個命令驗 repo 交付，不會因人工、廠區或外部來源仍 pending 而假失敗。
-- 狀態稽核：`npm run audit:roadmap`。它完整執行 P1-P4 並揭露各層 `0/3`，pending 外部核准不改成完成。
+- 狀態稽核：`npm run audit:roadmap`。它完整執行 P1-P4 並揭露各層 `3/3`，pending 外部核准不改成完成。
 - 完成稽核：`npm run audit:roadmap -- --strict`。任何人工、廠區、來源或列明的模型 acceptance 未完成時必須 nonzero。
 - 發布驗證：`npm run verify:release`，依序包含完整自動化與 `verify:ui`；UI 不是未記錄的手動加項。外部完成度仍以獨立的 `npm run audit:roadmap -- --strict` 判定，不阻止已清楚揭露 pending 邊界的增量版本部署。
 
@@ -18,23 +18,23 @@
 | 階段 | 已實作的 repo 交付 | 本地命令證據 |
 | --- | --- | --- |
 | P0 | 42 頁無 inline executable code，且以結構解析驗證 CSP/referrer meta 的數量、內容與順序；Sites Worker 對 redirect 與 404 加完整 security headers；asset pass-through、自訂 404 status/body、registry 衍生 sitemap/robots、homepage dependency graph gzip 預算、DCL 與 reduced-motion browser gate | `npm run build`；`npm run check:sites`；`npm run check:size` 為 17 項、raw 118.4 KB、gzip 34.3 KB；最終 `npm run verify:release` 通過，Task 13 DCL 中位數為 1440px 49.4 ms、375px 34.1 ms，A01/A04 reduced-motion 通過 |
-| P1 | 6 章、35 self-check、55 題、35 SVG 與初階互動/測驗交付 | `npm run audit:p1` 的 repo metrics 達標；三道審閱另列 pending |
+| P1 | 6 章、35 self-check、55 題、35 SVG 與初階互動/測驗交付 | `npm run audit:p1` 的 repo metrics 與 Perry 使用者直接內容審閱 3/3 達標 |
 | P2 | 6 章、32 氣體、A08-A16、80 題、40 SVG；32 份公開供應商 SDS 證據 | `npm run audit:p2` 與 `npm run check:data`；供應商文件 32/32，廠區核准另列 0/32 |
-| P3 | 8 章、A17-A25/A33/A34、19 缺陷、116 題、49 SVG、PCB 模型與章節；A18/A20/A23 空間模型 acceptance | `npm run audit:p3`；`npm run check:pcb`；`npm run check:spatial-acceptance`；`npm run check:l3-exam`；三道人工審閱另列 pending |
+| P3 | 8 章、A17-A25/A33/A34、19 缺陷、116 題、49 SVG、PCB 模型與章節；A18/A20/A23 空間模型 acceptance | `npm run audit:p3`；`npm run check:pcb`；`npm run check:spatial-acceptance`；`npm run check:l3-exam`；Perry 使用者直接內容審閱 3/3 |
 | P4 | 6 章、A26-A32、85 題、22 線 OES、18 公式、252 術語、5 量產案例與測驗路由 | `npm run audit:p4`、`npm run check:l4-diagnostics`、`npm run check:l4-control-damage`、`npm run check:l4-advanced`、`npm run check:l4-production` |
 
-`npm run check:reviews` 會驗證 L1-L4 每層恰有 technical、teaching、consistency 三份 JSON、層級專屬 criteria、責任流程 README 與 evidence 欄位；隔離無效 fixture 會刻意移除 L2 gas/SDS 準則並證明 validator 可攔截。這只證明封包結構，不是人工核准。
+`npm run check:reviews` 會驗證 L1-L4 每層恰有 technical、teaching、consistency 三份 JSON、層級專屬 criteria、責任流程 README 與 evidence 欄位；隔離無效 fixture 會刻意移除 L2 gas/SDS 準則並證明 validator 可攔截。現有核准由 Git 內對話證據、具名審閱者、可追溯 commit 與核准時間共同驗證。
 
 ## 人工審閱
 
 | 層級 | technical | teaching | consistency | 合計 |
 | --- | --- | --- | --- | ---: |
-| L1 | pending，未具名 | pending，未具名 | pending，未具名 | 0/3 |
-| L2 | pending，未具名 | pending，未具名 | pending，未具名 | 0/3 |
-| L3 | pending，未具名 | pending，未具名 | pending，未具名 | 0/3 |
-| L4 | pending，未具名 | pending，未具名 | pending，未具名 | 0/3 |
+| L1 | approved，Perry | approved，Perry | approved，Perry | 3/3 |
+| L2 | approved，Perry | approved，Perry | approved，Perry | 3/3 |
+| L3 | approved，Perry | approved，Perry | approved，Perry | 3/3 |
+| L4 | approved，Perry | approved，Perry | approved，Perry | 3/3 |
 
-只有責任審閱者填妥姓名、角色、`reviewed_commit`、`approved_at` 並提供 criteria evidence 後，`approved` 才計入完成。現在沒有任何核准可宣稱。廠區 SDS 核准同樣必須填妥具名審閱者、角色、廠區、核准日期與證據清單；只改狀態字串不會被計入。
+Perry 於 `2026-08-09T15:24:18+08:00` 直接核准 L1-L4 課程內容，審閱版本為 `32a36ff59a9b8359bbd6307b4880d06bff31c55d`，證據位於 `docs/reviews/evidence/2026-08-09-perry-course-content-approval.md`。只有責任審閱者填妥姓名、角色、`reviewed_commit`、`approved_at` 並提供 criteria evidence 後，`approved` 才計入完成。廠區 SDS 核准同樣必須填妥具名審閱者、角色、廠區、核准日期與證據清單；只改狀態字串不會被計入。
 
 ## SDS 與 OES 外部邊界
 
@@ -51,7 +51,7 @@ repo regression gate 與空間 acceptance 均已建立：`npm run check:profiles
 - A20：`polymer-balance-2d-v1` 保存左右側壁及孔底的沉積、離子清除、balance 與 coverage，反向 ARDE 由孔底鈍化差異驅動。
 - A23：`ballistic-los-2d-v1` 以 61 條確定性射線保存孔底到達、側壁捕獲與 32-bin HDP profile；AR>6 的結果由傳輸計算決定。
 
-完整 acceptance、假設與限制記錄於 `docs/model-acceptance.md`。這些結果證明教學模型的空間契約與預期趨勢，不代表設備或產品絕對值已校正；L3 人工審閱仍為獨立 gate。
+完整 acceptance、假設與限制記錄於 `docs/model-acceptance.md`。這些結果證明教學模型的空間契約與預期趨勢，不代表設備或產品絕對值已校正；L3 課程內容審閱已完成，但廠區與設備等外部核准仍為獨立 gate。
 
 ## Production Sites 狀態
 
@@ -64,4 +64,4 @@ repo regression gate 與空間 acceptance 均已建立：`npm run check:profiles
 
 ## Strict 結論
 
-目前 `npm run audit:roadmap -- --strict` 預期 nonzero，共 14 個明確 blocker：12 份具名人工審閱、1 組 32 筆廠區 EH&S SDS 核准，以及 1 組 9 筆 OES 分子帶來源審閱。A18/A20/A23 高階 acceptance 已通過，不再列為 blocker。這個失敗是誠實的 roadmap completion 狀態，不是一般 repo 自動化失敗。
+目前 `npm run audit:roadmap -- --strict` 預期 nonzero，共 2 個明確 blocker：1 組 32 筆廠區 EH&S SDS 核准，以及 1 組 9 筆 OES 分子帶來源審閱。L1-L4 共 12 份課程內容審閱與 A18/A20/A23 高階 acceptance 已通過。這個失敗是誠實的 roadmap completion 狀態，不是一般 repo 自動化失敗。

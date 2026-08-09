@@ -72,7 +72,10 @@ const molecularBands = spectraData.filter((line) => ["CO", "CN", "C2", "N2", "OH
 const molecularBandsPending = molecularBands.filter(isMolecularSourcePending).length;
 const molecularApprovalChecks = await Promise.all(molecularBands.map((line) => isMolecularSourceReviewComplete(line, evidenceRepo)));
 const molecularBandsApproved = molecularApprovalChecks.filter(Boolean).length;
-console.log(`外部審閱狀態：OES 原子線已逐線 NIST 核實 ${atomicLinesVerified}/13、分子帶來源核准 ${molecularBandsApproved}/9、pending ${molecularBandsPending}/9；L4 技術、教學與一致性審閱仍需具名審閱者簽核。`);
+const contentReviewStatus = metrics.completedReviews >= 3
+  ? `L4 技術、教學與一致性審閱已完成 ${metrics.completedReviews}/3。`
+  : `L4 技術、教學與一致性審閱仍需具名審閱者簽核（${metrics.completedReviews}/3）。`;
+console.log(`外部審閱狀態：OES 原子線已逐線 NIST 核實 ${atomicLinesVerified}/13、分子帶來源核准 ${molecularBandsApproved}/9、pending ${molecularBandsPending}/9；${contentReviewStatus}`);
 if (atomicLinesVerified !== 13 || molecularBands.length !== 9 || molecularBandsPending + molecularBandsApproved !== 9) {
   console.error("OES 來源狀態門檻不符：必須為原子線 NIST 核實 13/13，且 9 個分子帶各自為乾淨 pending 或完整 evidence-approved 狀態。");
   if (repoStrict) process.exitCode = 1;
