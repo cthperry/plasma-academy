@@ -42,6 +42,7 @@ Perry 於 `2026-08-09T15:24:18+08:00` 直接核准 L1-L4 課程內容，審閱�
 - 廠區 EH&S SDS 核准：0/32；32/32 仍為 `localApprovalStatus: pending`。必須依實際供應濃度、在地法規版本、供氣系統、材料相容、abatement 與廠區程序核准。
 - OES 原子線：13/13 已保存逐線 NIST 證據。
 - OES 分子帶：0/9 完成外部來源審閱；`co-483.5`、`co-519.0`、`cn-387.1`、`cn-388.3`、`c2-516.5`、`n2-336.0`、`n2-357.0`、`oh-306.0`、`oh-309.0` 仍為 `pending-source-review`。9/9 已各整理至少兩筆候選來源與近似波長差異，詳見 `docs/reviews/evidence/oes-molecular-candidate-sources.md`；候選來源不是核准。`relativeIntensity` 只代表教學權重。
+- 交接表：32 筆廠區 SDS 與 9 筆分子 OES 的待填欄位、現有文件與證據檔命名規則見 `docs/reviews/external-approval-handoff.md`。此表不是核准證據。
 
 ## 模型 acceptance
 
