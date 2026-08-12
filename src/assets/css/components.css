@@ -194,6 +194,13 @@ html[data-auth-state="authenticated"] [data-auth-gate] {
   font-weight: 700;
 }
 
+.auth-pending-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
 [data-auth-status][data-state="error"] {
   color: var(--pa-danger);
 }

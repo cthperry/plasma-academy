@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   onIdTokenChanged,
+  reload,
   sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
@@ -26,8 +27,10 @@ export function initFirebaseAuth() {
 
   const auth = getAuth(initializeApp(firebaseConfig));
   let registrationInProgress = false;
+  let pendingVerificationUser = null;
   onIdTokenChanged(auth, async (firebaseUser) => {
     if (!firebaseUser) {
+      pendingVerificationUser = null;
       clearCurrentUser();
       setAuthState("locked");
       renderAuth(dialog, null);
@@ -41,14 +44,14 @@ export function initFirebaseAuth() {
       return;
     }
     if (!firebaseUser.emailVerified) {
+      pendingVerificationUser = firebaseUser;
       clearCurrentUser();
       setAuthState("locked");
       renderAuth(dialog, null);
       renderProgress(null);
-      if (!registrationInProgress) {
-        await signOut(auth);
-        showStatus(dialog, "請先完成公司信箱驗證，再重新登入。", true);
-      }
+      renderPendingVerification(dialog, firebaseUser);
+      if (!dialog.open) dialog.showModal();
+      if (!registrationInProgress) showStatus(dialog, "請先完成公司信箱驗證；未收到信件可重新寄送。", true);
       return;
     }
     const idToken = await firebaseUser.getIdToken();
@@ -76,8 +79,8 @@ export function initFirebaseAuth() {
     const password = value(dialog, "[data-auth-password]");
     if (!isPremtekEmail(email)) return showStatus(dialog, "僅接受 @premtek.com.tw 公司信箱登入。", true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      dialog.close();
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      if (result.user.emailVerified) dialog.close();
     } catch (error) {
       showStatus(dialog, firebaseErrorMessage(error), true);
     }
@@ -94,8 +97,7 @@ export function initFirebaseAuth() {
       const result = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(result.user, { displayName });
       await sendEmailVerification(result.user);
-      await signOut(auth);
-      showStatus(dialog, "驗證信已寄出。完成驗證後，請使用此信箱與密碼登入。", false);
+      showStatus(dialog, "驗證信已寄出。完成驗證後請重新整理頁面或再次登入。", false);
     } catch (error) {
       showStatus(dialog, firebaseErrorMessage(error), true);
     } finally {
@@ -105,6 +107,32 @@ export function initFirebaseAuth() {
   dialog.querySelector("[data-auth-logout]").addEventListener("click", async () => {
     await signOut(auth);
     dialog.close();
+  });
+  dialog.querySelector("[data-auth-resend-verification]").addEventListener("click", async () => {
+    if (!pendingVerificationUser) return showStatus(dialog, "請先以尚未驗證的公司帳號登入。", true);
+    try {
+      await sendEmailVerification(pendingVerificationUser);
+      showStatus(dialog, "驗證信已重新寄送。請檢查收件匣與垃圾郵件匣。", false);
+    } catch (error) {
+      showStatus(dialog, firebaseErrorMessage(error), true);
+    }
+  });
+  dialog.querySelector("[data-auth-pending-logout]").addEventListener("click", async () => {
+    await signOut(auth);
+  });
+  dialog.querySelector("[data-auth-check-verification]").addEventListener("click", async () => {
+    if (!pendingVerificationUser) return showStatus(dialog, "請先以尚未驗證的公司帳號登入。", true);
+    try {
+      await reload(pendingVerificationUser);
+      if (!pendingVerificationUser.emailVerified) {
+        showStatus(dialog, "尚未偵測到驗證完成，請開啟驗證信中的連結後再試。", true);
+        return;
+      }
+      showStatus(dialog, "驗證完成，正在重新載入登入工作階段。", false);
+      window.location.reload();
+    } catch (error) {
+      showStatus(dialog, firebaseErrorMessage(error), true);
+    }
   });
 }
 
@@ -118,6 +146,7 @@ function bindDialog(dialog) {
 
 function renderUnavailable(dialog) {
   dialog.querySelector("[data-auth-signed-out]").hidden = true;
+  dialog.querySelector("[data-auth-pending-verification]").hidden = true;
   showStatus(dialog, "登入服務尚未設定。完成設定後僅接受 @premtek.com.tw 公司信箱登入。", true);
 }
 
@@ -127,10 +156,18 @@ function renderAuth(dialog, firebaseUser) {
   document.querySelectorAll("[data-auth-name-display]").forEach((element) => { element.textContent = displayName; });
   dialog.querySelector("[data-auth-signed-out]").hidden = signedIn;
   dialog.querySelector("[data-auth-session]").hidden = !signedIn;
+  dialog.querySelector("[data-auth-pending-verification]").hidden = true;
   if (signedIn) {
     dialog.querySelector("[data-auth-session-name]").textContent = displayName;
     dialog.querySelector("[data-auth-session-email]").textContent = firebaseUser.email;
   }
+}
+
+function renderPendingVerification(dialog, firebaseUser) {
+  dialog.querySelector("[data-auth-signed-out]").hidden = true;
+  dialog.querySelector("[data-auth-session]").hidden = true;
+  dialog.querySelector("[data-auth-pending-verification]").hidden = false;
+  dialog.querySelector("[data-auth-pending-email]").textContent = firebaseUser.email;
 }
 
 function renderProgress(firebaseUser) {
@@ -175,6 +212,8 @@ function firebaseErrorMessage(error) {
   if (code === "auth/invalid-credential") return "帳號或密碼不正確。";
   if (code === "auth/email-already-in-use") return "此公司信箱已建立帳號，請直接登入。";
   if (code === "auth/weak-password") return "密碼至少需要 6 個字元。";
+  if (code === "auth/too-many-requests") return "寄送次數過多，請稍後再試。";
+  if (code === "auth/network-request-failed") return "網路連線失敗，無法寄送驗證信。";
   if (code === "auth/operation-not-allowed") return "此登入方式尚未由管理者啟用。";
   return "登入服務暫時無法使用，請稍後再試。";
 }

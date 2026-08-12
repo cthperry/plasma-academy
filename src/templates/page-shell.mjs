@@ -85,6 +85,15 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
       <p class="meta" data-auth-session-email></p>
       <button class="button danger" type="button" data-auth-logout>登出</button>
     </div>
+    <div data-auth-pending-verification hidden>
+      <p><strong>尚未完成公司信箱驗證</strong></p>
+      <p class="meta">驗證信會寄到 <span data-auth-pending-email></span>。請檢查收件匣與垃圾郵件匣。</p>
+      <div class="auth-pending-actions">
+        <button class="button primary" type="button" data-auth-resend-verification>重新寄送驗證信</button>
+        <button class="button secondary" type="button" data-auth-check-verification>已完成驗證，重新檢查</button>
+        <button class="button secondary" type="button" data-auth-pending-logout>使用其他帳號</button>
+      </div>
+    </div>
     <p class="meta" data-auth-status aria-live="polite"></p>
     <p class="auth-admin-link"><a class="button secondary" href="/admin/">管理登入紀錄</a></p>
   </dialog>
