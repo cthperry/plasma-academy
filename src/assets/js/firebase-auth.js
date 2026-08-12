@@ -199,4 +199,5 @@ function showStatus(dialog, message, isError = false) {
 
 function setAuthState(state) {
   document.documentElement.dataset.authState = state;
+  document.dispatchEvent(new CustomEvent("pa:authready", { detail: state }));
 }

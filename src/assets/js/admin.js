@@ -18,7 +18,12 @@ export function initAdmin() {
   page.querySelector("[data-admin-search]").addEventListener("input", render);
   page.querySelector("[data-admin-export]").addEventListener("click", exportRecords);
   document.addEventListener("pa:authchange", refresh);
-  refresh();
+  document.addEventListener("pa:authready", refresh);
+  if (document.documentElement.dataset.authState === "pending") {
+    setStatus(page, "正在確認登入狀態…");
+  } else {
+    refresh();
+  }
 }
 
 async function fetchRecords() {

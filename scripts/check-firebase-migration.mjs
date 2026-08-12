@@ -9,10 +9,11 @@ const files = await Promise.all([
   readFile("api/auth/consume-link.mjs", "utf8"),
   readFile("api/admin/records.mjs", "utf8"),
   readFile("src/assets/js/firebase-auth.js", "utf8"),
+  readFile("src/assets/js/admin.js", "utf8"),
   readFile("src/templates/page-shell.mjs", "utf8"),
   readFile("vercel.json", "utf8")
 ]);
-const [rules, admin, loginEvent, sendLink, consumeLink, records, client, shell, vercel] = files;
+const [rules, admin, loginEvent, sendLink, consumeLink, records, client, adminClient, shell, vercel] = files;
 assert.match(rules, /allow read, write: if false/);
 assert.match(admin, /ADMIN_EMAIL/);
 assert.match(admin, /premtek\.com\.tw/);
@@ -36,6 +37,8 @@ assert.match(client, /loginAuditUid/);
 assert.match(client, /administratorEmail/);
 assert.match(client, /browserSessionPersistence/);
 assert.match(client, /useSessionOnlyAuth/);
+assert.match(client, /pa:authready/);
+assert.match(adminClient, /pa:authready/);
 assert.ok(client.indexOf("await recordLogin(idToken)") < client.indexOf('setAuthState("authenticated")'));
 assert.match(shell, /data-auth-gate/);
 assert.match(shell, /data-auth-email-link/);
