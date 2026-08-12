@@ -12,8 +12,10 @@ export default async function handler(request, result) {
   if (!isPremtekEmail(email)) return result.status(400).json({ error: "僅接受 @premtek.com.tw 公司信箱。" });
   if (!isConfigured()) return result.status(503).json({ error: "登入寄信服務尚未設定。" });
 
+  let stage = "firebase";
   try {
     const { auth, db, FieldValue } = getFirebaseServices();
+    stage = "rate-limit";
     const rateTargets = [
       { id: `email-${digest(email)}`, limit: emailRequestLimit },
       { id: `source-${digest(clientAddress(request))}`, limit: sourceRequestLimit }
@@ -21,7 +23,9 @@ export default async function handler(request, result) {
     const rateAllowed = await reserveRateLimit(db, FieldValue, rateTargets);
     if (!rateAllowed) return result.status(429).json({ error: "登入連結寄送過於頻繁，請 10 分鐘後再試。" });
 
+    stage = "user";
     const user = await findOrCreateUser(auth, email);
+    stage = "link";
     const token = randomBytes(32).toString("hex");
     await db.collection("magicLoginLinks").doc(digest(token)).set({
       uid: user.uid,
@@ -31,10 +35,11 @@ export default async function handler(request, result) {
     });
     const loginUrl = new URL(magicLinkUrl());
     loginUrl.searchParams.set("loginToken", token);
+    stage = "brevo";
     await sendWithBrevo(email, loginUrl.toString());
     return result.status(202).json({ sent: true });
   } catch (error) {
-    console.error("登入連結寄送失敗", { code: error?.code || "unknown", status: error?.status || null });
+    console.error("登入連結寄送失敗", { stage, code: error?.code || "unknown", status: error?.status || null });
     return result.status(503).json({ error: "登入連結暫時無法寄送，請稍後再試。" });
   }
 }
