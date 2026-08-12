@@ -97,7 +97,8 @@ async function sendWithBrevo(email, loginUrl) {
     })
   });
   if (!response.ok) {
-    const error = new Error("Brevo rejected the request");
+    const detail = await response.text().catch(() => "");
+    const error = new Error(`Brevo rejected the request: ${detail.slice(0, 240)}`);
     error.status = response.status;
     throw error;
   }
