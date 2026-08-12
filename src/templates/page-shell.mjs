@@ -56,7 +56,7 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
     <div class="auth-gate__panel">
       <div class="brand auth-gate__brand" aria-label="Plasma Academy"><span class="brand-mark" aria-hidden="true">PA</span><span>Plasma Academy</span></div>
       <p class="eyebrow">PREMTEK 學習平台</p>
-      <h1 id="auth-gate-title">請先登入公司帳號</h1>
+      <h2 id="auth-gate-title">請先登入公司帳號</h2>
       <p>輸入公司信箱後，系統會寄送一次性登入連結。完成登入後才開放課程、實驗室與個人進度。</p>
       <button class="button primary auth-gate__action" type="button" data-auth-gate-open>寄送登入連結</button>
       <p class="meta" data-auth-gate-status aria-live="polite"></p>
@@ -67,14 +67,14 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
     <div data-auth-signed-out>
       <p>僅接受 <strong>@premtek.com.tw</strong> 公司信箱。系統會寄送一次性登入連結，登入時間會保存於中央管理紀錄。</p>
       <form class="auth-form" data-auth-email-link>
-        <label>公司信箱<input type="email" autocomplete="email" required data-auth-email placeholder="name@premtek.com.tw"></label>
+        <label for="auth-email">公司信箱</label><input id="auth-email" type="email" autocomplete="email" required data-auth-email placeholder="name@premtek.com.tw">
         <button class="button primary" type="submit">寄送登入連結</button>
       </form>
     </div>
     <div data-auth-email-link-complete hidden>
       <p>請再次輸入收取登入連結的公司信箱，以完成登入。</p>
       <form class="auth-form" data-auth-email-link-complete-form>
-        <label>公司信箱<input type="email" autocomplete="email" required data-auth-email-link-complete-email placeholder="name@premtek.com.tw"></label>
+        <label for="auth-email-link-complete">公司信箱</label><input id="auth-email-link-complete" type="email" autocomplete="email" required data-auth-email-link-complete-email placeholder="name@premtek.com.tw">
         <button class="button primary" type="submit">完成登入</button>
       </form>
     </div>
