@@ -19,7 +19,6 @@ export async function requirePremtekUser(request) {
     const { auth } = getFirebaseServices();
     const user = await auth.verifyIdToken(token, true);
     if (!isPremtekEmail(user.email)) return { error: response(403, "僅接受 @premtek.com.tw 公司信箱。") };
-    if (!user.email_verified) return { error: response(403, "請先完成公司信箱驗證。") };
     return { user };
   } catch (_) {
     return { error: response(401, "登入工作階段無效，請重新登入。") };

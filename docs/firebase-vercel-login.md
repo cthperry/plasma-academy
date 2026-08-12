@@ -1,6 +1,6 @@
 # Firebase 與 Vercel 登入管理
 
-Plasma Academy 採登入優先流程。使用者必須以已驗證的 `@premtek.com.tw` 公司信箱登入，才會顯示課程介面與個人裝置進度；管理者可查看集中登入紀錄。
+Plasma Academy 採登入優先流程。使用者必須以 `@premtek.com.tw` 公司信箱登入，才會顯示課程介面與個人裝置進度；管理者可查看集中登入紀錄。
 
 此登入首畫面是為了確保使用紀錄完整，不將已部署的靜態課程檔案視作保密內容。
 
@@ -9,7 +9,7 @@ Plasma Academy 採登入優先流程。使用者必須以已驗證的 `@premtek.
 - 專案 ID：`plasma-academy-p0-ab013`
 - Cloud Firestore 已在 `asia-east1`（台灣）建立 Standard 資料庫，並啟用刪除保護。
 - Firestore 規則：所有瀏覽器直接讀寫一律拒絕；僅 Vercel API 的 Firebase Admin SDK 可讀寫。
-- Authentication 已啟用 Email/Password；網站程式會拒絕非 `@premtek.com.tw` 信箱，並要求完成信箱驗證。
+- Authentication 已啟用 Email/Password；網站程式會拒絕非 `@premtek.com.tw` 信箱。
 
 登入資料結構：
 
@@ -29,5 +29,5 @@ Plasma Academy 採登入優先流程。使用者必須以已驗證的 `@premtek.
 1. `firebase deploy --project plasma-academy-p0-ab013`
 2. 在 Vercel 匯入 `cthperry/plasma-academy`，選擇本專案根目錄。
 3. 設定上述 Vercel 環境變數並部署 Preview。
-4. 使用 @premtek.com.tw 信箱建立帳號、完成驗證後登入，確認 `/api/auth/login-event` 建立資料。
+4. 使用 @premtek.com.tw 信箱建立帳號並登入，確認 `/api/auth/login-event` 建立資料。
 5. 以 `ADMIN_EMAIL` 帳號開啟 `/admin/`，確認查詢與 CSV 匯出。

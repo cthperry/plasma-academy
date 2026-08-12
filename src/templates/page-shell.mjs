@@ -57,7 +57,7 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
       <div class="brand auth-gate__brand" aria-label="Plasma Academy"><span class="brand-mark" aria-hidden="true">PA</span><span>Plasma Academy</span></div>
       <p class="eyebrow">PREMTEK 學習平台</p>
       <h1 id="auth-gate-title">請先登入公司帳號</h1>
-      <p>課程、實驗室與個人進度僅在完成公司信箱驗證後開放。</p>
+      <p>課程、實驗室與個人進度會在完成公司帳號登入後開放。</p>
       <button class="button primary auth-gate__action" type="button" data-auth-gate-open>登入或建立帳號</button>
       <p class="meta" data-auth-gate-status aria-live="polite"></p>
     </div>
@@ -84,15 +84,6 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
       <p>目前以 <strong data-auth-session-name></strong> 身分登入。</p>
       <p class="meta" data-auth-session-email></p>
       <button class="button danger" type="button" data-auth-logout>登出</button>
-    </div>
-    <div data-auth-pending-verification hidden>
-      <p><strong>尚未完成公司信箱驗證</strong></p>
-      <p class="meta">驗證信會寄到 <span data-auth-pending-email></span>。請檢查收件匣與垃圾郵件匣。</p>
-      <div class="auth-pending-actions">
-        <button class="button primary" type="button" data-auth-resend-verification>重新寄送驗證信</button>
-        <button class="button secondary" type="button" data-auth-check-verification>已完成驗證，重新檢查</button>
-        <button class="button secondary" type="button" data-auth-pending-logout>使用其他帳號</button>
-      </div>
     </div>
     <p class="meta" data-auth-status aria-live="polite"></p>
     <p class="auth-admin-link"><a class="button secondary" href="/admin/">管理登入紀錄</a></p>
