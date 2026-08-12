@@ -92,8 +92,8 @@ html[data-auth-state="authenticated"] [data-auth-gate] {
 
 .auth-gate__panel {
   width: min(100%, 32rem);
-  border-top: 3px solid var(--accent);
-  padding: 2.5rem 0 1rem;
+  border-top: 3px solid var(--pa-primary);
+  padding: 2.5rem 0;
 }
 
 .auth-gate__brand {
@@ -114,7 +114,16 @@ html[data-auth-state="authenticated"] [data-auth-gate] {
 
 .auth-gate__action {
   width: 100%;
-  margin-top: 1.8rem;
+  margin-top: 0.3rem;
+}
+
+.auth-gate__form {
+  margin: 1.75rem 0 0.75rem;
+}
+
+.auth-gate__form label {
+  display: grid;
+  gap: 6px;
 }
 
 [data-auth-gate-status][data-state="error"] {

@@ -36,7 +36,8 @@ export default async function handler(request, result) {
     const loginUrl = new URL(magicLinkUrl());
     loginUrl.searchParams.set("loginToken", token);
     stage = "brevo";
-    await sendWithBrevo(email, loginUrl.toString());
+    const messageId = await sendWithBrevo(email, loginUrl.toString());
+    console.info("登入連結已交由 Brevo 處理", { messageId });
     return result.status(202).json({ sent: true });
   } catch (error) {
     console.error("登入連結寄送失敗", {
@@ -91,9 +92,12 @@ async function sendWithBrevo(email, loginUrl) {
     },
     body: JSON.stringify({
       sender: { email: process.env.BREVO_SENDER_EMAIL, name: "Plasma Academy" },
+      replyTo: { email: secretValue(process.env.BREVO_SENDER_EMAIL), name: "Plasma Academy" },
       to: [{ email }],
       subject: "Plasma Academy 登入連結",
-      htmlContent: `<p>請使用以下一次性連結登入 Plasma Academy：</p><p><a href="${escapeAttribute(loginUrl)}">完成登入</a></p><p>此連結 15 分鐘內有效，且只能使用一次。若非您本人要求，請忽略此信。</p>`
+      textContent: `請使用以下一次性連結登入 Plasma Academy：\n${loginUrl}\n\n此連結 15 分鐘內有效，且只能使用一次。若非您本人要求，請忽略此信。`,
+      htmlContent: `<p>請使用以下一次性連結登入 Plasma Academy：</p><p><a href="${escapeAttribute(loginUrl)}">完成登入</a></p><p>此連結 15 分鐘內有效，且只能使用一次。若非您本人要求，請忽略此信。</p>`,
+      tags: ["plasma-academy-login"]
     })
   });
   if (!response.ok) {
@@ -102,6 +106,8 @@ async function sendWithBrevo(email, loginUrl) {
     error.status = response.status;
     throw error;
   }
+  const payload = await response.json().catch(() => ({}));
+  return payload.messageId || null;
 }
 
 function isConfigured() {
