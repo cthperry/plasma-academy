@@ -41,13 +41,13 @@ export function initFirebaseAuth() {
     const idToken = await firebaseUser.getIdToken();
     try {
       await recordLogin(idToken);
-    } catch (_) {
+    } catch (error) {
       clearCurrentUser();
       setAuthState("locked");
       renderAuth(dialog, null);
       renderProgress(null);
       await signOut(auth);
-      showStatus(dialog, "登入紀錄暫時無法保存，請稍後重新登入。", true);
+      showStatus(dialog, error.message || "登入紀錄暫時無法保存，請稍後重新登入。", true);
       return;
     }
     setCurrentUser({ id: firebaseUser.uid, displayName: firebaseUser.displayName, email: firebaseUser.email }, idToken);
@@ -64,7 +64,6 @@ export function initFirebaseAuth() {
     if (!isPremtekEmail(email)) return showStatus(dialog, "僅接受 @premtek.com.tw 公司信箱登入。", true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      dialog.close();
     } catch (error) {
       showStatus(dialog, firebaseErrorMessage(error), true);
     }
@@ -80,7 +79,6 @@ export function initFirebaseAuth() {
       const result = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(result.user, { displayName });
       showStatus(dialog, "公司帳號已建立並登入。", false);
-      dialog.close();
     } catch (error) {
       showStatus(dialog, firebaseErrorMessage(error), true);
     }
@@ -128,7 +126,10 @@ async function recordLogin(idToken) {
     method: "POST",
     headers: { Authorization: `Bearer ${idToken}` }
   });
-  if (!response.ok) throw new Error("登入紀錄暫時無法保存。");
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    throw new Error(payload.error || "登入紀錄暫時無法保存。");
+  }
 }
 
 function value(dialog, selector) {

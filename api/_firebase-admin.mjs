@@ -20,7 +20,11 @@ export async function requirePremtekUser(request) {
     const user = await auth.verifyIdToken(token, true);
     if (!isPremtekEmail(user.email)) return { error: response(403, "僅接受 @premtek.com.tw 公司信箱。") };
     return { user };
-  } catch (_) {
+  } catch (error) {
+    console.error("Firebase ID 權杖驗證失敗", {
+      code: error?.code || "unknown",
+      message: error?.message || "unknown"
+    });
     return { error: response(401, "登入工作階段無效，請重新登入。") };
   }
 }
