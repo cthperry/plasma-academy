@@ -85,7 +85,7 @@ async function sendWithBrevo(email, loginUrl) {
   const response = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
-      "api-key": process.env.BREVO_API_KEY,
+      "api-key": secretValue(process.env.BREVO_API_KEY),
       "content-type": "application/json"
     },
     body: JSON.stringify({
@@ -103,7 +103,7 @@ async function sendWithBrevo(email, loginUrl) {
 }
 
 function isConfigured() {
-  return Boolean(process.env.BREVO_API_KEY && process.env.BREVO_SENDER_EMAIL && process.env.AUTH_MAGIC_LINK_URL);
+  return Boolean(secretValue(process.env.BREVO_API_KEY) && secretValue(process.env.BREVO_SENDER_EMAIL) && process.env.AUTH_MAGIC_LINK_URL);
 }
 
 function magicLinkUrl() {
@@ -127,4 +127,11 @@ function digest(value) {
 
 function escapeAttribute(value) {
   return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function secretValue(value) {
+  const normalized = String(value || "").trim();
+  return normalized.length > 1 && ((normalized.startsWith('"') && normalized.endsWith('"')) || (normalized.startsWith("'") && normalized.endsWith("'")))
+    ? normalized.slice(1, -1)
+    : normalized;
 }
