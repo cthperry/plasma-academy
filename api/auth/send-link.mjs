@@ -86,6 +86,7 @@ async function sendWithBrevo(email, loginUrl) {
     method: "POST",
     headers: {
       "api-key": secretValue(process.env.BREVO_API_KEY),
+      accept: "application/json",
       "content-type": "application/json"
     },
     body: JSON.stringify({
