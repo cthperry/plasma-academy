@@ -52,16 +52,22 @@ export function initFirebaseAuth() {
       return;
     }
     const idToken = await firebaseUser.getIdToken();
+    try {
+      await recordLogin(idToken);
+    } catch (_) {
+      clearCurrentUser();
+      setAuthState("locked");
+      renderAuth(dialog, null);
+      renderProgress(null);
+      await signOut(auth);
+      showStatus(dialog, "登入紀錄暫時無法保存，請稍後重新登入。", true);
+      return;
+    }
     setCurrentUser({ id: firebaseUser.uid, displayName: firebaseUser.displayName, email: firebaseUser.email }, idToken);
     setAuthState("authenticated");
     ensureCurrentUserProgress();
     renderAuth(dialog, firebaseUser);
     renderProgress(firebaseUser);
-    try {
-      await recordLogin(idToken);
-    } catch (_) {
-      showStatus(dialog, "登入完成，但登入紀錄暫時無法保存。", true);
-    }
   });
 
   dialog.querySelector("[data-auth-login]").addEventListener("submit", async (event) => {

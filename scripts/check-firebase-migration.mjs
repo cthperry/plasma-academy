@@ -20,6 +20,7 @@ assert.match(records, /adminEvents/);
 assert.match(client, /premtek\.com\.tw/);
 assert.match(client, /sendEmailVerification/);
 assert.match(admin, /email_verified/);
+assert.ok(client.indexOf("await recordLogin(idToken)") < client.indexOf('setAuthState("authenticated")'));
 assert.match(shell, /data-auth-gate/);
 assert.match(shell, /data-auth-protected/);
 assert.match(shell, /identitytoolkit\.googleapis\.com/);
