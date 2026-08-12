@@ -17,7 +17,7 @@
     "check:size": "node scripts/check-size.mjs",
     "check:size-parser": "node scripts/test-module-dependencies.mjs",
     "check:sites": "node scripts/check-sites-package.mjs && node scripts/test-worker.mjs && node scripts/check-html-security.mjs && node scripts/test-html-security.mjs && node scripts/check-sitemap.mjs",
-    "check:firebase": "node scripts/check-firebase-migration.mjs",
+    "check:firebase": "node scripts/build-firebase-auth.mjs && node scripts/test-firebase-auth-bundle.mjs && node scripts/check-firebase-migration.mjs",
     "check:sitemap": "node scripts/check-sitemap.mjs",
     "check:reviews": "node scripts/check-review-packets.mjs && node scripts/test-review-packets.mjs && node scripts/test-approval-evidence.mjs",
     "check:roadmap-orchestrator": "node scripts/test-roadmap-audit.mjs",

@@ -11,7 +11,7 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
   const nav = navItems.map(([label, href]) => `<a href="${href}">${label}</a>`).join("");
   const pageStyles = extraStyles.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n  ");
   return `<!doctype html>
-<html lang="zh-Hant" data-theme="auto">
+<html lang="zh-Hant" data-theme="auto" data-auth-state="pending">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,7 +21,6 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
   <title>${escapeHtml(title)}</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <script src="/assets/js/theme-init.js"></script>
-  <script>document.documentElement.dataset.authState = "pending";</script>
   <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/layout.css">
   <link rel="stylesheet" href="/assets/css/components.css">

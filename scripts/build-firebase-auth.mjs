@@ -14,6 +14,7 @@ const result = await build({
   platform: "browser",
   target: ["es2022"],
   write: false,
+  external: ["./auth-store.js"],
   define: {
     __PLASMA_FIREBASE_CONFIG__: JSON.stringify(config),
     __PLASMA_ADMIN_EMAIL__: JSON.stringify(adminEmail)
