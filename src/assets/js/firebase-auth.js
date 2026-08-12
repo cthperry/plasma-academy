@@ -4,6 +4,7 @@ import { clearCurrentUser, setCurrentUser } from "./auth-store.js";
 import { ensureCurrentUserProgress } from "./progress-store.js";
 
 const firebaseConfig = __PLASMA_FIREBASE_CONFIG__;
+const administratorEmail = __PLASMA_ADMIN_EMAIL__;
 const allowedDomain = "premtek.com.tw";
 
 export function initFirebaseAuth() {
@@ -148,6 +149,7 @@ function renderAuth(dialog, firebaseUser) {
   dialog.querySelector("[data-auth-signed-out]").hidden = signedIn;
   dialog.querySelector("[data-auth-email-link-complete]").hidden = true;
   dialog.querySelector("[data-auth-session]").hidden = !signedIn;
+  dialog.querySelector("[data-auth-admin-link]").hidden = !signedIn || firebaseUser.email.toLocaleLowerCase() !== administratorEmail?.toLocaleLowerCase();
   if (signedIn) {
     dialog.querySelector("[data-auth-session-name]").textContent = displayName;
     dialog.querySelector("[data-auth-session-email]").textContent = firebaseUser.email;

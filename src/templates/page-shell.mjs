@@ -82,10 +82,10 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
     <div data-auth-session hidden>
       <p>目前以 <strong data-auth-session-name></strong> 身分登入。</p>
       <p class="meta" data-auth-session-email></p>
+      <p data-auth-admin-link hidden><a class="button secondary" href="/admin/">管理登入紀錄</a></p>
       <button class="button danger" type="button" data-auth-logout>登出</button>
     </div>
     <p class="meta" data-auth-status aria-live="polite"></p>
-    <p class="auth-admin-link"><a class="button secondary" href="/admin/">管理登入紀錄</a></p>
   </dialog>
   <script type="module" src="/assets/js/app.js"></script>
 </body>

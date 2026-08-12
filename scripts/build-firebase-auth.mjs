@@ -3,6 +3,7 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const config = readFirebaseConfig(process.env);
+const adminEmail = process.env.ADMIN_EMAIL?.trim().toLocaleLowerCase() || null;
 const outdir = path.resolve("dist/client/assets/js");
 await mkdir(outdir, { recursive: true });
 
@@ -13,7 +14,10 @@ const result = await build({
   platform: "browser",
   target: ["es2022"],
   write: false,
-  define: { __PLASMA_FIREBASE_CONFIG__: JSON.stringify(config) },
+  define: {
+    __PLASMA_FIREBASE_CONFIG__: JSON.stringify(config),
+    __PLASMA_ADMIN_EMAIL__: JSON.stringify(adminEmail)
+  },
   minify: true,
   legalComments: "none"
 });
