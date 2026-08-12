@@ -22,7 +22,7 @@ Plasma Academy 採登入優先流程。使用者必須以 `@premtek.com.tw` 公�
 
 1. 在 Authentication 的 Settings 將 Vercel 正式網域與 Preview 網域加入 Authorized domains。
 2. 將 `.env.example` 的 `NEXT_PUBLIC_FIREBASE_*` 值填入 Vercel 的 Production 與 Preview 環境變數。
-3. 建立最小權限 Firebase service account JSON，完整 JSON 存入 Vercel 的 `FIREBASE_ADMIN_SERVICE_ACCOUNT` 私密環境變數。
+3. 建立最小權限 Firebase service account JSON，完整 JSON 存入 Vercel 的 `FIREBASE_ADMIN_SERVICE_ACCOUNT` 私密環境變數。值欄只貼 JSON 本體，不要加上 `FIREBASE_ADMIN_SERVICE_ACCOUNT=` 前綴或額外引號。
 4. 設定 `ADMIN_EMAIL` 為唯一可開啟 `/admin/` 的 `@premtek.com.tw` 公司信箱。
 5. 設定私密環境變數 `BREVO_API_KEY`、`BREVO_SENDER_EMAIL` 與 `AUTH_MAGIC_LINK_URL`。最後一項固定為正式網站的 HTTPS 根網址。
 

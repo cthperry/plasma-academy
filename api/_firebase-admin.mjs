@@ -53,11 +53,22 @@ function bearerToken(request) {
 }
 
 function parseServiceAccount() {
-  const raw = process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT;
+  const raw = String(process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT || "").trim();
   if (!raw) throw new Error("FIREBASE_ADMIN_SERVICE_ACCOUNT 尚未設定。");
-  try {
-    return JSON.parse(raw);
-  } catch (_) {
-    throw new Error("FIREBASE_ADMIN_SERVICE_ACCOUNT 必須是有效 JSON。");
+  const values = [raw, unwrap(raw), raw.replace(/^FIREBASE_ADMIN_SERVICE_ACCOUNT\s*=\s*/, "")];
+  for (const value of values) {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === "string" ? JSON.parse(parsed) : parsed;
+    } catch (_) {
+      // Continue with the next safe normalization candidate.
+    }
   }
+  throw new Error("FIREBASE_ADMIN_SERVICE_ACCOUNT 必須是有效 JSON。");
+}
+
+function unwrap(value) {
+  return value.length > 1 && ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))
+    ? value.slice(1, -1)
+    : value;
 }
