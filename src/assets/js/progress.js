@@ -1,4 +1,4 @@
-import { clearProgress, getProgress, normalizeProgress, saveProgress } from "./progress-store.js";
+import { clearProgress, ensureCurrentUserProgress, getProgress, normalizeProgress, saveProgress } from "./progress-store.js";
 
 const chapterObjectiveCounts = {
   "1-1": 4, "1-2": 4, "1-3": 3, "1-4": 3, "1-5": 4, "1-6": 3,
@@ -9,6 +9,10 @@ const chapterObjectiveCounts = {
 const levelNames = ["L1 電漿入門", "L2 氣體與電漿源", "L3 製程應用與診斷", "L4 電漿專家"];
 
 export function initProgress() {
+  document.addEventListener("pa:authchange", () => {
+    ensureCurrentUserProgress();
+    document.dispatchEvent(new CustomEvent("pa:progresschange", { detail: getProgress() }));
+  });
   markVisitedChapter();
   initObjectiveChecks();
   initHomeDashboard();

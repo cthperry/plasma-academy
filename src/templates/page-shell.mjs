@@ -36,6 +36,7 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
     </a>
     <nav class="site-nav" aria-label="主導覽">${nav}</nav>
     <div class="header-actions">
+      <button class="account-button" type="button" data-auth-open aria-label="登入學員帳號"><span data-auth-name-display>登入</span></button>
       <button class="icon-button" type="button" data-search-open aria-label="搜尋">⌕</button>
       <button class="icon-button" type="button" data-theme-toggle aria-label="切換主題">◐</button>
     </div>
@@ -44,9 +45,37 @@ export function shell({ title, description, navItems, body, pageType, extraBodyC
     <label>搜尋<input type="search" data-search-input placeholder="輸入電漿、sheath、A01..."></label>
     <div class="search-results" data-search-results></div>
   </div>
+  <dialog class="auth-dialog" data-auth-dialog aria-labelledby="auth-dialog-title">
+    <div class="auth-dialog__header"><h2 id="auth-dialog-title">公司帳號登入</h2><button class="button secondary" type="button" data-auth-close>關閉</button></div>
+    <div data-auth-signed-out>
+      <p>僅接受 <strong>@premtek.com.tw</strong> 公司信箱。登入時間會保存於中央管理紀錄。</p>
+      <form class="auth-form" data-auth-login>
+        <label>公司信箱<input type="email" autocomplete="email" required data-auth-email placeholder="name@premtek.com.tw"></label>
+        <label>密碼<input type="password" autocomplete="current-password" required data-auth-password></label>
+        <button class="button primary" type="submit">登入</button>
+      </form>
+      <p class="auth-divider">或</p>
+      <button class="button secondary" type="button" data-auth-github>使用 GitHub 登入</button>
+      <details class="auth-register"><summary>首次使用，建立公司帳號</summary>
+        <form class="auth-form auth-form--stacked" data-auth-register>
+          <label>顯示名稱<input type="text" maxlength="80" autocomplete="name" required data-auth-display-name></label>
+          <label>公司信箱<input type="email" autocomplete="email" required data-auth-register-email placeholder="name@premtek.com.tw"></label>
+          <label>密碼<input type="password" minlength="6" autocomplete="new-password" required data-auth-register-password></label>
+          <button class="button primary" type="submit">建立帳號</button>
+        </form>
+      </details>
+    </div>
+    <div data-auth-session hidden>
+      <p>目前以 <strong data-auth-session-name></strong> 身分登入。</p>
+      <p class="meta" data-auth-session-email></p>
+      <button class="button danger" type="button" data-auth-logout>登出</button>
+    </div>
+    <p class="meta" data-auth-status aria-live="polite"></p>
+    <p class="auth-admin-link"><a class="button secondary" href="/admin/">管理登入紀錄</a></p>
+  </dialog>
   <div id="main">${body}</div>
   <footer class="site-footer">
-    <span>Plasma Academy · 進度僅儲存在本機瀏覽器</span>
+    <span>Plasma Academy · 學習進度儲存在目前裝置；登入紀錄由管理系統集中保存</span>
   </footer>
   <script type="module" src="/assets/js/app.js"></script>
 </body>

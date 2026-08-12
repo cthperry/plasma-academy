@@ -1039,9 +1039,18 @@ function progressPage() {
       ${breadcrumb(["首頁", "個人進度"])}
       <section class="page-intro">
         <h1>個人進度</h1>
-        <p>進度只存在這台裝置的瀏覽器。清除瀏覽資料會遺失，建議定期匯出 JSON 備份。</p>
+        <p>公司帳號登入後，每位學員在此裝置有獨立進度；登入時間會由管理系統集中保存。學習進度仍建議定期匯出備份。</p>
       </section>
       <section class="progress-dashboard" data-progress-page>
+        <section class="account-panel" data-auth-progress aria-labelledby="auth-progress-title">
+          <div class="account-panel__heading"><div><h2 id="auth-progress-title">公司登入</h2><p>僅接受 @premtek.com.tw 公司信箱；登入時間由管理系統集中保存。</p></div><button class="button secondary" type="button" data-auth-open>登入</button></div>
+          <dl class="status-grid account-status-grid">
+            <div><dt>目前學員</dt><dd data-auth-progress-name>尚未登入</dd></div>
+            <div><dt>登入網域</dt><dd>@premtek.com.tw</dd></div>
+            <div><dt>登入紀錄</dt><dd>管理者可查閱</dd></div>
+            <div><dt>進度空間</dt><dd>登入後建立個人學習進度</dd></div>
+          </dl>
+        </section>
         <div class="status-grid">
           <div><dt>角色路徑</dt><dd data-progress-role>尚未選擇</dd></div>
           <div><dt>已造訪章節</dt><dd data-progress-visited>0</dd></div>
@@ -1118,6 +1127,28 @@ function progressPage() {
       </section>
     </main>
   `);
+}
+
+function adminPage() {
+  return page("/admin/", "管理登入紀錄", `
+    <main class="content-shell narrow" data-admin-page>
+      ${breadcrumb(["首頁", "管理登入紀錄"])}
+      <section class="page-intro">
+        <h1>管理登入紀錄</h1>
+        <p>只限授權的 @premtek.com.tw 管理者查閱。系統保存使用者、登入時間與登入次數；不讀取學習內容。</p>
+      </section>
+      <section class="admin-panel">
+        <p class="meta" data-admin-status aria-live="polite">請先使用授權的公司帳號登入。</p>
+        <section data-admin-dashboard hidden>
+          <div class="admin-toolbar"><div><h2>學員登入紀錄</h2><p class="meta" data-admin-result-count>顯示 0 位學員</p></div><div class="admin-toolbar__actions"><button class="button secondary" type="button" data-admin-export>匯出 CSV</button><button class="button secondary" type="button" data-auth-open>登入帳號</button></div></div>
+          <label class="admin-search">搜尋學員<input type="search" data-admin-search placeholder="姓名或公司信箱"></label>
+          <div class="table-scroll"><table class="admin-table"><thead><tr><th scope="col">學員</th><th scope="col">公司信箱</th><th scope="col">首次登入</th><th scope="col">最近登入</th><th scope="col">登入次數</th></tr></thead><tbody data-admin-users></tbody></table></div>
+          <h2 class="admin-events-title">最近登入事件</h2>
+          <div class="table-scroll"><table class="admin-table"><thead><tr><th scope="col">學員</th><th scope="col">公司信箱</th><th scope="col">登入時間</th></tr></thead><tbody data-admin-events></tbody></table></div>
+        </section>
+      </section>
+    </main>
+  `, { pageType: "admin", description: "Plasma Academy 公司帳號登入紀錄管理頁。" });
 }
 
 function examPage(level) {
@@ -1325,6 +1356,7 @@ async function main() {
     ...l4Chapters.map(chapterFourPage),
     labPage(),
     progressPage(),
+    adminPage(),
     examPage(1),
     examPage(2),
     examPage(3),

@@ -1,0 +1,10 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 所有登入紀錄只能經由 Vercel API 以 Firebase Admin SDK 寫入與查閱。
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

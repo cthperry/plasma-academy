@@ -7,6 +7,7 @@ import { initUnitConverters } from "./units.js";
 import { initLabContainers } from "./lifecycle.js";
 
 initThemeToggle();
+import("./firebase-auth.bundle.js").then(({ initFirebaseAuth }) => initFirebaseAuth());
 initProgress();
 initNav();
 initTooltips();
@@ -21,4 +22,7 @@ if (document.querySelector("[data-gas-browser]")) {
 }
 if (document.body.dataset.pageType === "defects") {
   import("./defect-atlas.js").then(({ initDefectAtlas }) => initDefectAtlas());
+}
+if (document.querySelector("[data-admin-page]")) {
+  import("./admin.js").then(({ initAdmin }) => initAdmin());
 }

@@ -6,5 +6,9 @@ dist/
 *.tar
 *.tar.gz
 *.zip
+.env
+.env.local
+.env.*.local
+.vercel/
 qa/
 work/
