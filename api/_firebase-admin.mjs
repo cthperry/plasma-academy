@@ -40,7 +40,7 @@ export async function requireAdministrator(request) {
 }
 
 export function isPremtekEmail(email) {
-  return typeof email === "string" && email.trim().toLocaleLowerCase().endsWith(`@${permittedDomain}`);
+  return typeof email === "string" && /^[^@\s]+@premtek\.com\.tw$/i.test(email.trim());
 }
 
 export function response(status, error) {

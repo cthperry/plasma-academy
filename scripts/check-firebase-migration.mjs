@@ -5,19 +5,29 @@ const files = await Promise.all([
   readFile("firestore.rules", "utf8"),
   readFile("api/_firebase-admin.mjs", "utf8"),
   readFile("api/auth/login-event.mjs", "utf8"),
+  readFile("api/auth/send-link.mjs", "utf8"),
+  readFile("api/auth/consume-link.mjs", "utf8"),
   readFile("api/admin/records.mjs", "utf8"),
   readFile("src/assets/js/firebase-auth.js", "utf8"),
   readFile("src/templates/page-shell.mjs", "utf8"),
   readFile("vercel.json", "utf8")
 ]);
-const [rules, admin, loginEvent, records, client, shell, vercel] = files;
+const [rules, admin, loginEvent, sendLink, consumeLink, records, client, shell, vercel] = files;
 assert.match(rules, /allow read, write: if false/);
 assert.match(admin, /ADMIN_EMAIL/);
 assert.match(admin, /premtek\.com\.tw/);
 assert.match(loginEvent, /runTransaction/);
 assert.match(loginEvent, /loginEvents/);
+assert.match(sendLink, /BREVO_API_KEY/);
+assert.match(sendLink, /magicLoginLinks/);
+assert.match(sendLink, /magicLoginRateLimits/);
+assert.match(consumeLink, /createCustomToken/);
+assert.match(consumeLink, /usedAt/);
 assert.match(records, /adminEvents/);
 assert.match(client, /premtek\.com\.tw/);
+assert.match(client, /signInWithCustomToken/);
+assert.match(client, /\/api\/auth\/send-link/);
+assert.match(client, /\/api\/auth\/consume-link/);
 assert.ok(client.indexOf("await recordLogin(idToken)") < client.indexOf('setAuthState("authenticated")'));
 assert.match(shell, /data-auth-gate/);
 assert.match(shell, /data-auth-protected/);

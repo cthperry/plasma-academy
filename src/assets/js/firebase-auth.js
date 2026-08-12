@@ -1,12 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  onIdTokenChanged,
-  signInWithEmailAndPassword,
-  signOut,
-  updateProfile
-} from "firebase/auth";
+import { getAuth, onIdTokenChanged, signInWithCustomToken, signOut } from "firebase/auth";
 import { clearCurrentUser, setCurrentUser } from "./auth-store.js";
 import { ensureCurrentUserProgress } from "./progress-store.js";
 
@@ -28,7 +21,7 @@ export function initFirebaseAuth() {
     if (!firebaseUser) {
       clearCurrentUser();
       setAuthState("locked");
-      renderAuth(dialog, null);
+      if (!dialog.dataset.magicLinkToken) renderAuth(dialog, null);
       renderProgress(null);
       return;
     }
@@ -57,36 +50,28 @@ export function initFirebaseAuth() {
     renderProgress(firebaseUser);
   });
 
-  dialog.querySelector("[data-auth-login]").addEventListener("submit", async (event) => {
+  dialog.querySelector("[data-auth-email-link]").addEventListener("submit", async (event) => {
     event.preventDefault();
     const email = value(dialog, "[data-auth-email]");
-    const password = value(dialog, "[data-auth-password]");
     if (!isPremtekEmail(email)) return showStatus(dialog, "僅接受 @premtek.com.tw 公司信箱登入。", true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await requestEmailLink(email);
+      showStatus(dialog, "登入連結已寄送，請至公司信箱開啟。", false);
     } catch (error) {
-      showStatus(dialog, firebaseErrorMessage(error), true);
+      showStatus(dialog, error.message || "登入連結暫時無法寄送，請稍後再試。", true);
     }
   });
-  dialog.querySelector("[data-auth-register]").addEventListener("submit", async (event) => {
+
+  dialog.querySelector("[data-auth-email-link-complete-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
-    const email = value(dialog, "[data-auth-register-email]");
-    const password = value(dialog, "[data-auth-register-password]");
-    const displayName = value(dialog, "[data-auth-display-name]");
-    if (!isPremtekEmail(email)) return showStatus(dialog, "僅接受 @premtek.com.tw 公司信箱建立帳號。", true);
-    if (!displayName) return showStatus(dialog, "請輸入顯示名稱。", true);
-    try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(result.user, { displayName });
-      showStatus(dialog, "公司帳號已建立並登入。", false);
-    } catch (error) {
-      showStatus(dialog, firebaseErrorMessage(error), true);
-    }
+    const email = value(dialog, "[data-auth-email-link-complete-email]");
+    await completeMagicLink(auth, dialog, email);
   });
   dialog.querySelector("[data-auth-logout]").addEventListener("click", async () => {
     await signOut(auth);
     dialog.close();
   });
+  completeMagicLinkFromUrl(auth, dialog);
 }
 
 function bindDialog(dialog) {
@@ -95,6 +80,49 @@ function bindDialog(dialog) {
     dialog.querySelector("[data-auth-email]")?.focus();
   }));
   dialog.querySelector("[data-auth-close]").addEventListener("click", () => dialog.close());
+}
+
+async function completeMagicLinkFromUrl(auth, dialog) {
+  const token = new URL(window.location.href).searchParams.get("loginToken");
+  if (!token) return;
+  dialog.showModal();
+  dialog.querySelector("[data-auth-signed-out]").hidden = true;
+  dialog.querySelector("[data-auth-email-link-complete]").hidden = false;
+  dialog.querySelector("[data-auth-email-link-complete-email]").focus();
+  dialog.dataset.magicLinkToken = token;
+  showStatus(dialog, "請確認收取登入連結的公司信箱。", false);
+}
+
+async function completeMagicLink(auth, dialog, email) {
+  if (!isPremtekEmail(email)) return showStatus(dialog, "僅接受 @premtek.com.tw 公司信箱登入。", true);
+  const token = dialog.dataset.magicLinkToken;
+  if (!token) return showStatus(dialog, "登入連結已失效，請重新寄送。", true);
+  try {
+    showStatus(dialog, "正在完成登入。", false);
+    const response = await fetch("/api/auth/consume-link", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ token, email })
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || "登入連結已失效，請重新寄送。");
+    delete dialog.dataset.magicLinkToken;
+    window.history.replaceState({}, document.title, window.location.pathname);
+    await signInWithCustomToken(auth, payload.customToken);
+    dialog.close();
+  } catch (error) {
+    showStatus(dialog, error.message || "登入連結已失效，請重新寄送。", true);
+  }
+}
+
+async function requestEmailLink(email) {
+  const response = await fetch("/api/auth/send-link", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ email })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || "登入連結暫時無法寄送，請稍後再試。");
 }
 
 function renderUnavailable(dialog) {
@@ -107,6 +135,7 @@ function renderAuth(dialog, firebaseUser) {
   const displayName = firebaseUser?.displayName || firebaseUser?.email || "登入";
   document.querySelectorAll("[data-auth-name-display]").forEach((element) => { element.textContent = displayName; });
   dialog.querySelector("[data-auth-signed-out]").hidden = signedIn;
+  dialog.querySelector("[data-auth-email-link-complete]").hidden = true;
   dialog.querySelector("[data-auth-session]").hidden = !signedIn;
   if (signedIn) {
     dialog.querySelector("[data-auth-session-name]").textContent = displayName;
@@ -152,13 +181,4 @@ function showStatus(dialog, message, isError = false) {
 
 function setAuthState(state) {
   document.documentElement.dataset.authState = state;
-}
-
-function firebaseErrorMessage(error) {
-  const code = error?.code;
-  if (code === "auth/invalid-credential") return "帳號或密碼不正確。";
-  if (code === "auth/email-already-in-use") return "此公司信箱已建立帳號，請直接登入。";
-  if (code === "auth/weak-password") return "密碼至少需要 6 個字元。";
-  if (code === "auth/operation-not-allowed") return "此登入方式尚未由管理者啟用。";
-  return "登入服務暫時無法使用，請稍後再試。";
 }
