@@ -1,13 +1,14 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, onIdTokenChanged, signInWithCustomToken, signOut } from "firebase/auth";
+import { browserSessionPersistence, getAuth, onIdTokenChanged, setPersistence, signInWithCustomToken, signOut } from "firebase/auth";
 import { clearCurrentUser, setCurrentUser } from "./auth-store.js";
 import { ensureCurrentUserProgress } from "./progress-store.js";
 
 const firebaseConfig = __PLASMA_FIREBASE_CONFIG__;
 const administratorEmail = __PLASMA_ADMIN_EMAIL__;
 const allowedDomain = "premtek.com.tw";
+const persistenceMarker = "plasma-academy-session-auth-v1";
 
-export function initFirebaseAuth() {
+export async function initFirebaseAuth() {
   const dialog = document.querySelector("[data-auth-dialog]");
   if (!dialog) return;
   bindDialog(dialog);
@@ -18,6 +19,7 @@ export function initFirebaseAuth() {
   }
 
   const auth = getAuth(initializeApp(firebaseConfig));
+  await useSessionOnlyAuth(auth);
   onIdTokenChanged(auth, async (firebaseUser) => {
     if (!firebaseUser) {
       clearCurrentUser();
@@ -65,6 +67,13 @@ export function initFirebaseAuth() {
     dialog.close();
   });
   completeMagicLinkFromUrl(auth, dialog);
+}
+
+async function useSessionOnlyAuth(auth) {
+  await setPersistence(auth, browserSessionPersistence);
+  if (sessionStorage.getItem(persistenceMarker) === "1") return;
+  await signOut(auth);
+  sessionStorage.setItem(persistenceMarker, "1");
 }
 
 function bindDialog(dialog) {

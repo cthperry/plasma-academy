@@ -34,6 +34,8 @@ assert.doesNotMatch(client, /data-auth-email-link-complete-email/);
 assert.match(client, /loginAuditPending/);
 assert.match(client, /loginAuditUid/);
 assert.match(client, /administratorEmail/);
+assert.match(client, /browserSessionPersistence/);
+assert.match(client, /useSessionOnlyAuth/);
 assert.ok(client.indexOf("await recordLogin(idToken)") < client.indexOf('setAuthState("authenticated")'));
 assert.match(shell, /data-auth-gate/);
 assert.match(shell, /data-auth-email-link/);
