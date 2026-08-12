@@ -22,5 +22,7 @@ assert.match(client, /sendEmailVerification/);
 assert.match(admin, /email_verified/);
 assert.match(shell, /data-auth-gate/);
 assert.match(shell, /data-auth-protected/);
+assert.match(shell, /identitytoolkit\.googleapis\.com/);
+assert.match(shell, /securetoken\.googleapis\.com/);
 assert.equal(JSON.parse(vercel).outputDirectory, "dist/client");
 console.log("Firebase/Vercel 移植檢查通過：網域限制、集中登入紀錄、管理稽核與靜態輸出皆已設定。 ");
