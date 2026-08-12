@@ -39,7 +39,12 @@ export default async function handler(request, result) {
     await sendWithBrevo(email, loginUrl.toString());
     return result.status(202).json({ sent: true });
   } catch (error) {
-    console.error("登入連結寄送失敗", { stage, code: error?.code || "unknown", status: error?.status || null });
+    console.error("登入連結寄送失敗", {
+      stage,
+      code: error?.code || "unknown",
+      status: error?.status || null,
+      message: String(error?.message || "unknown").slice(0, 160)
+    });
     return result.status(503).json({ error: "登入連結暫時無法寄送，請稍後再試。" });
   }
 }
