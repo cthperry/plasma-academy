@@ -1,11 +1,10 @@
 import { initializeApp } from "firebase/app";
 import {
-  GithubAuthProvider,
   createUserWithEmailAndPassword,
   getAuth,
   onIdTokenChanged,
+  sendEmailVerification,
   signInWithEmailAndPassword,
-  signInWithPopup,
   signOut,
   updateProfile
 } from "firebase/auth";
@@ -20,25 +19,41 @@ export function initFirebaseAuth() {
   if (!dialog) return;
   bindDialog(dialog);
   if (!firebaseConfig) {
+    setAuthState("locked");
     renderUnavailable(dialog);
     return;
   }
 
   const auth = getAuth(initializeApp(firebaseConfig));
+  let registrationInProgress = false;
   onIdTokenChanged(auth, async (firebaseUser) => {
     if (!firebaseUser) {
       clearCurrentUser();
+      setAuthState("locked");
       renderAuth(dialog, null);
       renderProgress(null);
       return;
     }
     if (!isPremtekEmail(firebaseUser.email)) {
       await signOut(auth);
+      setAuthState("locked");
       showStatus(dialog, "僅接受 @premtek.com.tw 公司信箱登入。", true);
+      return;
+    }
+    if (!firebaseUser.emailVerified) {
+      clearCurrentUser();
+      setAuthState("locked");
+      renderAuth(dialog, null);
+      renderProgress(null);
+      if (!registrationInProgress) {
+        await signOut(auth);
+        showStatus(dialog, "請先完成公司信箱驗證，再重新登入。", true);
+      }
       return;
     }
     const idToken = await firebaseUser.getIdToken();
     setCurrentUser({ id: firebaseUser.uid, displayName: firebaseUser.displayName, email: firebaseUser.email }, idToken);
+    setAuthState("authenticated");
     ensureCurrentUserProgress();
     renderAuth(dialog, firebaseUser);
     renderProgress(firebaseUser);
@@ -68,25 +83,17 @@ export function initFirebaseAuth() {
     const displayName = value(dialog, "[data-auth-display-name]");
     if (!isPremtekEmail(email)) return showStatus(dialog, "僅接受 @premtek.com.tw 公司信箱建立帳號。", true);
     if (!displayName) return showStatus(dialog, "請輸入顯示名稱。", true);
+    registrationInProgress = true;
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(result.user, { displayName });
-      dialog.close();
+      await sendEmailVerification(result.user);
+      await signOut(auth);
+      showStatus(dialog, "驗證信已寄出。完成驗證後，請使用此信箱與密碼登入。", false);
     } catch (error) {
       showStatus(dialog, firebaseErrorMessage(error), true);
-    }
-  });
-  dialog.querySelector("[data-auth-github]").addEventListener("click", async () => {
-    try {
-      const result = await signInWithPopup(auth, new GithubAuthProvider());
-      if (!isPremtekEmail(result.user.email)) {
-        await signOut(auth);
-        showStatus(dialog, "GitHub 帳號必須提供 @premtek.com.tw 公司信箱。", true);
-        return;
-      }
-      dialog.close();
-    } catch (error) {
-      showStatus(dialog, firebaseErrorMessage(error), true);
+    } finally {
+      registrationInProgress = false;
     }
   });
   dialog.querySelector("[data-auth-logout]").addEventListener("click", async () => {
@@ -96,7 +103,7 @@ export function initFirebaseAuth() {
 }
 
 function bindDialog(dialog) {
-  document.querySelectorAll("[data-auth-open]").forEach((button) => button.addEventListener("click", () => {
+  document.querySelectorAll("[data-auth-open], [data-auth-gate-open]").forEach((button) => button.addEventListener("click", () => {
     dialog.showModal();
     dialog.querySelector("[data-auth-email]")?.focus();
   }));
@@ -147,6 +154,14 @@ function showStatus(dialog, message, isError = false) {
   const status = dialog.querySelector("[data-auth-status]");
   status.textContent = message;
   status.dataset.state = isError ? "error" : "success";
+  document.querySelectorAll("[data-auth-gate-status]").forEach((element) => {
+    element.textContent = message;
+    element.dataset.state = isError ? "error" : "success";
+  });
+}
+
+function setAuthState(state) {
+  document.documentElement.dataset.authState = state;
 }
 
 function firebaseErrorMessage(error) {
@@ -155,6 +170,5 @@ function firebaseErrorMessage(error) {
   if (code === "auth/email-already-in-use") return "此公司信箱已建立帳號，請直接登入。";
   if (code === "auth/weak-password") return "密碼至少需要 6 個字元。";
   if (code === "auth/operation-not-allowed") return "此登入方式尚未由管理者啟用。";
-  if (code === "auth/popup-closed-by-user") return "GitHub 登入視窗已關閉。";
   return "登入服務暫時無法使用，請稍後再試。";
 }

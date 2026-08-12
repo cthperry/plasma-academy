@@ -1,13 +1,15 @@
 # Firebase 與 Vercel 登入管理
 
-Plasma Academy 保持公開閱讀。只有 @premtek.com.tw 公司信箱可登入、保存個人裝置進度，並由管理者查看集中登入紀錄。
+Plasma Academy 採登入優先流程。使用者必須以已驗證的 `@premtek.com.tw` 公司信箱登入，才會顯示課程介面與個人裝置進度；管理者可查看集中登入紀錄。
+
+此登入首畫面是為了確保使用紀錄完整，不將已部署的靜態課程檔案視作保密內容。
 
 ## Firebase 專案
 
 - 專案 ID：`plasma-academy-p0-ab013`
 - Cloud Firestore 已在 `asia-east1`（台灣）建立 Standard 資料庫，並啟用刪除保護。
 - Firestore 規則：所有瀏覽器直接讀寫一律拒絕；僅 Vercel API 的 Firebase Admin SDK 可讀寫。
-- Authentication 已啟用 Email/Password；網站程式會拒絕非 `@premtek.com.tw` 信箱。
+- Authentication 已啟用 Email/Password；網站程式會拒絕非 `@premtek.com.tw` 信箱，並要求完成信箱驗證。
 
 登入資料結構：
 
@@ -22,14 +24,10 @@ Plasma Academy 保持公開閱讀。只有 @premtek.com.tw 公司信箱可登入
 3. 建立最小權限 Firebase service account JSON，完整 JSON 存入 Vercel 的 `FIREBASE_ADMIN_SERVICE_ACCOUNT` 私密環境變數。
 4. 設定 `ADMIN_EMAIL` 為唯一可開啟 `/admin/` 的 `@premtek.com.tw` 公司信箱。
 
-若要使用 GitHub 登入，另行建立 GitHub OAuth App 並在 Firebase 啟用 GitHub provider。OAuth Client Secret 只儲存在 Firebase，不能放進 GitHub 或 Vercel 前端變數。
-
-GitHub OAuth 的 callback URL 以 Firebase Console 顯示的 `https://<project>.firebaseapp.com/__/auth/handler` 為準；Client Secret 只儲存在 Firebase，不能放進 GitHub 或 Vercel 前端變數。
-
 ## 部署順序
 
 1. `firebase deploy --project plasma-academy-p0-ab013`
 2. 在 Vercel 匯入 `cthperry/plasma-academy`，選擇本專案根目錄。
 3. 設定上述 Vercel 環境變數並部署 Preview。
-4. 使用 @premtek.com.tw 帳號登入，確認 `/api/auth/login-event` 建立資料。
+4. 使用 @premtek.com.tw 信箱建立帳號、完成驗證後登入，確認 `/api/auth/login-event` 建立資料。
 5. 以 `ADMIN_EMAIL` 帳號開啟 `/admin/`，確認查詢與 CSV 匯出。
